@@ -9,10 +9,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: create env files
-        run: |
-          echo "${{ secrets.FRONTEND_ENV }}" > ./frontend/.env;
-          echo "${{ secrets.BACKEND_ENV }}" > ./backend/.env;
+#      - name: create env files
+#        run: |
+#          echo "${{ secrets.FRONTEND_ENV }}" > ./frontend/.env;
+#          echo "${{ secrets.BACKEND_ENV }}" > ./backend/.env;
 
       - name: compose build
         run: docker compose build
