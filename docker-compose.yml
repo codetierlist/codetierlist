@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  next:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+        - "3000:3000"
+
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: codetierlist
+      MONGO_INITDB_ROOT_PASSWORD: password
