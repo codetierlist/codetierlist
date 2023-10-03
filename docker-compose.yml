@@ -9,9 +9,16 @@ services:
     ports:
         - "3000:3000"
 
-  mongo:
-    image: mongo
+  db:
+    image: postgres
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: codetierlist
-      MONGO_INITDB_ROOT_PASSWORD: password
+      POSTGRES_PASSWORD: example
+      POSTGRES_USER: postgres
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+    db_data:
