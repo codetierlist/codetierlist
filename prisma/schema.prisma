@@ -84,6 +84,7 @@ model Score {
   test_id     String
   solution_id String
   id          String   @id @default(dbgenerated("gen_random_uuid()"))
+  pass        Boolean
   solution    Solution @relation(fields: [solution_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   test_case   TestCase @relation(fields: [test_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
