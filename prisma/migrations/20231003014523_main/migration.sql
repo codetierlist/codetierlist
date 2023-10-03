@@ -67,6 +67,7 @@ CREATE TABLE "_Scores" (
     "test_id" TEXT NOT NULL,
     "solution_id" TEXT NOT NULL,
     "id" TEXT NOT NULL DEFAULT gen_random_uuid(),
+    "pass" BOOLEAN NOT NULL,
 
     CONSTRAINT "_Scores_pkey" PRIMARY KEY ("id")
 );
