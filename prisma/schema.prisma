@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Assignment {
+  id          String     @id @default(dbgenerated("gen_random_uuid()"))
+  title       String
+  due_date    DateTime?
+  description String
+  course_id   String
+  course      Course     @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  test_cases  TestCase[]
+
+  @@map("Assignments")
+}
+
+model Course {
+  id          String       @id @default(dbgenerated("gen_random_uuid()"))
+  name        String
+  code        String
+  assignments Assignment[]
+  Role        Role[]
+
+  @@map("Courses")
+}
+
+model Solution {
+  id        String   @id
+  git_url   String
+  git_id    String
+  datetime  DateTime @default(now())
+  author_id String
+  author    User     @relation(fields: [author_id], references: [utorid], onDelete: Cascade, onUpdate: Cascade)
+  scores    Score[]
+
+  @@map("Solutions")
+}
+
+model TestCase {
+  datetime      DateTime   @default(now())
+  override      Boolean    @default(false)
+  git_url       String
+  id            String     @id @default(dbgenerated("gen_random_uuid()"))
+  git_id        String
+  assignment_id String
+  assignment    Assignment @relation(fields: [assignment_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  scores        Score[]
+
+  @@map("TestCases")
+}
+
+model User {
+  utorid    String     @id
+  email     String
+  solutions Solution[]
+  roles     Role[]
+
+  @@map("Users")
+}
+
+enum RoleType {
+  INSTRUCTOR
+  TA
+  STUDENT
+}
+
+model Role {
+  id        String   @id @default(dbgenerated("gen_random_uuid()"))
+  type      RoleType @default(STUDENT)
+  user_id   String
+  course_id String
+  course    Course   @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user      User     @relation(fields: [user_id], references: [utorid], onDelete: Cascade, onUpdate: Cascade)
+
+  @@map("_Roles")
+}
+
+model Score {
+  test_id     String
+  solution_id String
+  id          String   @id @default(dbgenerated("gen_random_uuid()"))
+  pass        Boolean
+  solution    Solution @relation(fields: [solution_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  test_case   TestCase @relation(fields: [test_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@map("_Scores")
+}
