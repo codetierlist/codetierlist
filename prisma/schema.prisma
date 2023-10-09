@@ -8,7 +8,6 @@ datasource db {
 }
 
 model Assignment {
-  id          String     @id @default(dbgenerated("gen_random_uuid()"))
   title       String
   due_date    DateTime?
   description String
@@ -16,6 +15,7 @@ model Assignment {
   course      Course     @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   test_cases  TestCase[]
 
+  @@id([course_id, title])
   @@map("Assignments")
 }
 
