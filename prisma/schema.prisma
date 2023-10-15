@@ -65,6 +65,7 @@ model User {
   email     String
   solutions Solution[]
   roles     Role[]
+  admin     Boolean    @default(false)
 
   @@map("Users")
 }
