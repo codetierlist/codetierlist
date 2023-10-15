@@ -14,8 +14,10 @@ model Assignment {
   course_id   String
   course      Course     @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   test_cases  TestCase[]
+  submissions Solution[]
 
-  @@id([course_id, title])
+  @@id(fields: [course_id, title])
+  @@unique([course_id, title], name: "id")
   @@map("Assignments")
 }
 
@@ -30,26 +32,30 @@ model Course {
 }
 
 model Solution {
-  id        String   @id
-  git_url   String
-  git_id    String
-  datetime  DateTime @default(now())
-  author_id String
-  author    User     @relation(fields: [author_id], references: [utorid], onDelete: Cascade, onUpdate: Cascade)
-  scores    Score[]
+  id                  String     @id
+  git_url             String
+  git_id              String
+  datetime            DateTime   @default(now())
+  author_id           String
+  author              User       @relation(fields: [author_id], references: [utorid], onDelete: Cascade, onUpdate: Cascade)
+  assignment          Assignment @relation(onDelete: Cascade, onUpdate: Cascade, fields: [assignmentCourse_id, assignmentTitle], references: [course_id, title])
+  scores              Score[]
+  assignmentCourse_id String
+  assignmentTitle     String
 
   @@map("Solutions")
 }
 
 model TestCase {
-  datetime      DateTime   @default(now())
-  override      Boolean    @default(false)
-  git_url       String
-  id            String     @id @default(dbgenerated("gen_random_uuid()"))
-  git_id        String
-  assignment_id String
-  assignment    Assignment @relation(fields: [assignment_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  scores        Score[]
+  datetime            DateTime   @default(now())
+  override            Boolean    @default(false)
+  git_url             String
+  id                  String     @id @default(dbgenerated("gen_random_uuid()"))
+  git_id              String
+  assignment          Assignment @relation(onDelete: Cascade, onUpdate: Cascade, fields: [assignmentCourse_id, assignmentTitle], references: [course_id, title])
+  scores              Score[]
+  assignmentCourse_id String
+  assignmentTitle     String
 
   @@map("TestCases")
 }
