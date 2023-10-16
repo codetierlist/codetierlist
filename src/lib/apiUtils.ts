@@ -18,7 +18,7 @@ export async function getUser(request: Request) {
 export async function getCourse(courseId: string, user: {
     utorid: string
 }) {
-    return prisma.course.findUnique({
+    return prisma.course.findUniqueOrThrow({
         where: {id: courseId, Role: {some: {user: {utorid: user.utorid}}}},
         include: {
             Role: {
@@ -52,4 +52,17 @@ export function isProf(course: Course & {
     utorid: string
 }) {
     return course.Role.some(role => role.user.utorid === user.utorid && ["INSTRUCTOR", "TA"].includes(role.type));
+}
+
+export function getAssignment(courseId: string, assignmentName: string) {
+    return prisma.assignment.findUniqueOrThrow({
+        where: {id: {course_id: courseId, title: assignmentName}},
+        include: {
+            submissions: {
+                include: {scores: true},
+            },
+            course: true,
+            test_cases: true
+        }
+    });
 }
