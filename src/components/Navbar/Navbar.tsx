@@ -1,10 +1,22 @@
-import { InitialsAvatar } from ".."
+import { GenerateInitalsAvatarProps } from "@/components"
+import styles from "./Navbar.module.css"
+import { Persona } from "@fluentui/react-components"
+import { UserContext } from "@/app/contexts/UserContext"
+import { useContext } from "react"
 
 export const Navbar = () => {
+    const defaultUser = useContext(UserContext);
+
     return (
-        <div>
-        <InitialsAvatar name="asda" />
-        <h1>Navbar</h1>
-        </div>
+        <header className={styles.navbar}>
+            <h1 className={styles.title}>Codetierlist</h1>
+
+            <Persona
+                textPosition="before"
+                avatar={GenerateInitalsAvatarProps(defaultUser.name)}
+                primaryText="asda"
+                secondaryText={defaultUser.role}
+            />
+        </header>
     )
 }

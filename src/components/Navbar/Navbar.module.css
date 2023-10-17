@@ -1,0 +1,11 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 1em;
+
+    & .title {
+        font-family: var(--fontFamilyNumeric);
+        line-height: var(--lineHeightBase600);
+    }
+
+}
