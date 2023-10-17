@@ -11,14 +11,18 @@ export declare type CourseSessionChipProps = {
 
   /** the children of the component */
   children?: React.ReactNode;
+
+  /** the props of the component */
+  props?: React.HTMLAttributes<HTMLDivElement>;
 }
 
-export const CourseSessionChip = ({ session, children }: CourseSessionChipProps): JSX.Element => {
+/**
+ * @returns a generic div so it's easier to style
+ */
+export const CourseSessionChip = ({ session, children, props }: CourseSessionChipProps): JSX.Element => {
   return (
-    <div className={styles.sessionChip + " " + styles[session]}>
-      <Body1>
+    <div className={styles.sessionChip + " " + styles[session]} {...props}>
         {children ? children : session}
-      </Body1>
     </div>
   )
 }
@@ -33,6 +37,8 @@ export declare type CourseOverviewCardProps = {
   image: string;
   /** the session of the course */
   session: "Fall" | "Winter" | "Summer";
+  /** the props of the component */
+  props?: React.HTMLAttributes<HTMLDivElement>;
 }
 
 export const CourseOverviewCard = ({ name, description, image, session, props }: CourseOverviewCardProps): JSX.Element => {
