@@ -2,11 +2,8 @@
 
 import './globals.css'
 import { Inter } from 'next/font/google'
-
-import {
-  FluentProvider,
-  webLightTheme,
-} from "@fluentui/react-components";
+import { Navbar, lightTheme } from '@/components';
+import { FluentProvider } from "@fluentui/react-components";
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -18,7 +15,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <FluentProvider theme={webLightTheme}>
+        <FluentProvider theme={lightTheme} className='light'>
+          <Navbar />
           {children}
         </FluentProvider>
       </body>
