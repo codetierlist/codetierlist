@@ -10,6 +10,10 @@ body {
   max-width: 100vw;
   overflow-x: hidden;
   --accent-hue: 203;
+
+  &.dark {
+    color-scheme: dark;
+  }
 }
 
 .fui-FluentProvider {
@@ -17,7 +21,8 @@ body {
   background-color: var(--colorNeutralBackground3) !important;
   /* fake mica effect */
   background-image:
-  linear-gradient(0deg, rgba(255,255,255,0.85), rgba(255,255,255,0.85)),
+  linear-gradient(0deg, color-mix(in srgb, var(--colorNeutralBackground1) 85%, transparent),
+                        color-mix(in srgb, var(--colorNeutralBackground1) 85%, transparent)),
   radial-gradient(at 51% 34%, hsla(126,87%,76%,1) 0px, transparent 50%),
   radial-gradient(at 90% 51%, hsla(214,95%,75%,1) 0px, transparent 50%),
   radial-gradient(at 87% 80%, hsla(239,90%,70%,1) 0px, transparent 50%),
@@ -27,6 +32,9 @@ body {
   radial-gradient(at 67% 84%, hsla(357,66%,76%,1) 0px, transparent 50%);
 
   & main {
-    background-color: var(--colorNeutralBackground1) !important;
+    background-color: color-mix(in srgb, var(--colorNeutralBackground1) 75%, transparent) !important;
+    box-shadow: var(--shadow8);
+    min-height: calc(100vh - var(--spacingVerticalXXXL) * 2);
+    padding: var(--spacingVerticalXL);
   }
 }
