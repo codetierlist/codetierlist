@@ -1,6 +1,7 @@
 "use client"
 
 import { CourseSessionChip } from "@/components"
+import { AssignmentCard } from "@/components/AssignmentCard/AssignmentCard";
 import { getCourses } from "@/contexts/UserContext";
 import { Title2 } from "@fluentui/react-components";
 
@@ -22,11 +23,19 @@ export default function Page({ params }: { params: { course: string } }) {
         <main>
             <div>
                 <CourseSessionChip session="Fall">
-                    {params.course}
+                    { params.course }
                 </CourseSessionChip>
                 <Title2>
                 { course.name }
                 </Title2>
+            </div>
+            <div className="flex-wrap">
+                <AssignmentCard id="1" name="Assignment 1" dueDate={new Date()} tier="s" />
+                <AssignmentCard id="1" name="Assignment 2" dueDate={new Date()} tier="a" />
+                <AssignmentCard id="1" name="Assignment 3" dueDate={new Date()} tier="b" />
+                <AssignmentCard id="1" name="Assignment 4" dueDate={new Date()} tier="c" />
+                <AssignmentCard id="1" name="Assignment 5" dueDate={new Date()} tier="d" />
+                <AssignmentCard id="1" name="Assignment 6" dueDate={new Date()} tier="idk" />
             </div>
         </main>
     );

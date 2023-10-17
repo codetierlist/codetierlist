@@ -20,7 +20,7 @@ export default function Home() {
 
   return (
     <main className={styles.main}>
-      <div className={styles.CourseOverviewCards}>
+      <div className="flex-wrap">
         {courses.map((course: Course, i) => {
           return (
             <CourseOverviewCard

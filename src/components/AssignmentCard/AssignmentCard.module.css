@@ -1,0 +1,52 @@
+.tier-s, .tier-a, .tier-b, .tier-c, .tier-d, .tier-idk {
+  border-radius: 0.5rem;
+  padding: var(--spacingHorizontalL) var(--spacingVerticalL);
+  font-size: var(--fontSizeHero800);
+  font-weight: var(--fontWeightSemibold);
+  text-transform: uppercase;
+  text-decoration: none !important;
+}
+
+.tier-s {
+  background-color: var(--colorPaletteDarkRedBackground2);
+  color: var(--colorPaletteDarkRedForeground2);
+}
+
+.tier-a {
+  background-color: var(--colorPaletteDarkGreenBackground2);
+  color: var(--colorPaletteDarkGreenForeground2);
+}
+
+.tier-b {
+  background-color: var(--colorPaletteMarigoldBackground2);
+  color: var(--colorPaletteMarigoldForeground2);
+}
+
+.tier-c {
+  background-color: var(--colorPaletteCornflowerBackground2);
+  color: var(--colorPaletteCornflowerForeground2);
+}
+
+.tier-d {
+  background-color: var(--colorPaletteLavenderBackground2);
+  color: var(--colorPaletteLavenderForeground2);
+}
+
+.tier-idk {
+  background-color: var(--colorPaletteBeigeBackground2);
+  color: var(--colorPaletteBeigeForeground2);
+}
+
+.cardContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.cardLink {
+  text-decoration: none;
+}
+
+.card {
+  display: flex;
+  flex-direction: row !important;
+}

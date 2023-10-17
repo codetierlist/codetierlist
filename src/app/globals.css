@@ -16,6 +16,12 @@ body {
   }
 }
 
+.flex-wrap {
+  display: flex;
+  gap: var(--spacingVerticalL);
+  flex-wrap: wrap;
+}
+
 .fui-FluentProvider {
   min-height: 100vh;
   background-color: var(--colorNeutralBackground3) !important;
