@@ -1,5 +1,12 @@
 import Image from 'next/image'
 import styles from './page.module.css'
+import { Metadata } from 'next'
+
+export function generateMetadata() : Metadata {
+  return {
+    title: "Dakshboard"
+  }
+}
 
 export default function Home() {
   return (
