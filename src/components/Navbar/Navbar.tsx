@@ -14,7 +14,7 @@ export const Navbar = () => {
             <Persona
                 textPosition="before"
                 avatar={GenerateInitalsAvatarProps(defaultUser.name)}
-                primaryText="asda"
+                primaryText={defaultUser.name}
                 secondaryText={defaultUser.role}
             />
         </header>
