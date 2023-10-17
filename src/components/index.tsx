@@ -3,3 +3,5 @@
 /**
  * @fileoverview This file is the entry point for all components.
  */
+export * from "./InitialsAvatar/InitialsAvatar";
+export * from "./Navbar/Navbar";
