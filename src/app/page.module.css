@@ -1,0 +1,5 @@
+.CourseOverviewCards {
+    display: flex;
+    gap: var(--spacingVerticalL);
+    flex-wrap: wrap;
+}

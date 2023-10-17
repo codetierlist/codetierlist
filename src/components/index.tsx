@@ -6,3 +6,4 @@
 export * from "./InitialsAvatar/InitialsAvatar";
 export * from "./Navbar/Navbar";
 export * from "./utils/Theme/Theme";
+export * from "./CourseOverviewCard/CourseOverviewCard"

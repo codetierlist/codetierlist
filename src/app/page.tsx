@@ -6,6 +6,8 @@ import { Metadata } from 'next'
 import {
   Button
 } from "@fluentui/react-components";
+import { Course, getCourses } from '../contexts/UserContext';
+import { CourseOverviewCard } from '@/components';
 
 export function generateMetadata() : Metadata {
   return {
@@ -14,9 +16,23 @@ export function generateMetadata() : Metadata {
 }
 
 export default function Home() {
+  const courses = getCourses();
+
   return (
     <main className={styles.main}>
-      <Button appearance="primary">Hello Fluent UI React</Button>
+      <div className={styles.CourseOverviewCards}>
+        {courses.map((course: Course, i) => {
+          return (
+            <CourseOverviewCard
+              name={course.code}
+              description={course.name}
+              image="https://developer.mozilla.org/mdn-social-share.cd6c4a5a.png"
+              session={course.session}
+              key={i}
+            />
+          )
+        })}
+      </div>
     </main>
   )
 }
