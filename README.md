@@ -42,7 +42,7 @@ While students do provide their test cases and code to rank their progress, thes
 ### Tech stack:
 
 * Frontend
-  * [Fluent UI React](https://react.fluentui.dev/) 🎨
+  * [Fluent UI React v9](https://react.fluentui.dev/) 🎨
   * NextJS ⚛️
 * Backend
   * NextJS ☕
