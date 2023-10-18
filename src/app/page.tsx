@@ -1,19 +1,8 @@
 "use client"
 
-import Image from 'next/image'
-import styles from './page.module.css'
-import { Metadata } from 'next'
-import {
-  Button
-} from "@fluentui/react-components";
-import { Course, getCourses } from '../contexts/UserContext';
 import { CourseOverviewCard } from '@/components';
-
-export function generateMetadata() : Metadata {
-  return {
-    title: "Dakshboard"
-  }
-}
+import { Course, getCourses } from '../contexts/UserContext';
+import styles from './page.module.css';
 
 export default function Home() {
   const courses = getCourses();
