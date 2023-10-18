@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@fluentui/react-components": "^9.35.0",
+    "@fluentui/react-icons": "^2.0.220",
     "@prisma/client": "^5.3.1",
     "next": "13.4.19",
     "nodegit": "^0.27.0",
