@@ -1,8 +1,9 @@
 import {getAssignment, getCourse, getUser} from "@/lib/apiUtils";
-import * as fs from "fs";
-import nodegit from "nodegit";
 import path from "path";
 import prisma from "@/lib/prisma";
+import {fs} from 'memfs';
+import git from 'isomorphic-git';
+import http from 'isomorphic-git/http/node';
 
 export async function POST(request: Request, {params}: {
     params: {
@@ -16,13 +17,30 @@ export async function POST(request: Request, {params}: {
     const course = assignmentObj.course;
 
     // upload files
-    const repoPath = path.resolve(`./repos/${course.id}/${assignment}/${user.utorid}`);
+    // const repoPath = path.resolve(`./repos/${course.id}/${assignment}/${user.utorid}`);
+    const repoPath = path.resolve(`./repo`);
+    // check if git repo exists
+    const submission = await prisma.solution.findUnique({
+        where: {
+            id: {
+                author_id: user.utorid,
+                assignment_title: assignmentObj.title,
+                course_id: course.id
+            }
+        }
+    });
 
-    // create folder if it doesnt exist
-    await new Promise<undefined>((res, rej) => fs.mkdir(repoPath, {recursive: true}, (err) => {
-        if (err) rej(err);
-        res(undefined);
-    }));
+    if (submission === null) {
+        // TODO create git repo on remote
+        return;
+    }
+
+    await git.clone({
+        fs,
+        http,
+        dir: repoPath,
+        url: submission.git_url
+    });
 
     // get files from form data
     const formData = await request.formData();
@@ -36,59 +54,24 @@ export async function POST(request: Request, {params}: {
         }
     }
 
-    // check if git repo exists
-    const submission = await prisma.solution.findUnique({
+    const commit = await git.commit({
+        fs,
+        dir: repoPath,
+        message: "Update files via file upload",
+    })
+
+    await prisma.solution.update({
         where: {
             id: {
                 author_id: user.utorid,
                 assignment_title: assignmentObj.title,
                 course_id: course.id
             }
+        },
+        data: {
+            git_id: commit,
         }
     });
-    let repo: nodegit.Repository;
-    if (submission !== null) {
-        // update submission
-        repo = await nodegit.Repository.open(submission.git_url);
-    } else {
-        repo = await nodegit.Repository.init(repoPath, 0);
-    }
 
-
-    const index = await repo.refreshIndex();
-    await index.addAll();
-    await index.write();
-    const author = nodegit.Signature.now(user.utorid, user.email);
-    const committer = nodegit.Signature.now(user.utorid, user.email);
-    const oid = await index.writeTree();
-    const parent = await repo.getHeadCommit();
-    const commit = await repo.createCommit("HEAD", author, committer, "Initial commit", oid, [parent]);
-
-    // create submission
-    if (submission === null) {
-        await prisma.solution.create({
-            data: {
-                git_url: repo.path(),
-                git_id: commit.tostrS(),
-                assignment_title: assignmentObj.title,
-                course_id: course.id,
-                author_id: user.utorid
-            }
-        });
-    } else {
-        await prisma.solution.update({
-            where: {
-                id: {
-                    author_id: user.utorid,
-                    assignment_title: assignmentObj.title,
-                    course_id: course.id
-                }
-            },
-            data: {
-                git_url: repo.path(),
-                git_id: commit.tostrS(),
-            }
-        });
-    }
     return Response.json({success: true});
 }
