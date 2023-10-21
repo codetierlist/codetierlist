@@ -59,7 +59,7 @@ export function getAssignment(courseId: string, assignmentName: string) {
         where: {id: {course_id: courseId, title: assignmentName}},
         include: {
             submissions: {
-                include: {scores: true},
+                include: {scores: true, author: true},
             },
             course: true,
             test_cases: true
