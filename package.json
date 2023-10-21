@@ -12,8 +12,9 @@
     "@fluentui/react-components": "^9.35.0",
     "@fluentui/react-icons": "^2.0.220",
     "@prisma/client": "^5.3.1",
+    "isomorphic-git": "^1.24.5",
+    "memfs": "^4.6.0",
     "next": "13.4.19",
-    "nodegit": "^0.27.0",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },
