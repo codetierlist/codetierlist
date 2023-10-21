@@ -8,13 +8,13 @@ export async function GET(request: Request, {params}: {
     }
 }) {
     const course = await getCourse(params.courseId, await getUser(request));
-    if (course === null){
+    if (course === null) {
         throw new Error("Course not found");
     }
     const user = await getUser(request);
     const {courseId, assignment: assignmentName} = params;
     const assignment = await prisma.assignment.findUnique({
-        where: {id:{course_id: courseId, title: assignmentName}},
+        where: {id: {course_id: courseId, title: assignmentName}},
         include: {
             submissions: {
                 include: {scores: true},
@@ -27,5 +27,14 @@ export async function GET(request: Request, {params}: {
     if (assignment === null) {
         return Response.json(JSON.stringify({error: "Assignment not found."}), {status: 404});
     }
+
+    const res: Omit<typeof assignment, "submissions"> & {
+        submissions?: typeof assignment.submissions
+    } = assignment;
+
+    if (!isProf(course, user)) {
+        delete res.submissions;
+    }
+
     return Response.json(assignment);
 }
