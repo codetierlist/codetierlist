@@ -1,9 +1,8 @@
 import {getAssignment, getCourse, getUser} from "@/lib/apiUtils";
 import path from "path";
 import prisma from "@/lib/prisma";
-import {fs} from 'memfs';
+import fs from "fs";
 import git from 'isomorphic-git';
-import http from 'isomorphic-git/http/node';
 
 export async function POST(request: Request, {params}: {
     params: {
@@ -17,10 +16,16 @@ export async function POST(request: Request, {params}: {
     const course = assignmentObj.course;
 
     // upload files
-    // const repoPath = path.resolve(`./repos/${course.id}/${assignment}/${user.utorid}`);
-    const repoPath = path.resolve(`./repo`);
+    const repoPath = path.resolve(`./repos/${course.id}/${assignment}/${user.utorid}`);
+
+    // create folder if it doesnt exist
+    await new Promise<undefined>((res, rej) => fs.mkdir(repoPath, {recursive: true}, (err) => {
+        if (err) rej(err);
+        res(undefined);
+    }));
+
     // check if git repo exists
-    const submission = await prisma.solution.findUnique({
+    let submission = await prisma.solution.findUnique({
         where: {
             id: {
                 author_id: user.utorid,
@@ -31,16 +36,8 @@ export async function POST(request: Request, {params}: {
     });
 
     if (submission === null) {
-        // TODO create git repo on remote
-        return;
+        await git.init({fs, dir: repoPath});
     }
-
-    await git.clone({
-        fs,
-        http,
-        dir: repoPath,
-        url: submission.git_url
-    });
 
     // get files from form data
     const formData = await request.formData();
@@ -54,13 +51,15 @@ export async function POST(request: Request, {params}: {
         }
     }
 
+    await git.add({fs, dir: repoPath, filepath: "."});
+
     const commit = await git.commit({
         fs,
         dir: repoPath,
         message: "Update files via file upload",
     })
 
-    await prisma.solution.update({
+    await prisma.solution.upsert({
         where: {
             id: {
                 author_id: user.utorid,
@@ -68,7 +67,14 @@ export async function POST(request: Request, {params}: {
                 course_id: course.id
             }
         },
-        data: {
+        create: {
+            git_id: commit,
+            git_url: repoPath,
+            course_id: course.id,
+            assignment_title: assignmentObj.title,
+            author_id: user.utorid,
+        },
+        update: {
             git_id: commit,
         }
     });
