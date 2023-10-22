@@ -7,7 +7,11 @@ export async function POST(request: Request, {params}: {
     params: { courseId: string }
 }) {
     const {courseId} = params;
-    const {utorids}: { utorids: string[] } = await request.json();
+    const {utorids, role}: { utorids: string[], role?: string } = await request.json();
+    if(role !== undefined && !(Object.values(RoleType) as string[]).includes(role)){
+        return Response.json(JSON.stringify({error: 'Invalid role.'}), {status: 400});
+    }
+    const newRole = role as RoleType | undefined ?? RoleType.STUDENT;
     if (!utorids || !Array.isArray(utorids)) {
         return Response.json(JSON.stringify({error: 'utorids must be an array of strings.'}), {status: 400});
     }
@@ -16,7 +20,7 @@ export async function POST(request: Request, {params}: {
 
     await prisma.role.createMany({
         data: utorids.map(utorid => ({
-            type: RoleType.STUDENT,
+            type: newRole,
             course_id: courseId,
             user_id: utorid
         })),

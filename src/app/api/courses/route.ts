@@ -3,11 +3,17 @@ import {getUser} from "@/lib/apiUtils";
 
 export async function POST(request: Request) {
     const user = await getUser(request);
-    // TODO how do auth profs?
+    if(!user.admin){
+        return Response.json(JSON.stringify({error: 'You are not an admin.'}), {status: 403});
+    }
     const {name, code} = await request.json();
-    const courseNumber = await prisma.course.count({where: {code}});
+    if (typeof name !== "string" || typeof code !== "string") {
+        return Response.json(JSON.stringify({error: 'Invalid body.'}), {status: 400});
+    }
+    const oldCourse = await prisma.course.findFirst({orderBy: {id: "desc"}});
+    let courseNumber =  oldCourse ? parseInt(oldCourse.id.split("-")[1]) + 1: 0;
     if (courseNumber > 99) {
-        return Response.json(JSON.stringify({error: 'Too many courses with this code.'}), {status: code});
+        return Response.json(JSON.stringify({error: 'Too many courses with this code.'}), {status: 409});
     }
     const id = code + "-" + courseNumber;
 
@@ -22,7 +28,7 @@ export async function POST(request: Request) {
     await prisma.course.update({
         where: {id},
         data: {
-            Role: {
+            role: {
                 create: {
                     user: {connect: {utorid: user.utorid}},
                     type: "INSTRUCTOR"
@@ -37,7 +43,7 @@ export async function GET(request: Request) {
     const user = await getUser(request);
     const courses = await prisma.course.findMany({
         where: {
-            Role: {
+            role: {
                 some: {
                     user: {utorid: user.utorid}
                 }

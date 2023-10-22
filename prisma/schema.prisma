@@ -26,7 +26,7 @@ model Course {
   name        String
   code        String
   assignments Assignment[]
-  Role        Role[]
+  role        Role[]
   solutions   Solution[]
   testcases   TestCase[]
 
