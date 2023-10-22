@@ -1,10 +1,11 @@
+import { Session } from '@/lib/types';
 import { createContext } from 'react';
 
 export declare interface Course {
   id: string
   name: string
   code: string
-  session: 'Fall' | 'Winter' | 'Summer'
+  session: Session
 }
 
 /** defines a user pre-integration */

@@ -5,10 +5,11 @@ import { Card, CardFooter, CardHeader, CardPreview, Link, Title3 } from '@fluent
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import styles from './CourseOverviewCard.module.css';
+import { Session } from '@/lib/types';
 
 export declare interface CourseSessionChipProps {
   /** the session of the course */
-  session: 'Fall' | 'Winter' | 'Summer'
+  session: Session
 
   /** the children of the component */
   children?: React.ReactNode
@@ -34,11 +35,18 @@ export declare interface CourseOverviewCardProps {
   /** the image of the course */
   image: string
   /** the session of the course */
-  session: 'Fall' | 'Winter' | 'Summer'
+  session: Session
   /** the props of the component */
   props?: React.HTMLAttributes<HTMLDivElement>
 }
 
+/**
+ * A card shown in the dashboard representing the overview of a course.
+ * @property {string} name the name of the course
+ * @property {string} image the image of the course
+ * @property {Session} session the session of the course
+ * @returns {JSX.Element} the course overview card
+ */
 export const CourseOverviewCard = ({ name, image, session, props }: CourseOverviewCardProps): JSX.Element => {
     const [isSelected, setSelected] = useState(false);
     const router = useRouter();

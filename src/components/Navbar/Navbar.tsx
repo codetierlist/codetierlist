@@ -5,6 +5,11 @@ import { UserContext } from '@/contexts/UserContext';
 import { useContext } from 'react';
 import Link from 'next/link';
 
+/**
+ * The navbar component is the top bar of the website. It contains the
+ * logo and the user's name and role.
+ * @returns {JSX.Element} the navbar
+ */
 export const Navbar = () => {
     const defaultUser = useContext(UserContext);
 
