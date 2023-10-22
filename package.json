@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "lint:fix": "eslint --fix src/** --ext .ts,.tsx,.js,.jsx"
+    "lint:fix": "eslint --fix src/ --ext .ts,.tsx,.js,.jsx"
   },
   "dependencies": {
     "@fluentui/react-components": "^9.35.0",
@@ -29,5 +29,57 @@
     "eslint-plugin-react": "^7.33.2",
     "prisma": "^5.3.1",
     "typescript": "5.2.2"
+  },
+  "eslintConfig": {
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended",
+      "next/core-web-vitals",
+      "plugin:react-hooks/recommended",
+      "plugin:react/recommended",
+      "plugin:react/jsx-runtime"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+      "@typescript-eslint"
+    ],
+    "rules": {
+      "indent": [
+        "error",
+        4
+      ],
+      "no-console": [
+        "warn"
+      ],
+      "semi": [
+        "error",
+        "always"
+      ],
+      "no-shadow": "off",
+      "@typescript-eslint/no-shadow": [
+        "error"
+      ],
+      "no-use-before-define": "off",
+      "@typescript-eslint/no-use-before-define": [
+        "error"
+      ],
+      "react/jsx-filename-extension": [
+        "warn",
+        {
+          "extensions": [
+            ".tsx"
+          ]
+        }
+      ]
+    },
+    "env": {
+      "browser": true
+    },
+    "settings": {
+      "react": {
+        "pragma": "React",
+        "version": "detect"
+      }
+    }
   }
 }
