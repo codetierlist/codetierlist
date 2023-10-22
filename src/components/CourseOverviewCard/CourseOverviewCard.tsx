@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { Card, CardFooter, CardHeader, CardPreview, Link, Title3 } from '@fluentui/react-components';

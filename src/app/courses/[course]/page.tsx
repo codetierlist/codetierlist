@@ -34,12 +34,12 @@ export default function Page ({ params }: { params: { course: string } }) {
                 </Title2>
             </header>
             <div className="flex-wrap">
-                <AssignmentCard id="1" name="Assignment 1" dueDate={new Date()} tier="s" />
-                <AssignmentCard id="1" name="Assignment 2" dueDate={new Date()} tier="a" />
-                <AssignmentCard id="1" name="Assignment 3" dueDate={new Date()} tier="b" />
-                <AssignmentCard id="1" name="Assignment 4" dueDate={new Date()} tier="c" />
-                <AssignmentCard id="1" name="Assignment 5" dueDate={new Date()} tier="d" />
-                <AssignmentCard id="1" name="Assignment 5" dueDate={new Date()} tier="f" />
+                <AssignmentCard id="1" name="Assignment 1" dueDate={new Date()} tier="S" />
+                <AssignmentCard id="1" name="Assignment 2" dueDate={new Date()} tier="A" />
+                <AssignmentCard id="1" name="Assignment 3" dueDate={new Date()} tier="B" />
+                <AssignmentCard id="1" name="Assignment 4" dueDate={new Date()} tier="C" />
+                <AssignmentCard id="1" name="Assignment 5" dueDate={new Date()} tier="D" />
+                <AssignmentCard id="1" name="Assignment 5" dueDate={new Date()} tier="F" />
                 <AssignmentCard id="1" name="Assignment 6" dueDate={new Date()} tier="?" />
             </div>
         </main>

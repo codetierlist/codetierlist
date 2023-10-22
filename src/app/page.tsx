@@ -14,7 +14,6 @@ export default function Home () {
                     return (
                         <CourseOverviewCard
                             name={course.code}
-                            description={course.name}
                             image="https://developer.mozilla.org/mdn-social-share.cd6c4a5a.png"
                             session={course.session}
                             key={i}
