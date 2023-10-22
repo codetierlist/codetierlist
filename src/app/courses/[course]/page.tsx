@@ -5,6 +5,7 @@ import { AssignmentCard } from '@/components/AssignmentCard/AssignmentCard';
 import { type Course, getCourses } from '@/contexts/UserContext';
 import { Title2 } from '@fluentui/react-components';
 import styles from './page.module.css';
+import { notFound } from 'next/navigation';
 
 export default function Page ({ params }: { params: { course: string } }) {
     const courses = getCourses();
@@ -12,11 +13,7 @@ export default function Page ({ params }: { params: { course: string } }) {
     let courseObject: Course | undefined;
 
     if (!courses.find((course) => course.code === params.course)) {
-        return (
-            <main>
-                <h1>Course not found</h1>
-            </main>
-        );
+        notFound();
     } else {
         courseObject = courses.find((course) => course.code === params.course);
     }
