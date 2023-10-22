@@ -1,13 +1,23 @@
 import prisma from '@/lib/prisma';
 import { $Enums, type Course, type User } from '@prisma/client';
+import { isUTORid, isUofTEmail } from 'is-utorid';
 import RoleType = $Enums.RoleType
 
 export async function getUser (request: Request) {
     const utorid = request.headers.get('utorid');
     const email = request.headers.get('http_mail');
+
+    // header validation
     if (utorid === null || email === null) {
         throw new Error('No shibboleth headers found.');
     }
+    if (!isUTORid(utorid)) {
+        throw new Error('Invalid utorid.');
+    }
+    if (!isUofTEmail(email)) {
+        throw new Error('Invalid email.');
+    }
+
     return await prisma.user.upsert({
         where: { utorid },
         create: { utorid, email },

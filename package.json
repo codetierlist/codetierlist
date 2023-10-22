@@ -14,6 +14,7 @@
     "@fluentui/react-components": "^9.35.0",
     "@fluentui/react-icons": "^2.0.220",
     "@prisma/client": "^5.3.1",
+    "is-utorid": "^1.2.2",
     "isomorphic-git": "^1.24.5",
     "next": "13.4.19",
     "react": "18.2.0",
