@@ -8,16 +8,17 @@ import styles from "./page.module.css"
 
 export default function Page({ params }: { params: { course: string } }) {
     const courses = getCourses();
-    let course: Course;
 
-    if (!courses.find((course) => course.code.toLowerCase() === params.course.toLowerCase())) {
+    let courseObject: Course | undefined;
+
+    if (!courses.find((course) => course.code === params.course)) {
         return (
             <main>
                 <h1>Course not found</h1>
             </main>
         )
     } else {
-        course = courses.find((course) => course.code.toLowerCase() === params.course.toLowerCase());
+        courseObject = courses.find((course) => course.code === params.course);
     }
 
     return (
@@ -29,7 +30,7 @@ export default function Page({ params }: { params: { course: string } }) {
                     </CourseSessionChip>
                 </Title2>
                 <Title2>
-                    {course.name}
+                    {courseObject?.name || "Course not found"}
                 </Title2>
             </header>
             <div className="flex-wrap">

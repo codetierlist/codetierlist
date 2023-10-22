@@ -42,14 +42,14 @@ export declare type CourseOverviewCardProps = {
 }
 
 export const CourseOverviewCard = ({ name, description, image, session, props }: CourseOverviewCardProps): JSX.Element => {
-  const [isSelected, setIsSelected] = useState(false);
+  const [selected, setSelected] = useState(false);
   const router = useRouter();
 
   return (
       <Card
         className={styles.courseCard}
-        selected={isSelected}
-        onSelectionChange={(_, { isSelected }: { isSelected: boolean }) => setIsSelected(isSelected)}
+        selected={selected}
+        onSelectionChange={(_, { selected }) => setSelected(selected)}
         onClick={(_) => router.push(`/courses/${name}`)}
         {...props}
       >
