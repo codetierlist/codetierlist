@@ -1,13 +1,14 @@
-import { Caption1, Card, CardHeader, Subtitle2, Title3 } from "@fluentui/react-components";
+import { Caption1, Card, CardHeader, Title3 } from "@fluentui/react-components";
 import Link from "next/link";
 import styles from "./AssignmentCard.module.css";
-import { Clock12Filled } from "@fluentui/react-icons/lib/fonts";
+import { TierChip } from "@/components";
+import { Tier } from "@/lib/types";
 
 export declare type AssignmentCardProps = {
     id: string;
     name: string;
     dueDate: Date;
-    tier: "s" | "a" | "b" | "c" | "d" | "idk";
+    tier: Tier;
 }
 
 export const AssignmentCard = ({ id, name, dueDate, tier }: AssignmentCardProps): JSX.Element => {
@@ -15,7 +16,7 @@ export const AssignmentCard = ({ id, name, dueDate, tier }: AssignmentCardProps)
         <Link href={`/assignments/${id}`} className={styles.cardLink}>
             <Card className={styles.card}>
                 <CardHeader
-                    header={<div className={styles[`tier-${tier}`]}>{tier}</div>}
+                    header={( <TierChip tier={tier} /> )}
                 >
                 </CardHeader>
                 <div className={styles.cardContent}>

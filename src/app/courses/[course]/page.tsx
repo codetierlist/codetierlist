@@ -39,7 +39,7 @@ export default function Page({ params }: { params: { course: string } }) {
                 <AssignmentCard id="1" name="Assignment 3" dueDate={new Date()} tier="b" />
                 <AssignmentCard id="1" name="Assignment 4" dueDate={new Date()} tier="c" />
                 <AssignmentCard id="1" name="Assignment 5" dueDate={new Date()} tier="d" />
-                <AssignmentCard id="1" name="Assignment 6" dueDate={new Date()} tier="idk" />
+                <AssignmentCard id="1" name="Assignment 6" dueDate={new Date()} tier="?" />
             </div>
         </main>
     );
