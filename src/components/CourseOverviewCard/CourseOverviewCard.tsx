@@ -32,7 +32,7 @@ export declare interface CourseOverviewCardProps {
   /** the name of the course */
   name: string
   /** the image of the course */
-  image?: string
+  image: string
   /** the session of the course */
   session: 'Fall' | 'Winter' | 'Summer'
   /** the props of the component */
@@ -53,9 +53,7 @@ export const CourseOverviewCard = ({ name, image, session, props }: CourseOvervi
         >
             <CardPreview>
                 <img
-                    src={
-                        image || "https://i.imgur.com/XXlaSS3.png"
-                    }
+                    src={ image }
                     alt="Developer Art"
                 />
             </CardPreview>
