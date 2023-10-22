@@ -1,25 +1,25 @@
-"use client"
+'use client';
 
-import './globals.css'
-import { Inter } from 'next/font/google'
-import { Navbar, lightTheme, darkTheme } from '@/components';
-import { FluentProvider, teamsLightTheme } from "@fluentui/react-components";
+import { Navbar, lightTheme } from '@/components';
+import { FluentProvider } from '@fluentui/react-components';
+import { Inter } from 'next/font/google';
+import './globals.css';
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'] });
 
-export default function RootLayout({
-  children,
+export default function RootLayout ({
+    children
 }: {
   children: React.ReactNode
 }) {
-  return (
-    <html lang="en" className="dark">
-      <body className={inter.className}>
-        <FluentProvider theme={teamsLightTheme}>
-          <Navbar />
-          {children}
-        </FluentProvider>
-      </body>
-    </html>
-  )
+    return (
+        <html lang="en" className="dark">
+            <body className={inter.className}>
+                <FluentProvider theme={lightTheme}>
+                    <Navbar />
+                    {children}
+                </FluentProvider>
+            </body>
+        </html>
+    );
 }

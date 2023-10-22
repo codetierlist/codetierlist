@@ -1,16 +1,25 @@
-import {getAssignment, getUser} from "@/lib/apiUtils";
-import prisma from "@/lib/prisma";
+import { getAssignment, getUser } from '@/lib/apiUtils';
+import prisma from '@/lib/prisma';
 import git from 'isomorphic-git';
-import fs from "fs";
+import fs from 'fs';
 
-export async function GET(request: Request, {params}: {
-    params: {
-        assignment: string,
-        courseId: string,
-        submissionId: string
-    }
+/**
+ * Gets a submission for an assignment.
+ * @returns {Promise<Response>} log of the git repository
+ */
+export async function GET (request: Request, { params }: {
+  params: {
+    /** title of the assignment */
+    assignment: string
+
+    /** id of the course */
+    courseId: string
+
+    /** git commit id of submission */
+    submissionId: string
+  }
 }) {
-    const {assignment, courseId, submissionId} = params;
+    const { assignment, courseId, submissionId } = params;
     const user = await getUser(request);
     const assignmentObj = await getAssignment(courseId, assignment);
     const course = assignmentObj.course;
@@ -26,7 +35,7 @@ export async function GET(request: Request, {params}: {
     });
 
     if (submission === null) {
-        return Response.json(JSON.stringify({error: "Submission not found."}), {status: 404});
+        return Response.json(JSON.stringify({ error: 'Submission not found.' }), { status: 404 });
     }
 
     const commit = await git.readCommit({
@@ -36,15 +45,15 @@ export async function GET(request: Request, {params}: {
     });
 
     if (commit === null) {
-        return Response.json(JSON.stringify({error: "Commit not found."}), {status: 404});
+        return Response.json(JSON.stringify({ error: 'Commit not found.' }), { status: 404 });
     }
 
     const files = await git.listFiles({
         fs,
-        dir: "./repo",
+        dir: './repo',
         ref: commit.oid
     });
 
-    const log = await git.log({fs, dir: "./repo"})
-    return Response.json({files, log: log.map(commit => commit.oid)});
+    const log = await git.log({ fs, dir: './repo' });
+    return Response.json({ files, log: log.map(commitIterator => commitIterator.oid) });
 }

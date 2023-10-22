@@ -1,8 +1,8 @@
-"use client"
+'use client';
 
-import { useMemo } from "react";
-import { Avatar } from "@fluentui/react-components";
-import type { AvatarProps } from "@fluentui/react-components";
+import { useMemo } from 'react';
+import { Avatar } from '@fluentui/react-components';
+import type { AvatarProps } from '@fluentui/react-components';
 
 /**
  * Given a name get the initials of the name up to 2 characters into an avatar
@@ -10,31 +10,31 @@ import type { AvatarProps } from "@fluentui/react-components";
  */
 export const GenerateInitalsAvatarProps = (name: string, props?: AvatarProps): AvatarProps => {
     const initials = useMemo(() => {
-        let notNullName = name ?? "hello";
+        const notNullName = name ?? 'hello';
 
         return notNullName
             .match(/(^\S\S?|\s\S)?/g) // matches the first character of each word
-            ?.map((v) => v.trim())    // removes the spaces
-            .join('')                 // joins the characters
-            .match(/(^\S|\S$)?/g)     // matches the first and last character
-            ?.join('')                // joins the characters
-            .toLocaleUpperCase();     // makes the characters uppercase
+            ?.map((v) => v.trim()) // removes the spaces
+            .join('') // joins the characters
+            .match(/(^\S|\S$)?/g) // matches the first and last character
+            ?.join('') // joins the characters
+            .toLocaleUpperCase(); // makes the characters uppercase
     }, [name]);
 
     return {
         'aria-label': name,
-        initials: initials,
-        color: "colorful",
+        initials,
+        color: 'colorful',
         idForColor: name,
-        ...props,
-    }
-}
+        ...props
+    };
+};
 
 export declare type InitialsAvatarProps = AvatarProps & {
-    /** the name to get the initials of */
-    name?: string;
-    /** the props to pass to the avatar */
-    props?: AvatarProps;
+  /** the name to get the initials of */
+  name?: string
+  /** the props to pass to the avatar */
+  props?: AvatarProps
 }
 
 /**

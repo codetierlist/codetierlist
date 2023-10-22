@@ -3,7 +3,7 @@
 // defined in the global scope in Node.js and not in the browser.
 
 // source https://github.com/prisma/prisma-examples/blob/latest/typescript/rest-nextjs-api-routes/src/lib/prisma.ts
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client';
 
 // PrismaClient is attached to the `global` object in development to prevent
 // exhausting your database connection limit.
@@ -11,12 +11,12 @@ import { PrismaClient } from '@prisma/client'
 // Learn more:
 // https://pris.ly/d/help/next-js-best-practices
 
-const globalForPrisma = global as unknown as { prisma: PrismaClient }
+const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
 export const prisma = globalForPrisma.prisma || new PrismaClient(
-    {datasourceUrl:"postgresql://postgres:123@localhost:5432/postgres?schema=public"}
-)
+    { datasourceUrl: 'postgresql://postgres:123@localhost:5432/postgres?schema=public' }
+);
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
-export default prisma
+export default prisma;

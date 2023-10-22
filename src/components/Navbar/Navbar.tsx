@@ -1,9 +1,9 @@
-import { GenerateInitalsAvatarProps } from "@/components"
-import styles from "./Navbar.module.css"
-import { Persona } from "@fluentui/react-components"
-import { UserContext } from "@/contexts/UserContext"
-import { useContext } from "react"
-import Link from "next/link"
+import { GenerateInitalsAvatarProps } from '@/components';
+import styles from './Navbar.module.css';
+import { Persona } from '@fluentui/react-components';
+import { UserContext } from '@/contexts/UserContext';
+import { useContext } from 'react';
+import Link from 'next/link';
 
 export const Navbar = () => {
     const defaultUser = useContext(UserContext);
@@ -21,5 +21,5 @@ export const Navbar = () => {
                 secondaryText={defaultUser.role}
             />
         </header>
-    )
-}
+    );
+};

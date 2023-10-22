@@ -1,16 +1,23 @@
-import {getAssignment, getCourse, getUser} from "@/lib/apiUtils";
-import path from "path";
-import prisma from "@/lib/prisma";
-import fs from "fs";
+import { getAssignment, getUser } from '@/lib/apiUtils';
+import prisma from '@/lib/prisma';
+import fs from 'fs';
 import git from 'isomorphic-git';
+import path from 'path';
 
-export async function POST(request: Request, {params}: {
-    params: {
-        courseId: string,
-        assignment: string
-    }
+/**
+ * Submits a solution to an assignment.
+ * @returns {Promise<Response>} success or error
+ */
+export async function POST (request: Request, { params }: {
+  params: {
+    /** title of the assignment */
+    courseId: string
+
+    /** id of the course */
+    assignment: string
+  }
 }) {
-    const {courseId, assignment} = params;
+    const { courseId, assignment } = params;
     const user = await getUser(request);
     const assignmentObj = await getAssignment(courseId, assignment);
     const course = assignmentObj.course;
@@ -19,13 +26,15 @@ export async function POST(request: Request, {params}: {
     const repoPath = path.resolve(`./repos/${course.id}/${assignment}/${user.utorid}`);
 
     // create folder if it doesnt exist
-    await new Promise<undefined>((res, rej) => fs.mkdir(repoPath, {recursive: true}, (err) => {
-        if (err) rej(err);
-        res(undefined);
-    }));
+    await new Promise<undefined>((res, rej) => {
+        fs.mkdir(repoPath, { recursive: true }, (err) => {
+            if (err) rej(err);
+            res(undefined);
+        });
+    });
 
     // check if git repo exists
-    let submission = await prisma.solution.findUnique({
+    const submission = await prisma.solution.findUnique({
         where: {
             id: {
                 author_id: user.utorid,
@@ -36,7 +45,7 @@ export async function POST(request: Request, {params}: {
     });
 
     if (submission === null) {
-        await git.init({fs, dir: repoPath});
+        await git.init({ fs, dir: repoPath });
     }
 
     // get files from form data
@@ -44,20 +53,20 @@ export async function POST(request: Request, {params}: {
     const formDataEntryValues = Array.from(formData.values());
     for (const formDataEntryValue of formDataEntryValues) {
         if (formDataEntryValue === null) continue;
-        if (typeof formDataEntryValue === "object" && "arrayBuffer" in formDataEntryValue) {
+        if (typeof formDataEntryValue === 'object' && 'arrayBuffer' in formDataEntryValue) {
             const file = formDataEntryValue as unknown as Blob;
             const buffer = Buffer.from(await file.arrayBuffer());
             fs.writeFileSync(`${repoPath}/${file.name}`, buffer);
         }
     }
 
-    await git.add({fs, dir: repoPath, filepath: "."});
+    await git.add({ fs, dir: repoPath, filepath: '.' });
 
     const commit = await git.commit({
         fs,
         dir: repoPath,
-        message: "Update files via file upload",
-    })
+        message: 'Update files via file upload'
+    });
 
     await prisma.solution.upsert({
         where: {
@@ -72,12 +81,12 @@ export async function POST(request: Request, {params}: {
             git_url: repoPath,
             course_id: course.id,
             assignment_title: assignmentObj.title,
-            author_id: user.utorid,
+            author_id: user.utorid
         },
         update: {
-            git_id: commit,
+            git_id: commit
         }
     });
 
-    return Response.json({success: true});
+    return Response.json({ success: true });
 }

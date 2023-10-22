@@ -1,4 +1,4 @@
-.tier-s, .tier-a, .tier-b, .tier-c, .tier-d, .tier-idk {
+.tier-s, .tier-a, .tier-b, .tier-c, .tier-d, .tier-f, .tier-idk {
     border-radius: 0.5rem;
     padding: var(--spacingHorizontalL) var(--spacingVerticalL);
     font-size: var(--fontSizeHero800);
@@ -31,6 +31,11 @@
   .tier-d {
     background-color: var(--colorPaletteLavenderBackground2);
     color: var(--colorPaletteLavenderForeground2);
+  }
+
+  .tier-f {
+    background-color: var(--colorPaletteBerryBackground2);
+    color: var(--colorPaletteBerryForeground2);
   }
 
   .tier-idk {

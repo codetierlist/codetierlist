@@ -1,12 +1,12 @@
-"use client"
+'use client';
 
-import { CourseSessionChip } from "@/components"
-import { AssignmentCard } from "@/components/AssignmentCard/AssignmentCard";
-import { Course, getCourses } from "@/contexts/UserContext";
-import { Title2 } from "@fluentui/react-components";
-import styles from "./page.module.css"
+import { CourseSessionChip } from '@/components';
+import { AssignmentCard } from '@/components/AssignmentCard/AssignmentCard';
+import { type Course, getCourses } from '@/contexts/UserContext';
+import { Title2 } from '@fluentui/react-components';
+import styles from './page.module.css';
 
-export default function Page({ params }: { params: { course: string } }) {
+export default function Page ({ params }: { params: { course: string } }) {
     const courses = getCourses();
 
     let courseObject: Course | undefined;
@@ -16,7 +16,7 @@ export default function Page({ params }: { params: { course: string } }) {
             <main>
                 <h1>Course not found</h1>
             </main>
-        )
+        );
     } else {
         courseObject = courses.find((course) => course.code === params.course);
     }
@@ -30,7 +30,7 @@ export default function Page({ params }: { params: { course: string } }) {
                     </CourseSessionChip>
                 </Title2>
                 <Title2>
-                    {courseObject?.name || "Course not found"}
+                    {courseObject?.name || 'Course not found'}
                 </Title2>
             </header>
             <div className="flex-wrap">
@@ -39,6 +39,7 @@ export default function Page({ params }: { params: { course: string } }) {
                 <AssignmentCard id="1" name="Assignment 3" dueDate={new Date()} tier="b" />
                 <AssignmentCard id="1" name="Assignment 4" dueDate={new Date()} tier="c" />
                 <AssignmentCard id="1" name="Assignment 5" dueDate={new Date()} tier="d" />
+                <AssignmentCard id="1" name="Assignment 5" dueDate={new Date()} tier="f" />
                 <AssignmentCard id="1" name="Assignment 6" dueDate={new Date()} tier="?" />
             </div>
         </main>
