@@ -51,18 +51,28 @@ export async function POST (request: Request) {
 /**
  * Get all courses that the user is enrolled in.
  *
- * @returns {Promise<Response>} array of courses
+ * @param utorid utorid of the user
+ * @returns {Promise<Course[]>} array of courses
  */
-export async function GET (request: Request) {
-    const user = await getUser(request);
-    const courses = await prisma.course.findMany({
+export const getEnrolledCourses = async (utorid: string) => {
+    return await prisma.course.findMany({
         where: {
             role: {
                 some: {
-                    user: { utorid: user.utorid }
+                    user: { utorid }
                 }
             }
         }
     });
+};
+
+/**
+ * Get all courses that the user is enrolled in.
+ *
+ * @returns {Promise<Response>} array of courses
+ */
+export async function GET (request: Request) {
+    const user = await getUser(request);
+    const courses = await getEnrolledCourses(user.utorid);
     return Response.json(courses);
 }

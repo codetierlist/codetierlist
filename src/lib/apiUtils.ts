@@ -3,14 +3,13 @@ import { $Enums, type Course, type User } from '@prisma/client';
 import { isUTORid, isUofTEmail } from 'is-utorid';
 import RoleType = $Enums.RoleType
 
-export async function getUser (request: Request) {
-    const utorid = request.headers.get('utorid');
-    const email = request.headers.get('http_mail');
-
-    // header validation
-    if (utorid === null || email === null) {
-        throw new Error('No shibboleth headers found.');
-    }
+/**
+ * Gets a user from their utorid and email.
+ * @param utorid
+ * @param email
+ * @returns {Promise<User>} user
+ */
+export const getUserFromUTORidAndEmail = async (utorid: string, email: string) => {
     if (!isUTORid(utorid)) {
         throw new Error('Invalid utorid.');
     }
@@ -23,6 +22,18 @@ export async function getUser (request: Request) {
         create: { utorid, email },
         update: { utorid, email }
     });
+};
+
+export async function getUser (request: Request) {
+    const utorid = request.headers.get('utorid');
+    const email = request.headers.get('http_mail');
+
+    // header validation
+    if (utorid === null || email === null) {
+        throw new Error('No shibboleth headers found.');
+    }
+
+    getUserFromUTORidAndEmail(utorid, email);
 }
 
 export async function getCourse (courseId: string, user: {
