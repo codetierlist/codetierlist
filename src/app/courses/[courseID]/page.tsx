@@ -7,15 +7,15 @@ import { Title2 } from '@fluentui/react-components';
 import styles from './page.module.css';
 import { notFound } from 'next/navigation';
 
-export default function Page ({ params }: { params: { course: string } }) {
+export default function Page ({ params }: { params: { courseID: string } }) {
     const courses = getCourses();
 
     let courseObject: Course | undefined;
 
-    if (!courses.find((course) => course.code === params.course)) {
+    if (!courses.find((course) => course.code === params.courseID)) {
         notFound();
     } else {
-        courseObject = courses.find((course) => course.code === params.course);
+        courseObject = courses.find((course) => course.code === params.courseID);
     }
 
     return (
@@ -23,7 +23,7 @@ export default function Page ({ params }: { params: { course: string } }) {
             <header className={styles.header}>
                 <Title2>
                     <CourseSessionChip session="Fall">
-                        {params.course}
+                        {params.courseID}
                     </CourseSessionChip>
                 </Title2>
                 <Title2>

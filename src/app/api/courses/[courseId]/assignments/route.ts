@@ -1,7 +1,6 @@
 import { getCourse, getUser } from '@/lib/apiUtils';
 import prisma from '@/lib/prisma';
-import { Prisma } from '.prisma/client';
-import PrismaClientKnownRequestError = Prisma.PrismaClientKnownRequestError
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 /**
  * Create a new assignment.

@@ -4,6 +4,8 @@
   "private": true,
   "license": "GPL-3.0-only",
   "scripts": {
+    "prisma-generate": "npx prisma generate",
+    "prisma-deploy": "npx prisma migrate deploy",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

@@ -48,6 +48,11 @@ export async function POST (request: Request) {
     return Response.json(course, { status: 201 });
 }
 
+/**
+ * Get all courses that the user is enrolled in.
+ *
+ * @returns {Promise<Response>} array of courses
+ */
 export async function GET (request: Request) {
     const user = await getUser(request);
     const courses = await prisma.course.findMany({

@@ -5,9 +5,15 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    restart: always
+      args:
+        NODE_ENV: production
+        POSTGRES_PASSWORD: example
+        POSTGRES_HOST: db
+    depends_on:
+      - db
     ports:
-        - "3000:3000"
+        - "3555:3000"
+    restart: always
 
   db:
     image: postgres

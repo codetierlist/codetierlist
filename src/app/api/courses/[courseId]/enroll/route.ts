@@ -1,7 +1,6 @@
 import prisma from '@/lib/prisma';
 import { getCourse, getUser } from '@/lib/apiUtils';
-import { $Enums } from '.prisma/client';
-import RoleType = $Enums.RoleType
+import { RoleType } from '@prisma/client';
 
 /**
  * Enroll a user in a course.

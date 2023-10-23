@@ -6,7 +6,7 @@ import { type Optional } from '@prisma/client/runtime/library';
 // TODO middleware to check if user is enrolled in course
 
 /**
- * Create a new course.
+ * Obtains information about a course.
  * @returns {Promise<Response>} course information or error
  */
 export async function GET (request: Request, { params }: {
@@ -40,6 +40,10 @@ export async function GET (request: Request, { params }: {
     return Response.json(course);
 }
 
+/**
+ * Deletes a course.
+ * @returns {Promise<Response>} success or error
+ */
 export async function DELETE (request: Request, { params }: {
   params: { courseId: string }
 }) {
