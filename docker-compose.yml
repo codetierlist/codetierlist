@@ -6,9 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        NODE_ENV: production
-        POSTGRES_PASSWORD: example
-        POSTGRES_HOST: db
+        DATABASE_URL: postgres://postgres:example@db:5432/postgres?schema=public
     depends_on:
       - db
     ports:
@@ -19,8 +17,8 @@ services:
     image: postgres
     restart: always
     environment:
-      POSTGRES_PASSWORD: example
       POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: example
     volumes:
       - db_data:/var/lib/postgresql/data
     ports:
