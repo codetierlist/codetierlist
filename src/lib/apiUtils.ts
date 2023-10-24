@@ -33,7 +33,7 @@ export async function getUser (request: Request) {
         throw new Error('No shibboleth headers found.');
     }
 
-    getUserFromUTORidAndEmail(utorid, email);
+    return getUserFromUTORidAndEmail(utorid, email);
 }
 
 export async function getCourse (courseId: string, user: {
