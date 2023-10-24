@@ -1,0 +1,13 @@
+.cardContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.cardLink {
+  text-decoration: none;
+}
+
+.card {
+  display: flex;
+  flex-direction: row !important;
+}

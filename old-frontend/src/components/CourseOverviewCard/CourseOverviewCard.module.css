@@ -1,0 +1,26 @@
+.sessionChip {
+    margin: 0 5px 5px 0;
+    color: var(--colorNeutralForegroundInverted);
+    text-transform: uppercase;
+    font-weight: var(--fontWeightBold);
+    padding: 0 var(--spacingHorizontalXS);
+
+    &.Fall {
+        background-color: var(--colorPaletteDarkOrangeForeground2);
+    }
+    &.Winter {
+        background-color: var(--colorPaletteRoyalBlueForeground2);
+    }
+    &.Summer {
+        background-color: var(--colorPaletteDarkGreenForeground2);
+    }
+
+}
+
+.courseTitle {
+    font-weight: var(--fontWeightSemibold);
+}
+
+.courseHeader {
+    row-gap: var(--spacingVerticalMNudge);
+}
