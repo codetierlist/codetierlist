@@ -1,11 +1,11 @@
 on:
   push:
     branches:
-      - dev
+      - main
   workflow_dispatch:
 jobs:
   deploy:
-    runs-on: dev
+    runs-on: prod
     steps:
       - uses: actions/checkout@v2
 
