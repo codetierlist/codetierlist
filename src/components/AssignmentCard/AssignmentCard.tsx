@@ -1,7 +1,7 @@
-import { Caption1, Card, CardHeader, Title3 } from '@fluentui/react-components';
+import { Caption1, Card, CardHeader, Title3 } from '@/components/fluent';
 import Link from 'next/link';
 import styles from './AssignmentCard.module.css';
-import { TierChip } from '@/components';
+import { TierChip } from '@/components/client';
 import { type DisplayTier, type Tier } from '@/lib/types';
 
 export declare interface AssignmentCardProps {

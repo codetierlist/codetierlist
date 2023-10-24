@@ -1,17 +1,16 @@
-import { GenerateInitalsAvatarProps } from '@/components';
-import styles from './Navbar.module.css';
-import { Persona } from '@fluentui/react-components';
-import { UserContext } from '@/contexts/UserContext';
-import { useContext } from 'react';
+import { getEmail, getUtorid } from '@/lib/frontendUtils';
+import { Persona } from '@/components/fluent';
 import Link from 'next/link';
+import styles from './Navbar.module.css';
+import { GenerateInitalsAvatarProps } from '../server';
 
 /**
  * The navbar component is the top bar of the website. It contains the
  * logo and the user's name and role.
  * @returns {JSX.Element} the navbar
  */
-export const Navbar = () => {
-    const defaultUser = useContext(UserContext);
+export const Navbar = (): JSX.Element => {
+    const user = { utorid: getUtorid(), email: getEmail() };
 
     return (
         <header className={styles.navbar}>
@@ -21,9 +20,9 @@ export const Navbar = () => {
 
             <Persona
                 textPosition="before"
-                avatar={GenerateInitalsAvatarProps(defaultUser.name)}
-                primaryText={defaultUser.name}
-                secondaryText={defaultUser.role}
+                avatar={GenerateInitalsAvatarProps(user.utorid)}
+                primaryText={user.email.split('@')[0]}
+                secondaryText={user.utorid}
             />
         </header>
     );

@@ -1,22 +1,19 @@
-'use client';
-
-import { CourseSessionChip } from '@/components';
-import { AssignmentCard } from '@/components/AssignmentCard/AssignmentCard';
-import { type Course, getCourses } from '@/contexts/UserContext';
-import { Title2 } from '@fluentui/react-components';
+import { CourseSessionChip, AssignmentCard } from '@/components/client';
+// import { type Course, getCourses } from '@/contexts/UserContext';
+import { Title2 } from '@/components/fluent';
 import styles from './page.module.css';
-import { notFound } from 'next/navigation';
+// import { notFound } from 'next/navigation';
 
 export default function Page ({ params }: { params: { courseID: string } }) {
-    const courses = getCourses();
+    // const courses = getCourses();
 
-    let courseObject: Course | undefined;
+    // let courseObject: Course | undefined;
 
-    if (!courses.find((course) => course.code === params.courseID)) {
-        notFound();
-    } else {
-        courseObject = courses.find((course) => course.code === params.courseID);
-    }
+    // if (!courses.find((course) => course.code === params.courseID)) {
+    //     notFound();
+    // } else {
+    //     courseObject = courses.find((course) => course.code === params.courseID);
+    // }
 
     return (
         <main>
@@ -27,7 +24,7 @@ export default function Page ({ params }: { params: { courseID: string } }) {
                     </CourseSessionChip>
                 </Title2>
                 <Title2>
-                    {courseObject?.name || 'Course not found'}
+                    {/* {courseObject?.name || 'Course not found'} */}
                 </Title2>
             </header>
             <div className="flex-wrap">

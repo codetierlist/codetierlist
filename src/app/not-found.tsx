@@ -1,6 +1,4 @@
-'use client';
-
-import { Display } from '@fluentui/react-components';
+import { Display } from '@/components/fluent';
 
 export default function NotFound () {
     return (

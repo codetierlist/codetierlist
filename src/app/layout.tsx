@@ -1,7 +1,6 @@
-'use client';
-
-import { Navbar, lightTheme } from '@/components';
-import { FluentProvider } from '@fluentui/react-components';
+import { lightTheme } from '@/components/client';
+import { Navbar } from '@/components/server';
+import { FluentProvider } from '@/components/fluent';
 import { Inter } from 'next/font/google';
 import './globals.css';
 
