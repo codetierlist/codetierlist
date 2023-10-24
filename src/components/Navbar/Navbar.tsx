@@ -1,9 +1,9 @@
-import { GenerateInitalsAvatarProps } from '@/components';
-import styles from './Navbar.module.css';
+import { GenerateInitalsAvatarProps } from '@/components/client';
+import { getUserFromUTORidAndEmail } from '@/lib/apiUtils';
+import { getEmail, getUtorid } from '@/lib/frontendUtils';
 import { Persona } from '@fluentui/react-components';
-import { UserContext } from '@/contexts/UserContext';
-import { useContext } from 'react';
 import Link from 'next/link';
+import styles from './Navbar.module.css';
 
 /**
  * The navbar component is the top bar of the website. It contains the
@@ -11,7 +11,7 @@ import Link from 'next/link';
  * @returns {JSX.Element} the navbar
  */
 export const Navbar = () => {
-    const defaultUser = useContext(UserContext);
+    const user = getUserFromUTORidAndEmail(getUtorid(), getEmail());
 
     return (
         <header className={styles.navbar}>
@@ -21,9 +21,9 @@ export const Navbar = () => {
 
             <Persona
                 textPosition="before"
-                avatar={GenerateInitalsAvatarProps(defaultUser.name)}
-                primaryText={defaultUser.name}
-                secondaryText={defaultUser.role}
+                avatar={GenerateInitalsAvatarProps(user.utorid)}
+                primaryText={user.utorid}
+                secondaryText={user.utorid}
             />
         </header>
     );
