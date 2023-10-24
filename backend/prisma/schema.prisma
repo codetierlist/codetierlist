@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Assignment {
+  title       String
+  due_date    DateTime?
+  description String
+  course_id   String
+  course      Course     @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  test_cases  TestCase[]
+  submissions Solution[]
+
+  @@id(fields: [course_id, title])
+  @@unique([course_id, title], name: "id")
+  @@map("Assignments")
+}
+
+model Course {
+  id          String       @id @default(dbgenerated("gen_random_uuid()"))
+  name        String
+  code        String
+  assignments Assignment[]
+  roles       Role[]
+  solutions   Solution[]
+  testcases   TestCase[]
+
+  createdAt DateTime @default(now())
+
+  @@map("Courses")
+}
+
+model Solution {
+  git_url          String
+  git_id           String
+  datetime         DateTime   @default(now())
+  author_id        String
+  author           User       @relation(fields: [author_id], references: [utorid], onDelete: Cascade, onUpdate: Cascade)
+  course           Course     @relation(fields: [course_id], references: [id])
+  assignment       Assignment @relation(onDelete: Cascade, onUpdate: Cascade, fields: [course_id, assignment_title], references: [course_id, title])
+  scores           Score[]
+  course_id        String
+  assignment_title String
+
+  @@id(fields: [course_id, assignment_title, author_id])
+  @@unique([course_id, assignment_title, author_id], name: "id")
+  @@map("Solutions")
+}
+
+model TestCase {
+  git_url          String
+  git_id           String
+  datetime         DateTime   @default(now())
+  author_id        String
+  author           User       @relation(fields: [author_id], references: [utorid], onDelete: Cascade, onUpdate: Cascade)
+  assignment       Assignment @relation(onDelete: Cascade, onUpdate: Cascade, fields: [course_id, assignment_title], references: [course_id, title])
+  course           Course     @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  scores           Score[]
+  course_id        String
+  assignment_title String
+
+  @@id(fields: [course_id, assignment_title, author_id])
+  @@unique([course_id, assignment_title, author_id], name: "id")
+  @@map("Testcases")
+}
+
+model User {
+  utorid    String     @id
+  email     String
+  solutions Solution[]
+  roles     Role[]
+  admin     Boolean    @default(false)
+  TestCase  TestCase[]
+
+  @@map("Users")
+}
+
+enum RoleType {
+  INSTRUCTOR
+  TA
+  STUDENT
+}
+
+model Role {
+  type      RoleType @default(STUDENT)
+  user_id   String
+  course_id String
+  course    Course   @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user      User     @relation(fields: [user_id], references: [utorid], onDelete: Cascade, onUpdate: Cascade)
+
+  @@id(fields: [user_id, course_id])
+  @@unique([user_id, course_id], name: "id")
+  @@map("_Roles")
+}
+
+model Score {
+  id                 String   @id @default(dbgenerated("gen_random_uuid()"))
+  pass               Boolean
+  solution           Solution @relation(references: [course_id, assignment_title, author_id], onDelete: Cascade, onUpdate: Cascade, fields: [course_id, assignment_title, solution_author_id])
+  test_case          TestCase @relation(references: [course_id, assignment_title, author_id], onDelete: Cascade, onUpdate: Cascade, fields: [course_id, assignment_title, testcase_author_id])
+  course_id          String
+  assignment_title   String
+  solution_author_id String
+  testcase_author_id String
+
+  @@map("_Scores")
+}
