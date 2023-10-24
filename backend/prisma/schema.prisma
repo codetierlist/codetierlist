@@ -26,9 +26,11 @@ model Course {
   name        String
   code        String
   assignments Assignment[]
-  role        Role[]
+  roles       Role[]
   solutions   Solution[]
   testcases   TestCase[]
+
+  createdAt DateTime @default(now())
 
   @@map("Courses")
 }
