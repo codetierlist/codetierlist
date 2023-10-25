@@ -5,13 +5,9 @@ on:
   workflow_dispatch:
 jobs:
   deploy:
-    runs-on: self-hosted
+    runs-on: dev
     steps:
       - uses: actions/checkout@v2
-
-#      - name: create env files
-#        run: |
-#          echo "${{ secrets.NEXT_ENV }}" > ./.env;
 
       - name: compose build
         run: docker compose build
@@ -19,5 +15,7 @@ jobs:
       - name: compose up
         run: docker compose up -d
 
-      - name: prisma migrate
-        run: docker compose exec next npx prisma migrate deploy
+      - name: cleanup
+        run: |
+          docker image prune -f
+          docker builder prune -f
