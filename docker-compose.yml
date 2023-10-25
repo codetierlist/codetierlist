@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  nginx:
+    restart: always
+    depends_on:
+#      - frontend
+      - backend
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "3555:80"
+
+  backend:
+    restart: always
+    depends_on:
+      - db
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_URL=postgres://postgres:example@db:5432/postgres
+      - NODE_ENV=production
+
+#  frontend:
+#    restart: always
+#    build:
+#      context: ./frontend
+#      dockerfile: Dockerfile
+#    environment:
+#      - NODE_ENV=production
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: example
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  db_data:
