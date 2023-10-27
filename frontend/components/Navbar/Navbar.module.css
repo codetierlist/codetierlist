@@ -3,14 +3,14 @@
     justify-content: space-between;
     padding: var(--spacingVerticalXL);
     align-items: center;
+}
 
-    & .title {
-        font-family: var(--fontFamilyNumeric);
-        line-height: var(--lineHeightHero700);
-    }
+.title {
+    font-family: var(--fontFamilyNumeric);
+    line-height: var(--lineHeightHero700);
+}
 
-    & .brand {
-        color: var(--colorNeutralForeground1);
-        text-decoration: none;
-    }
+.brand {
+    color: var(--colorNeutralForeground1);
+    text-decoration: none;
 }

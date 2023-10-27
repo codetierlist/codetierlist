@@ -1,6 +1,6 @@
 import { Link, Persona } from '@fluentui/react-components';
 import styles from './Navbar.module.css';
-import { GenerateInitalsAvatarProps } from '../InitialsAvatar/InitialsAvatar';
+import { GenerateInitalsAvatarProps } from '@/components';
 
 /**
  * The navbar component is the top bar of the website. It contains the
@@ -8,7 +8,7 @@ import { GenerateInitalsAvatarProps } from '../InitialsAvatar/InitialsAvatar';
  * @returns {JSX.Element} the navbar
  */
 export const Navbar = (): JSX.Element => {
-    const user = { utorid: getUtorid(), email: getEmail() };
+    const user = { utorid: "michael", email: "liut" };
 
     return (
         <header className={styles.navbar}>
