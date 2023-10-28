@@ -6,6 +6,7 @@ import {PrismaClientKnownRequestError} from "@prisma/client/runtime/library";
 import {generateYourTier} from "../../../common/tierlist";
 import {fetchCourseMiddleware} from "../../../common/utils";
 import {FetchedAssignment} from "codetierlist-types";
+import {isUTORid} from "is-utorid";
 
 const router = express.Router();
 router.post("/courses", async (req, res) => {
@@ -85,9 +86,9 @@ router.post("/:courseId/enroll", fetchCourseMiddleware, async (req, res) => {
         return;
     }
     const newRole = role as RoleType | undefined ?? RoleType.STUDENT;
-    if (!utorids || !Array.isArray(utorids) || utorids.some(utorid => typeof utorid !== 'string')) {
+    if (!utorids || !Array.isArray(utorids) || utorids.some(utorid => typeof utorid !== 'string' || !isUTORid(utorid))) {
         res.statusCode = 400;
-        res.send({error: 'utorids must be an array of strings.'});
+        res.send({error: 'utorids must be an array of valid utorids.'});
         return;
     }
 
