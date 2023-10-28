@@ -5,6 +5,7 @@ import assignmentsRoute from "./assignments";
 import {PrismaClientKnownRequestError} from "@prisma/client/runtime/library";
 import {generateYourTier} from "../../../common/tierlist";
 import {fetchCourseMiddleware} from "../../../common/utils";
+import {FetchedAssignment} from "codetierlist-types";
 
 const router = express.Router();
 router.post("/courses", async (req, res) => {
@@ -118,10 +119,10 @@ router.post("/:courseId/assignments", fetchCourseMiddleware, async (req, res) =>
                 due_date: dueDate,
                 description,
                 course: {connect: {id: req.course!.id}}
-            }
+            }, ...fetchedAssignmentArgs
         });
         res.statusCode = 201;
-        res.send(assignment);
+        res.send(assignment satisfies FetchedAssignment);
     } catch (e) {
         if ((e as PrismaClientKnownRequestError).code === 'P2002') {
             res.statusCode = 400;

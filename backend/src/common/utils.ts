@@ -4,6 +4,7 @@ import {NextFunction, Request, Response} from "express";
 import path from "path";
 import fs from "fs";
 import git from "isomorphic-git";
+import {Commit} from "codetierlist-types";
 
 /**
  * Checks if a user is a prof in a course.
@@ -99,7 +100,7 @@ export const processSubmission = async (req: Request, table: "solution" | "testC
     return commit;
 };
 
-export const getCommit = async (req: Request, table: "solution" | "testCase") => {
+export const getCommit = async (req: Request, table: "solution" | "testCase") : Promise<Commit | null> => {
     const query = {
         where: {
             id: {
@@ -109,7 +110,7 @@ export const getCommit = async (req: Request, table: "solution" | "testCase") =>
             }
         }
     };
-    let submission: TestCase | Solution | null = null;
+    let submission: TestCase | Solution | null;
     if (table === "solution") {
         submission = await prisma.solution.findUnique(query);
     } else {
@@ -118,7 +119,7 @@ export const getCommit = async (req: Request, table: "solution" | "testCase") =>
 
 
     if (submission === null) {
-        return false;
+        return null;
     }
 
     const commit = await git.readCommit({
@@ -128,7 +129,7 @@ export const getCommit = async (req: Request, table: "solution" | "testCase") =>
     });
 
     if (commit === null) {
-        return false;
+        return null;
     }
 
     const files = await git.listFiles({

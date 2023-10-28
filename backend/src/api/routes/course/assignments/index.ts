@@ -8,6 +8,12 @@ import {
 } from "../../../../common/utils";
 import multer from 'multer';
 import {generateTierList} from "../../../../common/tierlist";
+import {
+    Assignment,
+    Commit,
+    FetchedAssignment,
+    TierList
+} from "codetierlist-types";
 
 const storage = multer.diskStorage({
     filename: function (req, file, callback) {
@@ -28,7 +34,7 @@ router.get("/:assignment", fetchAssignmentMiddleware, async (req, res) => {
         include: {submissions: isProf(req.course!, req.user)},
     });
 
-    res.send(assignment);
+    res.send(assignment! satisfies (FetchedAssignment | Assignment));
 });
 
 router.delete("/:assignment", fetchAssignmentMiddleware, async (req, res) => {
@@ -63,48 +69,28 @@ router.post("/:assignment/submissions", fetchAssignmentMiddleware, upload.array(
 router.post("/:assignment/testcases", fetchAssignmentMiddleware, upload.array('files', 100), checkFilesMiddleware, async (req, res) =>
     processSubmission(req, "testCase").then(() => res.send({})));
 
-router.get("/:assignment/submissions/:commitId", fetchAssignmentMiddleware, async (req, res) => {
+router.get("/:assignment/submissions/:commitId?", fetchAssignmentMiddleware, async (req, res) => {
     const commit = await getCommit(req, "solution");
-    if (commit === false) {
+    if (commit === null) {
         res.statusCode = 404;
         res.send({error: 'Commit not found.'});
         return;
     }
-    res.send(commit);
+    res.send(commit satisfies Commit);
 });
 
-router.get("/:assignment/testcases/:commitId", fetchAssignmentMiddleware, async (req, res) => {
+router.get("/:assignment/testcases/:commitId?", fetchAssignmentMiddleware, async (req, res) => {
     const commit = await getCommit(req, "testCase");
-    if (commit === false) {
+    if (commit === null) {
         res.statusCode = 404;
         res.send({error: 'Commit not found.'});
         return;
     }
-    res.send(commit);
-});
-
-router.get("/:assignment/testcases", fetchAssignmentMiddleware, async (req, res) => {
-    const commit = await getCommit(req, "testCase");
-    if (commit === false) {
-        res.statusCode = 404;
-        res.send({error: 'Commit not found.'});
-        return;
-    }
-    res.send(commit);
-});
-
-router.get("/:assignment/submissions", fetchAssignmentMiddleware, async (req, res) => {
-    const commit = await getCommit(req, "solution");
-    if (commit === false) {
-        res.statusCode = 404;
-        res.send({error: 'Commit not found.'});
-        return;
-    }
-    res.send(commit);
+    res.send(commit satisfies Commit);
 });
 
 router.get("/:assignment/tierlist", fetchAssignmentMiddleware, async (req, res) => {
-    res.send(generateTierList(req.assignment!, req.user));
+    res.send(generateTierList(req.assignment!, req.user) satisfies TierList);
 });
 
 export default router;
