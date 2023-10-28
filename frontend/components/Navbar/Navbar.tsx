@@ -8,6 +8,7 @@ import { GenerateInitalsAvatarProps } from '@/components';
  * @returns {JSX.Element} the navbar
  */
 export const Navbar = (): JSX.Element => {
+    // TODO INTEGRATE
     const user = { utorid: "michael", email: "liut" };
 
     return (
