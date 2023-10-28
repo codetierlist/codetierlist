@@ -20,7 +20,8 @@
     "@types/react-dom": "latest",
     "eslint": "latest",
     "eslint-config-next": "latest",
-    "typescript": "latest"
+    "typescript": "latest",
+    "codetierlist-types": "file:../types"
   },
   "eslintConfig": {
     "extends": [
