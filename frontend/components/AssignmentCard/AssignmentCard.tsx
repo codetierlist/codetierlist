@@ -1,13 +1,13 @@
 import { Caption1, Card, CardHeader, Title3, Link } from '@fluentui/react-components';
 import styles from './AssignmentCard.module.css';
-import { TierChip } from '../TierChip/TierChip';
-import { type DisplayTier, type Tier } from '../../../backend/src/types/global';
+import { TierChip } from '@/components';
+import { type Tier, type UserTier } from "codetierlist-types";
 
 export declare interface AssignmentCardProps {
   id: string
   name: string
   dueDate: Date
-  tier: DisplayTier | Tier
+  tier: UserTier | Tier
 }
 
 export const AssignmentCard = ({ id, name, dueDate, tier }: AssignmentCardProps): JSX.Element => {
