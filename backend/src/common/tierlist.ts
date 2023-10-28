@@ -1,5 +1,5 @@
 import {User} from "@prisma/client";
-import {FetchedAssignment} from "../types/global";
+import {FetchedAssignment} from "codetierlist-types";
 
 const getMean = (data: number[]) => data.reduce((a, b) => Number(a) + Number(b)) / data.length;
 
