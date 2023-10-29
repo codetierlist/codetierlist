@@ -9,6 +9,7 @@ import {
 } from '@fluentui/react-components';
 import type { AppProps } from 'next/app';
 import { Navbar } from '@/components';
+import { UserContext, defaultUser } from '@/contexts/UserContext';
 
 type EnhancedAppProps = AppProps & { renderer?: GriffelRenderer };
 
@@ -18,10 +19,12 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
     //    Also triggers rehydration a client
     <RendererProvider renderer={renderer || createDOMRenderer()}>
       <SSRProvider>
-        <FluentProvider theme={lightTheme}>
-          <Navbar/>
-          <Component {...pageProps} />
-        </FluentProvider>
+        <UserContext.Provider value={{ userInfo: defaultUser, setUserInfo: () => {}, fetchUserInfo: async () => {} }}>
+          <FluentProvider theme={lightTheme}>
+            <Navbar />
+            <Component {...pageProps} />
+          </FluentProvider>
+        </UserContext.Provider>
       </SSRProvider>
     </RendererProvider>
   );

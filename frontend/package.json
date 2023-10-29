@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@fluentui/react-components": "^9.36.0",
+    "axios": "^1.6.0",
     "next": "latest",
     "react": "latest",
     "react-dom": "latest"
@@ -18,10 +19,10 @@
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "codetierlist-types": "file:../types",
     "eslint": "latest",
     "eslint-config-next": "latest",
-    "typescript": "latest",
-    "codetierlist-types": "file:../types"
+    "typescript": "latest"
   },
   "eslintConfig": {
     "extends": [
