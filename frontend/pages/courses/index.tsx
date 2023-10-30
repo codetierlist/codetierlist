@@ -1,5 +1,6 @@
 import styles from '@/styles/courses.module.css';
 
+
 export default function Home() {
     // const utorid = getUtorid();
 

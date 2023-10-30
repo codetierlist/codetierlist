@@ -10,4 +10,6 @@
 .card {
   display: flex;
   flex-direction: row !important;
+  width: 260px;
+  height: 75px;
 }

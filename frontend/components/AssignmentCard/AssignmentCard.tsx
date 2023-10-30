@@ -7,22 +7,29 @@ export declare interface AssignmentCardProps {
   id: string
   name: string
   dueDate: Date
-  tier: UserTier | Tier
+  tier?: UserTier | Tier
 }
 
 export const AssignmentCard = ({ id, name, dueDate, tier }: AssignmentCardProps): JSX.Element => {
+    const formattedDueDate = formatDate(dueDate);
     return (
         <Link href={`/assignments/${id}`} className={styles.cardLink}>
             <Card className={styles.card}>
-                <CardHeader
-                    header={(<TierChip tier={tier} />)}
-                >
-                </CardHeader>
+                
+                { tier && <CardHeader header={<TierChip tier={tier} />} />}
+                
                 <div className={styles.cardContent}>
-                    <Caption1>{ dueDate.toLocaleDateString() }</Caption1>
+                    <Caption1>{formattedDueDate}</Caption1>
                     <Title3>{name}</Title3>
                 </div>
             </Card>
         </Link>
     );
 };
+
+const formatDate = (date: Date) => {
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${month}/${day}/${year}`;
+  };

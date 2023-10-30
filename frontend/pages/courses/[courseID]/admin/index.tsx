@@ -6,6 +6,8 @@ import styles from './page.module.css';
 import { Title2 } from '@fluentui/react-text';
 import { CourseBlockLarge } from '@/components/CourseBlock/CourseBlockLarge';
 import { UpcomingDeadlinesCard } from '@/components/UpcomingDeadlines/UpcomingDeadlinesCard/UpcomingDeadlinesCard';
+import { AddAssignmentModal } from '@/components/AddAssignmentModal/AddAssignmentModal';
+import { ReturnHomeButton } from '@/components/ReturnHomeButton/ReturnHomeButton';
 // import { notFound } from 'next/navigation';
 
 export default function Page ({ params }: { params: { courseID: string } }) {
@@ -34,36 +36,20 @@ export default function Page ({ params }: { params: { courseID: string } }) {
                     </Title2>
                 </header>
                 <div className="flex-wrap">
-                    <AssignmentCard id="1" name="Assignment 1" dueDate={new Date()} tier="S" />
-                    <AssignmentCard id="1" name="Assignment 2" dueDate={new Date()} tier="A" />
-                    <AssignmentCard id="1" name="Assignment 3" dueDate={new Date()} tier="B" />
-                    <AssignmentCard id="1" name="Assignment 4" dueDate={new Date()} tier="C" />
-                    <AssignmentCard id="1" name="Assignment 5" dueDate={new Date()} tier="D" />
-                    <AssignmentCard id="1" name="Assignment 5" dueDate={new Date()} tier="F" />
-                    <AssignmentCard id="1" name="Assignment 6" dueDate={new Date()} tier="?" />
+                    <AssignmentCard id="1" name="Assignment 1" dueDate={new Date()} />
+                    <AssignmentCard id="1" name="Assignment 2" dueDate={new Date()} />
+                    <AssignmentCard id="1" name="Assignment 3" dueDate={new Date()} />
+                    <AssignmentCard id="1" name="Assignment 4" dueDate={new Date()} />
+                    <AssignmentCard id="1" name="Assignment 5" dueDate={new Date()} />
+                    <AssignmentCard id="1" name="Assignment 5" dueDate={new Date()} />
+                    <AssignmentCard id="1" name="Assignment 6" dueDate={new Date()} />
+                    <AddAssignmentModal />
+                </div>
+                <div style={{marginTop: 20}}>
+                    <ReturnHomeButton />
                 </div>
             </div>
-            <div className={styles.upcoming}>
-                <UpcomingDeadlinesCard />
-            </div>
+            
         </main>
     );
 }
-
-// ---------------------------------------------
-
-// export default function Home() {
-
-//     return (
-//         <main>
-//             <div className="course">
-//                 <div className="assignments" style={{ backgroundColor: 'red'}}>
-//                     <p> hi hi hi</p>
-//                 </div>
-//                 <div>
-//                     <p> yo yo yo</p>
-//                 </div>
-//             </div>
-//         </main>
-//     );
-// }
