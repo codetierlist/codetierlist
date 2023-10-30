@@ -4,3 +4,4 @@ export * from './AssignmentCard/AssignmentCard';
 export * from './TierChip/TierChip';
 export * from './Navbar/Navbar';
 export * from './InitialsAvatar/InitialsAvatar';
+export * from './utils/ColourHash/ColourHash';
