@@ -58,7 +58,7 @@ export const convertTime = (date: Date, options?: Intl.DateTimeFormatOptions): s
         ...options,
     };
 
-    return new Date(date).toLocaleTimeString(undefined, formatDateOptions);
+    return new Date(date).toLocaleTimeString('en-CA', formatDateOptions);
 };
 
 /**
