@@ -53,7 +53,7 @@ const uploader = (url: string, fetchAssignment: ()=>void) => () => {
     const input = document.createElement('input');
     input.type = 'file';
     input.name = 'file';
-    form.onformdata = async () => {
+    input.oninput = async () => {
         const formData = new FormData(form);
         await axios.post<void>(url, formData);
         document.body.removeChild(form);
