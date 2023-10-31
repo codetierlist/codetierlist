@@ -38,7 +38,7 @@ export type FetchedUser = Prisma.UserGetPayload<typeof fetchedUserArgs>;
 export type FetchedCourse = Prisma.CourseGetPayload<typeof fetchedCourseArgs>;
 export type FetchedAssignment = Prisma.AssignmentGetPayload<typeof fetchedAssignmentArgs>;
 export type AssignmentWithTier = Assignment & {tier: UserTier};
-export type FetchedCourseWithTier = FetchedCourse & {assignments: AssignmentWithTier[]};
+export type FetchedCourseWithTiers = Omit<FetchedCourse, "assignments"> & {assignments: AssignmentWithTier[]};
 
 export type Commit = {
     files: string[],

@@ -11,7 +11,7 @@ import {fetchCourseMiddleware} from "../../../common/utils";
 import {
     AssignmentWithTier,
     FetchedAssignment,
-    FetchedCourseWithTier
+    FetchedCourseWithTiers
 } from "codetierlist-types";
 import {isUTORid} from "is-utorid";
 
@@ -69,7 +69,7 @@ router.get("/:courseId", fetchCourseMiddleware, async (req, res) => {
         description: assignment.description,
         tier: generateYourTier(assignment)
     }));
-    res.send({...req.course!, assignments} satisfies FetchedCourseWithTier);
+    res.send({...req.course!, assignments} satisfies FetchedCourseWithTiers);
 });
 
 router.delete("/:courseId", fetchCourseMiddleware, async (req, res) => {
