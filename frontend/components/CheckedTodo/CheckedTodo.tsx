@@ -21,4 +21,4 @@ export const CheckedTodoItem = ({ todo, checked }: CheckedTodoItemProps) => {
             <span className={styles.todoText}>{todo}</span>
         </div>
     );
-}
+};

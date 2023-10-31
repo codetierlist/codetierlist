@@ -1,0 +1,12 @@
+.you {
+    animation: shadowBurst 2s ease-in-out infinite;
+}
+
+@keyframes shadowBurst {
+    0% {
+        box-shadow: 0 0 0 0 var(--colorScrollbarOverlay);
+    }
+    100% {
+        box-shadow: 0 0 0 20px transparent;
+    }
+}

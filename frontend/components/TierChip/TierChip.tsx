@@ -17,8 +17,8 @@ export declare interface TierChipProps {
  */
 export const TierChip = ({ tier, ...props }: TierChipProps): JSX.Element => {
     return (
-        <div className={
-            tier === '?' ? styles['tier-IDK'] : styles[`tier-${tier}`]
-        } {...props} >{tier}</div>
+        <div {...props} className={
+            tier === '?' ? styles['tier-IDK'] : styles[`tier-${tier}`] + ' ' + props?.className
+        }>{tier}</div>
     );
 };
