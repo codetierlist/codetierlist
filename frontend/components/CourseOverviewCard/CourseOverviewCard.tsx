@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import styles from './CourseOverviewCard.module.css';
 import { Session } from '@/lib/types';
+import { SessionBlock } from '@/components/SessionBlock/SessionBlock';
 
 export declare interface CourseSessionChipProps {
   /** the session of the course */
@@ -71,7 +72,7 @@ export const CourseOverviewCard = ({ name, image, session, props }: CourseOvervi
                     </Title3>
                 }
                 className={styles.courseHeader}
-                description={<CourseSessionChip session={session} />}
+                description={<SessionBlock session={session} />}
             />
 
             <CardFooter>
