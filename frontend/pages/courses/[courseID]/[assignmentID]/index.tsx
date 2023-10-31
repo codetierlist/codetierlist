@@ -24,8 +24,7 @@ const UploadHeader = ({ title, action }: { title: string, action: () => void }) 
     return (
         <div className="d-flex justify-content-between">
             <Title1>{title}</Title1>
-            <Button appearance="subtle" onClick={() => action()}>
-                <Add16Regular />
+            <Button appearance="subtle" onClick={() => action()} icon={<Add16Regular />}>
                 Upload {title.toLowerCase()}
             </Button>
         </div>
