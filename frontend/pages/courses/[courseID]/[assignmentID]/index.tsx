@@ -9,16 +9,15 @@ import { Add16Regular, Clock16Regular } from '@fluentui/react-icons';
 import { convertDate, convertTime } from '@/components';
 import { CheckedTodoItem } from '@/components/CheckedTodo/CheckedTodo';
 import Editor from '@monaco-editor/react';
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
+import {
+    FetchedAssignmentWithTier,
+    Tierlist
+} from "codetierlist-types";
+import axios from "@/axios";
+import {notFound} from "next/navigation";
 
 // TODO: clean technical debt
-
-const assignment = {
-    dueDate: new Date(),
-    tier: 'A',
-    uploadedTests: [],
-    uploadedSolutions: []
-};
 
 const UploadHeader = ({ title, action }: { title: string, action: () => void }) => {
     return (
@@ -46,7 +45,7 @@ const NoUploadPlaceholder = ({ title }: { title: string }) => {
     );
 };
 
-const TestUpload = ({ uploadedTests }: { uploadedTests: string[] }) => {
+const TestUpload = ({ uploadedTests }: { uploadedTests: unknown[] }) => {
     return (
         <div className="col-12 col-lg-8 mt-4">
             <UploadHeader title="Test" action={() => { }} />
@@ -72,7 +71,7 @@ const TestUpload = ({ uploadedTests }: { uploadedTests: string[] }) => {
     );
 };
 
-const SolutionUpload = ({ uploadedSolutions }: { uploadedSolutions: string[] }) => {
+const SolutionUpload = ({ uploadedSolutions }: { uploadedSolutions: unknown[] }) => {
     return (
         <div className="col-12 col-lg-8 mt-4">
             <UploadHeader title="Solution" action={() => { }} />
@@ -102,14 +101,14 @@ const SolutionUpload = ({ uploadedSolutions }: { uploadedSolutions: string[] }) 
     );
 };
 
-const ViewTierList = () => {
+const ViewTierList = ({tierlist}: {tierlist: Tierlist}) => {
     return (
         <div className="col-12 col-lg-8 mt-4">
             <Title2>
                 Tier List
             </Title2>
             <Card className="mt-4">
-                <TierList />
+                <TierList tierlist={tierlist}/>
             </Card>
         </div>
     );
@@ -118,15 +117,38 @@ const ViewTierList = () => {
 export default function Page() {
     const router = useRouter();
     const [stage, setStage] = useState(0);
+    const [assignment, setAssignment] = useState<FetchedAssignmentWithTier | null>(null);
+    const [tierlist, setTierlist] = useState<Tierlist | null>(null);
 
     // TODO: guard against invalid courseID, invalid assignmentID
-    //eslint-disable-next-line no-constant-condition
-    if (false) { // your code goes here
-        return <Error statusCode={404} />;
-    }
-
     const { courseID, assignmentID } = router.query;
 
+    const fetchAssignment = async () => {
+        await axios.get<FetchedAssignmentWithTier>(`/courses/${courseID}/assignments/${assignmentID}`, {skipErrorHandling: true}).then((res) => setAssignment(res.data)).catch(e => {
+            console.log(e);
+            notFound();
+        });
+    };
+    const fetchTierlist = async () => {
+        await axios.get<Tierlist>(`/courses/${courseID}/assignments/${assignmentID}/tierlist`, {skipErrorHandling: true}).then((res) => setTierlist(res.data)).catch(e => {
+            console.log(e);
+            notFound();
+        });
+    };
+    useEffect(() => {
+        if (!courseID || !assignmentID) {
+            return;
+        }
+        void fetchAssignment();
+        void fetchTierlist();
+    }, [courseID, assignmentID]);
+
+    if (!courseID || !assignmentID) {
+        return <Error statusCode={404} />;
+    }
+    if(!assignment) {
+        return <p>Loading...</p>;
+    }
     return (
         <main className="container-fluid">
             <Card className={styles.header}>
@@ -137,7 +159,7 @@ export default function Page() {
                                 <>
                                     <Clock16Regular className={styles.dueDateIcon} />
                                     <Subtitle2 className={styles.dueDate}>
-                                        Due {convertDate(assignment.dueDate)} at {convertTime(assignment.dueDate)}
+                                        Due {convertDate(assignment.due_date)} at {convertTime(assignment.due_date)}
                                     </Subtitle2>
                                 </>
                             }
@@ -175,10 +197,10 @@ export default function Page() {
                         />
                         <div className="d-flex flex-column">
                             <Button onClick={() => setStage(1)} appearance="subtle" className="d-block">
-                                <CheckedTodoItem todo="Submit a valid test" checked={assignment.uploadedTests.length > 0} />
+                                <CheckedTodoItem todo="Submit a valid test" checked={assignment.test_cases.length > 0} />
                             </Button>
                             <Button onClick={() => setStage(2)} appearance="subtle" className="d-block">
-                                <CheckedTodoItem todo="Submit your code" checked={assignment.uploadedSolutions.length > 0} />
+                                <CheckedTodoItem todo="Submit your code" checked={assignment.submissions.length > 0} />
                             </Button>
                             <Button onClick={() => setStage(3)} appearance="subtle" className="d-block" disabled={assignment.tier === "?"}>
                                 <CheckedTodoItem todo="View tier list" checked={assignment.tier !== "?"} />
@@ -191,13 +213,14 @@ export default function Page() {
                             header={<Title3>Uplodaded Tests</Title3>}
                         />
                         {
-                            assignment.uploadedTests.length === 0 && (
+                            assignment.test_cases.length === 0 && (
                                 <p>No tests uploaded yet</p>
                             )
                         }
                         <ul className={"d-flex flex-column " + styles.uploadedTests}>
-                            {assignment.uploadedTests.map((test, index) => (
-                                <li className={styles.uploadedTest} key={index}>{test}</li>
+                            {assignment.test_cases.map((test, index) => (
+                                // TODO this is not very informative
+                                <li className={styles.uploadedTest} key={index}>{test.git_id}</li>
                             ))}
                         </ul>
                     </Card>
@@ -207,28 +230,28 @@ export default function Page() {
                             header={<Title3>Uplodaded Solutions</Title3>}
                         />
                         {
-                            assignment.uploadedSolutions.length === 0 && (
+                            assignment.submissions.length === 0 && (
                                 <p>No solutions uploaded yet</p>
                             )
                         }
                         <ul className={"d-flex flex-column " + styles.uploadedSolutions}>
-                            {assignment.uploadedSolutions.map((test, index) => (
-                                <li className={styles.uploadedTest} key={index}>{test}</li>
+                            {assignment.submissions.map((test, index) => (
+                                <li className={styles.uploadedTest} key={index}>{test.git_id}</li>
                             ))}
                         </ul>
                     </Card>
                 </div>
                 {
                     stage === 1 && (
-                        <TestUpload uploadedTests={assignment.uploadedTests} />
+                        <TestUpload uploadedTests={assignment.test_cases} />
                     )
                 }{
                     stage === 2 && (
-                        <SolutionUpload uploadedSolutions={assignment.uploadedSolutions} />
+                        <SolutionUpload uploadedSolutions={assignment.submissions} />
                     )
                 }{
                     stage === 3 && (
-                        <ViewTierList />
+                        tierlist ? <ViewTierList tierlist={tierlist}/> : "No tierlist found"
                     )
                 }
             </div>

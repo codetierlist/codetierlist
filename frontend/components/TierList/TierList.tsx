@@ -54,7 +54,7 @@ const Hardcode = [
  * @property {Tierlist} tierlist the tierlist to display
  * @returns {JSX.Element} the tier list
  */
-export const TierList = ({ tierlist }: { tierlist?: Tierlist }): JSX.Element => {
+export const TierList = ({ tierlist }: { tierlist: Tierlist }): JSX.Element => {
     return (
         <section className="row">
             {
