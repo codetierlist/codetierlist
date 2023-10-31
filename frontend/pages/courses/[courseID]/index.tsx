@@ -126,7 +126,7 @@ function EnrollStudentsForm({ closeDialog }: { closeDialog: () => void }) {
                         <Title3 style={{ fontSize: 18 }}>Input a list of students</Title3>
                         <Textarea
                             id="csvText"
-                            placeholder="utorid,role"
+                            placeholder="utorid1,utorid2,utorid3,..."
                             value={csvText}
                             onChange={(e) => setCsvText(e.target.value)}
                             required
@@ -149,7 +149,7 @@ export default function Page() {
     const [course, setCourse] = useState<FetchedCourseWithTiers | null>(null);
     const { courseID } = useRouter().query;
     const [showDialog, setShowDialog] = useState(false);
-
+    const [showEnrollDialog, setShowEnrollDialog] = useState(false);
     const fetchCourse = async () => {
         if (!courseID) return;
         await axios.get<FetchedCourseWithTiers>(`/courses/${courseID}`, { skipErrorHandling: true }).then((res) => setCourse(res.data)).catch(e => {
@@ -172,6 +172,12 @@ export default function Page() {
                 <Title2>
                     {course?.name || 'Course not found'}
                 </Title2>
+                <Dialog open={showEnrollDialog} onOpenChange={(e: DialogOpenChangeEvent, data: DialogOpenChangeData) => setShowEnrollDialog(data.open)}>
+                    <DialogTrigger disableButtonEnhancement>
+                        <Button><Title1>Enroll Students</Title1></Button>
+                    </DialogTrigger>
+                    <EnrollStudentsForm closeDialog={() => fetchCourse().then(() => setShowEnrollDialog(false))} />
+                </Dialog>
             </header>
             <div className="flex-wrap">
                 {course ? course.assignments.map((assignment) => (

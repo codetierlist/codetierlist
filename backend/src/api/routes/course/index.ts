@@ -1,6 +1,7 @@
 import express from "express";
 import prisma, {
-    fetchedAssignmentArgs, fullFetchedAssignmentArgs
+    fetchedAssignmentArgs,
+    fullFetchedAssignmentArgs
 } from "../../../common/prisma";
 import {RoleType} from "@prisma/client";
 import assignmentsRoute from "./assignments";
@@ -97,7 +98,10 @@ router.post("/:courseId/enroll", fetchCourseMiddleware, async (req, res) => {
         res.send({error: 'utorids must be an array of valid utorids.'});
         return;
     }
-
+    await prisma.user.createMany({
+        data: utorids.map(utorid => ({utorid, email: ""})),
+        skipDuplicates: true
+    });
     await prisma.role.createMany({
         data: utorids.map(utorid => ({
             type: newRole,
