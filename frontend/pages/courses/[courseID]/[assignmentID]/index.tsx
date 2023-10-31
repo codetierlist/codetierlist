@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 import { TierChip, colourHash, TierList } from '@/components';
 import { Button, Card, CardHeader, Title3 } from '@fluentui/react-components';
 import { Add16Regular, Clock16Regular } from '@fluentui/react-icons';
-import { convertDate, convertTime } from '../../../../components/utils/TimeUtils/TimeUtils';
+import { convertDate, convertTime } from '@/components';
 import { CheckedTodoItem } from '@/components/CheckedTodo/CheckedTodo';
 import Editor from '@monaco-editor/react';
 import { useState } from 'react';
@@ -143,7 +143,7 @@ export default function Page() {
                             }
                         />
                         <Title2>
-                            <span className={colourHash(courseID) + ' ' + styles.courseCode}>
+                            <span className={colourHash(courseID as string) + ' ' + styles.courseCode}>
                                 {courseID}
                             </span>
                             {assignmentID}
