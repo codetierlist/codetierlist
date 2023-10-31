@@ -64,3 +64,5 @@ export type Tier = "S" | "A" | "B" | "C" | "D" | "F";
 export type UserTier = Tier | "?"
 export type TierlistEntry = {name: string, you: boolean}
 export type Tierlist = Record<Tier, TierlistEntry[]>;
+
+export {RoleType};
