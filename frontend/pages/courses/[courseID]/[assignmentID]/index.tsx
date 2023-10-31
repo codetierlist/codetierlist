@@ -230,7 +230,7 @@ export default function Page() {
                         </Title2>
                     </div>
                     <div>
-                        <TierChip tier={assignment.tier} />
+                        <TierChip tier={testContent !== null && solutionContent !== null ? "B" : "?"} />
                     </div>
                 </div>
             </Card>
@@ -242,7 +242,7 @@ export default function Page() {
                 <Button className="mx-2" onClick={() => setStage(2)}>
                     Upload a solution
                 </Button>
-                <Button disabled={assignment.tier === "?" && false}
+                <Button disabled={testContent === null || solutionContent === null}
                     onClick={() => setStage(3)}>
                     View tier list
                 </Button>
@@ -258,18 +258,18 @@ export default function Page() {
                             <Button onClick={() => setStage(1)}
                                 appearance="subtle" className="d-block">
                                 <CheckedTodoItem todo="Submit a valid test"
-                                    checked={assignment.test_cases.length > 0} />
+                                    checked={testContent !== null} />
                             </Button>
                             <Button onClick={() => setStage(2)}
                                 appearance="subtle" className="d-block">
                                 <CheckedTodoItem todo="Submit your code"
-                                    checked={assignment.submissions.length > 0} />
+                                    checked={solutionContent !== null} />
                             </Button>
                             <Button onClick={() => setStage(3)}
                                 appearance="subtle" className="d-block"
-                                disabled={assignment.tier === "?"}>
+                                disabled={ testContent === null || solutionContent === null }>
                                 <CheckedTodoItem todo="View tier list"
-                                    checked={assignment.tier !== "?"} />
+                                    checked={testContent !== null && solutionContent !== null} />
                             </Button>
                         </div>
                     </Card>
