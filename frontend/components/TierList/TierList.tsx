@@ -2,11 +2,7 @@ import { TierChip } from "..";
 import { InitialsAvatar } from "../../components/InitialsAvatar/InitialsAvatar";
 import styles from "./TierList.module.css";
 import { Fragment } from "react";
-
-export declare type Tierlist = {
-    tier: string,
-    people: string[],
-}[];
+import {Tier, Tierlist} from "codetierlist-types";
 
 const Hardcode = [
     {
@@ -58,11 +54,11 @@ const Hardcode = [
  * @property {Tierlist} tierlist the tierlist to display
  * @returns {JSX.Element} the tier list
  */
-export const TierList = ({ tierlist = Hardcode }: { tierlist?: Tierlist }): JSX.Element => {
+export const TierList = ({ tierlist }: { tierlist?: Tierlist }): JSX.Element => {
     return (
         <section className="row">
             {
-                tierlist.map((tier, index) => {
+                Object.keys(tierlist).map((tier, index) => {
                     return (
                         <Fragment key={index}>
                             <div
@@ -72,7 +68,7 @@ export const TierList = ({ tierlist = Hardcode }: { tierlist?: Tierlist }): JSX.
                                 className="col-12 col-lg-2 px-0"
                             >
                                 <TierChip
-                                    tier={tier.tier}
+                                    tier={tier}
                                     className="py-2 px-0"
                                     style={{
                                         borderRadius: "0",
@@ -91,12 +87,12 @@ export const TierList = ({ tierlist = Hardcode }: { tierlist?: Tierlist }): JSX.
                             >
                                 <div>
                                     {
-                                        tier.people.map((person, i) => {
+                                        tierlist[tier as Tier].map((person, i) => {
                                             return (
                                                 <InitialsAvatar
-                                                    name={person}
+                                                    name={person.name}
                                                     key={i}
-                                                    className={person === "You" ? styles.you : ""}
+                                                    className={person.you ? styles.you : ""}
                                                     style={{
                                                         margin: "1em",
                                                     }}

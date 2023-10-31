@@ -47,4 +47,5 @@ export type Commit = {
 
 export type Tier = "S" | "A" | "B" | "C" | "D" | "F";
 export type UserTier = Tier | "?"
-export type TierList = Record<Tier, {name: string, you: boolean}[]>;
+export type TierlistEntry = {name: string, you: boolean}
+export type Tierlist = Record<Tier, TierlistEntry[]>;
