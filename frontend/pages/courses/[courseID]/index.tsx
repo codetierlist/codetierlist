@@ -6,7 +6,6 @@ import axios from "@/axios";
 import { FetchedCourseWithTiers } from "codetierlist-types";
 import { useContext, useEffect, useState } from "react";
 import { notFound } from "next/navigation";
-import { useRouter } from "next/router";
 import { UserContext } from "@/contexts/UserContext";
 import {
     Button,
@@ -26,8 +25,10 @@ import {
     Title1
 } from "@fluentui/react-components";
 import { CourseBlockLarge } from '@/components/CourseBlock/CourseBlockLarge';
+import { useRouter } from 'next/router';
 
 // import { notFound } from 'next/navigation';
+import { Shield24Filled } from '@fluentui/react-icons';
 // TODO this code is duplicated from course page
 function CreateAssignmentForm({ closeDialog }: { closeDialog: () => void }) {
     const [assignmentName, setAssignmentName] = useState("");
@@ -83,31 +84,31 @@ function EnrollStudentsForm({ closeDialog }: { closeDialog: () => void }) {
     const [csvText, setCsvText] = useState("");
     const { courseID } = useRouter().query;
     const { fetchUserInfo } = useContext(UserContext);
-  
+
     const handleSubmit = (e) => {
         e.preventDefault();
-    
+
         // Split the input text into lines
         const lines = csvText.split('\n');
-  
+
         // Initialize an array to store the extracted data
-        const data :string[]= [];
-  
+        const data: string[] = [];
+
         lines.forEach((line) => {
-        // Split each line by a comma
+            // Split each line by a comma
             const [utorid] = line.trim().split('\n');
-  
+
             // Check if both utorid and role exist
             if (utorid) {
                 // Push the data to the array
                 data.push(utorid);
             }
         });
-  
+
         // Now 'data' contains an array of objects with 'utorid' and 'role'
-  
+
         // Send 'data' to the server endpoint using axios or your preferred method
-        axios.post(`/courses/${courseID}/enroll`, { utorids: data, role:"STUDENT" })
+        axios.post(`/courses/${courseID}/enroll`, { utorids: data, role: "STUDENT" })
             .then(() => {
                 fetchUserInfo();
                 closeDialog();
@@ -116,7 +117,7 @@ function EnrollStudentsForm({ closeDialog }: { closeDialog: () => void }) {
                 console.error("Error sending data to the server:", error);
             });
     };
-  
+
     return (
         <DialogSurface>
             <DialogBody>
@@ -150,6 +151,8 @@ export default function Page() {
     const { courseID } = useRouter().query;
     const [showDialog, setShowDialog] = useState(false);
     const [showEnrollDialog, setShowEnrollDialog] = useState(false);
+    const router = useRouter();
+
     const fetchCourse = async () => {
         if (!courseID) return;
         await axios.get<FetchedCourseWithTiers>(`/courses/${courseID}`, { skipErrorHandling: true }).then((res) => setCourse(res.data)).catch(e => {
@@ -160,6 +163,7 @@ export default function Page() {
     useEffect(() => {
         void fetchCourse();
     }, [courseID]);
+
 
     return (
         <main>
@@ -198,6 +202,11 @@ export default function Page() {
                         <CreateAssignmentForm
                             closeDialog={() => fetchCourse().then(() => setShowDialog(false))} />
                     </Dialog>
+                    : undefined}
+                {userInfo.admin ?
+                    <Button onClick={() => router.push(`/courses/${courseID}/admin`)}>
+                        <Shield24Filled />
+                    </Button>
                     : undefined}
             </div>
         </main>

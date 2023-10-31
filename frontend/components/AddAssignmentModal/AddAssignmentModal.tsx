@@ -1,6 +1,6 @@
 import { Dialog, Divider, Input, Title2, Title3, Card, Button, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Title1 } from "@fluentui/react-components";
 import styles from "./AddAssignmentModal.module.css";
-import { DatePicker } from "@fluentui/react-date-time";
+import { DatePicker } from "@fluentui/react-datepicker-compat";
 import { AddCourseButton } from "../AddCourseButton/AddCourseButton";
 import * as React from "react";
 

@@ -8,14 +8,11 @@ import { CourseBlockLarge } from '@/components/CourseBlock/CourseBlockLarge';
 import { UpcomingDeadlinesCard } from '@/components/UpcomingDeadlines/UpcomingDeadlinesCard/UpcomingDeadlinesCard';
 import { AddAssignmentModal } from '@/components/AddAssignmentModal/AddAssignmentModal';
 import { ReturnHomeButton } from '@/components/ReturnHomeButton/ReturnHomeButton';
-<<<<<<< HEAD
-import { EnrollModal } from '@/components/EnrollModal/EnrollModal';
-=======
+// import { EnrollModal } from '@/components/EnrollModal/EnrollModal';
 import {useEffect, useState} from "react";
 import {FetchedCourseWithTiers} from "codetierlist-types";
 import axios from "@/axios";
 import {notFound} from "next/navigation";
->>>>>>> 6da6e4901afe2d71166e4a5308a41ed81af007d7
 // import { notFound } from 'next/navigation';
 
 export default function Page ({ params }: { params: { courseID: string } }) {
@@ -33,6 +30,7 @@ export default function Page ({ params }: { params: { courseID: string } }) {
     useEffect(() => {
         axios.get<FetchedCourseWithTiers>(`/courses/${params.courseID}`, {skipErrorHandling: true}).then((res) => setCourse(res.data)).catch(notFound);
     }, [params.courseID]);
+
     return (
         <main className={styles.info}>
             <div className={styles.assignments}>
@@ -58,7 +56,6 @@ export default function Page ({ params }: { params: { courseID: string } }) {
                     <EnrollModal />
                 </div>
             </div>
-            
         </main>
     );
 }
