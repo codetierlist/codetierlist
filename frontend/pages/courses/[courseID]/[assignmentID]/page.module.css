@@ -1,0 +1,17 @@
+.courseCode {
+    display: inline-block;
+    margin-right: 0.5em;
+    padding: 0 0.25em;
+}
+
+.dueDate {
+    display: inline-block !important;
+    padding: 0 0.25em !important;
+    line-height: var(--lineHeightBase200) !important;
+    height: var(--spacingVerticalL) !important;
+    font-weight: var(--fontWeightRegular) !important;
+}
+
+.dueDateIcon {
+    line-height: inherit !important;
+}
