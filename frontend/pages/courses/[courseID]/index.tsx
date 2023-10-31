@@ -22,11 +22,8 @@ import {
     Input,
     Label,
     Textarea,
-<<<<<<< HEAD
-    Title3
-=======
+    Title3,
     Title1
->>>>>>> 6da6e4901afe2d71166e4a5308a41ed81af007d7
 } from "@fluentui/react-components";
 import { CourseBlockLarge } from '@/components/CourseBlock/CourseBlockLarge';
 
@@ -88,64 +85,64 @@ function EnrollStudentsForm({ closeDialog }: { closeDialog: () => void }) {
     const { fetchUserInfo } = useContext(UserContext);
   
     const handleSubmit = (e) => {
-      e.preventDefault();
+        e.preventDefault();
     
-      // Split the input text into lines
-      const lines = csvText.split('\n');
+        // Split the input text into lines
+        const lines = csvText.split('\n');
   
-      // Initialize an array to store the extracted data
-      const data :string[]= [];
+        // Initialize an array to store the extracted data
+        const data :string[]= [];
   
-      lines.forEach((line) => {
+        lines.forEach((line) => {
         // Split each line by a comma
-        const [utorid] = line.trim().split('\n');
+            const [utorid] = line.trim().split('\n');
   
-        // Check if both utorid and role exist
-        if (utorid) {
-          // Push the data to the array
-          data.push(utorid);
-        }
-      });
-  
-      // Now 'data' contains an array of objects with 'utorid' and 'role'
-  
-      // Send 'data' to the server endpoint using axios or your preferred method
-      axios.post(`/courses/${courseID}/enroll`, { utorids: data, role:"STUDENT" })
-        .then(() => {
-          fetchUserInfo();
-          closeDialog();
-        })
-        .catch((error) => {
-          console.error("Error sending data to the server:", error);
+            // Check if both utorid and role exist
+            if (utorid) {
+                // Push the data to the array
+                data.push(utorid);
+            }
         });
+  
+        // Now 'data' contains an array of objects with 'utorid' and 'role'
+  
+        // Send 'data' to the server endpoint using axios or your preferred method
+        axios.post(`/courses/${courseID}/enroll`, { utorids: data, role:"STUDENT" })
+            .then(() => {
+                fetchUserInfo();
+                closeDialog();
+            })
+            .catch((error) => {
+                console.error("Error sending data to the server:", error);
+            });
     };
   
     return (
-      <DialogSurface>
-        <DialogBody>
-          <form onSubmit={handleSubmit}>
-            <DialogContent>
-              <Title2 style={{ marginBottom: 7 }}>Enroll Students</Title2>
-              <Title3 style={{ fontSize: 18 }}>Input a list of students</Title3>
-              <Textarea
-                id="csvText"
-                placeholder="utorid,role"
-                value={csvText}
-                onChange={(e) => setCsvText(e.target.value)}
-                required
-              />
-            </DialogContent>
-            <DialogActions>
-              <DialogTrigger disableButtonEnhancement>
-                <Button appearance="secondary">Close</Button>
-              </DialogTrigger>
-              <Button type="submit" appearance="primary">Submit</Button>
-            </DialogActions>
-          </form>
-        </DialogBody>
-      </DialogSurface>
+        <DialogSurface>
+            <DialogBody>
+                <form onSubmit={handleSubmit}>
+                    <DialogContent>
+                        <Title2 style={{ marginBottom: 7 }}>Enroll Students</Title2>
+                        <Title3 style={{ fontSize: 18 }}>Input a list of students</Title3>
+                        <Textarea
+                            id="csvText"
+                            placeholder="utorid,role"
+                            value={csvText}
+                            onChange={(e) => setCsvText(e.target.value)}
+                            required
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <DialogTrigger disableButtonEnhancement>
+                            <Button appearance="secondary">Close</Button>
+                        </DialogTrigger>
+                        <Button type="submit" appearance="primary">Submit</Button>
+                    </DialogActions>
+                </form>
+            </DialogBody>
+        </DialogSurface>
     );
-  }
+}
 
 export default function Page() {
     const { userInfo } = useContext(UserContext);
