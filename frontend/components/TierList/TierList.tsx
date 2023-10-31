@@ -47,14 +47,22 @@ const Hardcode = [
             "Masaoka Azuki",
         ]
     },
-];
+].reduce((acc, { tier, people }) => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    acc[tier] = people.map((name) => ({
+        name,
+        you: name === "You",
+    }));
+    return acc;
+}, {} as Tierlist);
 
 /**
  * A tier list displays a list of people in a tier list format.
  * @property {Tierlist} tierlist the tierlist to display
  * @returns {JSX.Element} the tier list
  */
-export const TierList = ({ tierlist }: { tierlist: Tierlist }): JSX.Element => {
+export const TierList = ({ tierlist = Hardcode }: { tierlist: Tierlist }): JSX.Element => {
     return (
         <section className="row">
             {
