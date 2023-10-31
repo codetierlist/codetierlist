@@ -45,6 +45,7 @@ instance.interceptors.response.use(
         return response;
     },
     (error) => {
+        console.log(error);
         loading -= 1;
         const loadingWheel = document.getElementById('axios-loading-backdrop');
         if(!loadingWheel){

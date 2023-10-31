@@ -5,7 +5,10 @@
  * @property date The date string in DD-MM-YYYY or ISP 8601 format
  * @returns The localized date string
  */
-export const convertDate = (date: string | Date): string => {
+export const convertDate = (date?: string | Date): string => {
+    if(date === undefined){
+        return "No date";
+    }
     let dateObj: Date;
 
     // parse the date string into a date object
@@ -51,14 +54,27 @@ export const addHoursToDate = (date: Date, hours: number): Date => {
  * @property endDate The end date of the booking
  * @return A formatted string of the time range of the booking
  */
-export const convertTime = (date: Date, options?: Intl.DateTimeFormatOptions): string => {
+export const convertTime = (date?: Date | string, options?: Intl.DateTimeFormatOptions): string => {
+    if(date === undefined){
+        return "No time";
+    }
+
+    let dateObj: Date;
+
+    // parse the date string into a date object
+    if (typeof date === 'string') {
+        // parse the date string into a date object
+        dateObj = new Date(date);
+    } else {
+        dateObj = date;
+    }
     const formatDateOptions: Intl.DateTimeFormatOptions = {
         hour: 'numeric',
         minute: 'numeric',
         ...options,
     };
 
-    return new Date(date).toLocaleTimeString('en-CA', formatDateOptions);
+    return dateObj.toLocaleTimeString('en-CA', formatDateOptions);
 };
 
 /**

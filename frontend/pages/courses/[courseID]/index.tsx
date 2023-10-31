@@ -1,13 +1,13 @@
-import {AssignmentCard, CourseSessionChip} from '@/components';
+import { AssignmentCard, CourseSessionChip } from '@/components';
 // import { type Course, getCourses } from '@/contexts/UserContext';
 import styles from './page.module.css';
-import {Title2} from '@fluentui/react-text';
+import { Title2 } from '@fluentui/react-text';
 import axios from "@/axios";
-import {FetchedCourseWithTiers} from "codetierlist-types";
-import {useContext, useEffect, useState} from "react";
-import {notFound} from "next/navigation";
-import {useRouter} from "next/router";
-import {UserContext} from "@/contexts/UserContext";
+import { FetchedCourseWithTiers } from "codetierlist-types";
+import { useContext, useEffect, useState } from "react";
+import { notFound } from "next/navigation";
+import { useRouter } from "next/router";
+import { UserContext } from "@/contexts/UserContext";
 import {
     Button,
     Dialog,
@@ -22,18 +22,22 @@ import {
     Input,
     Label,
     Textarea,
+<<<<<<< HEAD
     Title3
+=======
+    Title1
+>>>>>>> 6da6e4901afe2d71166e4a5308a41ed81af007d7
 } from "@fluentui/react-components";
 import { CourseBlockLarge } from '@/components/CourseBlock/CourseBlockLarge';
 
 // import { notFound } from 'next/navigation';
 // TODO this code is duplicated from course page
-function CreateAssignmentForm({closeDialog}: { closeDialog: () => void }) {
+function CreateAssignmentForm({ closeDialog }: { closeDialog: () => void }) {
     const [assignmentName, setAssignmentName] = useState("");
     const [description, setDescription] = useState("");
     const [dueDate, setDueDate] = useState(new Date());
-    const {courseID} = useRouter().query;
-    const {fetchUserInfo} = useContext(UserContext);
+    const { courseID } = useRouter().query;
+    const { fetchUserInfo } = useContext(UserContext);
     return (
         <DialogSurface>
             <DialogBody>
@@ -47,19 +51,19 @@ function CreateAssignmentForm({closeDialog}: { closeDialog: () => void }) {
                 }}>
                     <DialogTitle>Create Course</DialogTitle>
                     <DialogContent>
-                        <Label htmlFor="name">Name:</Label><br/>
+                        <Label htmlFor="name">Name:</Label><br />
                         <Input type="text" id="name" name="courseCode"
                             value={assignmentName}
-                            onChange={e => setAssignmentName(e.target.value)}/><br/>
-                        <Label htmlFor="description">Description:</Label><br/>
+                            onChange={e => setAssignmentName(e.target.value)} /><br />
+                        <Label htmlFor="description">Description:</Label><br />
                         <Textarea id="description" name="courseName"
                             value={description}
-                            onChange={e => setDescription(e.target.value)}/><br/>
-                        <Label htmlFor="dueDate">Due Date:</Label><br/>
+                            onChange={e => setDescription(e.target.value)} /><br />
+                        <Label htmlFor="dueDate">Due Date:</Label><br />
                         <Input type="datetime-local" id="dueDate" name="dueDate"
                             value={dueDate.toISOString().slice(0, -8)}
-                            onChange={e => setDueDate(new Date(e.target.value))}/>
-                        <br/><br/>
+                            onChange={e => setDueDate(new Date(e.target.value))} />
+                        <br /><br />
                     </DialogContent>
                     <DialogActions>
                         <DialogTrigger disableButtonEnhancement>
@@ -144,117 +148,55 @@ function EnrollStudentsForm({ closeDialog }: { closeDialog: () => void }) {
   }
 
 export default function Page() {
-    const {userInfo} = useContext(UserContext);
+    const { userInfo } = useContext(UserContext);
     const [course, setCourse] = useState<FetchedCourseWithTiers | null>(null);
-    const {courseID} = useRouter().query;
+    const { courseID } = useRouter().query;
     const [showDialog, setShowDialog] = useState(false);
-
 
     const fetchCourse = async () => {
         if (!courseID) return;
-        await axios.get<FetchedCourseWithTiers>(`/courses/${courseID}`, {skipErrorHandling: true}).then((res) => setCourse(res.data)).catch(e => {
+        await axios.get<FetchedCourseWithTiers>(`/courses/${courseID}`, { skipErrorHandling: true }).then((res) => setCourse(res.data)).catch(e => {
             notFound();
         });
     };
+
     useEffect(() => {
         void fetchCourse();
     }, [courseID]);
 
     return (
-        <main  className={styles.info}>
-            <div className={styles.assignments}>
-                <header className={styles.header}>
-                    <CourseBlockLarge courseID={'CSC'.concat(String(courseID))} />
-                    <Title2 className={styles.title}>
-                        {course?.name || 'Course not found'}
-                    </Title2>
-                    {userInfo.admin ?
-                        <div>
-                        <Dialog open={showDialog}
-                            onOpenChange={(e: DialogOpenChangeEvent, data: DialogOpenChangeData) => setShowDialog(data.open)}>
-                            <DialogTrigger disableButtonEnhancement>
-                                <Button>Create Assignment</Button>
-                            </DialogTrigger>
-                            <CreateAssignmentForm
-                                closeDialog={() => fetchCourse().then(()=>setShowDialog(false))}/>
-                        </Dialog>
-                        <Dialog open={showDialog}
-                            onOpenChange={(e: DialogOpenChangeEvent, data: DialogOpenChangeData) => setShowDialog(data.open)}>
-                            <DialogTrigger disableButtonEnhancement>
-                                <Button>Enroll Students</Button>
-                            </DialogTrigger>
-                            <EnrollStudentsForm
-                                closeDialog={() => fetchCourse().then(()=>setShowDialog(false))}/>
-                        </Dialog>
-                        </div>
-                        : undefined}
-                        
-                </header>
-                <div className="flex-wrap">
-                    {course ? course.assignments.map((assignment) => (
-                        <AssignmentCard key={assignment.title.replaceAll(" ", "_")}
-                            id={assignment.title.replaceAll(" ", "_")}
-                            name={assignment.title}
-                            dueDate={assignment.due_date ? new Date(assignment.due_date) : undefined}
-                            tier={assignment.tier}
-                            courseID={courseID as string}
-                        />
-                    )) : "Loading..."}
-                </div>
+        <main>
+            <header className={styles.header}>
+                <Title2>
+                    <CourseSessionChip session="Fall">
+                        {courseID}
+                    </CourseSessionChip>
+                </Title2>
+                <Title2>
+                    {course?.name || 'Course not found'}
+                </Title2>
+            </header>
+            <div className="flex-wrap">
+                {course ? course.assignments.map((assignment) => (
+                    <AssignmentCard key={assignment.title.replaceAll(" ", "_")}
+                        id={assignment.title.replaceAll(" ", "_")}
+                        name={assignment.title}
+                        dueDate={assignment.due_date ? new Date(assignment.due_date) : undefined}
+                        tier={assignment.tier}
+                        courseID={courseID as string}
+                    />
+                )) : "Loading..."}
+                {userInfo.admin ?
+                    <Dialog open={showDialog}
+                        onOpenChange={(e: DialogOpenChangeEvent, data: DialogOpenChangeData) => setShowDialog(data.open)}>
+                        <DialogTrigger disableButtonEnhancement>
+                            <Button><Title1>+</Title1></Button>
+                        </DialogTrigger>
+                        <CreateAssignmentForm
+                            closeDialog={() => fetchCourse().then(() => setShowDialog(false))} />
+                    </Dialog>
+                    : undefined}
             </div>
         </main>
-
-
-
-        // --------------------------
-
-        // <main className={styles.info}>
-        //     <div className={styles.assignments}>
-        //         <header className={styles.header}>
-        //             {/* <Title2>
-        //                 <CourseSessionChip session="Fall">
-        //                     {params.courseID}
-        //                 </CourseSessionChip>
-        //             </Title2> */}
-        //             <CourseBlockLarge courseID='CSCXXX'/>
-        //             <Title2 className={styles.title}>
-        //                 Temporary Course Name{/* {courseObject?.name || 'Course not found'} */}
-        //             </Title2>
-        //         </header>
-        //         <div className="flex-wrap">
-        //             <AssignmentCard id="1" name="Assignment 1" dueDate={new Date()} tier="S" />
-        //             <AssignmentCard id="1" name="Assignment 2" dueDate={new Date()} tier="A" />
-        //             <AssignmentCard id="1" name="Assignment 3" dueDate={new Date()} tier="B" />
-        //             <AssignmentCard id="1" name="Assignment 4" dueDate={new Date()} tier="C" />
-        //             <AssignmentCard id="1" name="Assignment 5" dueDate={new Date()} tier="D" />
-        //             <AssignmentCard id="1" name="Assignment 5" dueDate={new Date()} tier="F" />
-        //             <AssignmentCard id="1" name="Assignment 6" dueDate={new Date()} tier="?" />
-        //         </div>
-        //     </div>
-        //     <div className={styles.upcoming}>
-        //         <UpcomingDeadlinesCard />
-        //     </div>
-        // </main>
-
-
-
     );
 }
-
-// ---------------------------------------------
-
-// export default function Home() {
-
-//     return (
-//         <main>
-//             <div className="course">
-//                 <div className="assignments" style={{ backgroundColor: 'red'}}>
-//                     <p> hi hi hi</p>
-//                 </div>
-//                 <div>
-//                     <p> yo yo yo</p>
-//                 </div>
-//             </div>
-//         </main>
-//     );
-// }

@@ -9,7 +9,7 @@ export const UpcomingDeadlinesCard = ({ params }: { params: { courseID: string }
     // TODO: comment the following out! This is just for mock data    
     const dueDate = new Date('2023-11-04');
     // Add 5 days to the current date
-    console.log(dueDate)
+    console.log(dueDate);
     return (
         <Card className={styles.mainCard}>
             <Title3>Upcoming</Title3>

@@ -1,6 +1,6 @@
 import { Button } from "@fluentui/react-components";
 
-import styles from "./ReturnHomeButton.module.css"
+import styles from "./ReturnHomeButton.module.css";
 
 export const ReturnHomeButton = (): JSX.Element => {
 
