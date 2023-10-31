@@ -76,6 +76,7 @@ const TestUpload = ({uploadedTests, fetchAssignment}: { uploadedTests: unknown[]
     return (
         <div className="col-12 col-lg-8 mt-4">
             <UploadHeader title="Test" action={() => {
+                uploader(`/courses/${courseID}/assignments/${assignmentID}/testcases`, fetchAssignment);
             }}/>
             <Card className={"mt-4 d-flex flex-column " + styles.editor}>
                 {uploadedTests.length === 0 ? (
@@ -91,10 +92,10 @@ const TestUpload = ({uploadedTests, fetchAssignment}: { uploadedTests: unknown[]
                 )}
             </Card>
             <div className="d-flex justify-content-end mt-4">
-                <Button appearance="primary"
-                    onClick={uploader(`/courses/${courseID}/assignments/${assignmentID}/testcases`, fetchAssignment)}>
-                    Submit
-                </Button>
+                {/*<Button appearance="primary"*/}
+                {/*    onClick={uploader(`/courses/${courseID}/assignments/${assignmentID}/testcases`, fetchAssignment)}>*/}
+                {/*    Submit*/}
+                {/*</Button>*/}
             </div>
         </div>
     );
@@ -104,8 +105,7 @@ const SolutionUpload = ({uploadedSolutions, fetchAssignment}: { uploadedSolution
     const {courseID, assignmentID} = router.query;
     return (
         <div className="col-12 col-lg-8 mt-4">
-            <UploadHeader title="Solution" action={() => {
-            }}/>
+            <UploadHeader title="Solution" action={uploader(`/courses/${courseID}/assignments/${assignmentID}/submissions`, fetchAssignment)}/>
             <Card className={"mt-4 d-flex flex-column " + styles.editor}>
                 {
                     uploadedSolutions.length === 0 ? (
@@ -124,13 +124,10 @@ const SolutionUpload = ({uploadedSolutions, fetchAssignment}: { uploadedSolution
 
             </Card>
             <div className="d-flex justify-content-end mt-4">
-                <Button appearance="primary"
-                    onClick={()=>{
-                        console.log("test");
-                        uploader(`/courses/${courseID}/assignments/${assignmentID}/submissions`, fetchAssignment)();
-                    }}>
-                    Submit
-                </Button>
+                {/*<Button appearance="primary"*/}
+                {/*    onClick={()=>{console.log("test");uploader(`/courses/${courseID}/assignments/${assignmentID}/submissions`, fetchAssignment)();}}>*/}
+                {/*    Submit*/}
+                {/*</Button>*/}
             </div>
         </div>
     );
@@ -143,7 +140,8 @@ const ViewTierList = ({tierlist}: { tierlist: Tierlist }) => {
                 Tier List
             </Title2>
             <Card className="mt-4">
-                <TierList tierlist={tierlist}/>
+                {/*TODO show actual tierlist*/}
+                <TierList />
             </Card>
         </div>
     );
@@ -224,7 +222,7 @@ export default function Page() {
                 <Button className="mx-2" onClick={() => setStage(2)}>
                     Upload a solution
                 </Button>
-                <Button disabled={assignment.tier === "?"}
+                <Button disabled={assignment.tier === "?" && false}
                     onClick={() => setStage(3)}>
                     View tier list
                 </Button>
