@@ -55,7 +55,9 @@ const uploader = (url: string, fetchAssignment: ()=>void) => () => {
     input.name = 'file';
     input.oninput = async () => {
         const formData = new FormData(form);
-        await axios.post<void>(url, formData);
+        await axios.post<void>(url, formData, {headers:{
+            'Content-Type': 'multipart/form-data'
+        }});
         document.body.removeChild(form);
         fetchAssignment();
     };
@@ -85,7 +87,7 @@ const TestUpload = ({uploadedTests, fetchAssignment}: { uploadedTests: unknown[]
             </Card>
             <div className="d-flex justify-content-end mt-4">
                 <Button appearance="primary"
-                    onClick={uploader(`/courses/${courseID}/assignments/${assignmentID}/submissions`, fetchAssignment)}>
+                    onClick={uploader(`/courses/${courseID}/assignments/${assignmentID}/testcases`, fetchAssignment)}>
                     Submit
                 </Button>
             </div>
