@@ -1,12 +1,12 @@
 .courseCode {
     display: inline-block;
-    margin-right: 0.5em;
-    padding: 0 0.25em;
+    margin-right: var(--spacingHorizontalS);
+    padding: var(--spaceVerticalNone) var(--spacingHorizontalXS);
 }
 
 .dueDate {
     display: inline-block !important;
-    padding: 0 0.25em !important;
+    padding: var(--spaceVerticalNone) var(--spacingHorizontalXS) !important;
     line-height: var(--lineHeightBase200) !important;
     height: var(--spacingVerticalL) !important;
     font-weight: var(--fontWeightRegular) !important;
@@ -14,4 +14,16 @@
 
 .dueDateIcon {
     line-height: inherit !important;
+}
+
+.assignmentHeaderContent {
+    gap: var(--spacingHorizontalS);
+}
+
+.uploadedTests, .uploadedSolutions {
+    list-style: none;
+}
+
+.editor {
+    height: 500px;
 }

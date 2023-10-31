@@ -9,3 +9,4 @@ export * from './Navbar/Navbar';
 export * from './InitialsAvatar/InitialsAvatar';
 export * from './utils/ColourHash/ColourHash';
 export * from './utils/TimeUtils/TimeUtils';
+export * from './CheckedTodo/CheckedTodo';
