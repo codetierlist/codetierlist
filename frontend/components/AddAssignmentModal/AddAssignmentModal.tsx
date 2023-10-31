@@ -54,7 +54,7 @@ export const AddAssignmentModal = (): JSX.Element => {
 //         <Dialog className={styles.modal}>
 //             <Title2>Create Assignment</Title2>
 //             <Divider></Divider>
-            
+
 //         </Dialog>
 //     )
 // };
@@ -65,4 +65,3 @@ export const AddAssignmentModal = (): JSX.Element => {
             <DatePicker />
             <Title3>Solution</Title3>
             <input type="file" /> */}
-
