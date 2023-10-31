@@ -175,7 +175,7 @@ export default function Page() {
         return <p>Loading...</p>;
     }
     return (
-        <main className="container-fluid">
+        <main className="container">
             <Card className={styles.header}>
                 <div className={"d-flex justify-content-between"}>
                     <div
