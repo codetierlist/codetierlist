@@ -13,7 +13,8 @@ export declare interface AssignmentCardProps {
     id: string
     name: string
     dueDate?: Date
-    tier: UserTier | Tier
+    tier: UserTier | Tier,
+    courseID: string
 }
 const formatDate = (date: Date) => {
     const day = date.getDate().toString().padStart(2, '0');
@@ -25,11 +26,12 @@ export const AssignmentCard = ({
     id,
     name,
     dueDate,
-    tier
+    tier,
+    courseID
 }: AssignmentCardProps): JSX.Element => {
     const formattedDueDate = dueDate ? formatDate(dueDate) :null;
     return (
-        <Link href={`/assignments/${id}`} className={styles.cardLink}>
+        <Link href={`${courseID}/${id}`} className={styles.cardLink}>
             <Card className={styles.card}>
                 <CardHeader
                     header={(<TierChip tier={tier}/>)}
