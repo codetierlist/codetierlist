@@ -52,9 +52,13 @@ const uploader = (url: string, fetchAssignment: ()=>void) => () => {
     const form = document.createElement('form');
     const input = document.createElement('input');
     input.type = 'file';
-    input.name = 'file';
+    input.name = 'files';
     input.oninput = async () => {
-        const formData = new FormData(form);
+        const formData = new FormData();
+        const filesLength=input.files!.length;
+        for(let i=0;i<filesLength;i++){
+            formData.append("files", input.files![i]);
+        }
         await axios.post<void>(url, formData, {headers:{
             'Content-Type': 'multipart/form-data'
         }});
