@@ -94,7 +94,7 @@ const TestUpload = ({ uploadedTests, fetchAssignment, content, setContent }: { u
 
             <Card className={"mt-4 d-flex flex-column " + styles.editor}>
                 {/* {uploadedTests.length === 0 ? ( */}
-                content === null ? (
+                { content === null ? (
                     <NoUploadPlaceholder title="test" />
                 ) : (
                     <Editor
