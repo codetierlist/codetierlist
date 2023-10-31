@@ -18,10 +18,11 @@ type EnhancedAppProps = AppProps & { renderer?: GriffelRenderer };
 
 function MyApp({Component, pageProps, renderer}: EnhancedAppProps) {
     const [userInfo, setUserInfo] = useState<FetchedUser>(defaultUser);
-    const fetchUserInfo = async () => setUserInfo((await axios.get<FetchedUser>("/")).data);
-    useEffect(() => {
-        void fetchUserInfo();
-    }, []);
+    // const fetchUserInfo = async () => setUserInfo((await axios.get<FetchedUser>("/")).data);
+    // useEffect(() => {
+        // void fetchUserInfo();
+    // }, []);
+    const fetchUserInfo =  async () => { return () => {} };
     return (
         // 👇 Accepts a renderer from <Document /> or creates a default one
         //    Also triggers rehydration a client
