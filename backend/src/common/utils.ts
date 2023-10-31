@@ -1,5 +1,12 @@
 import prisma, {fetchedAssignmentArgs, fetchedCourseArgs} from "./prisma";
-import {Course, RoleType, Solution, TestCase, User} from "@prisma/client";
+import {
+    Assignment as PrismaAssignment,
+    Course,
+    RoleType,
+    Solution,
+    TestCase,
+    User
+} from "@prisma/client";
 import {NextFunction, Request, Response} from "express";
 import path from "path";
 import fs from "fs";
@@ -68,7 +75,7 @@ export const processSubmission = async (req: Request, table: "solution" | "testC
         fs,
         dir: repoPath,
         message: 'Update files via file upload',
-        author:{
+        author: {
             name: req.user.utorid,
             email: req.user.email
         }
@@ -100,7 +107,7 @@ export const processSubmission = async (req: Request, table: "solution" | "testC
     return commit;
 };
 
-export const getCommit = async (req: Request, table: "solution" | "testCase") : Promise<Commit | null> => {
+export const getCommit = async (req: Request, table: "solution" | "testCase"): Promise<Commit | null> => {
     const query = {
         where: {
             id: {
@@ -158,7 +165,9 @@ export const fetchCourseMiddleware = async (req: Request, res: Response, next: N
     req.course = course;
     next();
 };
-
+export const serializeAssignment = <T extends PrismaAssignment>(assignment: T): Omit<T, "due_date"> & {
+    due_date?: string
+} => ({...assignment, due_date: assignment.due_date?.toISOString()});
 export const fetchAssignmentMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const assignment = await prisma.assignment.findUnique({
         where: {
@@ -178,7 +187,8 @@ export const fetchAssignmentMiddleware = async (req: Request, res: Response, nex
         });
         return;
     }
-    req.assignment = assignment;
+    req.assignment = serializeAssignment(assignment);
     req.course = assignment.course;
     next();
 };
+
