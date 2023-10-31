@@ -85,7 +85,13 @@ const TestUpload = ({ uploadedTests, fetchAssignment, content, setContent }: { u
     const { courseID, assignmentID } = router.query;
     return (
         <div className="col-12 col-lg-8 mt-4">
-            <UploadHeader title="Test" action={uploader(`/courses/${courseID}/assignments/${assignmentID}/testcases`, fetchAssignment)}/>
+            <UploadHeader
+                title="Test"
+                action={
+                    uploader(`/courses/${courseID}/assignments/${assignmentID}/testcases`, fetchAssignment, setContent)
+                }
+            />
+
             <Card className={"mt-4 d-flex flex-column " + styles.editor}>
                 {uploadedTests.length === 0 ? (
                     <NoUploadPlaceholder title="test" />
