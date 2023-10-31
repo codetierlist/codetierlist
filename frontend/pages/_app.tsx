@@ -22,7 +22,6 @@ function MyApp({Component, pageProps, renderer}: EnhancedAppProps) {
     useEffect(() => {
         void fetchUserInfo();
     }, []);
-    const fetchUserInfo =  async () => { return () => {} };
     return (
         // 👇 Accepts a renderer from <Document /> or creates a default one
         //    Also triggers rehydration a client
