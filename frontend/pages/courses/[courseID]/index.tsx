@@ -34,3 +34,21 @@ export default function Page({params}: { params: { courseID: string } }) {
         </main>
     );
 }
+
+// ---------------------------------------------
+
+// export default function Home() {
+
+//     return (
+//         <main>
+//             <div className="course">
+//                 <div className="assignments" style={{ backgroundColor: 'red'}}>
+//                     <p> hi hi hi</p>
+//                 </div>
+//                 <div>
+//                     <p> yo yo yo</p>
+//                 </div>
+//             </div>
+//         </main>
+//     );
+// }

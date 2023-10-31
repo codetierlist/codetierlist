@@ -1,0 +1,18 @@
+.info {
+
+}
+
+.assignments {
+    margin-left: 2%;
+    margin-right: 2%;
+}
+
+.header {
+    display: flex;
+    align-items: baseline;
+    margin-bottom: var(--spacingVerticalL);
+}
+
+.title {
+    margin-left: 13px;
+}

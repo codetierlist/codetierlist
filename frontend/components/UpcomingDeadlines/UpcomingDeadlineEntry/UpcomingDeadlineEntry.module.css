@@ -1,0 +1,16 @@
+.entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 13px;
+}
+
+.assignmentName {
+    font-size: 20px;
+    margin-left: 8px;
+}
+
+.assignmentIdentifyingInfo {
+    display: flex;
+    align-items: baseline;
+}
