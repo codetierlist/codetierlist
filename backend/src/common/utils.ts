@@ -163,7 +163,7 @@ export const fetchAssignmentMiddleware = async (req: Request, res: Response, nex
     const assignment = await prisma.assignment.findUnique({
         where: {
             id: {
-                title: req.params.assignment,
+                title: req.params.assignment.replace("_", " "),
                 course_id: req.params.courseId
             }
         },
