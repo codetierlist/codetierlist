@@ -25,5 +25,22 @@ export const fetchedAssignmentArgs = Prisma.validator<Prisma.AssignmentDefaultAr
     }
 });
 
+export const fullFetchedAssignmentArgs = Prisma.validator<Prisma.AssignmentDefaultArgs>()({
+    include: {
+        submissions: {
+            include: {
+                author: true,
+                scores: true
+            }
+        },
+        test_cases: {
+            include: {
+                author: true,
+                scores: true
+            }
+        }
+    }
+});
+
 
 export default client;
