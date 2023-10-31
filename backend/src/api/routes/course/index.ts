@@ -16,7 +16,7 @@ import {
 import {isUTORid} from "is-utorid";
 
 const router = express.Router();
-router.post("/courses", async (req, res) => {
+router.post("/", async (req, res) => {
     if (!req.user.admin) {
         res.statusCode = 403;
         res.send({error: 'You are not an admin.'});
