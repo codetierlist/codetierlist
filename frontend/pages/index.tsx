@@ -82,9 +82,9 @@ export default function Home() {
                 <div className="flex-wrap">
                     {userInfo.roles.map(x => x.course).map(x => (
                         // TODO session probably shouldn't be hardcoded, image placeholder should be replaced with actual course image
-                        <CourseOverviewCard key={x.id} name={x.code}
+                        <CourseOverviewCard key={x.id} id={x.id} name={x.code}
                             image="https://placehold.co/300x200"
-                            session={"F"}></CourseOverviewCard>
+                            session={"Fall"}></CourseOverviewCard>
                     ))}
                 </div>
             </main>
