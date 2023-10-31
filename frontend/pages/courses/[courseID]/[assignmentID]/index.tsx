@@ -1,8 +1,8 @@
 // import { CourseSessionChip, AssignmentCard } from '@/components';
 import styles from './page.module.css';
-import {Subtitle2, Title1, Title2} from '@fluentui/react-text';
+import { Subtitle2, Title1, Title2 } from '@fluentui/react-text';
 import Error from 'next/error';
-import {useRouter} from 'next/router';
+import { useRouter } from 'next/router';
 import {
     colourHash,
     convertDate,
@@ -10,30 +10,30 @@ import {
     TierChip,
     TierList
 } from '@/components';
-import {Button, Card, CardHeader, Title3} from '@fluentui/react-components';
-import {Add16Regular, Clock16Regular} from '@fluentui/react-icons';
-import {CheckedTodoItem} from '@/components/CheckedTodo/CheckedTodo';
+import { Button, Card, CardHeader, Title3 } from '@fluentui/react-components';
+import { Add16Regular, Clock16Regular } from '@fluentui/react-icons';
+import { CheckedTodoItem } from '@/components/CheckedTodo/CheckedTodo';
 import Editor from '@monaco-editor/react';
-import {useEffect, useState} from 'react';
-import {FetchedAssignmentWithTier, Tierlist} from "codetierlist-types";
+import { useEffect, useState } from 'react';
+import { FetchedAssignmentWithTier, Tierlist } from "codetierlist-types";
 import axios from "@/axios";
-import {notFound} from "next/navigation";
+import { notFound } from "next/navigation";
 
 // TODO: clean technical debt
 
-const UploadHeader = ({title, action}: { title: string, action: () => void }) => {
+const UploadHeader = ({ title, action }: { title: string, action: () => void }) => {
     return (
         <div className="d-flex justify-content-between">
             <Title1>{title}</Title1>
             <Button appearance="subtle" onClick={() => action()}
-                icon={<Add16Regular/>}>
+                icon={<Add16Regular />}>
                 Upload {title.toLowerCase()}
             </Button>
         </div>
     );
 };
 
-const NoUploadPlaceholder = ({title}: { title: string }) => {
+const NoUploadPlaceholder = ({ title }: { title: string }) => {
     return (
         <>
             <div
@@ -49,91 +49,105 @@ const NoUploadPlaceholder = ({title}: { title: string }) => {
     );
 };
 
-const uploader = (url: string, fetchAssignment: ()=>void) => () => {
+const uploader = (url: string, fetchAssignment: () => void, setContent: (content: string) => void) => () => {
     const form = document.createElement('form');
     const input = document.createElement('input');
     input.type = 'file';
     input.name = 'files';
     input.oninput = async () => {
         const formData = new FormData();
-        const filesLength=input.files!.length;
-        for(let i=0;i<filesLength;i++){
+        const filesLength = input.files!.length;
+        for (let i = 0; i < filesLength; i++) {
             formData.append("files", input.files![i]);
         }
-        await axios.post<void>(url, formData, {headers:{
-            'Content-Type': 'multipart/form-data'
-        }});
+        await axios.post<void>(url, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
         document.body.removeChild(form);
+        // read file
+        const reader = new FileReader();
+        reader.readAsText(input.files![0]);
+        reader.onloadend = () => {
+            console.log(reader.result);
+            setContent(reader.result as string);
+        };
+        setContent("Loading...");
         fetchAssignment();
     };
     document.body.append(form);
     input.click();
 };
 
-const TestUpload = ({uploadedTests, fetchAssignment}: { uploadedTests: unknown[], fetchAssignment: ()=>void }) => {
+const TestUpload = ({ uploadedTests, fetchAssignment, content, setContent }: { uploadedTests: unknown[], fetchAssignment: () => void, content: string, setContent: (content: string) => void }) => {
     const router = useRouter();
-    const {courseID, assignmentID} = router.query;
+    const { courseID, assignmentID } = router.query;
     return (
         <div className="col-12 col-lg-8 mt-4">
             <UploadHeader title="Test" action={() => {
-                uploader(`/courses/${courseID}/assignments/${assignmentID}/testcases`, fetchAssignment);
-            }}/>
+                uploader(`/courses/${courseID}/assignments/${assignmentID}/testcases`, fetchAssignment, setContent);
+            }} />
             <Card className={"mt-4 d-flex flex-column " + styles.editor}>
                 {uploadedTests.length === 0 ? (
-                    <NoUploadPlaceholder title="test"/>
+                    <NoUploadPlaceholder title="test" />
                 ) : (
                     <Editor
                         defaultLanguage="python"
-                        defaultValue='sdfasdf'
+                        defaultValue={content}
                         height="90vh"
-                        options={{readOnly: true}}
+                        options={{ readOnly: true }}
                         theme="light"
                     />
                 )}
             </Card>
-            <div className="d-flex justify-content-end mt-4">
-                {/*<Button appearance="primary"*/}
-                {/*    onClick={uploader(`/courses/${courseID}/assignments/${assignmentID}/testcases`, fetchAssignment)}>*/}
-                {/*    Submit*/}
-                {/*</Button>*/}
-            </div>
         </div>
     );
 };
-const SolutionUpload = ({uploadedSolutions, fetchAssignment}: { uploadedSolutions: unknown[],  fetchAssignment: ()=>void }) => {
+const SolutionUpload = (
+    { uploadedSolutions,
+        fetchAssignment,
+        content,
+        setContent
+    }: {
+        uploadedSolutions: unknown[],
+        fetchAssignment: () => void,
+        content: string,
+        setContent: (content: string) => void
+    }) => {
     const router = useRouter();
-    const {courseID, assignmentID} = router.query;
+    const { courseID, assignmentID } = router.query;
     return (
         <div className="col-12 col-lg-8 mt-4">
-            <UploadHeader title="Solution" action={uploader(`/courses/${courseID}/assignments/${assignmentID}/submissions`, fetchAssignment)}/>
+            <UploadHeader
+                title="Solution"
+                action={
+                    uploader(`/courses/${courseID}/assignments/${assignmentID}/submissions`, fetchAssignment, setContent)
+                }
+            />
+
             <Card className={"mt-4 d-flex flex-column " + styles.editor}>
                 {
                     uploadedSolutions.length === 0 ? (
-                        <NoUploadPlaceholder title="solution"/>
+                        <NoUploadPlaceholder title="solution" />
                     ) :
                         (
                             <Editor
                                 defaultLanguage="python"
-                                defaultValue='sdfasdf'
+                                defaultValue={content}
                                 height="90vh"
-                                options={{readOnly: true}}
+                                options={{ readOnly: true }}
                                 theme="light"
                             />
                         )
                 }
 
             </Card>
-            <div className="d-flex justify-content-end mt-4">
-                {/*<Button appearance="primary"*/}
-                {/*    onClick={()=>{console.log("test");uploader(`/courses/${courseID}/assignments/${assignmentID}/submissions`, fetchAssignment)();}}>*/}
-                {/*    Submit*/}
-                {/*</Button>*/}
-            </div>
         </div>
     );
 };
 
-const ViewTierList = ({tierlist}: { tierlist: Tierlist }) => {
+const ViewTierList = ({ tierlist }: { tierlist: Tierlist }) => {
     return (
         <div className="col-12 col-lg-8 mt-4">
             <Title2>
@@ -152,20 +166,20 @@ export default function Page() {
     const [stage, setStage] = useState(0);
     const [assignment, setAssignment] = useState<FetchedAssignmentWithTier | null>(null);
     const [tierlist, setTierlist] = useState<Tierlist | null>(null);
-    const [solutionContent, setSolutionContent] = useState<string>("");
-    const [testContent, setTestContent] = useState<string>("");
+    const [solutionContent, setSolutionContent] = useState<string>("asfdfdsafasdfsad");
+    const [testContent, setTestContent] = useState<string>("asdfsdaf");
 
     // TODO: guard against invalid courseID, invalid assignmentID
-    const {courseID, assignmentID} = router.query;
+    const { courseID, assignmentID } = router.query;
 
     const fetchAssignment = async () => {
-        await axios.get<FetchedAssignmentWithTier>(`/courses/${courseID}/assignments/${assignmentID}`, {skipErrorHandling: true}).then((res) => setAssignment(res.data)).catch(e => {
+        await axios.get<FetchedAssignmentWithTier>(`/courses/${courseID}/assignments/${assignmentID}`, { skipErrorHandling: true }).then((res) => setAssignment(res.data)).catch(e => {
             console.log(e);
             notFound();
         });
     };
     const fetchTierlist = async () => {
-        await axios.get<Tierlist>(`/courses/${courseID}/assignments/${assignmentID}/tierlist`, {skipErrorHandling: true}).then((res) => setTierlist(res.data)).catch(e => {
+        await axios.get<Tierlist>(`/courses/${courseID}/assignments/${assignmentID}/tierlist`, { skipErrorHandling: true }).then((res) => setTierlist(res.data)).catch(e => {
             console.log(e);
             notFound();
         });
@@ -179,7 +193,7 @@ export default function Page() {
     }, [courseID, assignmentID]);
 
     if (!courseID || !assignmentID) {
-        return <Error statusCode={404}/>;
+        return <Error statusCode={404} />;
     }
     if (!assignment) {
         return <p>Loading...</p>;
@@ -194,7 +208,7 @@ export default function Page() {
                             header={
                                 <>
                                     <Clock16Regular
-                                        className={styles.dueDateIcon}/>
+                                        className={styles.dueDateIcon} />
                                     <Subtitle2 className={styles.dueDate}>
                                         Due {convertDate(assignment.due_date)} at {convertTime(assignment.due_date)}
                                     </Subtitle2>
@@ -210,7 +224,7 @@ export default function Page() {
                         </Title2>
                     </div>
                     <div>
-                        <TierChip tier={assignment.tier}/>
+                        <TierChip tier={assignment.tier} />
                     </div>
                 </div>
             </Card>
@@ -238,18 +252,18 @@ export default function Page() {
                             <Button onClick={() => setStage(1)}
                                 appearance="subtle" className="d-block">
                                 <CheckedTodoItem todo="Submit a valid test"
-                                    checked={assignment.test_cases.length > 0}/>
+                                    checked={assignment.test_cases.length > 0} />
                             </Button>
                             <Button onClick={() => setStage(2)}
                                 appearance="subtle" className="d-block">
                                 <CheckedTodoItem todo="Submit your code"
-                                    checked={assignment.submissions.length > 0}/>
+                                    checked={assignment.submissions.length > 0} />
                             </Button>
                             <Button onClick={() => setStage(3)}
                                 appearance="subtle" className="d-block"
                                 disabled={assignment.tier === "?"}>
                                 <CheckedTodoItem todo="View tier list"
-                                    checked={assignment.tier !== "?"}/>
+                                    checked={assignment.tier !== "?"} />
                             </Button>
                         </div>
                     </Card>
@@ -291,16 +305,16 @@ export default function Page() {
                 </div>
                 {
                     stage === 1 && (
-                        <TestUpload uploadedTests={assignment.test_cases} fetchAssignment={fetchAssignment}/>
+                        <TestUpload uploadedTests={assignment.test_cases} fetchAssignment={fetchAssignment} content={testContent} setContent={setTestContent} />
                     )
                 }{
                     stage === 2 && (
-                        <SolutionUpload uploadedSolutions={assignment.submissions} fetchAssignment={fetchAssignment}/>
+                        <SolutionUpload uploadedSolutions={assignment.submissions} fetchAssignment={fetchAssignment} content={solutionContent} setContent={setSolutionContent} />
                     )
                 }{
                     stage === 3 && (
                         tierlist ?
-                            <ViewTierList tierlist={tierlist}/> : "No tierlist found"
+                            <ViewTierList tierlist={tierlist} /> : "No tierlist found"
                     )
                 }
             </div>

@@ -79,13 +79,13 @@ export default function Page() {
     const { courseID } = useRouter().query;
     const [showDialog, setShowDialog] = useState(false);
 
-
     const fetchCourse = async () => {
         if (!courseID) return;
         await axios.get<FetchedCourseWithTiers>(`/courses/${courseID}`, { skipErrorHandling: true }).then((res) => setCourse(res.data)).catch(e => {
             notFound();
         });
     };
+
     useEffect(() => {
         void fetchCourse();
     }, [courseID]);
