@@ -6,11 +6,12 @@
 }
 
 .title {
-    font-family: var(--fontFamilyNumeric);
-    line-height: var(--lineHeightHero700);
+    line-height: var(--lineHeightHero700) !important;
 }
 
 .brand {
-    color: var(--colorNeutralForeground1);
-    text-decoration: none;
+    color: var(--colorNeutralForeground1) !important;
+    font-family: var(--fontFamilyNumeric) !important;
+    font-weight: var(--fontWeightBold) !important;
+    text-decoration: none !important;
 }
