@@ -37,7 +37,7 @@ const fluentNineColors = [
  * Returns a hex colour based on a string
  * @param str String to hash
  */
-const getHashCode = (str: string): number => {
+const getHashCode = (str: string | undefined): number => {
     let hashCode = 0;
     if (!str) return hashCode;
     for(let len = str.length - 1; len >= 0; len--){
@@ -52,6 +52,6 @@ const getHashCode = (str: string): number => {
  * Returns a hex colour based on a string
  * @param str String to hash
  */
-export const colourHash = (str: string): string => {
+export const colourHash = (str: string | undefined): string => {
     return fluentNineColors[getHashCode(str) % fluentNineColors.length];
-}
+};
