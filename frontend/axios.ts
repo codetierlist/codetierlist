@@ -1,5 +1,10 @@
 import axios from "axios";
 
+declare module "axios" {
+  export interface AxiosRequestConfig {
+    skipErrorHandling?: boolean;
+  }
+}
 /**
  * Axios instance
  */
