@@ -1,6 +1,6 @@
 import { Divider, Title3 } from "@fluentui/react-components";
 import React from "react";
-import styles from "./UpcomingDeadlineEntry.module.css"
+import styles from "./UpcomingDeadlineEntry.module.css";
 import { CourseBlockSmall } from "../../CourseBlock/CourseBlockSmall";
 import { Text } from "@fluentui/react-components";
 import { DueDate } from "../DueDate/DueDate";

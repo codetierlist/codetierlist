@@ -48,6 +48,7 @@ const NoUploadPlaceholder = ({title}: { title: string }) => {
         </>
     );
 };
+
 const uploader = (url: string, fetchAssignment: ()=>void) => () => {
     const form = document.createElement('form');
     const input = document.createElement('input');
@@ -67,8 +68,8 @@ const uploader = (url: string, fetchAssignment: ()=>void) => () => {
     };
     document.body.append(form);
     input.click();
-
 };
+
 const TestUpload = ({uploadedTests, fetchAssignment}: { uploadedTests: unknown[], fetchAssignment: ()=>void }) => {
     const router = useRouter();
     const {courseID, assignmentID} = router.query;
@@ -124,7 +125,10 @@ const SolutionUpload = ({uploadedSolutions, fetchAssignment}: { uploadedSolution
             </Card>
             <div className="d-flex justify-content-end mt-4">
                 <Button appearance="primary"
-                    onClick={()=>{console.log("test");uploader(`/courses/${courseID}/assignments/${assignmentID}/submissions`, fetchAssignment)();}}>
+                    onClick={()=>{
+                        console.log("test");
+                        uploader(`/courses/${courseID}/assignments/${assignmentID}/submissions`, fetchAssignment)();
+                    }}>
                     Submit
                 </Button>
             </div>
@@ -150,6 +154,8 @@ export default function Page() {
     const [stage, setStage] = useState(0);
     const [assignment, setAssignment] = useState<FetchedAssignmentWithTier | null>(null);
     const [tierlist, setTierlist] = useState<Tierlist | null>(null);
+    const [solutionContent, setSolutionContent] = useState<string>("");
+    const [testContent, setTestContent] = useState<string>("");
 
     // TODO: guard against invalid courseID, invalid assignmentID
     const {courseID, assignmentID} = router.query;

@@ -5,11 +5,11 @@ import { AddCourseButton } from "../AddCourseButton/AddCourseButton";
 import * as React from "react";
 
 export const AddAssignmentModal = (): JSX.Element => {
-  //const styles = useStyles();
-  const handleSubmit = (ev: React.FormEvent) => {
-    ev.preventDefault();
-    alert("form submitted!");
-  };  // TODO
+    //const styles = useStyles();
+    const handleSubmit = (ev: React.FormEvent) => {
+        ev.preventDefault();
+        alert("form submitted!");
+    };  // TODO
     return (
         <Dialog>
             <DialogTrigger>
@@ -41,7 +41,7 @@ export const AddAssignmentModal = (): JSX.Element => {
                 </form>
             </DialogSurface>
         </Dialog>
-    )
+    );
 };
 
 
