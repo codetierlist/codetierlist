@@ -93,7 +93,8 @@ const TestUpload = ({ uploadedTests, fetchAssignment, content, setContent }: { u
             />
 
             <Card className={"mt-4 d-flex flex-column " + styles.editor}>
-                {uploadedTests.length === 0 ? (
+                {/* {uploadedTests.length === 0 ? ( */}
+                content === null ? (
                     <NoUploadPlaceholder title="test" />
                 ) : (
                     <Editor
@@ -132,7 +133,8 @@ const SolutionUpload = (
 
             <Card className={"mt-4 d-flex flex-column " + styles.editor}>
                 {
-                    uploadedSolutions.length === 0 ? (
+                    // uploadedSolutions.length === 0 ? (
+                    content === null ? (
                         <NoUploadPlaceholder title="solution" />
                     ) :
                         (
@@ -170,8 +172,8 @@ export default function Page() {
     const [stage, setStage] = useState(0);
     const [assignment, setAssignment] = useState<FetchedAssignmentWithTier | null>(null);
     const [tierlist, setTierlist] = useState<Tierlist | null>(null);
-    const [solutionContent, setSolutionContent] = useState<string>("asfdfdsafasdfsad");
-    const [testContent, setTestContent] = useState<string>("asdfsdaf");
+    const [solutionContent, setSolutionContent] = useState<string | null>(null);
+    const [testContent, setTestContent] = useState<string | null>(null);
 
     // TODO: guard against invalid courseID, invalid assignmentID
     const { courseID, assignmentID } = router.query;
