@@ -1,11 +1,18 @@
 import express from "express";
-import prisma, {fetchedAssignmentArgs} from "../../../common/prisma";
+import prisma, {
+    fetchedAssignmentArgs,
+    fetchedCourseArgs
+} from "../../../common/prisma";
 import {RoleType} from "@prisma/client";
 import assignmentsRoute from "./assignments";
 import {PrismaClientKnownRequestError} from "@prisma/client/runtime/library";
 import {generateYourTier} from "../../../common/tierlist";
 import {fetchCourseMiddleware} from "../../../common/utils";
-import {FetchedAssignment} from "codetierlist-types";
+import {
+    AssignmentWithTier,
+    FetchedAssignment,
+    FetchedCourseWithTiers
+} from "codetierlist-types";
 import {isUTORid} from "is-utorid";
 
 const router = express.Router();
@@ -50,22 +57,19 @@ router.post("/courses", async (req, res) => {
 
 
 router.get("/:courseId", fetchCourseMiddleware, async (req, res) => {
-    const course = await prisma.course.findUnique({
+    const course = await prisma.course.findUniqueOrThrow({
         where: {id: req.course!.id},
         include: {roles: true, assignments: fetchedAssignmentArgs},
     });
 
-    const assignments = course!.assignments.map(assignment => ({
+    const assignments: AssignmentWithTier[] = course!.assignments.map(assignment => ({
         title: assignment.title,
         course_id: assignment.course_id,
         due_date: assignment.due_date,
+        description: assignment.description,
         tier: generateYourTier(assignment)
     }));
-
-    res.send({
-        ...req.course,
-        assignments,
-    });
+    res.send({...req.course!, assignments} satisfies FetchedCourseWithTiers);
 });
 
 router.delete("/:courseId", fetchCourseMiddleware, async (req, res) => {
@@ -111,6 +115,11 @@ router.post("/:courseId/assignments", fetchCourseMiddleware, async (req, res) =>
     if (typeof name !== 'string' || isNaN(date.getDate()) || typeof description !== 'string' || name.length === 0 || description.length === 0) {
         res.statusCode = 400;
         res.send({error: 'Invalid request.'});
+        return;
+    }
+    if (!name.match(/^[A-Za-z0-9 ]*/)) {
+        res.statusCode = 400;
+        res.send({error: 'Invalid name.'});
         return;
     }
     try {

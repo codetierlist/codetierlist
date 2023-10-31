@@ -1,6 +1,8 @@
 import { Link, Persona } from '@fluentui/react-components';
 import styles from './Navbar.module.css';
 import { GenerateInitalsAvatarProps } from '@/components';
+import { useContext } from 'react';
+import { UserContext } from '@/contexts/UserContext';
 
 /**
  * The navbar component is the top bar of the website. It contains the
@@ -8,8 +10,7 @@ import { GenerateInitalsAvatarProps } from '@/components';
  * @returns {JSX.Element} the navbar
  */
 export const Navbar = (): JSX.Element => {
-    // TODO INTEGRATE
-    const user = { utorid: "michael", email: "liut" };
+    const { userInfo } = useContext(UserContext);
 
     return (
         <header className={styles.navbar}>
@@ -19,9 +20,9 @@ export const Navbar = (): JSX.Element => {
 
             <Persona
                 textPosition="before"
-                avatar={GenerateInitalsAvatarProps(user.utorid)}
-                primaryText={user.email.split('@')[0]}
-                secondaryText={user.utorid}
+                avatar={GenerateInitalsAvatarProps(userInfo.utorid)}
+                primaryText={userInfo.email.split('@')[0]}
+                secondaryText={userInfo.utorid}
             />
         </header>
     );

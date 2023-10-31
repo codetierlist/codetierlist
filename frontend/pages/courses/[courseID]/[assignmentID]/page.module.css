@@ -1,0 +1,29 @@
+.courseCode {
+    display: inline-block;
+    margin-right: var(--spacingHorizontalS);
+    padding: var(--spaceVerticalNone) var(--spacingHorizontalXS);
+}
+
+.dueDate {
+    display: inline-block !important;
+    padding: var(--spaceVerticalNone) var(--spacingHorizontalXS) !important;
+    line-height: var(--lineHeightBase200) !important;
+    height: var(--spacingVerticalL) !important;
+    font-weight: var(--fontWeightRegular) !important;
+}
+
+.dueDateIcon {
+    line-height: inherit !important;
+}
+
+.assignmentHeaderContent {
+    gap: var(--spacingHorizontalS);
+}
+
+.uploadedTests, .uploadedSolutions {
+    list-style: none;
+}
+
+.editor {
+    height: 500px;
+}

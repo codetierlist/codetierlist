@@ -2,51 +2,51 @@ import { createDOMRenderer, renderToStyleElements } from '@fluentui/react-compon
 import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/document';
 
 class MyDocument extends Document {
-  static async getInitialProps(ctx: DocumentContext) {
+    static async getInitialProps(ctx: DocumentContext) {
     // 👇 creates a renderer that will be used for SSR
-    const renderer = createDOMRenderer();
-    const originalRenderPage = ctx.renderPage;
+        const renderer = createDOMRenderer();
+        const originalRenderPage = ctx.renderPage;
 
-    ctx.renderPage = () =>
-      originalRenderPage({
-        enhanceApp: App =>
-          function EnhancedApp(props) {
-            const enhancedProps = {
-              ...props,
-              // 👇 this is required to provide a proper renderer instance
-              renderer,
-            };
+        ctx.renderPage = () =>
+            originalRenderPage({
+                enhanceApp: App =>
+                    function EnhancedApp(props) {
+                        const enhancedProps = {
+                            ...props,
+                            // 👇 this is required to provide a proper renderer instance
+                            renderer,
+                        };
 
-            return <App {...enhancedProps} />;
-          },
-      });
+                        return <App {...enhancedProps} />;
+                    },
+            });
 
-    const initialProps = await Document.getInitialProps(ctx);
-    const styles = renderToStyleElements(renderer);
+        const initialProps = await Document.getInitialProps(ctx);
+        const styles = renderToStyleElements(renderer);
 
-    return {
-      ...initialProps,
-      styles: (
-        <>
-          {initialProps.styles}
-          {/* 👇 adding Fluent UI styles elements to output */}
-          {styles}
-        </>
-      ),
-    };
-  }
+        return {
+            ...initialProps,
+            styles: (
+                <>
+                    {initialProps.styles}
+                    {/* 👇 adding Fluent UI styles elements to output */}
+                    {styles}
+                </>
+            ),
+        };
+    }
 
-  render() {
-    return (
-      <Html>
-        <Head />
-        <body>
-          <Main />
-          <NextScript />
-        </body>
-      </Html>
-    );
-  }
+    render() {
+        return (
+            <Html lang="en">
+                <Head />
+                <body>
+                    <Main />
+                    <NextScript />
+                </body>
+            </Html>
+        );
+    }
 }
 
 export default MyDocument;
