@@ -26,7 +26,7 @@ export const fetchedAssignmentArgs = Prisma.validator<Prisma.AssignmentDefaultAr
     }
 });
 
-export type Assignment = Prisma.AssignmentGetPayload<{}>;
+export type Assignment = Omit<Prisma.AssignmentGetPayload<{}>, "due_date"> & {due_date?: string};
 export type Course = Prisma.CourseGetPayload<{}>;
 export type User = Prisma.UserGetPayload<{}>;
 export type Submission = Prisma.SubmissionGetPayload<{}>;
@@ -36,7 +36,7 @@ export type TestCase = Prisma.TestCaseGetPayload<{}>;
 
 export type FetchedUser = Prisma.UserGetPayload<typeof fetchedUserArgs>;
 export type FetchedCourse = Prisma.CourseGetPayload<typeof fetchedCourseArgs>;
-export type FetchedAssignment = Prisma.AssignmentGetPayload<typeof fetchedAssignmentArgs>;
+export type FetchedAssignment = Omit<Prisma.AssignmentGetPayload<typeof fetchedAssignmentArgs>, "due_date"> & {due_date?: string};
 export type AssignmentWithTier = Assignment & {tier: UserTier};
 export type FetchedCourseWithTiers = Omit<FetchedCourse, "assignments"> & {assignments: AssignmentWithTier[]};
 

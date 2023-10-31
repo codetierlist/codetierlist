@@ -4,7 +4,7 @@ import {
     fetchAssignmentMiddleware,
     getCommit,
     isProf,
-    processSubmission
+    processSubmission, serializeAssignment
 } from "../../../../common/utils";
 import multer from 'multer';
 import {generateTierList} from "../../../../common/tierlist";
@@ -34,7 +34,7 @@ router.get("/:assignment", fetchAssignmentMiddleware, async (req, res) => {
         include: {submissions: isProf(req.course!, req.user)},
     });
 
-    res.send(assignment! satisfies (FetchedAssignment | Assignment));
+    res.send(serializeAssignment(assignment!) satisfies (FetchedAssignment | Assignment));
 });
 
 router.delete("/:assignment", fetchAssignmentMiddleware, async (req, res) => {

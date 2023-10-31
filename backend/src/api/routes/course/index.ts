@@ -7,7 +7,10 @@ import {RoleType} from "@prisma/client";
 import assignmentsRoute from "./assignments";
 import {PrismaClientKnownRequestError} from "@prisma/client/runtime/library";
 import {generateYourTier} from "../../../common/tierlist";
-import {fetchCourseMiddleware} from "../../../common/utils";
+import {
+    fetchCourseMiddleware,
+    serializeAssignment
+} from "../../../common/utils";
 import {
     AssignmentWithTier,
     FetchedAssignment,
@@ -65,9 +68,9 @@ router.get("/:courseId", fetchCourseMiddleware, async (req, res) => {
     const assignments: AssignmentWithTier[] = course!.assignments.map(assignment => ({
         title: assignment.title,
         course_id: assignment.course_id,
-        due_date: assignment.due_date,
+        due_date: assignment.due_date?.toISOString(),
         description: assignment.description,
-        tier: generateYourTier(assignment)
+        tier: generateYourTier(serializeAssignment(assignment), req.user)
     }));
     res.send({...req.course!, assignments} satisfies FetchedCourseWithTiers);
 });
@@ -132,7 +135,7 @@ router.post("/:courseId/assignments", fetchCourseMiddleware, async (req, res) =>
             }, ...fetchedAssignmentArgs
         });
         res.statusCode = 201;
-        res.send(assignment satisfies FetchedAssignment);
+        res.send(serializeAssignment(assignment) satisfies FetchedAssignment);
     } catch (e) {
         if ((e as PrismaClientKnownRequestError).code === 'P2002') {
             res.statusCode = 400;
