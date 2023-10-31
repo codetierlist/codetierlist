@@ -1,13 +1,13 @@
-import {AssignmentCard, CourseSessionChip} from '@/components';
+import { AssignmentCard, CourseSessionChip } from '@/components';
 // import { type Course, getCourses } from '@/contexts/UserContext';
 import styles from './page.module.css';
-import {Title2} from '@fluentui/react-text';
+import { Title2 } from '@fluentui/react-text';
 import axios from "@/axios";
-import {FetchedCourseWithTiers} from "codetierlist-types";
-import {useContext, useEffect, useState} from "react";
-import {notFound} from "next/navigation";
-import {useRouter} from "next/router";
-import {UserContext} from "@/contexts/UserContext";
+import { FetchedCourseWithTiers } from "codetierlist-types";
+import { useContext, useEffect, useState } from "react";
+import { notFound } from "next/navigation";
+import { useRouter } from "next/router";
+import { UserContext } from "@/contexts/UserContext";
 import {
     Button,
     Dialog,
@@ -21,17 +21,18 @@ import {
     DialogTrigger,
     Input,
     Label,
-    Textarea
+    Textarea,
+    Title1
 } from "@fluentui/react-components";
 
 // import { notFound } from 'next/navigation';
 // TODO this code is duplicated from course page
-function CreateAssignmentForm({closeDialog}: { closeDialog: () => void }) {
+function CreateAssignmentForm({ closeDialog }: { closeDialog: () => void }) {
     const [assignmentName, setAssignmentName] = useState("");
     const [description, setDescription] = useState("");
     const [dueDate, setDueDate] = useState(new Date());
-    const {courseID} = useRouter().query;
-    const {fetchUserInfo} = useContext(UserContext);
+    const { courseID } = useRouter().query;
+    const { fetchUserInfo } = useContext(UserContext);
     return (
         <DialogSurface>
             <DialogBody>
@@ -45,19 +46,19 @@ function CreateAssignmentForm({closeDialog}: { closeDialog: () => void }) {
                 }}>
                     <DialogTitle>Create Course</DialogTitle>
                     <DialogContent>
-                        <Label htmlFor="name">Name:</Label><br/>
+                        <Label htmlFor="name">Name:</Label><br />
                         <Input type="text" id="name" name="courseCode"
                             value={assignmentName}
-                            onChange={e => setAssignmentName(e.target.value)}/><br/>
-                        <Label htmlFor="description">Description:</Label><br/>
+                            onChange={e => setAssignmentName(e.target.value)} /><br />
+                        <Label htmlFor="description">Description:</Label><br />
                         <Textarea id="description" name="courseName"
                             value={description}
-                            onChange={e => setDescription(e.target.value)}/><br/>
-                        <Label htmlFor="dueDate">Due Date:</Label><br/>
+                            onChange={e => setDescription(e.target.value)} /><br />
+                        <Label htmlFor="dueDate">Due Date:</Label><br />
                         <Input type="datetime-local" id="dueDate" name="dueDate"
                             value={dueDate.toISOString().slice(0, -8)}
-                            onChange={e => setDueDate(new Date(e.target.value))}/>
-                        <br/><br/>
+                            onChange={e => setDueDate(new Date(e.target.value))} />
+                        <br /><br />
                     </DialogContent>
                     <DialogActions>
                         <DialogTrigger disableButtonEnhancement>
@@ -73,15 +74,15 @@ function CreateAssignmentForm({closeDialog}: { closeDialog: () => void }) {
 }
 
 export default function Page() {
-    const {userInfo} = useContext(UserContext);
+    const { userInfo } = useContext(UserContext);
     const [course, setCourse] = useState<FetchedCourseWithTiers | null>(null);
-    const {courseID} = useRouter().query;
+    const { courseID } = useRouter().query;
     const [showDialog, setShowDialog] = useState(false);
 
 
     const fetchCourse = async () => {
         if (!courseID) return;
-        await axios.get<FetchedCourseWithTiers>(`/courses/${courseID}`, {skipErrorHandling: true}).then((res) => setCourse(res.data)).catch(e => {
+        await axios.get<FetchedCourseWithTiers>(`/courses/${courseID}`, { skipErrorHandling: true }).then((res) => setCourse(res.data)).catch(e => {
             notFound();
         });
     };
@@ -100,16 +101,6 @@ export default function Page() {
                 <Title2>
                     {course?.name || 'Course not found'}
                 </Title2>
-                {userInfo.admin ?
-                    <Dialog open={showDialog}
-                        onOpenChange={(e: DialogOpenChangeEvent, data: DialogOpenChangeData) => setShowDialog(data.open)}>
-                        <DialogTrigger disableButtonEnhancement>
-                            <Button>Create Assignment</Button>
-                        </DialogTrigger>
-                        <CreateAssignmentForm
-                            closeDialog={() => fetchCourse().then(()=>setShowDialog(false))}/>
-                    </Dialog>
-                    : undefined}
             </header>
             <div className="flex-wrap">
                 {course ? course.assignments.map((assignment) => (
@@ -121,6 +112,16 @@ export default function Page() {
                         courseID={courseID as string}
                     />
                 )) : "Loading..."}
+                {userInfo.admin ?
+                    <Dialog open={showDialog}
+                        onOpenChange={(e: DialogOpenChangeEvent, data: DialogOpenChangeData) => setShowDialog(data.open)}>
+                        <DialogTrigger disableButtonEnhancement>
+                            <Button><Title1>+</Title1></Button>
+                        </DialogTrigger>
+                        <CreateAssignmentForm
+                            closeDialog={() => fetchCourse().then(() => setShowDialog(false))} />
+                    </Dialog>
+                    : undefined}
             </div>
         </main>
     );
