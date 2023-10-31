@@ -196,7 +196,7 @@ export default function Page() {
                                 className={colourHash(courseID as string) + ' ' + styles.courseCode}>
                                 {courseID}
                             </span>
-                            {assignmentID}
+                            {assignment.title}
                         </Title2>
                     </div>
                     <div>
