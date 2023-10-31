@@ -1,26 +1,36 @@
 /* eslint-disable @next/next/no-img-element */
-import { Card, CardFooter, CardHeader, CardPreview, Link, Title3 } from '@fluentui/react-components';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import {
+    Card,
+    CardFooter,
+    CardHeader,
+    CardPreview,
+    Link,
+    Title3
+} from '@fluentui/react-components';
+import {useRouter} from 'next/navigation';
+import {useState} from 'react';
 import styles from './CourseOverviewCard.module.css';
-import { Session } from '@/lib/types';
-import { SessionBlock } from '@/components/SessionBlock/SessionBlock';
+import {SessionBlock} from '@/components/SessionBlock/SessionBlock';
 
 export declare interface CourseSessionChipProps {
-  /** the session of the course */
-  session: Session
+    /** the session of the course */
+    session: "Fall"
 
-  /** the children of the component */
-  children?: React.ReactNode
+    /** the children of the component */
+    children?: React.ReactNode
 
-  /** the props of the component */
-  props?: React.HTMLAttributes<HTMLDivElement>
+    /** the props of the component */
+    props?: React.HTMLAttributes<HTMLDivElement>
 }
 
 /**
  * @returns a generic div so it's easier to style
  */
-export const CourseSessionChip = ({ session, children, props }: CourseSessionChipProps): JSX.Element => {
+export const CourseSessionChip = ({
+    session,
+    children,
+    props
+}: CourseSessionChipProps): JSX.Element => {
     return (
         <div className={styles.sessionChip + ' ' + styles[session]} {...props}>
             {children || session}
@@ -29,14 +39,16 @@ export const CourseSessionChip = ({ session, children, props }: CourseSessionChi
 };
 
 export declare interface CourseOverviewCardProps {
-  /** the name of the course */
-  name: string
-  /** the image of the course */
-  image: string
-  /** the session of the course */
-  session: Session
-  /** the props of the component */
-  props?: React.HTMLAttributes<HTMLDivElement>
+    /** the id of the course */
+    id: string
+    /** the name of the course */
+    name: string
+    /** the image of the course */
+    image: string
+    /** the session of the course */
+    session: "Fall"
+    /** the props of the component */
+    props?: React.HTMLAttributes<HTMLDivElement>
 }
 
 /**
@@ -46,7 +58,13 @@ export declare interface CourseOverviewCardProps {
  * @property {Session} session the session of the course
  * @returns {JSX.Element} the course overview card
  */
-export const CourseOverviewCard = ({ name, image, session, props }: CourseOverviewCardProps): JSX.Element => {
+export const CourseOverviewCard = ({
+    id,
+    name,
+    image,
+    session,
+    props
+}: CourseOverviewCardProps): JSX.Element => {
     const [isSelected, setSelected] = useState(false);
     const router = useRouter();
 
@@ -54,13 +72,17 @@ export const CourseOverviewCard = ({ name, image, session, props }: CourseOvervi
         <Card
             className={styles.courseCard}
             selected={isSelected}
-            onSelectionChange={(_, { selected }) => { setSelected(selected); }}
-            onClick={() => { router.push(`/courses/${name}`); }}
+            onSelectionChange={(_, {selected}) => {
+                setSelected(selected);
+            }}
+            onClick={() => {
+                router.push(`/courses/${id}`);
+            }}
             {...props}
         >
             <CardPreview>
                 <img
-                    src={ image }
+                    src={image}
                     alt="Developer Art"
                 />
             </CardPreview>
@@ -72,12 +94,12 @@ export const CourseOverviewCard = ({ name, image, session, props }: CourseOvervi
                     </Title3>
                 }
                 className={styles.courseHeader}
-                description={<SessionBlock session={session} />}
+                description={<SessionBlock session={session}/>}
             />
 
             <CardFooter>
                 <Link appearance="subtle">
-            View more
+                    View more
                 </Link>
             </CardFooter>
         </Card>

@@ -117,7 +117,9 @@ export default function Page() {
                         id={assignment.title.replaceAll(" ", "_")}
                         name={assignment.title}
                         dueDate={assignment.due_date ? new Date(assignment.due_date) : undefined}
-                        tier={assignment.tier}/>
+                        tier={assignment.tier}
+                        courseID={courseID as string}
+                    />
                 )) : "Loading..."}
             </div>
         </main>
