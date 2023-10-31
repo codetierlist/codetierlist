@@ -8,6 +8,7 @@ import { CourseBlockLarge } from '@/components/CourseBlock/CourseBlockLarge';
 import { UpcomingDeadlinesCard } from '@/components/UpcomingDeadlines/UpcomingDeadlinesCard/UpcomingDeadlinesCard';
 import { AddAssignmentModal } from '@/components/AddAssignmentModal/AddAssignmentModal';
 import { ReturnHomeButton } from '@/components/ReturnHomeButton/ReturnHomeButton';
+import { EnrollModal } from '@/components/EnrollModal/EnrollModal';
 // import { notFound } from 'next/navigation';
 
 export default function Page ({ params }: { params: { courseID: string } }) {
@@ -45,8 +46,9 @@ export default function Page ({ params }: { params: { courseID: string } }) {
                     <AssignmentCard id="1" name="Assignment 6" dueDate={new Date()} />
                     <AddAssignmentModal />
                 </div>
-                <div style={{marginTop: 20}}>
+                <div className={styles.bottomButtons}>
                     <ReturnHomeButton />
+                    <EnrollModal />
                 </div>
             </div>
             
