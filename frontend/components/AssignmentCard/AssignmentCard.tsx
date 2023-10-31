@@ -15,13 +15,19 @@ export declare interface AssignmentCardProps {
     dueDate?: Date
     tier: UserTier | Tier
 }
-
+const formatDate = (date: Date) => {
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${month}/${day}/${year}`;
+};
 export const AssignmentCard = ({
     id,
     name,
     dueDate,
     tier
 }: AssignmentCardProps): JSX.Element => {
+    const formattedDueDate = dueDate ? formatDate(dueDate) :null;
     return (
         <Link href={`/assignments/${id}`} className={styles.cardLink}>
             <Card className={styles.card}>
@@ -31,17 +37,10 @@ export const AssignmentCard = ({
                 </CardHeader>
                 <div className={styles.cardContent}>
                     {dueDate ?
-                        <Caption1>{dueDate.toLocaleDateString()}</Caption1> : null}
+                        <Caption1>{formattedDueDate}</Caption1> : null}
                     <Title3>{name}</Title3>
                 </div>
             </Card>
         </Link>
     );
 };
-
-const formatDate = (date: Date) => {
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const year = date.getFullYear();
-    return `${month}/${day}/${year}`;
-  };
