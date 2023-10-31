@@ -4,15 +4,15 @@ import {
     fetchAssignmentMiddleware,
     getCommit,
     isProf,
-    processSubmission, serializeAssignment
+    processSubmission
 } from "../../../../common/utils";
 import multer from 'multer';
-import {generateTierList} from "../../../../common/tierlist";
+import {generateTierList, generateYourTier} from "../../../../common/tierlist";
 import {
-    Assignment,
-    Commit,
-    FetchedAssignment,
-    TierList
+    AssignmentWithTier,
+    Commit, FetchedAssignment,
+    FetchedAssignmentWithTier,
+    Tierlist
 } from "codetierlist-types";
 
 const storage = multer.diskStorage({
@@ -24,17 +24,13 @@ const upload = multer({storage});
 const router = express.Router({mergeParams: true});
 
 router.get("/:assignment", fetchAssignmentMiddleware, async (req, res) => {
-    const assignment = await prisma.assignment.findUnique({
-        where: {
-            id: {
-                title: req.assignment!.title,
-                course_id: req.assignment!.course_id
-            }
-        },
-        include: {submissions: isProf(req.course!, req.user)},
-    });
+    const assignment: FetchedAssignment = {...req.assignment!};
+    if(!isProf(req.course!, req.user)) {
+        assignment.submissions = assignment.submissions.filter(submission => submission.author_id === req.user.utorid);
+        assignment.test_cases = assignment.test_cases.filter(testCase => testCase.author_id === req.user.utorid);
+    }
 
-    res.send(serializeAssignment(assignment!) satisfies (FetchedAssignment | Assignment));
+    res.send({...assignment, tier: generateYourTier(req.assignment!)} satisfies (FetchedAssignmentWithTier | AssignmentWithTier));
 });
 
 router.delete("/:assignment", fetchAssignmentMiddleware, async (req, res) => {
@@ -90,7 +86,7 @@ router.get("/:assignment/testcases/:commitId?", fetchAssignmentMiddleware, async
 });
 
 router.get("/:assignment/tierlist", fetchAssignmentMiddleware, async (req, res) => {
-    res.send(generateTierList(req.assignment!, req.user) satisfies TierList);
+    res.send(generateTierList(req.assignment!, req.user) satisfies Tierlist);
 });
 
 export default router;
