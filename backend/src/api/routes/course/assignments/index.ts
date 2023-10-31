@@ -1,5 +1,5 @@
 import express, {NextFunction, Request, Response} from "express";
-import prisma from "../../../../common/prisma";
+import prisma, {fullFetchedAssignmentArgs} from "../../../../common/prisma";
 import {
     fetchAssignmentMiddleware,
     getCommit,
@@ -11,7 +11,7 @@ import {generateTierList, generateYourTier} from "../../../../common/tierlist";
 import {
     AssignmentWithTier,
     Commit, FetchedAssignment,
-    FetchedAssignmentWithTier,
+    FetchedAssignmentWithTier, FullFetchedAssignment,
     Tierlist
 } from "codetierlist-types";
 
@@ -29,8 +29,9 @@ router.get("/:assignment", fetchAssignmentMiddleware, async (req, res) => {
         assignment.submissions = assignment.submissions.filter(submission => submission.author_id === req.user.utorid);
         assignment.test_cases = assignment.test_cases.filter(testCase => testCase.author_id === req.user.utorid);
     }
+    const fullFetchedAssignment: FullFetchedAssignment = await prisma.assignment.findUniqueOrThrow({where:{id: {title: assignment.title, course_id: assignment.course_id}}, ...fullFetchedAssignmentArgs});
 
-    res.send({...assignment, tier: generateYourTier(req.assignment!)} satisfies (FetchedAssignmentWithTier | AssignmentWithTier));
+    res.send({...assignment, tier: generateYourTier(fullFetchedAssignment)} satisfies (FetchedAssignmentWithTier | AssignmentWithTier));
 });
 
 router.delete("/:assignment", fetchAssignmentMiddleware, async (req, res) => {
@@ -86,7 +87,8 @@ router.get("/:assignment/testcases/:commitId?", fetchAssignmentMiddleware, async
 });
 
 router.get("/:assignment/tierlist", fetchAssignmentMiddleware, async (req, res) => {
-    res.send(generateTierList(req.assignment!, req.user) satisfies Tierlist);
+    const fullFetchedAssignment = await prisma.assignment.findUniqueOrThrow({where:{id: {title: req.assignment!.title, course_id: req.assignment!.course_id}}, ...fullFetchedAssignmentArgs});
+    res.send(generateTierList(fullFetchedAssignment, req.user) satisfies Tierlist);
 });
 
 export default router;
