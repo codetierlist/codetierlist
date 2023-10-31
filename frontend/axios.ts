@@ -1,4 +1,5 @@
 import axios from "axios";
+import {notFound} from "next/navigation";
 
 declare module "axios" {
   export interface AxiosRequestConfig {
@@ -30,7 +31,7 @@ instance.interceptors.response.use(
     (response) => {
         const loadingWheel = document.getElementById('axios-loading-backdrop');
         if(!loadingWheel){
-            return;
+            return response;
         }
         if ('skipLoadingWheel' in response.config && response.config.skipLoadingWheel === true) {
             return response;
