@@ -8,6 +8,10 @@ import { CourseBlockLarge } from '@/components/CourseBlock/CourseBlockLarge';
 import { UpcomingDeadlinesCard } from '@/components/UpcomingDeadlines/UpcomingDeadlinesCard/UpcomingDeadlinesCard';
 import { AddAssignmentModal } from '@/components/AddAssignmentModal/AddAssignmentModal';
 import { ReturnHomeButton } from '@/components/ReturnHomeButton/ReturnHomeButton';
+import {useEffect, useState} from "react";
+import {FetchedCourseWithTiers} from "codetierlist-types";
+import axios from "@/axios";
+import {notFound} from "next/navigation";
 // import { notFound } from 'next/navigation';
 
 export default function Page ({ params }: { params: { courseID: string } }) {
@@ -20,7 +24,11 @@ export default function Page ({ params }: { params: { courseID: string } }) {
     // } else {
     //     courseObject = courses.find((course) => course.code === params.courseID);
     // }
-
+    // TODO this code is duplicated from assignment page
+    const [course, setCourse] = useState<FetchedCourseWithTiers | null>(null);
+    useEffect(() => {
+        axios.get<FetchedCourseWithTiers>(`/courses/${params.courseID}`, {skipErrorHandling: true}).then((res) => setCourse(res.data)).catch(notFound);
+    }, [params.courseID]);
     return (
         <main className={styles.info}>
             <div className={styles.assignments}>
@@ -36,13 +44,9 @@ export default function Page ({ params }: { params: { courseID: string } }) {
                     </Title2>
                 </header>
                 <div className="flex-wrap">
-                    <AssignmentCard id="1" name="Assignment 1" dueDate={new Date()} />
-                    <AssignmentCard id="1" name="Assignment 2" dueDate={new Date()} />
-                    <AssignmentCard id="1" name="Assignment 3" dueDate={new Date()} />
-                    <AssignmentCard id="1" name="Assignment 4" dueDate={new Date()} />
-                    <AssignmentCard id="1" name="Assignment 5" dueDate={new Date()} />
-                    <AssignmentCard id="1" name="Assignment 5" dueDate={new Date()} />
-                    <AssignmentCard id="1" name="Assignment 6" dueDate={new Date()} />
+                    {course ? course.assignments.map((assignment) => (
+                        <AssignmentCard key={assignment.title.replaceAll(" ", "_")} id={assignment.title.replaceAll(" ", "_")} name={assignment.title} dueDate={assignment.due_date ?? undefined}  tier={assignment.tier}/>
+                    )) : "Loading..."}
                     <AddAssignmentModal />
                 </div>
                 <div style={{marginTop: 20}}>
