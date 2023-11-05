@@ -9,8 +9,9 @@ COPY ./types ./
 RUN npm run prisma
 
 WORKDIR /frontend
-COPY ./frontend ./
+COPY ./frontend/package.json ./frontend/yarn.lock ./
 RUN yarn install --frozen-lockfile
+COPY ./frontend ./
 
 # Environment variables must be present at build time
 # https://github.com/vercel/next.js/discussions/14030
