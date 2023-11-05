@@ -1,5 +1,5 @@
 FROM node:lts
-RUN npm install -g typescript
+RUN npm install -g typescript nodemon ts-node
 
 # npm install backend
 WORKDIR /backend
@@ -26,4 +26,4 @@ COPY ./backend .
 RUN npm run build
 
 # run
-CMD ["bash", "prod.sh"]
+CMD ["bash", "dev.sh"]

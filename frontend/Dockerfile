@@ -4,12 +4,12 @@ RUN npm install -g typescript
 # npm install backend
 # TODO: @ggggg why is this needed?
 WORKDIR /backend
-COPY ./backend/package.json ./
+COPY ./backend/package.json ./backend/package-lock.json ./
 RUN npm install
 
 # npm install types
 WORKDIR /types
-COPY ./types/package.json ./
+COPY ./types/package.json ./types/package-lock.json ./
 RUN npm install
 
 # copy backend prisma for types generation
@@ -23,13 +23,12 @@ RUN npm run prisma
 
 # npm install frontend
 WORKDIR /frontend
-COPY ./frontend/package.json ./
-RUN yarn install --frozen-lockfile --production
+COPY ./frontend/package.json ./frontend/yarn.lock ./
+RUN yarn install --frozen-lockfile
 
 # build frontend
 WORKDIR /frontend
 COPY ./frontend .
-RUN yarn run build
 
 # Environment variables must be present at build time
 # https://github.com/vercel/next.js/discussions/14030
