@@ -23,14 +23,14 @@ function MyApp({Component, pageProps, renderer}: EnhancedAppProps) {
     const [userInfo, setUserInfo] = useState<FetchedUser>(defaultUser);
 
     const fetchUserInfo = async () => {
-        await axios.get<FetchedUser>("/")
+        await axios("/api")
             .then(({ data }) => {
                 // check if data has certain properties
                 if (!data.utorid || !data.email || !data.admin) {
-                    throw new Error("Invalid user data");
+                    throw new Error(`Invalid user data received: ${JSON.stringify(data)}`);
                 }
 
-                setUserInfo(data);
+                setUserInfo(data as FetchedUser);
             })
             .catch((err) => {
                 console.error(err);
