@@ -1,0 +1,26 @@
+.header {
+    display: flex;
+    align-items: baseline;
+    margin-bottom: var(--spacingVerticalL);
+}
+
+
+.info {
+    display: flex;
+}
+
+.assignments {
+    margin-left: 2%;
+    margin-right: 2%
+}
+
+.title {
+    margin-left: 13px;
+}
+
+
+.upcoming {
+    width: 45%;
+    margin-left: 2%;
+    margin-right: 4%;
+}

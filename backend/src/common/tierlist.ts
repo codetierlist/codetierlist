@@ -1,16 +1,17 @@
 import {User} from "@prisma/client";
-import {FetchedAssignment} from "../types/global";
+import {
+    FullFetchedAssignment,
+    Tier,
+    Tierlist,
+    UserTier
+} from "codetierlist-types";
 
 const getMean = (data: number[]) => data.reduce((a, b) => Number(a) + Number(b)) / data.length;
 
 const getStandardDeviation = (data: number[]) => Math.sqrt(data.reduce((sq, n) => sq + Math.pow(n - getMean(data), 2), 0) / (data.length - 1));
-type Tier = "S" | "A" | "B" | "C" | "D" | "F";
-type UserTier = Tier | "?"
-function generateList(assignment: FetchedAssignment, user?: string | User) {
-    const res: Record<Tier, {
-        name: string,
-        you: boolean
-    }[]> = {
+
+function generateList(assignment: Omit<FullFetchedAssignment, "due_date">, user?: string | User): [Tierlist, UserTier] {
+    const res: Tierlist = {
         S: [],
         A: [],
         B: [],
@@ -53,10 +54,10 @@ function generateList(assignment: FetchedAssignment, user?: string | User) {
         }
         res[tier].push(score);
     }
-    if(!yourTier) yourTier = "?";
+    if (!yourTier) yourTier = "?";
 
     return [res, yourTier];
 }
 
-export const generateTierList = (assignment: FetchedAssignment, user?: string | User)=>generateList(assignment, user)[0];
-export const generateYourTier = (assignment: FetchedAssignment, user?: string | User)=>generateList(assignment, user)[1];
+export const generateTierList = (assignment: Omit<FullFetchedAssignment, "due_date">, user?: string | User): Tierlist => generateList(assignment, user)[0];
+export const generateYourTier = (assignment: Omit<FullFetchedAssignment, "due_date">, user?: string | User): UserTier => generateList(assignment, user)[1];

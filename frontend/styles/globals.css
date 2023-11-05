@@ -1,0 +1,44 @@
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+}
+
+html,
+body {
+  max-width: 100vw;
+  --accent-hue: 203;
+
+  &.dark {
+    color-scheme: dark;
+  }
+}
+
+.flex-wrap {
+  display: flex;
+  gap: var(--spacingVerticalL);
+  flex-wrap: wrap;
+}
+
+.fui-FluentProvider {
+  background-color: var(--colorNeutralBackground3) !important;
+  /* fake mica effect */
+  background-image:
+  linear-gradient(0deg, color-mix(in srgb, var(--colorNeutralBackground1) 85%, transparent),
+                        color-mix(in srgb, var(--colorNeutralBackground1) 85%, transparent)),
+  radial-gradient(at 51% 34%, hsla(126,87%,76%,1) 0px, transparent 50%),
+  radial-gradient(at 90% 51%, hsla(214,95%,75%,1) 0px, transparent 50%),
+  radial-gradient(at 87% 80%, hsla(239,90%,70%,1) 0px, transparent 50%),
+  radial-gradient(at 98% 47%, hsla(203,69%,78%,1) 0px, transparent 50%),
+  radial-gradient(at 49% 86%, hsla(336,69%,66%,1) 0px, transparent 50%),
+  radial-gradient(at 95% 18%, hsla(60,68%,64%,1) 0px, transparent 50%),
+  radial-gradient(at 67% 84%, hsla(357,66%,76%,1) 0px, transparent 50%);
+
+  & main {
+    background-color: color-mix(in srgb, var(--colorNeutralBackground1) 75%, transparent) !important;
+    box-shadow: var(--shadow8);
+    min-height: calc(100vh - var(--spacingVerticalXXXL) * 2);
+    padding: var(--spacingVerticalXL);
+  }
+}

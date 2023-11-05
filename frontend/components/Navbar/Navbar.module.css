@@ -1,0 +1,17 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--spacingVerticalL) var(--spacingHorizontalXL);
+    align-items: center;
+}
+
+.title {
+    line-height: var(--lineHeightHero700) !important;
+}
+
+.brand {
+    color: var(--colorNeutralForeground1) !important;
+    font-family: var(--fontFamilyNumeric) !important;
+    font-weight: var(--fontWeightBold) !important;
+    text-decoration: none !important;
+}

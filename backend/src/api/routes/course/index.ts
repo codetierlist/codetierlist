@@ -1,13 +1,25 @@
 import express from "express";
-import prisma, {fetchedAssignmentArgs} from "../../../common/prisma";
+import prisma, {
+    fetchedAssignmentArgs,
+    fullFetchedAssignmentArgs
+} from "../../../common/prisma";
 import {RoleType} from "@prisma/client";
 import assignmentsRoute from "./assignments";
 import {PrismaClientKnownRequestError} from "@prisma/client/runtime/library";
 import {generateYourTier} from "../../../common/tierlist";
-import {fetchCourseMiddleware} from "../../../common/utils";
+import {
+    fetchCourseMiddleware,
+    serializeAssignment
+} from "../../../common/utils";
+import {
+    AssignmentWithTier,
+    FetchedAssignment,
+    FetchedCourseWithTiers
+} from "codetierlist-types";
+import {isUTORid} from "is-utorid";
 
 const router = express.Router();
-router.post("/courses", async (req, res) => {
+router.post("/", async (req, res) => {
     if (!req.user.admin) {
         res.statusCode = 403;
         res.send({error: 'You are not an admin.'});
@@ -48,22 +60,19 @@ router.post("/courses", async (req, res) => {
 
 
 router.get("/:courseId", fetchCourseMiddleware, async (req, res) => {
-    const course = await prisma.course.findUnique({
+    const course = await prisma.course.findUniqueOrThrow({
         where: {id: req.course!.id},
-        include: {roles: true, assignments: fetchedAssignmentArgs},
+        include: {roles: true, assignments: fullFetchedAssignmentArgs},
     });
 
-    const assignments = course!.assignments.map(assignment => ({
+    const assignments: AssignmentWithTier[] = course!.assignments.map(assignment => ({
         title: assignment.title,
         course_id: assignment.course_id,
-        due_date: assignment.due_date,
-        tier: generateYourTier(assignment)
+        due_date: assignment.due_date?.toISOString(),
+        description: assignment.description,
+        tier: generateYourTier(serializeAssignment(assignment), req.user)
     }));
-
-    res.send({
-        ...req.course,
-        assignments,
-    });
+    res.send({...req.course!, assignments} satisfies FetchedCourseWithTiers);
 });
 
 router.delete("/:courseId", fetchCourseMiddleware, async (req, res) => {
@@ -84,12 +93,15 @@ router.post("/:courseId/enroll", fetchCourseMiddleware, async (req, res) => {
         return;
     }
     const newRole = role as RoleType | undefined ?? RoleType.STUDENT;
-    if (!utorids || !Array.isArray(utorids) || utorids.some(utorid => typeof utorid !== 'string')) {
+    if (!utorids || !Array.isArray(utorids) || utorids.some(utorid => typeof utorid !== 'string' || !isUTORid(utorid))) {
         res.statusCode = 400;
-        res.send({error: 'utorids must be an array of strings.'});
+        res.send({error: 'utorids must be an array of valid utorids.'});
         return;
     }
-
+    await prisma.user.createMany({
+        data: utorids.map(utorid => ({utorid, email: ""})),
+        skipDuplicates: true
+    });
     await prisma.role.createMany({
         data: utorids.map(utorid => ({
             type: newRole,
@@ -111,6 +123,11 @@ router.post("/:courseId/assignments", fetchCourseMiddleware, async (req, res) =>
         res.send({error: 'Invalid request.'});
         return;
     }
+    if (!name.match(/^[A-Za-z0-9 ]*/)) {
+        res.statusCode = 400;
+        res.send({error: 'Invalid name.'});
+        return;
+    }
     try {
         const assignment = await prisma.assignment.create({
             data: {
@@ -118,10 +135,10 @@ router.post("/:courseId/assignments", fetchCourseMiddleware, async (req, res) =>
                 due_date: dueDate,
                 description,
                 course: {connect: {id: req.course!.id}}
-            }
+            }, ...fetchedAssignmentArgs
         });
         res.statusCode = 201;
-        res.send(assignment);
+        res.send(serializeAssignment(assignment) satisfies FetchedAssignment);
     } catch (e) {
         if ((e as PrismaClientKnownRequestError).code === 'P2002') {
             res.statusCode = 400;

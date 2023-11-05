@@ -1,0 +1,11 @@
+.blockLarge, .blockSmall {
+    background-color: #1a4295;
+}
+
+.blockSmall {
+    padding: 1px 5px;
+}
+
+.blockLarge {
+    padding: 3px 9px;
+}

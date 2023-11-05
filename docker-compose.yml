@@ -4,7 +4,7 @@ services:
   nginx:
     restart: always
     depends_on:
-#      - frontend
+      - frontend
       - backend
     build:
       context: ./nginx
@@ -17,19 +17,24 @@ services:
     depends_on:
       - db
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./backend/Dockerfile
+    volumes:
+      - repo_data:/repos
     environment:
       - DATABASE_URL=postgres://postgres:example@db:5432/postgres
       - NODE_ENV=production
 
-#  frontend:
-#    restart: always
-#    build:
-#      context: ./frontend
-#      dockerfile: Dockerfile
-#    environment:
-#      - NODE_ENV=production
+  frontend:
+    restart: always
+    depends_on:
+      - backend
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile
+      args:
+        - NODE_ENV=production
+        - NEXT_PUBLIC_API_URI=/api
 
   db:
     image: postgres
@@ -43,3 +48,4 @@ services:
 
 volumes:
   db_data:
+  repo_data:

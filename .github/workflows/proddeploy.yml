@@ -1,0 +1,21 @@
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: prod
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: compose build
+        run: docker compose build
+
+      - name: compose up
+        run: docker compose up -d
+
+      - name: cleanup
+        run: |
+          docker image prune -f
+          docker builder prune -f

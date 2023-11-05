@@ -20,7 +20,20 @@ export const fetchedCourseArgs = Prisma.validator<Prisma.CourseDefaultArgs>()({
 
 export const fetchedAssignmentArgs = Prisma.validator<Prisma.AssignmentDefaultArgs>()({
     include: {
+        submissions: true,
+        test_cases: true
+    }
+});
+
+export const fullFetchedAssignmentArgs = Prisma.validator<Prisma.AssignmentDefaultArgs>()({
+    include: {
         submissions: {
+            include: {
+                author: true,
+                scores: true
+            }
+        },
+        test_cases: {
             include: {
                 author: true,
                 scores: true

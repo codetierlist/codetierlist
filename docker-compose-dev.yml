@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  nginx:
+    restart: always
+    depends_on:
+      - frontend
+      - backend
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "3555:80"
+
+  backend:
+    restart: always
+    depends_on:
+      - db
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile-dev
+    volumes:
+      - repo_data:/repos
+      - ./backend/src:/backend/src:ro
+    environment:
+      - DATABASE_URL=postgres://postgres:example@db:5432/postgres
+      - NODE_ENV=development
+
+  frontend:
+    restart: always
+    depends_on:
+      - backend
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile-dev
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URI=/api
+    volumes:
+      - ./frontend/src:/frontend/src:ro
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: example
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  db_data:
+  repo_data:

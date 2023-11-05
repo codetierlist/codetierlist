@@ -1,11 +1,11 @@
 import express from "express";
 import courseRoute from "./course";
-import prisma from "../../common/prisma";
+import {FetchedUser} from "codetierlist-types";
 
 const router = express.Router();
 
 router.get("/", (req, res) => {
-    res.send(req.user);
+    res.send(req.user satisfies FetchedUser);
 });
 
 router.use("/courses", courseRoute);

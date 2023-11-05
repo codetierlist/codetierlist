@@ -1,9 +1,17 @@
 import prisma, {fetchedAssignmentArgs, fetchedCourseArgs} from "./prisma";
-import {Course, RoleType, Solution, TestCase, User} from "@prisma/client";
+import {
+    Assignment as PrismaAssignment,
+    Course,
+    RoleType,
+    Solution,
+    TestCase,
+    User
+} from "@prisma/client";
 import {NextFunction, Request, Response} from "express";
 import path from "path";
 import fs from "fs";
 import git from "isomorphic-git";
+import {Commit} from "codetierlist-types";
 
 /**
  * Checks if a user is a prof in a course.
@@ -23,7 +31,7 @@ export function isProf(course: Course & {
 
 export const processSubmission = async (req: Request, table: "solution" | "testCase") => {
     // upload files
-    const repoPath = path.resolve(`./repos/${req.course!.id}/${req.assignment!.title}/${req.user.utorid}`);
+    const repoPath = path.resolve(`./repos/${req.course!.id}/${req.assignment!.title}/${req.user.utorid}_${table}`);
 
     // create folder if it doesnt exist
     await new Promise<undefined>((res, rej) => {
@@ -67,7 +75,7 @@ export const processSubmission = async (req: Request, table: "solution" | "testC
         fs,
         dir: repoPath,
         message: 'Update files via file upload',
-        author:{
+        author: {
             name: req.user.utorid,
             email: req.user.email
         }
@@ -99,7 +107,7 @@ export const processSubmission = async (req: Request, table: "solution" | "testC
     return commit;
 };
 
-export const getCommit = async (req: Request, table: "solution" | "testCase") => {
+export const getCommit = async (req: Request, table: "solution" | "testCase"): Promise<Commit | null> => {
     const query = {
         where: {
             id: {
@@ -109,7 +117,7 @@ export const getCommit = async (req: Request, table: "solution" | "testCase") =>
             }
         }
     };
-    let submission: TestCase | Solution | null = null;
+    let submission: TestCase | Solution | null;
     if (table === "solution") {
         submission = await prisma.solution.findUnique(query);
     } else {
@@ -118,7 +126,7 @@ export const getCommit = async (req: Request, table: "solution" | "testCase") =>
 
 
     if (submission === null) {
-        return false;
+        return null;
     }
 
     const commit = await git.readCommit({
@@ -128,7 +136,7 @@ export const getCommit = async (req: Request, table: "solution" | "testCase") =>
     });
 
     if (commit === null) {
-        return false;
+        return null;
     }
 
     const files = await git.listFiles({
@@ -157,12 +165,14 @@ export const fetchCourseMiddleware = async (req: Request, res: Response, next: N
     req.course = course;
     next();
 };
-
+export const serializeAssignment = <T extends PrismaAssignment>(assignment: T): Omit<T, "due_date"> & {
+    due_date?: string
+} => ({...assignment, due_date: assignment.due_date?.toISOString()});
 export const fetchAssignmentMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const assignment = await prisma.assignment.findUnique({
         where: {
             id: {
-                title: req.params.assignment,
+                title: req.params.assignment.replace("_", " "),
                 course_id: req.params.courseId
             }
         },
@@ -177,7 +187,8 @@ export const fetchAssignmentMiddleware = async (req: Request, res: Response, nex
         });
         return;
     }
-    req.assignment = assignment;
+    req.assignment = serializeAssignment(assignment);
     req.course = assignment.course;
     next();
 };
+
