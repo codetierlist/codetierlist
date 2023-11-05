@@ -1,5 +1,4 @@
 import axios from "axios";
-import {notFound} from "next/navigation";
 
 declare module "axios" {
   export interface AxiosRequestConfig {
