@@ -23,7 +23,7 @@ function MyApp({Component, pageProps, renderer}: EnhancedAppProps) {
     const [userInfo, setUserInfo] = useState<FetchedUser>(defaultUser);
 
     const fetchUserInfo = async () => {
-        await axios("/api")
+        await axios("/")
             .then(({ data }) => {
                 // check if data has certain properties
                 if (!data.utorid || !data.email || !data.admin) {
