@@ -17,12 +17,25 @@ import axios from "@/axios";
 type EnhancedAppProps = AppProps & { renderer?: GriffelRenderer };
 
 function MyApp({Component, pageProps, renderer}: EnhancedAppProps) {
+    /*
+     * user data initialization into context and fetching
+     */
     const [userInfo, setUserInfo] = useState<FetchedUser>(defaultUser);
-    setUserInfo(defaultUser);
-    const fetchUserInfo = async () => setUserInfo((await axios.get<FetchedUser>("/")).data);
+
+    const fetchUserInfo = async () => {
+        await axios.get<FetchedUser>("/")
+            .then(({ data }) => {
+                setUserInfo(data);
+            })
+            .catch((err) => {
+                console.error(err);
+            });
+    };
+
     useEffect(() => {
         void fetchUserInfo();
     }, []);
+
     return (
         // 👇 Accepts a renderer from <Document /> or creates a default one
         //    Also triggers rehydration a client
