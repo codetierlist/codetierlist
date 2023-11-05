@@ -1,28 +1,21 @@
 FROM node:lts
 RUN npm install -g typescript
 
-# npm install backend
-WORKDIR /backend
-COPY ./backend/package.json ./backend/package-lock.json ./
-RUN npm install
-
 # npm install types
 WORKDIR /types
 COPY ./types/package.json ./types/package-lock.json ./
-RUN npm install
-
-# copy backend prisma for types generation
-WORKDIR /backend
-COPY ./backend/prisma ./prisma
-
-# build out types
-WORKDIR /types
-COPY ./types .
+RUN npm ci
+COPY ./types ./
 RUN npm run prisma
 
-# build backend
+# npm install backend
 WORKDIR /backend
-COPY ./backend .
+COPY ./backend/package.json ./backend/package-lock.json ./
+RUN npm ci
+RUN cp -r ../types/prisma .
+RUN npm run prisma
+
+COPY ./backend ./
 RUN npm run build
 
 # run

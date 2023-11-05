@@ -21,6 +21,7 @@ services:
       dockerfile: ./backend/Dockerfile-dev
     volumes:
       - repo_data:/repos
+      - ./backend/src:/backend/src:ro
     environment:
       - DATABASE_URL=postgres://postgres:example@db:5432/postgres
       - NODE_ENV=development
