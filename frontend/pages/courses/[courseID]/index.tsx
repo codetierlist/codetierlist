@@ -1,11 +1,6 @@
 import { AssignmentCard, CourseSessionChip } from '@/components';
 // import { type Course, getCourses } from '@/contexts/UserContext';
-import styles from './page.module.css';
-import { Title2 } from '@fluentui/react-text';
 import axios from "@/axios";
-import { FetchedCourseWithTiers } from "codetierlist-types";
-import { useContext, useEffect, useState } from "react";
-import { notFound } from "next/navigation";
 import { UserContext } from "@/contexts/UserContext";
 import {
     Button,
@@ -21,11 +16,15 @@ import {
     Input,
     Label,
     Textarea,
-    Title3,
-    Title1
+    Title1,
+    Title3
 } from "@fluentui/react-components";
-import { CourseBlockLarge } from '@/components/CourseBlock/CourseBlockLarge';
+import { Title2 } from '@fluentui/react-text';
+import { FetchedCourseWithTiers } from "codetierlist-types";
+import { notFound } from "next/navigation";
 import { useRouter } from 'next/router';
+import { useContext, useEffect, useState } from "react";
+import styles from './page.module.css';
 
 // import { notFound } from 'next/navigation';
 import { Shield24Filled } from '@fluentui/react-icons';
@@ -85,7 +84,7 @@ function EnrollStudentsForm({ closeDialog }: { closeDialog: () => void }) {
     const { courseID } = useRouter().query;
     const { fetchUserInfo } = useContext(UserContext);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
         // Split the input text into lines

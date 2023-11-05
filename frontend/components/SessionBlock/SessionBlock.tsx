@@ -1,9 +1,8 @@
-import { Text, Title3 } from '@fluentui/react-components';
+import { Title3 } from '@fluentui/react-components';
 
 export declare interface SessionBlockProps {
     session: string;
 }
-  
 
 export const SessionBlock = ({ session }: SessionBlockProps): JSX.Element => {
     if (session === 'F') {

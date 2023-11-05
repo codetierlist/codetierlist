@@ -8,6 +8,7 @@ import {
 import styles from './AssignmentCard.module.css';
 import {TierChip} from '@/components';
 import {type Tier, type UserTier} from "codetierlist-types";
+import { convertDate } from '../utils/TimeUtils/TimeUtils';
 
 export declare interface AssignmentCardProps {
     id: string
@@ -16,12 +17,7 @@ export declare interface AssignmentCardProps {
     tier: UserTier | Tier,
     courseID: string
 }
-const formatDate = (date: Date) => {
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const year = date.getFullYear();
-    return `${month}/${day}/${year}`;
-};
+
 export const AssignmentCard = ({
     id,
     name,
@@ -29,12 +25,12 @@ export const AssignmentCard = ({
     tier,
     courseID
 }: AssignmentCardProps): JSX.Element => {
-    const formattedDueDate = dueDate ? formatDate(dueDate) :null;
+    const formattedDueDate = dueDate ? convertDate(dueDate) :null;
     return (
         <Link href={`${courseID}/${id}`} className={styles.cardLink}>
             <Card className={styles.card}>
                 <CardHeader
-                    header={(<TierChip tier={tier}/>)}
+                    header={(<TierChip tier={tier as UserTier}/>)}
                 >
                 </CardHeader>
                 <div className={styles.cardContent}>

@@ -1,21 +1,20 @@
 // Remember to change back t [courseID]
 
-import { CourseSessionChip, AssignmentCard } from '@/components';
-// import { type Course, getCourses } from '@/contexts/UserContext';
-import styles from './page.module.css';
-import { Title2 } from '@fluentui/react-text';
-import { CourseBlockLarge } from '@/components/CourseBlock/CourseBlockLarge';
-import { UpcomingDeadlinesCard } from '@/components/UpcomingDeadlines/UpcomingDeadlinesCard/UpcomingDeadlinesCard';
-import { AddAssignmentModal } from '@/components/AddAssignmentModal/AddAssignmentModal';
-import { ReturnHomeButton } from '@/components/ReturnHomeButton/ReturnHomeButton';
-// import { EnrollModal } from '@/components/EnrollModal/EnrollModal';
-import {useEffect, useState} from "react";
-import {FetchedCourseWithTiers} from "codetierlist-types";
 import axios from "@/axios";
-import {notFound} from "next/navigation";
-// import { notFound } from 'next/navigation';
+import {
+    AddAssignmentModal,
+    AssignmentCard,
+    CourseBlockLarge,
+    ReturnHomeButton
+} from '@/components';
+import { Title2 } from '@fluentui/react-text';
+import { FetchedCourseWithTiers } from "codetierlist-types";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import styles from './page.module.css';
+import { notFound } from 'next/navigation';
 
-export default function Page ({ params }: { params: { courseID: string } }) {
+export default function Page (): JSX.Element {
     // const courses = getCourses();
 
     // let courseObject: Course | undefined;
@@ -25,11 +24,16 @@ export default function Page ({ params }: { params: { courseID: string } }) {
     // } else {
     //     courseObject = courses.find((course) => course.code === params.courseID);
     // }
+
+    const router = useRouter();
+    const params = router.query;
+
     // TODO this code is duplicated from assignment page
     const [course, setCourse] = useState<FetchedCourseWithTiers | null>(null);
     useEffect(() => {
-        axios.get<FetchedCourseWithTiers>(`/courses/${params.courseID}`, {skipErrorHandling: true}).then((res) => setCourse(res.data)).catch(notFound);
+        axios.get<FetchedCourseWithTiers>(`/courses/${params.courseID}`, { skipErrorHandling: true }).then((res) => setCourse(res.data)).catch(notFound);
     }, [params.courseID]);
+
 
     return (
         <main className={styles.info}>
@@ -40,20 +44,27 @@ export default function Page ({ params }: { params: { courseID: string } }) {
                             {params.courseID}
                         </CourseSessionChip>
                     </Title2> */}
-                    <CourseBlockLarge courseID='CSCXXX'/>
+                    <CourseBlockLarge courseID='CSCXXX' />
                     <Title2 className={styles.title}>
                         Temporary Course Name{/* {courseObject?.name || 'Course not found'} */}
                     </Title2>
                 </header>
                 <div className="flex-wrap">
                     {course ? course.assignments.map((assignment) => (
-                        <AssignmentCard key={assignment.title.replaceAll(" ", "_")} id={assignment.title.replaceAll(" ", "_")} name={assignment.title} dueDate={assignment.due_date ?? undefined}  tier={assignment.tier}/>
+                        <AssignmentCard
+                            key={assignment.title.replaceAll(" ", "_")}
+                            id={assignment.title.replaceAll(" ", "_")}
+                            name={assignment.title}
+                            dueDate={assignment.due_date ? new Date(assignment.due_date) : undefined}
+                            tier={assignment.tier}
+                            courseID={params.courseID as string}
+                        />
                     )) : "Loading..."}
                     <AddAssignmentModal />
                 </div>
                 <div className={styles.bottomButtons}>
                     <ReturnHomeButton />
-                    <EnrollModal />
+                    {/* <EnrollModal /> */}
                 </div>
             </div>
         </main>

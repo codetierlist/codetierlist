@@ -1,23 +1,23 @@
 // import { CourseSessionChip, AssignmentCard } from '@/components';
-import styles from './page.module.css';
-import { Subtitle2, Title1, Title2 } from '@fluentui/react-text';
-import Error from 'next/error';
-import { useRouter } from 'next/router';
+import axios from "@/axios";
 import {
+    TierChip,
+    TierList,
     colourHash,
     convertDate,
-    convertTime,
-    TierChip,
-    TierList
+    convertTime
 } from '@/components';
+import { CheckedTodoItem } from '@/components/CheckedTodo/CheckedTodo';
 import { Button, Card, CardHeader, Title3 } from '@fluentui/react-components';
 import { Add16Regular, Clock16Regular } from '@fluentui/react-icons';
-import { CheckedTodoItem } from '@/components/CheckedTodo/CheckedTodo';
+import { Subtitle2, Title1, Title2 } from '@fluentui/react-text';
 import Editor from '@monaco-editor/react';
-import { useEffect, useState } from 'react';
-import { FetchedAssignmentWithTier, Tierlist } from "codetierlist-types";
-import axios from "@/axios";
+import { FetchedAssignmentWithTier, TestCase, Tierlist } from "codetierlist-types";
+import Error from 'next/error';
 import { notFound } from "next/navigation";
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import styles from './page.module.css';
 
 // TODO: clean technical debt
 
@@ -94,7 +94,7 @@ const TestUpload = ({ uploadedTests, fetchAssignment, content, setContent }: { u
 
             <Card className={"mt-4 d-flex flex-column " + styles.editor}>
                 {/* {uploadedTests.length === 0 ? ( */}
-                { content === null ? (
+                {content === null ? (
                     <NoUploadPlaceholder title="test" />
                 ) : (
                     <Editor
@@ -161,7 +161,7 @@ const ViewTierList = ({ tierlist }: { tierlist: Tierlist }) => {
             </Title2>
             <Card className="mt-4">
                 {/*TODO show actual tierlist*/}
-                <TierList />
+                <TierList tierlist={tierlist} />
             </Card>
         </div>
     );
@@ -180,13 +180,13 @@ export default function Page() {
 
     const fetchAssignment = async () => {
         await axios.get<FetchedAssignmentWithTier>(`/courses/${courseID}/assignments/${assignmentID}`, { skipErrorHandling: true }).then((res) => setAssignment(res.data)).catch(e => {
-            console.log(e);
+            // console.log(e);
             notFound();
         });
     };
     const fetchTierlist = async () => {
         await axios.get<Tierlist>(`/courses/${courseID}/assignments/${assignmentID}/tierlist`, { skipErrorHandling: true }).then((res) => setTierlist(res.data)).catch(e => {
-            console.log(e);
+            // console.log(e);
             notFound();
         });
     };
@@ -267,7 +267,7 @@ export default function Page() {
                             </Button>
                             <Button onClick={() => setStage(3)}
                                 appearance="subtle" className="d-block"
-                                disabled={ testContent === null || solutionContent === null }>
+                                disabled={testContent === null || solutionContent === null}>
                                 <CheckedTodoItem todo="View tier list"
                                     checked={testContent !== null && solutionContent !== null} />
                             </Button>
@@ -284,7 +284,7 @@ export default function Page() {
                             )
                         }
                         <ul className={"d-flex flex-column " + styles.uploadedTests}>
-                            {assignment.test_cases.map((test, index) => (
+                            {assignment.test_cases.map((test: TestCase, index: number) => (
                                 // TODO this is not very informative
                                 <li className={styles.uploadedTest}
                                     key={index}>{test.git_id}</li>
@@ -302,7 +302,7 @@ export default function Page() {
                             )
                         }
                         <ul className={"d-flex flex-column " + styles.uploadedSolutions}>
-                            {assignment.submissions.map((test, index) => (
+                            {assignment.submissions.map((test: TestCase, index: number) => (
                                 <li className={styles.uploadedTest}
                                     key={index}>{test.git_id}</li>
                             ))}
@@ -311,11 +311,19 @@ export default function Page() {
                 </div>
                 {
                     stage === 1 && (
-                        <TestUpload uploadedTests={assignment.test_cases} fetchAssignment={fetchAssignment} content={testContent} setContent={setTestContent} />
+                        <TestUpload
+                            uploadedTests={assignment.test_cases}
+                            fetchAssignment={fetchAssignment}
+                            content={testContent ?? ""}
+                            setContent={setTestContent} />
                     )
                 }{
                     stage === 2 && (
-                        <SolutionUpload uploadedSolutions={assignment.submissions} fetchAssignment={fetchAssignment} content={solutionContent} setContent={setSolutionContent} />
+                        <SolutionUpload
+                            uploadedSolutions={assignment.submissions}
+                            fetchAssignment={fetchAssignment}
+                            content={solutionContent ?? ""}
+                            setContent={setSolutionContent} />
                     )
                 }{
                     stage === 3 && (

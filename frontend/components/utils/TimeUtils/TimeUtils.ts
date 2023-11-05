@@ -91,3 +91,19 @@ export const convertTime = (date?: Date | string, options?: Intl.DateTimeFormatO
 export const formatRangedTime = (startDate: Date, endDate: Date): string => {
     return `${convertTime(startDate)} - ${convertTime(endDate)}`;
 };
+
+export const daysUntilDate = (targetDate: Date) => {
+    const today = new Date();
+
+    // Set both dates to the same time of day (midnight)
+    today.setUTCHours(0, 0, 0, 0);
+    targetDate.setUTCHours(0, 0, 0, 0);
+
+    // Calculate the time difference in milliseconds
+    const timeDifference = targetDate.getTime() - today.getTime();
+
+    // Convert the time difference to days
+    const daysDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+
+    return daysDifference;
+};

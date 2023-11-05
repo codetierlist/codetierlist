@@ -2,7 +2,7 @@ import { TierChip } from "..";
 import { InitialsAvatar } from "../../components/InitialsAvatar/InitialsAvatar";
 import styles from "./TierList.module.css";
 import { Fragment } from "react";
-import {Tier, Tierlist} from "codetierlist-types";
+import {Tier, Tierlist, UserTier} from "codetierlist-types";
 
 const Hardcode = [
     {
@@ -76,13 +76,8 @@ export const TierList = ({ tierlist = Hardcode }: { tierlist: Tierlist }): JSX.E
                                 className="col-12 col-lg-2 px-0"
                             >
                                 <TierChip
-                                    tier={tier}
-                                    className="py-2 px-0"
-                                    style={{
-                                        borderRadius: "0",
-                                        height: "100%",
-                                        lineHeight: "2em",
-                                    }}
+                                    tier={tier as UserTier}
+                                    className={`py-2 px-0 ${styles.tier}`}
                                 />
                             </div>
 

@@ -17,6 +17,8 @@ import {
     Title2
 } from "@fluentui/react-components";
 import axios from "@/axios";
+import { FetchedCourse } from '../../types/index';
+import { FetchedUser } from 'codetierlist-types';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -73,12 +75,13 @@ export default function Home() {
             </Head>
             <main className={`${inter.className}`}>
                 <div className="flex-wrap">
-                    {userInfo.roles.map(x => x.course).map(x => (
+                    {userInfo.roles.map((x: FetchedUser) => x.course).map((x: FetchedCourse) => (
                         // TODO session probably shouldn't be hardcoded, image placeholder should be replaced with actual course image
                         <CourseOverviewCard key={x.id} id={x.id} name={x.code}
                             image="https://placehold.co/300x200"
                             session={"Fall"}></CourseOverviewCard>
                     ))}
+
                     {userInfo.admin ?
                         <Dialog open={showDialog} onOpenChange={(e: DialogOpenChangeEvent, data: DialogOpenChangeData) => setShowDialog(data.open)}>
                             <DialogTrigger disableButtonEnhancement>
