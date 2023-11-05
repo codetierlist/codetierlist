@@ -10,7 +10,7 @@ declare module "axios" {
  * Axios instance
  */
 export const instance = axios.create({
-    baseURL: process.env.NODE_ENV === 'production' ? '/api' : `${process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:3030"}/`,
+    baseURL: process.env.NEXT_PUBLIC_API_URI ?? "http://localhost:3030",
 });
 
 let loading = 0;

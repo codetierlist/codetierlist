@@ -35,6 +35,9 @@ services:
       dockerfile: ./frontend/Dockerfile-dev
     environment:
       - NODE_ENV=development
+      - NEXT_PUBLIC_API_URI=/api
+    volumes:
+      - ./frontend/src:/frontend/src:ro
 
   db:
     image: postgres
