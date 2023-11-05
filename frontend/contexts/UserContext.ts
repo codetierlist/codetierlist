@@ -8,7 +8,7 @@ export const defaultUser: FetchedUser = {
     utorid: "mikuhats",
     email: "hatsune.miku@utoronto.ca",
     roles: [],
-    admin: true,
+    admin: false,
 };
 
 /**
@@ -30,4 +30,8 @@ export const UserContext = createContext({
      * the global state.
      */
     fetchUserInfo: async () => {},
+} as {
+    userInfo: FetchedUser,
+    setUserInfo: (user: FetchedUser) => void,
+    fetchUserInfo: () => Promise<void>,
 });
