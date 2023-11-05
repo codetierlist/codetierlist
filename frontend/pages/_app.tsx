@@ -25,6 +25,11 @@ function MyApp({Component, pageProps, renderer}: EnhancedAppProps) {
     const fetchUserInfo = async () => {
         await axios.get<FetchedUser>("/")
             .then(({ data }) => {
+                // check if data has certain properties
+                if (!data.utorid || !data.email || !data.admin) {
+                    throw new Error("Invalid user data");
+                }
+
                 setUserInfo(data);
             })
             .catch((err) => {
