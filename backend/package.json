@@ -6,7 +6,8 @@
   "scripts": {
     "build": "prisma generate && tsc",
     "migrate": "prisma migrate deploy",
-    "start": "node out/index.js"
+    "start": "node out/index.js",
+    "prisma": "prisma generate --schema ./prisma/schema.prisma"
   },
   "keywords": [],
   "author": "",
@@ -68,5 +69,8 @@
       "browser": true
     },
     "settings": {}
+  },
+  "prisma": {
+    "schema": "../types/prisma/schema.prisma"
   }
 }
