@@ -1,6 +1,6 @@
 init:
-	cd ./types && npm install
+	cd ./types && npm ci
 	cd ./types && npx prisma generate
-	cd ./backend && npm install
-	cd .backend && npx prisma generate --schema ../types/prisma/schema.prisma
-	cd ./frontend && npm install
+	cd ./backend && npm ci
+	cd ./backend && npx prisma generate --schema ../types/prisma/schema.prisma
+	cd ./frontend && npm ci
