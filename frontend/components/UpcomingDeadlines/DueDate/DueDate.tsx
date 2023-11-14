@@ -4,7 +4,7 @@ import styles from "./DueDate.module.css";
 export declare interface DueDateProps {
     daysUntilDue: number;
 }
-  
+
 
 export const DueDate = ({ daysUntilDue }: DueDateProps): JSX.Element => {
     return (
