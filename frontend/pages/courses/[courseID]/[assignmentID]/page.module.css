@@ -50,3 +50,7 @@
     flex-direction: column;
     gap: var(--spacingVerticalL);
 }
+
+.tabList {
+    margin-left: var(--spacingHorizontalS);
+}

@@ -8,7 +8,7 @@ import {
     convertTime
 } from '@/components';
 import { CheckedTodoItem } from '@/components/CheckedTodo/CheckedTodo';
-import { Button, Card, CardHeader, Title3, Toolbar, ToolbarButton } from '@fluentui/react-components';
+import { Button, Card, CardHeader, Tab, TabList, Title3, Toolbar, ToolbarButton } from '@fluentui/react-components';
 import { Add16Regular, Clock16Regular } from '@fluentui/react-icons';
 import { Subtitle2, Title1, Title2 } from '@fluentui/react-text';
 import Editor from '@monaco-editor/react';
@@ -83,7 +83,7 @@ const TestUpload = ({ uploadedTests, fetchAssignment, content, setContent }: { u
     const router = useRouter();
     const { courseID, assignmentID } = router.query;
     return (
-        <Col sm={12} lg={8} md={4}>
+        <Col sm={12}>
             <UploadHeader
                 title="Test"
                 action={
@@ -122,7 +122,7 @@ const SolutionUpload = (
     const router = useRouter();
     const { courseID, assignmentID } = router.query;
     return (
-        <Col sm={12} lg={8} md={4}>
+        <Col sm={12}>
             <UploadHeader
                 title="Solution"
                 action={
@@ -204,122 +204,123 @@ export default function Page() {
         return <p>Loading...</p>;
     }
     return (
-        <Container fluid component="main">
-            <Card className={styles.header} orientation="horizontal">
-                <CardHeader
-                    className={styles.assignmentHeaderContent}
-                    header={
-                        <div className={styles.assignmentHeaderContent}>
-                            <Subtitle2 className={styles.dueDate}>
-                                <Clock16Regular
-                                    className={styles.dueDateIcon} />
-                                Due {convertDate(assignment.due_date)} at {convertTime(assignment.due_date)}
-                            </Subtitle2>
-                            <Title2>
-                                <span
-                                    className={`${colourHash(courseID as string)} ${styles.courseCode}`}>
-                                    {courseID}
-                                </span>
-                                {assignment.title}
-                            </Title2>
-                        </div>
-                    }
-                    action={
-                        <TierChip tier={testContent !== null && solutionContent !== null ? "B" : "?"} />
-                    }
-                />
-            </Card>
-
-            <Toolbar className={styles.toolbar}>
-                <ToolbarButton appearance="primary" onClick={() => setStage(1)}>
+        <>
+            <TabList className={styles.tabList} size="large" selectedValue={`tab${stage}`}>
+                <Tab value="tab0" onClick={() => setStage(0)}>
+                    Assignment details
+                </Tab>
+                <Tab value="tab1" onClick={() => setStage(1)}>
                     Submit a test
-                </ToolbarButton>
-                <ToolbarButton onClick={() => setStage(2)}>
+                </Tab>
+                <Tab value="tab2" onClick={() => setStage(2)}>
                     Upload a solution
-                </ToolbarButton>
-                <ToolbarButton
-                    disabled={testContent === null || solutionContent === null}
-                    onClick={() => setStage(3)}>
+                </Tab>
+                <Tab value="tab3" onClick={() => setStage(3)} disabled={testContent === null || solutionContent === null}>
                     View tier list
-                </ToolbarButton>
-            </Toolbar>
-
-            <Row>
-                <Col sm={12} lg={4} md={4} className={styles.sidebarCards}>
-                    <Card>
-                        <CardHeader
-                            header={<Title3>Status</Title3>}
-                        />
-                        <div className={`${flex["d-flex"]} ${flex["flex-column"]} ${flex["align-items-baseline"]}`}>
-                            <Button onClick={() => setStage(1)}
-                                appearance="subtle" className="d-block">
-                                <CheckedTodoItem todo="Submit a valid test"
-                                    checked={testContent !== null} />
-                            </Button>
-                            <Button onClick={() => setStage(2)}
-                                appearance="subtle" className="d-block">
-                                <CheckedTodoItem todo="Submit your code"
-                                    checked={solutionContent !== null} />
-                            </Button>
-                            <Button onClick={() => setStage(3)}
-                                appearance="subtle" className="d-block"
-                                disabled={testContent === null || solutionContent === null}>
-                                <CheckedTodoItem todo="View tier list"
-                                    checked={testContent !== null && solutionContent !== null} />
-                            </Button>
-                        </div>
-                    </Card>
-
-                    <Card>
-                        <CardHeader
-                            header={<Title3>Uplodaded Tests</Title3>}
-                        />
-                        {
-                            assignment.test_cases.length === 0 && (
-                                <p>No tests uploaded yet</p>
-                            )
-                        }
-                        <ul className={"d-flex flex-column " + styles.uploadedTests}>
-                            {assignment.test_cases.map((test: TestCase, index: number) => (
-                                // TODO this is not very informative
-                                <li className={styles.uploadedTest}
-                                    key={index}>{test.git_id}</li>
-                            ))}
-                        </ul>
-                    </Card>
-
-                    <Card>
-                        <CardHeader
-                            header={<Title3>Uplodaded Solutions</Title3>}
-                        />
-                        {
-                            assignment.submissions.length === 0 && (
-                                <p>No solutions uploaded yet</p>
-                            )
-                        }
-                        <ul className={"d-flex flex-column " + styles.uploadedSolutions}>
-                            {assignment.submissions.map((test: TestCase, index: number) => (
-                                <li className={styles.uploadedTest}
-                                    key={index}>{test.git_id}</li>
-                            ))}
-                        </ul>
-                    </Card>
-                </Col>
+                </Tab>
+            </TabList>
+            <Container fluid component="main">
                 {
+                    stage === 0 && (
+                        <>
+                            <Row>
+                                <Col sm={12}>
+                                    <Card className={styles.header} orientation="horizontal">
+                                        <CardHeader
+                                            className={styles.assignmentHeaderContent}
+                                            header={
+                                                <div className={styles.assignmentHeaderContent}>
+                                                    <Subtitle2 className={styles.dueDate}>
+                                                        <Clock16Regular
+                                                            className={styles.dueDateIcon} />
+                                                        Due {convertDate(assignment.due_date)} at {convertTime(assignment.due_date)}
+                                                    </Subtitle2>
+                                                    <Title2>
+                                                        <span
+                                                            className={`${colourHash(courseID as string)} ${styles.courseCode}`}>
+                                                            {courseID}
+                                                        </span>
+                                                        {assignment.title}
+                                                    </Title2>
+                                                </div>
+                                            }
+                                            action={
+                                                <TierChip tier={testContent !== null && solutionContent !== null ? "B" : "?"} />
+                                            }
+                                        />
+                                    </Card>
+                                </Col>
+                            </Row>
+
+                            <Row>
+                                <Col sm={12} lg={4} md={4} className={styles.sidebarCards}>
+                                    <Card>
+                                        <CardHeader
+                                            header={<Title3>Uplodaded Tests</Title3>}
+                                        />
+                                        {
+                                            assignment.test_cases.length === 0 && (
+                                                <p>No tests uploaded yet</p>
+                                            )
+                                        }
+                                        <ul className={"d-flex flex-column " + styles.uploadedTests}>
+                                            {assignment.test_cases.map((test: TestCase, index: number) => (
+                                                // TODO this is not very informative
+                                                <li className={styles.uploadedTest}
+                                                    key={index}>{test.git_id}</li>
+                                            ))}
+                                        </ul>
+                                    </Card>
+
+                                    <Card>
+                                        <CardHeader
+                                            header={<Title3>Uplodaded Solutions</Title3>}
+                                        />
+                                        {
+                                            assignment.submissions.length === 0 && (
+                                                <p>No solutions uploaded yet</p>
+                                            )
+                                        }
+                                        <ul className={"d-flex flex-column " + styles.uploadedSolutions}>
+                                            {assignment.submissions.map((test: TestCase, index: number) => (
+                                                <li className={styles.uploadedTest}
+                                                    key={index}>{test.git_id}</li>
+                                            ))}
+                                        </ul>
+                                    </Card>
+                                </Col>
+                                <Col sm={12} lg={8} md={8}>
+                                    <Card>
+                                        <CardHeader
+                                            header={<Title3>Assignment Description</Title3>}
+                                        />
+                                        <p>
+                                            {assignment.description}
+                                        </p>
+                                    </Card>
+                                </Col>
+                            </Row>
+                        </>
+                    )
+                }{
                     stage === 1 && (
-                        <TestUpload
-                            uploadedTests={assignment.test_cases}
-                            fetchAssignment={fetchAssignment}
-                            content={testContent ?? ""}
-                            setContent={setTestContent} />
+                        <Row>
+                            <TestUpload
+                                uploadedTests={assignment.test_cases}
+                                fetchAssignment={fetchAssignment}
+                                content={testContent ?? ""}
+                                setContent={setTestContent} />
+                        </Row>
                     )
                 }{
                     stage === 2 && (
-                        <SolutionUpload
-                            uploadedSolutions={assignment.submissions}
-                            fetchAssignment={fetchAssignment}
-                            content={solutionContent ?? ""}
-                            setContent={setSolutionContent} />
+                        <Row>
+                            <SolutionUpload
+                                uploadedSolutions={assignment.submissions}
+                                fetchAssignment={fetchAssignment}
+                                content={solutionContent ?? ""}
+                                setContent={setSolutionContent} />
+                        </Row>
                     )
                 }{
                     stage === 3 && (
@@ -327,7 +328,7 @@ export default function Page() {
                             <ViewTierList tierlist={tierlist} /> : "No tierlist found"
                     )
                 }
-            </Row>
-        </Container>
+            </Container >
+        </>
     );
 }
