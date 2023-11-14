@@ -238,7 +238,7 @@ export default function Page() {
                     Upload a solution
                 </ToolbarButton>
                 <ToolbarButton
-                    // disabled={testContent === null || solutionContent === null}
+                    disabled={testContent === null || solutionContent === null}
                     onClick={() => setStage(3)}>
                     View tier list
                 </ToolbarButton>
