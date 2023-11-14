@@ -21,10 +21,10 @@
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "codetierlist-types": "file:../types",
     "eslint": "^8.52.0",
+    "nodemon": "^3.0.1",
     "prisma": "^5.5.2",
     "ts-node": "^10.9.1",
-    "typescript": "^5.2.2",
-    "nodemon": "^3.0.1"
+    "typescript": "^5.2.2"
   },
   "dependencies": {
     "@prisma/client": "^5.5.2",
@@ -33,7 +33,8 @@
     "express": "^4.18.2",
     "is-utorid": "1.2.2",
     "isomorphic-git": "^1.24.5",
-    "multer": "^1.4.5-lts.1"
+    "multer": "^1.4.5-lts.1",
+    "socket.io": "^4.7.2"
   },
   "eslintConfig": {
     "extends": [
