@@ -16,3 +16,14 @@
     height: 100%;
     line-height: 2em;
 }
+
+.avatarGroup {
+    padding: var(--spacingVerticalL) 0;
+    flex-wrap: wrap;
+    display: flex;
+}
+
+.avatar {
+    margin-left: var(--spacingHorizontalS) !important;
+    margin-bottom: var(--spacingVerticalS) !important;
+}

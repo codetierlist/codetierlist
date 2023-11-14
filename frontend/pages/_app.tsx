@@ -1,6 +1,5 @@
 import { lightTheme, Navbar } from '@/components';
 import '@/styles/globals.css';
-import '@/styles/bootstrap-grid.css';
 import {
     createDOMRenderer,
     FluentProvider,

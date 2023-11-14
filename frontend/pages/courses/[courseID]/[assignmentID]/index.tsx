@@ -8,7 +8,7 @@ import {
     convertTime
 } from '@/components';
 import { CheckedTodoItem } from '@/components/CheckedTodo/CheckedTodo';
-import { Button, Card, CardHeader, Title3 } from '@fluentui/react-components';
+import { Button, Card, CardHeader, Title3, Toolbar, ToolbarButton } from '@fluentui/react-components';
 import { Add16Regular, Clock16Regular } from '@fluentui/react-icons';
 import { Subtitle2, Title1, Title2 } from '@fluentui/react-text';
 import Editor from '@monaco-editor/react';
@@ -18,12 +18,14 @@ import { notFound } from "next/navigation";
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import styles from './page.module.css';
+import flex from '@/styles/flex-utils.module.css';
+import { Container, Row, Col } from "react-grid-system";
 
 // TODO: clean technical debt
 
 const UploadHeader = ({ title, action }: { title: string, action: () => void }) => {
     return (
-        <div className="d-flex justify-content-between">
+        <div className={`${flex["d-flex"]} ${flex["justify-content-between"]}`}>
             <Title1>{title}</Title1>
             <Button appearance="subtle" onClick={() => action()}
                 icon={<Add16Regular />}>
@@ -35,17 +37,14 @@ const UploadHeader = ({ title, action }: { title: string, action: () => void }) 
 
 const NoUploadPlaceholder = ({ title }: { title: string }) => {
     return (
-        <>
-            <div
-                className="d-flex flex-column align-items-center justify-content-center h-100">
-                <Title2>
-                    Nothing to see here...
-                </Title2>
-                <p>
-                    Upload a {title} to get started!
-                </p>
-            </div>
-        </>
+        <div className={`${flex["d-flex"]} ${flex["flex-column"]} ${flex["align-items-center"]} ${flex["justify-content-center"]}`}>
+            <Title2>
+                Nothing to see here...
+            </Title2>
+            <p>
+                Upload a {title} to get started!
+            </p>
+        </div>
     );
 };
 
@@ -84,7 +83,7 @@ const TestUpload = ({ uploadedTests, fetchAssignment, content, setContent }: { u
     const router = useRouter();
     const { courseID, assignmentID } = router.query;
     return (
-        <div className="col-12 col-lg-8 mt-4">
+        <Col sm={12} lg={8} md={4}>
             <UploadHeader
                 title="Test"
                 action={
@@ -92,7 +91,7 @@ const TestUpload = ({ uploadedTests, fetchAssignment, content, setContent }: { u
                 }
             />
 
-            <Card className={"mt-4 d-flex flex-column " + styles.editor}>
+            <Card className={styles.editor}>
                 {/* {uploadedTests.length === 0 ? ( */}
                 {content === null ? (
                     <NoUploadPlaceholder title="test" />
@@ -106,7 +105,7 @@ const TestUpload = ({ uploadedTests, fetchAssignment, content, setContent }: { u
                     />
                 )}
             </Card>
-        </div>
+        </Col>
     );
 };
 const SolutionUpload = (
@@ -123,7 +122,7 @@ const SolutionUpload = (
     const router = useRouter();
     const { courseID, assignmentID } = router.query;
     return (
-        <div className="col-12 col-lg-8 mt-4">
+        <Col sm={12} lg={8} md={4}>
             <UploadHeader
                 title="Solution"
                 action={
@@ -131,7 +130,7 @@ const SolutionUpload = (
                 }
             />
 
-            <Card className={"mt-4 d-flex flex-column " + styles.editor}>
+            <Card className={styles.editor}>
                 {
                     // uploadedSolutions.length === 0 ? (
                     content === null ? (
@@ -149,21 +148,21 @@ const SolutionUpload = (
                 }
 
             </Card>
-        </div>
+        </Col>
     );
 };
 
 const ViewTierList = ({ tierlist }: { tierlist: Tierlist }) => {
     return (
-        <div className="col-12 col-lg-8 mt-4">
+        <Col sm={12} lg={8} mt={4}>
             <Title2>
                 Tier List
             </Title2>
-            <Card className="mt-4">
+            <Card>
                 {/*TODO show actual tierlist*/}
                 <TierList tierlist={tierlist} />
             </Card>
-        </div>
+        </Col>
     );
 };
 
@@ -205,56 +204,53 @@ export default function Page() {
         return <p>Loading...</p>;
     }
     return (
-        <main className="container">
-            <Card className={styles.header}>
-                <div className={"d-flex justify-content-between"}>
-                    <div
-                        className={styles.assignmentHeaderContent + " flex-column d-flex"}>
-                        <CardHeader
-                            header={
-                                <>
-                                    <Clock16Regular
-                                        className={styles.dueDateIcon} />
-                                    <Subtitle2 className={styles.dueDate}>
-                                        Due {convertDate(assignment.due_date)} at {convertTime(assignment.due_date)}
-                                    </Subtitle2>
-                                </>
-                            }
-                        />
-                        <Title2>
-                            <span
-                                className={colourHash(courseID as string) + ' ' + styles.courseCode}>
-                                {courseID}
-                            </span>
-                            {assignment.title}
-                        </Title2>
-                    </div>
-                    <div>
+        <Container fluid component="main">
+            <Card className={styles.header} orientation="horizontal">
+                <CardHeader
+                    className={styles.assignmentHeaderContent}
+                    header={
+                        <div className={styles.assignmentHeaderContent}>
+                            <Subtitle2 className={styles.dueDate}>
+                                <Clock16Regular
+                                    className={styles.dueDateIcon} />
+                                Due {convertDate(assignment.due_date)} at {convertTime(assignment.due_date)}
+                            </Subtitle2>
+                            <Title2>
+                                <span
+                                    className={`${colourHash(courseID as string)} ${styles.courseCode}`}>
+                                    {courseID}
+                                </span>
+                                {assignment.title}
+                            </Title2>
+                        </div>
+                    }
+                    action={
                         <TierChip tier={testContent !== null && solutionContent !== null ? "B" : "?"} />
-                    </div>
-                </div>
+                    }
+                />
             </Card>
 
-            <div className="mt-4 mb-4">
-                <Button appearance="primary" onClick={() => setStage(1)}>
+            <Toolbar className={styles.toolbar}>
+                <ToolbarButton appearance="primary" onClick={() => setStage(1)}>
                     Submit a test
-                </Button>
-                <Button className="mx-2" onClick={() => setStage(2)}>
+                </ToolbarButton>
+                <ToolbarButton onClick={() => setStage(2)}>
                     Upload a solution
-                </Button>
-                <Button disabled={testContent === null || solutionContent === null}
+                </ToolbarButton>
+                <ToolbarButton
+                    // disabled={testContent === null || solutionContent === null}
                     onClick={() => setStage(3)}>
                     View tier list
-                </Button>
-            </div>
+                </ToolbarButton>
+            </Toolbar>
 
-            <div className="row">
-                <div className="col-12 col-lg-4 mt-4">
-                    <Card className="mb-5">
+            <Row>
+                <Col sm={12} lg={4} md={4} className={styles.sidebarCards}>
+                    <Card>
                         <CardHeader
                             header={<Title3>Status</Title3>}
                         />
-                        <div className="d-flex flex-column">
+                        <div className={`${flex["d-flex"]} ${flex["flex-column"]} ${flex["align-items-baseline"]}`}>
                             <Button onClick={() => setStage(1)}
                                 appearance="subtle" className="d-block">
                                 <CheckedTodoItem todo="Submit a valid test"
@@ -274,7 +270,7 @@ export default function Page() {
                         </div>
                     </Card>
 
-                    <Card className="mb-5">
+                    <Card>
                         <CardHeader
                             header={<Title3>Uplodaded Tests</Title3>}
                         />
@@ -292,7 +288,7 @@ export default function Page() {
                         </ul>
                     </Card>
 
-                    <Card className="mb-5">
+                    <Card>
                         <CardHeader
                             header={<Title3>Uplodaded Solutions</Title3>}
                         />
@@ -308,7 +304,7 @@ export default function Page() {
                             ))}
                         </ul>
                     </Card>
-                </div>
+                </Col>
                 {
                     stage === 1 && (
                         <TestUpload
@@ -331,7 +327,7 @@ export default function Page() {
                             <ViewTierList tierlist={tierlist} /> : "No tierlist found"
                     )
                 }
-            </div>
-        </main>
+            </Row>
+        </Container>
     );
 }
