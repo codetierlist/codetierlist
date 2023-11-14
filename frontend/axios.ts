@@ -1,10 +1,26 @@
 import axios from "axios";
 
 declare module "axios" {
-  export interface AxiosRequestConfig {
-    skipErrorHandling?: boolean;
-  }
+    export interface AxiosRequestConfig {
+        skipErrorHandling?: boolean;
+    }
 }
+
+const handleError = (message: string) => {
+    // TODO: show error message
+    console.error(message);
+    console.error(message);
+    console.error(message);
+    console.error(message);
+    console.error(message);
+    console.error(message);
+    console.error(message);
+    console.error(message);
+    console.error(message);
+    console.error(message);
+    console.error(message);
+};
+
 /**
  * Axios instance
  */
@@ -18,7 +34,7 @@ instance.interceptors.request.use((config) => {
         return config;
     }
     const loadingWheel = document.getElementById('axios-loading-backdrop');
-    if(!loadingWheel){
+    if (!loadingWheel) {
         return config;
     }
     loadingWheel.style.display = 'flex';
@@ -29,7 +45,7 @@ instance.interceptors.request.use((config) => {
 instance.interceptors.response.use(
     (response) => {
         const loadingWheel = document.getElementById('axios-loading-backdrop');
-        if(!loadingWheel){
+        if (!loadingWheel) {
             return response;
         }
         if ('skipLoadingWheel' in response.config && response.config.skipLoadingWheel === true) {
@@ -44,10 +60,9 @@ instance.interceptors.response.use(
         return response;
     },
     (error) => {
-        console.log(error);
         loading -= 1;
         const loadingWheel = document.getElementById('axios-loading-backdrop');
-        if(!loadingWheel){
+        if (!loadingWheel) {
             return;
         }
         setTimeout(() => {
@@ -55,17 +70,16 @@ instance.interceptors.response.use(
                 loadingWheel.style.display = 'none';
             }
         }, 500);
+        handleError(error.message);
         return Promise.reject(error);
     },
 );
-const handleError = (message: string) => {
-    // TODO: show error message
-};
+
 axios.interceptors.response.use((response) => {
     return response;
 }, error => {
-    if(error.response){
-        if(error.response.config.skipErrorHandling){
+    if (error.response) {
+        if (error.response.config.skipErrorHandling) {
             return Promise.reject(error);
         }
         handleError(error.response.data.message);

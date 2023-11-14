@@ -1,22 +1,23 @@
-import {lightTheme, Navbar} from '@/components';
+import { lightTheme, Navbar } from '@/components';
 import '@/styles/globals.css';
-import '@/styles/bootstrap-grid.css';
 import {
     createDOMRenderer,
     FluentProvider,
     GriffelRenderer,
     SSRProvider,
     RendererProvider,
+    ProgressBar,
+    Field,
 } from '@fluentui/react-components';
-import type {AppProps} from 'next/app';
-import {defaultUser, UserContext} from '@/contexts/UserContext';
-import {FetchedUser} from "codetierlist-types";
-import {useEffect, useState} from "react";
+import type { AppProps } from 'next/app';
+import { defaultUser, UserContext } from '@/contexts/UserContext';
+import { FetchedUser } from "codetierlist-types";
+import { useEffect, useState } from "react";
 import axios from "@/axios";
 
 type EnhancedAppProps = AppProps & { renderer?: GriffelRenderer };
 
-function MyApp({Component, pageProps, renderer}: EnhancedAppProps) {
+function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
     /*
      * user data initialization into context and fetching
      */
@@ -26,6 +27,9 @@ function MyApp({Component, pageProps, renderer}: EnhancedAppProps) {
         await axios("/")
             .then(({ data }) => {
                 setUserInfo(data as FetchedUser);
+            })
+            .catch((error) => {
+                console.error(error);
             });
     };
 
@@ -39,9 +43,12 @@ function MyApp({Component, pageProps, renderer}: EnhancedAppProps) {
         <RendererProvider renderer={renderer || createDOMRenderer()}>
             <SSRProvider>
                 <UserContext.Provider
-                    value={{userInfo, setUserInfo, fetchUserInfo}}>
+                    value={{ userInfo, setUserInfo, fetchUserInfo }}>
                     <FluentProvider theme={lightTheme}>
-                        <Navbar/>
+                        <Field validationState="none" id="axios-loading-backdrop">
+                            <ProgressBar />
+                        </Field>
+                        <Navbar />
                         <Component {...pageProps} />
                     </FluentProvider>
                 </UserContext.Provider>

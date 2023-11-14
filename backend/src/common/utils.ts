@@ -124,6 +124,7 @@ export const getCommit = async (req: Request, table: "solution" | "testCase"): P
             }
         }
     };
+
     let submission: TestCase | Solution | null;
 
     if (table === "solution") {

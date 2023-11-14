@@ -17,7 +17,9 @@ import {
     Label,
     Textarea,
     Title1,
-    Title3
+    Title3,
+    Toolbar,
+    ToolbarButton
 } from "@fluentui/react-components";
 import { Title2 } from '@fluentui/react-text';
 import { FetchedCourseWithTiers } from "codetierlist-types";
@@ -27,7 +29,7 @@ import { useContext, useEffect, useState } from "react";
 import styles from './page.module.css';
 
 // import { notFound } from 'next/navigation';
-import { Shield24Filled } from '@fluentui/react-icons';
+import { Add24Filled, Shield24Filled, PersonAdd24Regular } from '@fluentui/react-icons';
 // TODO this code is duplicated from course page
 function CreateAssignmentForm({ closeDialog }: { closeDialog: () => void }) {
     const [assignmentName, setAssignmentName] = useState("");
@@ -46,7 +48,7 @@ function CreateAssignmentForm({ closeDialog }: { closeDialog: () => void }) {
                         dueDate: dueDate.toISOString()
                     }).then(fetchUserInfo).then(closeDialog);
                 }}>
-                    <DialogTitle>Create Course</DialogTitle>
+                    <DialogTitle>Create Assignment</DialogTitle>
                     <DialogContent>
                         <Label htmlFor="name">Name:</Label><br />
                         <Input type="text" id="name" name="courseCode"
@@ -122,7 +124,7 @@ function EnrollStudentsForm({ closeDialog }: { closeDialog: () => void }) {
             <DialogBody>
                 <form onSubmit={handleSubmit}>
                     <DialogContent>
-                        <Title2 style={{ marginBottom: 7 }}>Enroll Students</Title2>
+                        <Title2 style={{ marginBottom: 7 }}>Enroll Students</Title2><br/>
                         <Title3 style={{ fontSize: 18 }}>Input a list of students</Title3>
                         <Textarea
                             id="csvText"
@@ -165,49 +167,78 @@ export default function Page() {
 
 
     return (
-        <main>
-            <header className={styles.header}>
-                <Title2>
-                    <CourseSessionChip session="Fall">
-                        {courseID}
-                    </CourseSessionChip>
-                </Title2>
-                <Title2>
-                    {course?.name || 'Course not found'}
-                </Title2>
-                <Dialog open={showEnrollDialog} onOpenChange={(e: DialogOpenChangeEvent, data: DialogOpenChangeData) => setShowEnrollDialog(data.open)}>
-                    <DialogTrigger disableButtonEnhancement>
-                        <Button><Title1>Enroll Students</Title1></Button>
-                    </DialogTrigger>
-                    <EnrollStudentsForm closeDialog={() => fetchCourse().then(() => setShowEnrollDialog(false))} />
-                </Dialog>
-            </header>
-            <div className="flex-wrap">
-                {course ? course.assignments.map((assignment) => (
-                    <AssignmentCard key={assignment.title.replaceAll(" ", "_")}
-                        id={assignment.title.replaceAll(" ", "_")}
-                        name={assignment.title}
-                        dueDate={assignment.due_date ? new Date(assignment.due_date) : undefined}
-                        tier={assignment.tier}
-                        courseID={courseID as string}
-                    />
-                )) : "Loading..."}
-                {userInfo.admin ?
-                    <Dialog open={showDialog}
-                        onOpenChange={(e: DialogOpenChangeEvent, data: DialogOpenChangeData) => setShowDialog(data.open)}>
+        <>
+            {
+                userInfo.admin ? (
+                    <Toolbar
+                        aria-label="Large Toolbar"
+                        size="large"
+                        className={styles.toolbar}
+                    >
+                        <ToolbarButton
+                            appearance="primary"
+                            icon={<Shield24Filled />}
+                            onClick={() => router.push(`/courses/${courseID}/admin`)}
+                        >
+                            Admin page
+                        </ToolbarButton>
+
+                        <ToolbarButton
+                            appearance="subtle"
+                            icon={<PersonAdd24Regular />}
+                            onClick={() => setShowEnrollDialog(true)}
+                        >
+                            Enroll Students
+                        </ToolbarButton>
+
+                        <ToolbarButton
+                            appearance="subtle"
+                            icon={<Add24Filled />}
+                            onClick={() => setShowDialog(true)}
+                        >
+                            Add assignment
+                        </ToolbarButton>
+                    </Toolbar>
+                ) : undefined
+            }
+
+            <Dialog open={showEnrollDialog} onOpenChange={(e: DialogOpenChangeEvent, data: DialogOpenChangeData) => setShowEnrollDialog(data.open)}>
+                <EnrollStudentsForm closeDialog={() => fetchCourse().then(() => setShowEnrollDialog(false))} />
+            </Dialog>
+            <Dialog open={showDialog}
+                onOpenChange={(e: DialogOpenChangeEvent, data: DialogOpenChangeData) => setShowDialog(data.open)}>
+                <CreateAssignmentForm
+                    closeDialog={() => fetchCourse().then(() => setShowDialog(false))} />
+            </Dialog>
+
+            <main>
+                <header className={styles.header}>
+                    <Title2>
+                        <CourseSessionChip session="Fall">
+                            {courseID}
+                        </CourseSessionChip>
+                    </Title2>
+                    <Title2>
+                        {course?.name || 'Course not found'}
+                    </Title2>
+                </header>
+                <div className="flex-wrap">
+                    {course ? course.assignments.map((assignment) => (
+                        <AssignmentCard key={assignment.title.replaceAll(" ", "_")}
+                            id={assignment.title.replaceAll(" ", "_")}
+                            name={assignment.title}
+                            dueDate={assignment.due_date ? new Date(assignment.due_date) : undefined}
+                            tier={assignment.tier}
+                            courseID={courseID as string}
+                        />
+                    )) : "Loading..."}
+                    {userInfo.admin ? (
                         <DialogTrigger disableButtonEnhancement>
                             <Button><Title1>+</Title1></Button>
                         </DialogTrigger>
-                        <CreateAssignmentForm
-                            closeDialog={() => fetchCourse().then(() => setShowDialog(false))} />
-                    </Dialog>
-                    : undefined}
-                {userInfo.admin ?
-                    <Button onClick={() => router.push(`/courses/${courseID}/admin`)}>
-                        <Shield24Filled />
-                    </Button>
-                    : undefined}
-            </div>
-        </main>
+                    ) : undefined}
+                </div>
+            </main >
+        </>
     );
 }
