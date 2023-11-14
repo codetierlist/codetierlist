@@ -44,7 +44,6 @@ body {
 }
 
 #axios-loading-backdrop {
-  height: 100%;
   left: 0;
   position: fixed;
   top: 0;

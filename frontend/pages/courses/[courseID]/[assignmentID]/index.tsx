@@ -1,4 +1,3 @@
-// import { CourseSessionChip, AssignmentCard } from '@/components';
 import axios from "@/axios";
 import {
     TierChip,
@@ -7,8 +6,15 @@ import {
     convertDate,
     convertTime
 } from '@/components';
-import { CheckedTodoItem } from '@/components/CheckedTodo/CheckedTodo';
-import { Button, Card, CardHeader, Tab, TabList, Title3, Toolbar, ToolbarButton } from '@fluentui/react-components';
+import flex from '@/styles/flex-utils.module.css';
+import {
+    Button, Card, CardHeader,
+    MessageBar,
+    MessageBarActions,
+    MessageBarBody,
+    MessageBarTitle,
+    Tab, TabList, Title3
+} from '@fluentui/react-components';
 import { Add16Regular, Clock16Regular } from '@fluentui/react-icons';
 import { Subtitle2, Title1, Title2 } from '@fluentui/react-text';
 import Editor from '@monaco-editor/react';
@@ -17,9 +23,8 @@ import Error from 'next/error';
 import { notFound } from "next/navigation";
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { Col, Container, Row } from "react-grid-system";
 import styles from './page.module.css';
-import flex from '@/styles/flex-utils.module.css';
-import { Container, Row, Col } from "react-grid-system";
 
 // TODO: clean technical debt
 
@@ -290,6 +295,33 @@ export default function Page() {
                                     </Card>
                                 </Col>
                                 <Col sm={12} lg={8} md={8}>
+                                    {solutionContent === null && (
+                                        <MessageBar intent={"warning"} className={styles.messageBar}>
+                                            <MessageBarBody>
+                                                <MessageBarTitle>You have not submitted a solution yet.</MessageBarTitle>
+                                                You can submit a solution by clicking on the "Upload a solution" tab.
+                                                You will not be able to see the tier list until you submit a solution.
+                                            </MessageBarBody>
+                                            <MessageBarActions>
+                                                <Button onClick={() => setStage(2)}>Upload a solution</Button>
+                                            </MessageBarActions>
+                                        </MessageBar>
+                                    )}
+
+                                    {testContent === null && (
+                                        <MessageBar intent={"warning"} className={styles.messageBar}>
+                                            <MessageBarBody>
+                                                <MessageBarTitle>You have not submitted a test yet.</MessageBarTitle>
+                                                You can submit a test by clicking on the "Submit a test" tab.
+                                                You will not be able to see the tier list until you submit a test.
+                                            </MessageBarBody>
+                                            <MessageBarActions
+                                            >
+                                                <Button onClick={() => setStage(1)}>Submit a test</Button>
+                                            </MessageBarActions>
+                                        </MessageBar>
+                                    )}
+
                                     <Card>
                                         <CardHeader
                                             header={<Title3>Assignment Description</Title3>}

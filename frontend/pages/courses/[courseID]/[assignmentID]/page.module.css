@@ -40,11 +40,6 @@
     height: 500px;
 }
 
-.toolbar {
-    margin: var(--spacingVerticalS) 0;
-    gap: var(--spacingHorizontalS);
-}
-
 .sidebarCards {
     display: flex;
     flex-direction: column;
@@ -53,4 +48,11 @@
 
 .tabList {
     margin-left: var(--spacingHorizontalS);
+}
+
+.messageBar {
+    margin: var(--spacingVerticalM) 0;
+    max-width: 100%;
+    white-space: pre-wrap !important;
+    padding: var(--spacingVerticalS) var(--spacingHorizontalS);
 }
