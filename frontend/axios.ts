@@ -5,6 +5,22 @@ declare module "axios" {
         skipErrorHandling?: boolean;
     }
 }
+
+const handleError = (message: string) => {
+    // TODO: show error message
+    console.error(message);
+    console.error(message);
+    console.error(message);
+    console.error(message);
+    console.error(message);
+    console.error(message);
+    console.error(message);
+    console.error(message);
+    console.error(message);
+    console.error(message);
+    console.error(message);
+};
+
 /**
  * Axios instance
  */
@@ -44,7 +60,6 @@ instance.interceptors.response.use(
         return response;
     },
     (error) => {
-        console.log(error);
         loading -= 1;
         const loadingWheel = document.getElementById('axios-loading-backdrop');
         if (!loadingWheel) {
@@ -59,20 +74,7 @@ instance.interceptors.response.use(
         return Promise.reject(error);
     },
 );
-const handleError = (message: string) => {
-    // TODO: show error message
-    console.error(message);
-    console.error(message);
-    console.error(message);
-    console.error(message);
-    console.error(message);
-    console.error(message);
-    console.error(message);
-    console.error(message);
-    console.error(message);
-    console.error(message);
-    console.error(message);
-};
+
 axios.interceptors.response.use((response) => {
     return response;
 }, error => {
