@@ -159,7 +159,7 @@ const SolutionUpload = (
 
 const ViewTierList = ({ tierlist }: { tierlist: Tierlist }) => {
     return (
-        <Col sm={12} lg={8} mt={4}>
+        <Col sm={12} lg={8} md={4}>
             <Title2>
                 Tier List
             </Title2>
@@ -299,7 +299,7 @@ export default function Page() {
                                         <MessageBar intent={"warning"} className={styles.messageBar}>
                                             <MessageBarBody>
                                                 <MessageBarTitle>You have not submitted a solution yet.</MessageBarTitle>
-                                                You can submit a solution by clicking on the "Upload a solution" tab.
+                                                You can submit a solution by clicking on the &ldquo;Upload a solution&rdquo; tab.
                                                 You will not be able to see the tier list until you submit a solution.
                                             </MessageBarBody>
                                             <MessageBarActions>
@@ -312,7 +312,7 @@ export default function Page() {
                                         <MessageBar intent={"warning"} className={styles.messageBar}>
                                             <MessageBarBody>
                                                 <MessageBarTitle>You have not submitted a test yet.</MessageBarTitle>
-                                                You can submit a test by clicking on the "Submit a test" tab.
+                                                You can submit a test by clicking on the &ldquo;Submit a test&rdquo; tab.
                                                 You will not be able to see the tier list until you submit a test.
                                             </MessageBarBody>
                                             <MessageBarActions
