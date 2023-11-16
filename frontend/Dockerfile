@@ -9,8 +9,8 @@ COPY ./types ./
 RUN npm run prisma
 
 WORKDIR /frontend
-COPY ./frontend/package.json ./frontend/yarn.lock ./
-RUN yarn install --frozen-lockfile
+COPY ./frontend/package.json ./frontend/package-lock.json ./
+RUN npm ci
 COPY ./frontend ./
 
 # Environment variables must be present at build time
@@ -22,5 +22,5 @@ ENV NEXT_PUBLIC_API_URI=${NEXT_PUBLIC_API_URI}
 ENV NEXT_TELEMETRY_DISABLED 1
 
 # build nextjs
-RUN yarn run build
-CMD ["yarn", "run", "start"]
+RUN npm run build
+CMD ["npm", "run", "start"]
