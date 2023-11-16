@@ -9,16 +9,6 @@ declare module "axios" {
 const handleError = (message: string) => {
     // TODO: show error message
     console.error(message);
-    console.error(message);
-    console.error(message);
-    console.error(message);
-    console.error(message);
-    console.error(message);
-    console.error(message);
-    console.error(message);
-    console.error(message);
-    console.error(message);
-    console.error(message);
 };
 
 /**
