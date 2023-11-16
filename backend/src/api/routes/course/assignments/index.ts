@@ -78,6 +78,7 @@ router.get("/:assignment/submissions/:commitId?", fetchAssignmentMiddleware, asy
 
 router.get("/:assignment/testcases/:commitId?", fetchAssignmentMiddleware, async (req, res) => {
     const commit = await getCommit(req, "testCase");
+
     if (commit === null) {
         res.statusCode = 404;
         res.send({error: 'Commit not found.'});

@@ -1,8 +1,10 @@
 import { TierChip } from "..";
-import { InitialsAvatar } from "../../components/InitialsAvatar/InitialsAvatar";
+import { GenerateInitalsAvatarProps, InitialsAvatar } from "../../components/InitialsAvatar/InitialsAvatar";
 import styles from "./TierList.module.css";
 import { Fragment } from "react";
-import {Tier, Tierlist, UserTier} from "codetierlist-types";
+import { Tier, Tierlist, UserTier } from "codetierlist-types";
+import { Col, Row } from "react-grid-system";
+import { AvatarGroup, AvatarGroupItem } from "@fluentui/react-components";
 
 const Hardcode = [
     {
@@ -64,52 +66,50 @@ const Hardcode = [
  */
 export const TierList = ({ tierlist = Hardcode }: { tierlist: Tierlist }): JSX.Element => {
     return (
-        <section className="row">
+        <Row component="section">
             {
                 Object.keys(tierlist).map((tier, index) => {
                     return (
                         <Fragment key={index}>
-                            <div
+                            <Col
                                 style={{
                                     textAlign: "center",
+                                    padding: 0
                                 }}
-                                className="col-12 col-lg-2 px-0"
+                                sm={12} lg={2}
                             >
                                 <TierChip
                                     tier={tier as UserTier}
                                     className={`py-2 px-0 ${styles.tier}`}
                                 />
-                            </div>
+                            </Col>
 
-                            <div
+                            <Col
                                 style={{
                                     backgroundColor: "var(--colorNeutralBackground1Hover)",
                                     borderBottom: "1px solid var(--colorNeutralBackground1Pressed)",
                                 }}
-                                className="col-12 col-lg-10 d-flex align-items-center py-2"
+                                sm={12} lg={10}
                             >
-                                <div>
+                                <AvatarGroup className={styles.avatarGroup}>
                                     {
                                         tierlist[tier as Tier].map((person, i) => {
                                             return (
-                                                <InitialsAvatar
-                                                    name={person.name}
+                                                <AvatarGroupItem
                                                     key={i}
-                                                    className={person.you ? styles.you : ""}
-                                                    style={{
-                                                        margin: "1em",
-                                                    }}
+                                                    className={person.you ? `${styles.you} ${styles.avatar}` : styles.avatar}
+                                                    {...GenerateInitalsAvatarProps(person.name)}
                                                 />
                                             );
                                         })
                                     }
-                                </div>
-                            </div>
+                                </AvatarGroup>
+                            </Col>
                         </Fragment>
                     );
                 })
             }
-        </section>
+        </Row>
     );
 };
 

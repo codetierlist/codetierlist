@@ -4,9 +4,16 @@ import cors from 'cors';
 import prisma, {fetchedUserArgs} from "../common/prisma";
 import {isUofTEmail, isUTORid} from "is-utorid";
 import routes from "./routes";
+import * as http from "http";
+import socket from "./socket";
 
 const port = process.env.PORT || 3000;
 const app = express();
+const server = http.createServer(app);
+
+
+socket(server);
+
 if (process.env.NODE_ENV === 'development') {
     app.use(
         cors({
@@ -74,6 +81,6 @@ app.use(async (req, res, next) => {
 
 app.use(routes);
 
-app.listen(port, () => {
+server.listen(port, () => {
     console.log(`Server is listening on port ${port}.`);
 });

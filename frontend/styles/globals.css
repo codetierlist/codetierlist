@@ -42,3 +42,12 @@ body {
     padding: var(--spacingVerticalXL);
   }
 }
+
+#axios-loading-backdrop {
+  left: 0;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 9999;
+  display: none;
+}
