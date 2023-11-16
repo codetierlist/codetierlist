@@ -312,7 +312,7 @@ export default function Page() {
                                         <MessageBar intent={"warning"} className={styles.messageBar}>
                                             <MessageBarBody>
                                                 <MessageBarTitle>You have not submitted a test yet.</MessageBarTitle>
-                                                You can submit a test by clicking on the &ldquo;Submit a test&rdquo; tab.
+                                                You can submit a test by clicking on &ldquo;Submit a test&rdquo; tab.
                                                 You will not be able to see the tier list until you submit a test.
                                             </MessageBarBody>
                                             <MessageBarActions
