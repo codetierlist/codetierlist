@@ -38,6 +38,11 @@ services:
       - NEXT_PUBLIC_API_URI=/api
     volumes:
       - ./frontend/src:/frontend/src:ro
+      - ./frontend/components:/frontend/components:ro
+      - ./frontend/contexts:/frontend/contexts:ro
+      - ./frontend/pages:/frontend/pages:ro
+      - ./frontend/public:/frontend/public:ro
+      - ./frontend/styles:/frontend/styles:ro
 
   db:
     image: postgres

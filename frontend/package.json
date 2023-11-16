@@ -21,8 +21,7 @@
     "next": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "react-grid-system": "^8.1.9",
-    "scheduler": "^0.23.0"
+    "react-grid-system": "^8.1.9"
   },
   "devDependencies": {
     "@types/node": "latest",
