@@ -46,6 +46,14 @@ services:
     ports:
       - "5432:5432"
 
+  git-server:
+    restart: always
+    build:
+      context: ./git-server
+      dockerfile: Dockerfile
+    volumes:
+      - repo_data:/repos
+
 volumes:
   db_data:
   repo_data:
