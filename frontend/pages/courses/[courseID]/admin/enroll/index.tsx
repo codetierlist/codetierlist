@@ -20,6 +20,10 @@ import { HeaderToolbar } from '../../../../../components/HeaderToolbar/HeaderToo
 async function massEnroll(courseID: string, csv: string) {
     const table = csv.split("\n").map((row) => row.trim().split(","));
 
+    if (table.length < 2) {
+        throw new Error("CSV must have at least 2 rows");
+    }
+
     const headers = table.shift() || [];
     const utoridIndex = headers.indexOf("utorid");
     const emailIndex = headers.indexOf("email");
@@ -81,8 +85,8 @@ export default function Page(): JSX.Element {
                     appearance="primary"
                     onClick={() => {
                         massEnroll(router.query.courseID as string, editorValue)
-                            .catch((e) => handleError(e.message, showSnackSev))
-                            .then(() => showSnackSev("Enrolled students successfully", "success"));
+                            .then(() => showSnackSev("Enrolled students successfully", "success"))
+                            .catch((e) => handleError(e.message, showSnackSev));
                     }}>
                     Enroll
                 </Button>
