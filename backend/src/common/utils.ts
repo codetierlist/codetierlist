@@ -71,7 +71,57 @@ const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'date
         return null;
     }
 };
+export const processSubmission = async (req: Request, table: "solution" | "testCase") => {
+    // upload files
+    const repoPath = path.resolve(`/repos/${req.course!.id}/${req.assignment!.title}/${req.user.utorid}_${table}`);
 
+    // check if git repo exists
+    const query = {
+        where: {
+            id: {
+                author_id: req.user.utorid,
+                assignment_title: req.assignment!.title,
+                course_id: req.course!.id
+            }
+        }
+    };
+    let submission: TestCase | Solution | null = null;
+    if (table === "solution") {
+        submission = await prisma.solution.findUnique(query);
+    } else {
+        submission = await prisma.testCase.findUnique(query);
+    }
+
+    if (submission === null || !fs.existsSync(repoPath)) {
+        if (submission !== null) {
+            await prisma.solution.delete(query);
+            submission = null;
+        }
+        // // create folder if it doesnt exist
+        await new Promise<undefined>((res, rej) => {
+            fs.mkdir(repoPath, {recursive: true}, (err) => {
+                if (err) rej(err);
+                res(undefined);
+            });
+        });
+        await git.init({fs, dir: repoPath});
+    }
+
+    // get files from form data
+    for (const file of req.files!) {
+        if (file === null) continue;
+        fs.copyFileSync(file.path, `${repoPath}/${file.filename}`);
+    }
+
+    // commit files
+    return await commitFiles(req, submission ?? {
+        git_id: "",
+        git_url: repoPath,
+        course_id: req.course!.id,
+        assignment_title: req.assignment!.title,
+        author_id: req.user.utorid
+    }, table);
+};
 /**
  * Gets a commit from a submission.
  *
@@ -120,26 +170,17 @@ export const getCommit = async (req: Request, table: "solution" | "testCase"): P
         return null;
     }
 
-    let files = null;
-
     try {
-        files = await git.listFiles({
+        const files = await git.listFiles({
             fs,
             dir: submission.git_url,
             ref: commit.oid
         });
+        const log = await git.log({fs, dir: submission.git_url});
+        return {files, log: log.map(commitIterator => commitIterator.oid)};
     } catch (e: unknown) {
         // listFiles throws an error if the commit is not found
         // https://github.com/isomorphic-git/isomorphic-git/blob/90ea0e34f6bb0956858213281fafff0fd8e94309/src/api/listFiles.js#L33
-        return null;
-    }
-
-    try {
-        const log = await git.log({ fs, dir: submission.git_url });
-        return { files, log: log.map(commitIterator => commitIterator.oid) };
-    } catch (e: unknown) {
-        // log throws an error if the commit is not found
-        // https://github.com/isomorphic-git/isomorphic-git/blob/90ea0e34f6bb0956858213281fafff0fd8e94309/src/api/log.js#L38
         return null;
     }
 };
