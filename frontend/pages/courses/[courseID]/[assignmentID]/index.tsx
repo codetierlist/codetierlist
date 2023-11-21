@@ -26,6 +26,7 @@ import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import { Col, Container, Row } from "react-grid-system";
 import styles from './page.module.css';
+import Head from "next/head";
 
 // TODO: clean technical debt
 
@@ -222,6 +223,10 @@ export default function Page() {
 
     return (
         <>
+            <Head>
+                <title>{assignment.title} - Codetierlist</title>
+            </Head>
+
             <TabList className={styles.tabList} size="large" selectedValue={`tab${stage}`}>
                 <Tab value="tab0" onClick={() => setStage(0)}>
                     Assignment details

@@ -27,6 +27,7 @@ import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from "react";
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import styles from './page.module.css';
+import { Head } from "next/head";
 
 /**
  * Toolbar for admin page
@@ -85,11 +86,13 @@ export default function Page() {
 
     useEffect(() => {
         void fetchCourse();
+        document.title = `${courseID} - Codetierlist`;
     }, [courseID]);
 
     return (
         <>
             {userInfo.admin ? <AdminToolbar courseID={courseID as string} fetchCourse={fetchCourse} /> : undefined}
+
             <main>
                 <header className={styles.header}>
                     <Title2>

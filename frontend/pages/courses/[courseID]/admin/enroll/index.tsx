@@ -9,6 +9,7 @@ import { isUTORid, isUofTEmail } from 'is-utorid';
 import { useRouter } from "next/router";
 import { useContext, useState } from "react";
 import flex from '@/styles/flex-utils.module.css';
+import Head from "next/head";
 
 /**
  * given a csv of students, enroll them in the course
@@ -87,6 +88,10 @@ export default function Page(): JSX.Element {
 
     return (
         <>
+            <Head>
+                <title>Enroll Students - Codetierlist</title>
+            </Head>
+
             <HeaderToolbar>
                 <ToolbarButton
                     icon={<ArrowLeft24Regular />}

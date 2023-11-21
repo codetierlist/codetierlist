@@ -9,6 +9,7 @@ import {
     Textarea, Title2, ToolbarButton
 } from "@fluentui/react-components";
 import { ArrowLeft24Regular } from '@fluentui/react-icons';
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { useContext, useState } from "react";
 
@@ -24,6 +25,10 @@ export default function Page(): JSX.Element {
 
     return (
         <>
+            <Head>
+                <title>Create Assignment - Codetierlist</title>
+            </Head>
+
             <HeaderToolbar>
                 <ToolbarButton
                     icon={<ArrowLeft24Regular />}
