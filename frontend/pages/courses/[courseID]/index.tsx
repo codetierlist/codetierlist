@@ -1,6 +1,6 @@
 import { AssignmentCard, CourseSessionChip } from '@/components';
 // import { type Course, getCourses } from '@/contexts/UserContext';
-import axios from "@/axios";
+import axios, { handleError } from "@/axios";
 import { UserContext } from "@/contexts/UserContext";
 import {
     Button,
@@ -30,6 +30,8 @@ import styles from './page.module.css';
 
 // import { notFound } from 'next/navigation';
 import { Add24Filled, Shield24Filled, PersonAdd24Regular } from '@fluentui/react-icons';
+import { handleError } from '../../../axios';
+import { SnackbarContext } from '../../../contexts/SnackbarContext';
 // TODO this code is duplicated from course page
 function CreateAssignmentForm({ closeDialog }: { closeDialog: () => void }) {
     const [assignmentName, setAssignmentName] = useState("");
@@ -37,6 +39,8 @@ function CreateAssignmentForm({ closeDialog }: { closeDialog: () => void }) {
     const [dueDate, setDueDate] = useState(new Date());
     const { courseID } = useRouter().query;
     const { fetchUserInfo } = useContext(UserContext);
+    const { showSnackSev } = useContext(SnackbarContext);
+
     return (
         <DialogSurface>
             <DialogBody>
@@ -46,7 +50,10 @@ function CreateAssignmentForm({ closeDialog }: { closeDialog: () => void }) {
                         name: assignmentName,
                         description: description,
                         dueDate: dueDate.toISOString()
-                    }).then(fetchUserInfo).then(closeDialog);
+                    })
+                        .then(fetchUserInfo)
+                        .then(closeDialog)
+                        .catch((error) => { handleError(error.message, showSnackSev); });
                 }}>
                     <DialogTitle>Create Assignment</DialogTitle>
                     <DialogContent>
@@ -85,6 +92,7 @@ function EnrollStudentsForm({ closeDialog }: { closeDialog: () => void }) {
     const [csvText, setCsvText] = useState("");
     const { courseID } = useRouter().query;
     const { fetchUserInfo } = useContext(UserContext);
+    const { showSnackSev } = useContext(SnackbarContext);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -114,9 +122,7 @@ function EnrollStudentsForm({ closeDialog }: { closeDialog: () => void }) {
                 fetchUserInfo();
                 closeDialog();
             })
-            .catch((error) => {
-                console.error("Error sending data to the server:", error);
-            });
+            .catch((error) => { handleError(error.message, showSnackSev); });
     };
 
     return (
@@ -152,13 +158,17 @@ export default function Page() {
     const { courseID } = useRouter().query;
     const [showDialog, setShowDialog] = useState(false);
     const [showEnrollDialog, setShowEnrollDialog] = useState(false);
+    const { showSnackSev } = useContext(SnackbarContext);
     const router = useRouter();
 
     const fetchCourse = async () => {
         if (!courseID) return;
-        await axios.get<FetchedCourseWithTiers>(`/courses/${courseID}`, { skipErrorHandling: true }).then((res) => setCourse(res.data)).catch(e => {
-            notFound();
-        });
+        await axios.get<FetchedCourseWithTiers>(`/courses/${courseID}`, { skipErrorHandling: true })
+            .then((res) => setCourse(res.data))
+            .catch(e => {
+                handleError(e.message, showSnackSev);
+                notFound();
+            });
     };
 
     useEffect(() => {

@@ -2,25 +2,56 @@ import { lightTheme, Navbar } from '@/components';
 import '@/styles/globals.css';
 import {
     createDOMRenderer,
+    Field,
     FluentProvider,
     GriffelRenderer,
-    SSRProvider,
-    RendererProvider,
     ProgressBar,
-    Field,
+    RendererProvider,
+    SSRProvider,
+    Toast,
+    ToastBody,
+    Toaster,
+    ToastIntent,
+    ToastTitle,
+    useId,
+    useToastController,
 } from '@fluentui/react-components';
 import type { AppProps } from 'next/app';
 import { defaultUser, UserContext } from '@/contexts/UserContext';
 import { FetchedUser } from "codetierlist-types";
 import { useEffect, useState } from "react";
-import axios from "@/axios";
+import axios, { handleError } from "@/axios";
+import { SnackbarContext } from '../contexts/SnackbarContext';
 
 type EnhancedAppProps = AppProps & { renderer?: GriffelRenderer };
 
 function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
-    /*
-     * user data initialization into context and fetching
-     */
+    /** snackbar */
+    const toasterId = useId("toaster");
+    const { dispatchToast } = useToastController(toasterId);
+
+    const showSnack = (message?: string, action?: JSX.Element, content?: JSX.Element) => {
+        if (message) {
+            dispatchToast(
+                <Toast>
+                    <ToastTitle>{message}</ToastTitle>
+                </Toast>,
+                { intent: "info" });
+        } else {
+            dispatchToast(content, { intent: "info" });
+        }
+    };
+
+    const showSnackSev = (message?: string, severity?: ToastIntent) =>
+        dispatchToast(
+            <Toast>
+                <ToastTitle>{severity}</ToastTitle>
+                <ToastBody>{message}</ToastBody>
+            </Toast>,
+            { intent: severity }
+        );
+
+    /* user data initialization into context and fetching */
     const [userInfo, setUserInfo] = useState<FetchedUser>(defaultUser);
 
     const fetchUserInfo = async () => {
@@ -29,7 +60,7 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
                 setUserInfo(data as FetchedUser);
             })
             .catch((error) => {
-                console.error(error);
+                handleError(error.message, showSnackSev);
             });
     };
 
@@ -45,11 +76,16 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
                 <UserContext.Provider
                     value={{ userInfo, setUserInfo, fetchUserInfo }}>
                     <FluentProvider theme={lightTheme}>
-                        <Field validationState="none" id="axios-loading-backdrop">
-                            <ProgressBar />
-                        </Field>
-                        <Navbar />
-                        <Component {...pageProps} />
+                        <SnackbarContext.Provider
+                            value={{ showSnack, showSnackSev }}
+                        >
+                            <Field validationState="none" id="axios-loading-backdrop">
+                                <ProgressBar />
+                            </Field>
+                            <Navbar />
+                            <Component {...pageProps} />
+                            <Toaster toasterId={toasterId} />
+                        </SnackbarContext.Provider>
                     </FluentProvider>
                 </UserContext.Provider>
             </SSRProvider>

@@ -1,4 +1,4 @@
-import axios from "@/axios";
+import axios, { handleError } from "@/axios";
 import {
     TierChip,
     TierList,
@@ -13,7 +13,7 @@ import {
     MessageBarActions,
     MessageBarBody,
     MessageBarTitle,
-    Tab, TabList, Title3
+    Tab, TabList, Title3, ToastIntent
 } from '@fluentui/react-components';
 import { Add16Regular, Clock16Regular } from '@fluentui/react-icons';
 import { Subtitle2, Title1, Title2 } from '@fluentui/react-text';
@@ -22,9 +22,11 @@ import { FetchedAssignmentWithTier, TestCase, Tierlist } from "codetierlist-type
 import Error from 'next/error';
 import { notFound } from "next/navigation";
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Col, Container, Row } from "react-grid-system";
 import styles from './page.module.css';
+import { handleError } from '../../../../axios';
+import { SnackbarContext } from "@/contexts/SnackbarContext";
 
 // TODO: clean technical debt
 
@@ -53,9 +55,10 @@ const NoUploadPlaceholder = ({ title }: { title: string }) => {
     );
 };
 
-const uploader = (url: string, fetchAssignment: () => void, setContent: (content: string) => void) => () => {
+const uploader = (url: string, fetchAssignment: () => void, setContent: (content: string) => void, showSnackSev: (message?: string, severity?: ToastIntent) => void) => () => {
     const form = document.createElement('form');
     const input = document.createElement('input');
+
     input.type = 'file';
     input.name = 'files';
     input.oninput = async () => {
@@ -68,7 +71,8 @@ const uploader = (url: string, fetchAssignment: () => void, setContent: (content
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
-        });
+        }).catch(e => { handleError(e.message, showSnackSev); });
+
         document.body.removeChild(form);
         // read file
         const reader = new FileReader();
@@ -178,22 +182,28 @@ export default function Page() {
     const [tierlist, setTierlist] = useState<Tierlist | null>(null);
     const [solutionContent, setSolutionContent] = useState<string | null>(null);
     const [testContent, setTestContent] = useState<string | null>(null);
+    const { showSnackSev } = useContext(SnackbarContext);
 
     // TODO: guard against invalid courseID, invalid assignmentID
     const { courseID, assignmentID } = router.query;
 
     const fetchAssignment = async () => {
-        await axios.get<FetchedAssignmentWithTier>(`/courses/${courseID}/assignments/${assignmentID}`, { skipErrorHandling: true }).then((res) => setAssignment(res.data)).catch(e => {
-            // console.log(e);
-            notFound();
-        });
+        await axios.get<FetchedAssignmentWithTier>(`/courses/${courseID}/assignments/${assignmentID}`, { skipErrorHandling: true })
+            .then((res) => setAssignment(res.data))
+            .catch(e => {
+                handleError(e.message, showSnackSev);
+                notFound();
+            });
     };
     const fetchTierlist = async () => {
-        await axios.get<Tierlist>(`/courses/${courseID}/assignments/${assignmentID}/tierlist`, { skipErrorHandling: true }).then((res) => setTierlist(res.data)).catch(e => {
-            // console.log(e);
-            notFound();
-        });
+        await axios.get<Tierlist>(`/courses/${courseID}/assignments/${assignmentID}/tierlist`, { skipErrorHandling: true })
+            .then((res) => setTierlist(res.data))
+            .catch(e => {
+                handleError(e.message, showSnackSev);
+                notFound();
+            });
     };
+
     useEffect(() => {
         if (!courseID || !assignmentID) {
             return;

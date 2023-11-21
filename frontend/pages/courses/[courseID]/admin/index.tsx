@@ -1,6 +1,6 @@
 // Remember to change back t [courseID]
 
-import axios from "@/axios";
+import axios, { handleError } from "@/axios";
 import {
     AddAssignmentModal,
     AssignmentCard,
@@ -10,9 +10,10 @@ import {
 import { Title2 } from '@fluentui/react-text';
 import { FetchedCourseWithTiers } from "codetierlist-types";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import styles from './page.module.css';
 import { notFound } from 'next/navigation';
+import { SnackbarContext } from "@/contexts/SnackbarContext";
 
 export default function Page (): JSX.Element {
     // const courses = getCourses();
@@ -27,11 +28,17 @@ export default function Page (): JSX.Element {
 
     const router = useRouter();
     const params = router.query;
+    const { showSnackSev } = useContext(SnackbarContext);
 
     // TODO this code is duplicated from assignment page
     const [course, setCourse] = useState<FetchedCourseWithTiers | null>(null);
     useEffect(() => {
-        axios.get<FetchedCourseWithTiers>(`/courses/${params.courseID}`, { skipErrorHandling: true }).then((res) => setCourse(res.data)).catch(notFound);
+        axios.get<FetchedCourseWithTiers>(`/courses/${params.courseID}`, { skipErrorHandling: true })
+            .then((res) => setCourse(res.data))
+            .catch((e) => {
+                handleError(e.message, showSnackSev);
+                notFound();
+            });
     }, [params.courseID]);
 
 

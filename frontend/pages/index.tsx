@@ -16,9 +16,10 @@ import {
     Label,
     Title2
 } from "@fluentui/react-components";
-import axios from "@/axios";
+import axios, { handleError } from "@/axios";
 import { FetchedCourse } from '../../types/index';
 import { FetchedUser } from 'codetierlist-types';
+import { SnackbarContext } from '../contexts/SnackbarContext';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -26,6 +27,8 @@ function CreateCourseForm({ closeDialog }: { closeDialog: () => void }) {
     const [courseCode, setCourseCode] = useState("");
     const [courseName, setCourseName] = useState("");
     const { fetchUserInfo } = useContext(UserContext);
+    const { showSnackSev } = useContext(SnackbarContext);
+
     return (
         <DialogSurface>
             <DialogBody>
@@ -34,7 +37,10 @@ function CreateCourseForm({ closeDialog }: { closeDialog: () => void }) {
                     axios.post("/courses", {
                         code: courseCode,
                         name: courseName
-                    }).then(fetchUserInfo).then(closeDialog);
+                    })
+                        .then(fetchUserInfo)
+                        .then(closeDialog)
+                        .catch((error) => { handleError(error.message, showSnackSev); });
                 }}>
                     <DialogTitle>Create Course</DialogTitle>
                     <DialogContent>

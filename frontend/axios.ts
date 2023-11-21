@@ -1,3 +1,4 @@
+import { ToastIntent } from "@fluentui/react-components";
 import axios from "axios";
 
 declare module "axios" {
@@ -6,9 +7,12 @@ declare module "axios" {
     }
 }
 
-const handleError = (message: string) => {
-    // TODO: show error message
-    console.error(message);
+export const handleError = (message: string, showSnackSev?: (message?: string, severity?: ToastIntent) => void) => {
+    if (showSnackSev) {
+        showSnackSev(message, "error");
+    } else {
+        console.error(message);
+    }
 };
 
 /**
@@ -60,7 +64,6 @@ instance.interceptors.response.use(
                 loadingWheel.style.display = 'none';
             }
         }, 500);
-        handleError(error.message);
         return Promise.reject(error);
     },
 );
