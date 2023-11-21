@@ -12,6 +12,7 @@ model Assignment {
   due_date    DateTime?
   description String
   course_id   String
+  session     String
   course      Course     @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   test_cases  TestCase[]
   submissions Solution[]

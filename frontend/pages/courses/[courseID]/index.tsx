@@ -214,7 +214,7 @@ export default function Page() {
             <main>
                 <header className={styles.header}>
                     <Title2>
-                        <CourseSessionChip session="Fall">
+                        <CourseSessionChip session={course?.name ? course.name : "Fall"}>
                             {courseID}
                         </CourseSessionChip>
                     </Title2>

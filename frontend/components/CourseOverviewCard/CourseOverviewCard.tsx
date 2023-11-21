@@ -14,7 +14,7 @@ import {SessionBlock} from '@/components/SessionBlock/SessionBlock';
 
 export declare interface CourseSessionChipProps {
     /** the session of the course */
-    session: "Fall"
+    session: string
 
     /** the children of the component */
     children?: React.ReactNode

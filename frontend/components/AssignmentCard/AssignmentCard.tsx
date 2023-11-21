@@ -11,6 +11,7 @@ import {type Tier, type UserTier} from "codetierlist-types";
 import { convertDate } from '../utils/TimeUtils/TimeUtils';
 
 export declare interface AssignmentCardProps {
+    key: string
     id: string
     name: string
     dueDate?: Date
@@ -19,6 +20,7 @@ export declare interface AssignmentCardProps {
 }
 
 export const AssignmentCard = ({
+    key,
     id,
     name,
     dueDate,
@@ -35,7 +37,7 @@ export const AssignmentCard = ({
                 </CardHeader>
                 <div className={styles.cardContent}>
                     {dueDate ?
-                        <Caption1>{formattedDueDate}</Caption1> : null}
+                        <Caption1>{"Due: " + formattedDueDate}</Caption1> : null}
                     <Title3>{name}</Title3>
                 </div>
             </Card>
