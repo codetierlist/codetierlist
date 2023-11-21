@@ -19,7 +19,7 @@ export const handleError = (message: string, showSnackSev?: (message?: string, s
  * Axios instance
  */
 export const instance = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URI || "/api"
+    baseURL: process.env.NEXT_PUBLIC_API_URL || "/api"
 });
 
 let loading = 0;

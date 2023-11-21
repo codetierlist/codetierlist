@@ -186,8 +186,6 @@ export default function Page() {
     const [solutionContent, setSolutionContent] = useState<string | null>(null);
     const [testContent, setTestContent] = useState<string | null>(null);
     const { showSnackSev } = useContext(SnackbarContext);
-
-    // TODO: guard against invalid courseID, invalid assignmentID
     const { courseID, assignmentID } = router.query;
 
     const fetchAssignment = async () => {
@@ -215,10 +213,7 @@ export default function Page() {
         void fetchTierlist();
     }, [courseID, assignmentID]);
 
-    if (!courseID || !assignmentID) {
-        return <Error statusCode={404} />;
-    }
-    if (!assignment) {
+    if (!assignment || !courseID || !assignmentID) {
         return <p>Loading...</p>;
     }
     return (
