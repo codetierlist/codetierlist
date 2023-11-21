@@ -193,7 +193,7 @@ export default function Page() {
             .then((res) => setAssignment(res.data))
             .catch(e => {
                 handleError(e.message, showSnackSev);
-                notFound();
+                setStage(-404);
             });
     };
     const fetchTierlist = async () => {
@@ -201,7 +201,7 @@ export default function Page() {
             .then((res) => setTierlist(res.data))
             .catch(e => {
                 handleError(e.message, showSnackSev);
-                notFound();
+                setStage(-404);
             });
     };
 
@@ -213,9 +213,13 @@ export default function Page() {
         void fetchTierlist();
     }, [courseID, assignmentID]);
 
-    if (!assignment || !courseID || !assignmentID) {
+    if (stage === -404) {
+        return <Error statusCode={404} />;
+    } else if (!assignment || !courseID || !assignmentID) {
         return <p>Loading...</p>;
     }
+
+
     return (
         <>
             <TabList className={styles.tabList} size="large" selectedValue={`tab${stage}`}>

@@ -29,6 +29,7 @@ import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from "react";
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import styles from './page.module.css';
+import { HeaderToolbar } from '../../../components/HeaderToolbar/HeaderToolbar';
 
 // TODO this code is duplicated from course page
 function CreateAssignmentForm({ closeDialog }: { closeDialog: () => void }) {
@@ -128,7 +129,7 @@ function EnrollStudentsForm({ closeDialog }: { closeDialog: () => void }) {
             <DialogBody>
                 <form onSubmit={handleSubmit}>
                     <DialogContent>
-                        <Title2 style={{ marginBottom: 7 }}>Enroll Students</Title2><br/>
+                        <Title2 style={{ marginBottom: 7 }}>Enroll Students</Title2><br />
                         <Title3 style={{ fontSize: 18 }}>Input a list of students</Title3>
                         <Textarea
                             id="csvText"
@@ -150,14 +151,59 @@ function EnrollStudentsForm({ closeDialog }: { closeDialog: () => void }) {
     );
 }
 
+/**
+ * Toolbar for admin page
+ * @property {string} courseID the course ID of the course
+ * @property {() => Promise<void>} fetchCourse a function to fetch the course
+ * @returns {JSX.Element} the toolbar
+ */
+const AdminToolbar = ({ courseID, fetchCourse }: { courseID: string, fetchCourse: () => Promise<void> }) => {
+    const [showDialog, setShowDialog] = useState(false);
+    const router = useRouter();
+
+    return (
+        <>
+            <HeaderToolbar
+                aria-label="Admin Toolbar"
+            >
+                <ToolbarButton
+                    appearance="primary"
+                    icon={<Shield24Filled />}
+                    onClick={() => router.push(`/courses/${courseID}/admin`)}
+                >
+                    Admin page
+                </ToolbarButton>
+
+                <ToolbarButton
+                    appearance="subtle"
+                    icon={<PersonAdd24Regular />}
+                    onClick={() => router.push(`/courses/${courseID}/admin/enroll`)}
+                >
+                    Enroll Students
+                </ToolbarButton>
+
+                <ToolbarButton
+                    appearance="subtle"
+                    icon={<Add24Filled />}
+                    onClick={() => setShowDialog(true)}
+                >
+                    Add assignment
+                </ToolbarButton>
+            </HeaderToolbar>
+            <Dialog open={showDialog}
+                onOpenChange={(e: DialogOpenChangeEvent, data: DialogOpenChangeData) => setShowDialog(data.open)}>
+                <CreateAssignmentForm
+                    closeDialog={() => fetchCourse().then(() => setShowDialog(false))} />
+            </Dialog>
+        </>
+    );
+};
+
 export default function Page() {
     const { userInfo } = useContext(UserContext);
     const [course, setCourse] = useState<FetchedCourseWithTiers | null>(null);
     const { courseID } = useRouter().query;
-    const [showDialog, setShowDialog] = useState(false);
-    const [showEnrollDialog, setShowEnrollDialog] = useState(false);
     const { showSnackSev } = useContext(SnackbarContext);
-    const router = useRouter();
 
     const fetchCourse = async () => {
         if (!courseID) return;
@@ -173,52 +219,9 @@ export default function Page() {
         void fetchCourse();
     }, [courseID]);
 
-
     return (
         <>
-            {
-                userInfo.admin ? (
-                    <Toolbar
-                        aria-label="Large Toolbar"
-                        size="large"
-                        className={styles.toolbar}
-                    >
-                        <ToolbarButton
-                            appearance="primary"
-                            icon={<Shield24Filled />}
-                            onClick={() => router.push(`/courses/${courseID}/admin`)}
-                        >
-                            Admin page
-                        </ToolbarButton>
-
-                        <ToolbarButton
-                            appearance="subtle"
-                            icon={<PersonAdd24Regular />}
-                            onClick={() => setShowEnrollDialog(true)}
-                        >
-                            Enroll Students
-                        </ToolbarButton>
-
-                        <ToolbarButton
-                            appearance="subtle"
-                            icon={<Add24Filled />}
-                            onClick={() => setShowDialog(true)}
-                        >
-                            Add assignment
-                        </ToolbarButton>
-                    </Toolbar>
-                ) : undefined
-            }
-
-            <Dialog open={showEnrollDialog} onOpenChange={(e: DialogOpenChangeEvent, data: DialogOpenChangeData) => setShowEnrollDialog(data.open)}>
-                <EnrollStudentsForm closeDialog={() => fetchCourse().then(() => setShowEnrollDialog(false))} />
-            </Dialog>
-            <Dialog open={showDialog}
-                onOpenChange={(e: DialogOpenChangeEvent, data: DialogOpenChangeData) => setShowDialog(data.open)}>
-                <CreateAssignmentForm
-                    closeDialog={() => fetchCourse().then(() => setShowDialog(false))} />
-            </Dialog>
-
+            { userInfo.admin ? <AdminToolbar courseID={courseID as string} fetchCourse={fetchCourse} /> : undefined}
             <main>
                 <header className={styles.header}>
                     <Title2>

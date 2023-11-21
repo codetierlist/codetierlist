@@ -41,6 +41,7 @@ export default function Page (): JSX.Element {
             });
     }, [params.courseID]);
 
+
     return (
         <main className={styles.info}>
             <div className={styles.assignments}>
