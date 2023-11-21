@@ -1,8 +1,6 @@
-import Head from 'next/head';
-import { Inter } from 'next/font/google';
+import axios, { handleError } from "@/axios";
 import { CourseOverviewCard } from '@/components';
 import { UserContext } from "@/contexts/UserContext";
-import { useContext, useState } from "react";
 import {
     Button,
     Dialog,
@@ -16,9 +14,9 @@ import {
     Label,
     Title2
 } from "@fluentui/react-components";
-import axios, { handleError } from "@/axios";
-import { FetchedCourse } from '../../types/index';
-import { FetchedUser } from 'codetierlist-types';
+import { Inter } from 'next/font/google';
+import Head from 'next/head';
+import { useContext, useState } from "react";
 import { SnackbarContext } from '../contexts/SnackbarContext';
 
 const inter = Inter({ subsets: ['latin'] });

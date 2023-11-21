@@ -6,6 +6,7 @@ import {
     convertDate,
     convertTime
 } from '@/components';
+import { SnackbarContext } from "@/contexts/SnackbarContext";
 import flex from '@/styles/flex-utils.module.css';
 import {
     Button, Card, CardHeader,
@@ -25,8 +26,6 @@ import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import { Col, Container, Row } from "react-grid-system";
 import styles from './page.module.css';
-import { handleError } from '../../../../axios';
-import { SnackbarContext } from "@/contexts/SnackbarContext";
 
 // TODO: clean technical debt
 
@@ -91,12 +90,14 @@ const uploader = (url: string, fetchAssignment: () => void, setContent: (content
 const TestUpload = ({ uploadedTests, fetchAssignment, content, setContent }: { uploadedTests: unknown[], fetchAssignment: () => void, content: string, setContent: (content: string) => void }) => {
     const router = useRouter();
     const { courseID, assignmentID } = router.query;
+    const { showSnackSev } = useContext(SnackbarContext);
+
     return (
         <Col sm={12}>
             <UploadHeader
                 title="Test"
                 action={
-                    uploader(`/courses/${courseID}/assignments/${assignmentID}/testcases`, fetchAssignment, setContent)
+                    uploader(`/courses/${courseID}/assignments/${assignmentID}/testcases`, fetchAssignment, setContent, showSnackSev)
                 }
             />
 
@@ -130,12 +131,14 @@ const SolutionUpload = (
     }) => {
     const router = useRouter();
     const { courseID, assignmentID } = router.query;
+    const { showSnackSev } = useContext(SnackbarContext);
+
     return (
         <Col sm={12}>
             <UploadHeader
                 title="Solution"
                 action={
-                    uploader(`/courses/${courseID}/assignments/${assignmentID}/submissions`, fetchAssignment, setContent)
+                    uploader(`/courses/${courseID}/assignments/${assignmentID}/submissions`, fetchAssignment, setContent, showSnackSev)
                 }
             />
 

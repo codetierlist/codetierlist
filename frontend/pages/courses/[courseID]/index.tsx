@@ -21,17 +21,15 @@ import {
     Toolbar,
     ToolbarButton
 } from "@fluentui/react-components";
+import { Add24Filled, PersonAdd24Regular, Shield24Filled } from '@fluentui/react-icons';
 import { Title2 } from '@fluentui/react-text';
 import { FetchedCourseWithTiers } from "codetierlist-types";
 import { notFound } from "next/navigation";
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from "react";
+import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import styles from './page.module.css';
 
-// import { notFound } from 'next/navigation';
-import { Add24Filled, Shield24Filled, PersonAdd24Regular } from '@fluentui/react-icons';
-import { handleError } from '../../../axios';
-import { SnackbarContext } from '../../../contexts/SnackbarContext';
 // TODO this code is duplicated from course page
 function CreateAssignmentForm({ closeDialog }: { closeDialog: () => void }) {
     const [assignmentName, setAssignmentName] = useState("");

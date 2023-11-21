@@ -7,13 +7,13 @@ import {
     CourseBlockLarge,
     ReturnHomeButton
 } from '@/components';
+import { SnackbarContext } from "@/contexts/SnackbarContext";
 import { Title2 } from '@fluentui/react-text';
 import { FetchedCourseWithTiers } from "codetierlist-types";
+import { notFound } from 'next/navigation';
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import styles from './page.module.css';
-import { notFound } from 'next/navigation';
-import { SnackbarContext } from "@/contexts/SnackbarContext";
 
 export default function Page (): JSX.Element {
     // const courses = getCourses();
