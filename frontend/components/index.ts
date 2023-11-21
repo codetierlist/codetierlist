@@ -9,6 +9,7 @@ export * from './CourseOverviewCard/CourseOverviewCard';
 export * from './InitialsAvatar/InitialsAvatar';
 export * from './Navbar/Navbar';
 export * from './ReturnHomeButton/ReturnHomeButton';
+export * from './HeaderToolbar/HeaderToolbar';
 export * from './SessionBlock/SessionBlock';
 export * from './TierChip/TierChip';
 export * from './TierList/TierList';

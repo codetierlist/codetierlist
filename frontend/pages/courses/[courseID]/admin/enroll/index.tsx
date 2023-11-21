@@ -1,13 +1,14 @@
 import axios, { handleError } from "@/axios";
+import { HeaderToolbar } from "@/components";
 import { SnackbarContext } from "@/contexts/SnackbarContext";
-import { Body2, Button, Toolbar, ToolbarButton } from "@fluentui/react-components";
-import { ArrowLeft24Regular } from "@fluentui/react-icons";
+import { Body2, Button, ToolbarButton } from "@fluentui/react-components";
+import { ArrowLeft24Regular, Add24Filled } from '@fluentui/react-icons';
 import { Title2 } from '@fluentui/react-text';
 import { Editor } from "@monaco-editor/react";
 import { isUTORid, isUofTEmail } from 'is-utorid';
 import { useRouter } from "next/router";
 import { useContext, useState } from "react";
-import { HeaderToolbar } from '../../../../../components/HeaderToolbar/HeaderToolbar';
+import flex from '@/styles/flex-utils.module.css';
 
 /**
  * given a csv of students, enroll them in the course
@@ -51,6 +52,32 @@ async function massEnroll(courseID: string, csv: string) {
         .catch((e) => { throw new Error(e.message); });
 }
 
+/**
+ * prompt the user to select a csv file
+ * @returns the contents of the csv file
+ */
+async function promptForFile(type: string): Promise<string | undefined> {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = type;
+
+    return new Promise((resolve) => {
+        fileInput.addEventListener("change", () => {
+            if (fileInput.files && fileInput.files[0]) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                reader.addEventListener("load", () => {
+                    if (typeof reader.result === "string") {
+                        resolve(reader.result);
+                    }
+                });
+                reader.readAsText(file);
+            }
+        });
+        fileInput.click();
+    });
+}
+
 export default function Page(): JSX.Element {
     const [editorValue, setEditorValue] = useState("");
     const { showSnackSev } = useContext(SnackbarContext);
@@ -69,8 +96,26 @@ export default function Page(): JSX.Element {
             </HeaderToolbar>
 
             <main>
-                <Title2 block>Enroll Students</Title2>
-                <Body2 block>Enter a CSV of students to enroll in this course. The CSV must have a header row with the columns <code>utorid</code> and <code>email</code>.</Body2>
+                <div className={`${flex["d-flex"]} ${flex["justify-content-between"]}`}>
+                    <header>
+                        <Title2 block>Enroll Students</Title2>
+                        <Body2 block>Enter a CSV of students to enroll in this course. The CSV must have a header row with the columns <code>utorid</code> and <code>email</code>.</Body2>
+                    </header>
+
+                    <Button
+                        icon={<Add24Filled />}
+                        onClick={async () => {
+                            promptForFile(".csv")
+                                .then((csv) => {
+                                    if (csv) {
+                                        setEditorValue(csv);
+                                    }
+                                });
+                        }}
+                    >
+                        Load CSV from file
+                    </Button>
+                </div>
 
                 <br />
 
