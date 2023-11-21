@@ -1,79 +1,73 @@
-// Remember to change back t [courseID]
-
 import axios, { handleError } from "@/axios";
-import {
-    AddAssignmentModal,
-    AssignmentCard,
-    CourseBlockLarge,
-    ReturnHomeButton
-} from '@/components';
+import { HeaderToolbar } from "@/components";
 import { SnackbarContext } from "@/contexts/SnackbarContext";
-import { Title2 } from '@fluentui/react-text';
-import { FetchedCourseWithTiers } from "codetierlist-types";
-import { notFound } from 'next/navigation';
+import { UserContext } from "@/contexts/UserContext";
+import {
+    Button,
+    Input,
+    Label,
+    Textarea, Title2, ToolbarButton
+} from "@fluentui/react-components";
+import { ArrowLeft24Regular } from '@fluentui/react-icons';
 import { useRouter } from "next/router";
-import { useContext, useEffect, useState } from "react";
-import styles from './page.module.css';
+import { useContext, useState } from "react";
 
-export default function Page (): JSX.Element {
-    // const courses = getCourses();
-
-    // let courseObject: Course | undefined;
-
-    // if (!courses.find((course) => course.code === params.courseID)) {
-    //     notFound();
-    // } else {
-    //     courseObject = courses.find((course) => course.code === params.courseID);
-    // }
+export default function Page(): JSX.Element {
+    const { showSnackSev } = useContext(SnackbarContext);
+    const [assignmentName, setAssignmentName] = useState("");
+    const [description, setDescription] = useState("");
+    const [dueDate, setDueDate] = useState(new Date());
+    const { courseID } = useRouter().query;
+    const { fetchUserInfo } = useContext(UserContext);
 
     const router = useRouter();
-    const params = router.query;
-    const { showSnackSev } = useContext(SnackbarContext);
-
-    // TODO this code is duplicated from assignment page
-    const [course, setCourse] = useState<FetchedCourseWithTiers | null>(null);
-    useEffect(() => {
-        axios.get<FetchedCourseWithTiers>(`/courses/${params.courseID}`, { skipErrorHandling: true })
-            .then((res) => setCourse(res.data))
-            .catch((e) => {
-                handleError(e.message, showSnackSev);
-                notFound();
-            });
-    }, [params.courseID]);
-
 
     return (
-        <main className={styles.info}>
-            <div className={styles.assignments}>
-                <header className={styles.header}>
-                    {/* <Title2>
-                        <CourseSessionChip session="Fall">
-                            {params.courseID}
-                        </CourseSessionChip>
-                    </Title2> */}
-                    <CourseBlockLarge courseID='CSCXXX' />
-                    <Title2 className={styles.title}>
-                        Temporary Course Name{/* {courseObject?.name || 'Course not found'} */}
-                    </Title2>
-                </header>
-                <div className="flex-wrap">
-                    {course ? course.assignments.map((assignment) => (
-                        <AssignmentCard
-                            key={assignment.title.replaceAll(" ", "_")}
-                            id={assignment.title.replaceAll(" ", "_")}
-                            name={assignment.title}
-                            dueDate={assignment.due_date ? new Date(assignment.due_date) : undefined}
-                            tier={assignment.tier}
-                            courseID={params.courseID as string}
-                        />
-                    )) : "Loading..."}
-                    <AddAssignmentModal />
-                </div>
-                <div className={styles.bottomButtons}>
-                    <ReturnHomeButton />
-                    {/* <EnrollModal /> */}
-                </div>
-            </div>
-        </main>
+        <>
+            <HeaderToolbar>
+                <ToolbarButton
+                    icon={<ArrowLeft24Regular />}
+                    onClick={() => router.push(`/courses/${router.query.courseID}`)}
+                >
+                    Back
+                </ToolbarButton>
+            </HeaderToolbar>
+
+            <main>
+                <form onSubmit={(e) => {
+                    e.preventDefault();
+                    axios.post(`/courses/${courseID}/assignments`, {
+                        name: assignmentName,
+                        description: description,
+                        dueDate: dueDate.toISOString()
+                    })
+                        .then(fetchUserInfo)
+                        .then(() => router.push(`/courses/${courseID}`))
+                        .catch((error) => { handleError(error.message, showSnackSev); });
+                }}>
+                    <Title2 block>Create Assignment</Title2>
+
+                    <Label htmlFor="name">Name:</Label><br />
+                    <Input type="text" id="name" name="courseCode"
+                        value={assignmentName}
+                        onChange={e => setAssignmentName(e.target.value)} /><br />
+
+                    <Label htmlFor="description">Description:</Label><br />
+                    <Textarea id="description" name="courseName"
+                        value={description}
+                        onChange={e => setDescription(e.target.value)} /><br />
+
+                    <Label htmlFor="dueDate">Due Date:</Label><br />
+                    <Input type="datetime-local" id="dueDate" name="dueDate"
+                        value={dueDate.toISOString().slice(0, -8)}
+                        onChange={e => setDueDate(new Date(e.target.value))} />
+
+                    <br /><br />
+
+                    <Button type="submit"
+                        appearance="primary">Create</Button>
+                </form>
+            </main>
+        </>
     );
 }

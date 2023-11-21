@@ -47,7 +47,8 @@ async function massEnroll(courseID: string, csv: string) {
     const utoridList = students.map((student) => student.utorid);
 
     await axios.post(`/courses/${courseID}/enroll`, {
-        utorids: utoridList
+        utorids: utoridList,
+        role: "STUDENT"
     })
         .catch((e) => { throw new Error(e.message); });
 }

@@ -28,171 +28,42 @@ import { useContext, useEffect, useState } from "react";
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import styles from './page.module.css';
 
-// TODO this code is duplicated from course page
-function CreateAssignmentForm({ closeDialog }: { closeDialog: () => void }) {
-    const [assignmentName, setAssignmentName] = useState("");
-    const [description, setDescription] = useState("");
-    const [dueDate, setDueDate] = useState(new Date());
-    const { courseID } = useRouter().query;
-    const { fetchUserInfo } = useContext(UserContext);
-    const { showSnackSev } = useContext(SnackbarContext);
-
-    return (
-        <DialogSurface>
-            <DialogBody>
-                <form onSubmit={(e) => {
-                    e.preventDefault();
-                    axios.post(`/courses/${courseID}/assignments`, {
-                        name: assignmentName,
-                        description: description,
-                        dueDate: dueDate.toISOString()
-                    })
-                        .then(fetchUserInfo)
-                        .then(closeDialog)
-                        .catch((error) => { handleError(error.message, showSnackSev); });
-                }}>
-                    <DialogTitle>Create Assignment</DialogTitle>
-                    <DialogContent>
-                        <Label htmlFor="name">Name:</Label><br />
-                        <Input type="text" id="name" name="courseCode"
-                            value={assignmentName}
-                            onChange={e => setAssignmentName(e.target.value)} /><br />
-                        <Label htmlFor="description">Description:</Label><br />
-                        <Textarea id="description" name="courseName"
-                            value={description}
-                            onChange={e => setDescription(e.target.value)} /><br />
-                        <Label htmlFor="dueDate">Due Date:</Label><br />
-                        <Input type="datetime-local" id="dueDate" name="dueDate"
-                            value={dueDate.toISOString().slice(0, -8)}
-                            onChange={e => setDueDate(new Date(e.target.value))} />
-                        <br /><br />
-                    </DialogContent>
-                    <DialogActions>
-                        <DialogTrigger disableButtonEnhancement>
-                            <Button appearance="secondary">Close</Button>
-                        </DialogTrigger>
-                        <Button type="submit"
-                            appearance="primary">Create</Button>
-                    </DialogActions>
-                </form>
-            </DialogBody>
-        </DialogSurface>
-    );
-}
-
-function parseFileContent(content: string) {
-
-}
-
-function EnrollStudentsForm({ closeDialog }: { closeDialog: () => void }) {
-    const [csvText, setCsvText] = useState("");
-    const { courseID } = useRouter().query;
-    const { fetchUserInfo } = useContext(UserContext);
-    const { showSnackSev } = useContext(SnackbarContext);
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-
-        // Split the input text into lines
-        const lines = csvText.split('\n');
-
-        // Initialize an array to store the extracted data
-        const data: string[] = [];
-
-        lines.forEach((line) => {
-            // Split each line by a comma
-            const [utorid] = line.trim().split('\n');
-
-            // Check if both utorid and role exist
-            if (utorid) {
-                // Push the data to the array
-                data.push(utorid);
-            }
-        });
-
-        // Now 'data' contains an array of objects with 'utorid' and 'role'
-
-        // Send 'data' to the server endpoint using axios or your preferred method
-        axios.post(`/courses/${courseID}/enroll`, { utorids: data, role: "STUDENT" })
-            .then(() => {
-                fetchUserInfo();
-                closeDialog();
-            })
-            .catch((error) => { handleError(error.message, showSnackSev); });
-    };
-
-    return (
-        <DialogSurface>
-            <DialogBody>
-                <form onSubmit={handleSubmit}>
-                    <DialogContent>
-                        <Title2 style={{ marginBottom: 7 }}>Enroll Students</Title2><br />
-                        <Title3 style={{ fontSize: 18 }}>Input a list of students</Title3>
-                        <Textarea
-                            id="csvText"
-                            placeholder="utorid1,utorid2,utorid3,..."
-                            value={csvText}
-                            onChange={(e) => setCsvText(e.target.value)}
-                            required
-                        />
-                    </DialogContent>
-                    <DialogActions>
-                        <DialogTrigger disableButtonEnhancement>
-                            <Button appearance="secondary">Close</Button>
-                        </DialogTrigger>
-                        <Button type="submit" appearance="primary">Submit</Button>
-                    </DialogActions>
-                </form>
-            </DialogBody>
-        </DialogSurface>
-    );
-}
-
 /**
  * Toolbar for admin page
  * @property {string} courseID the course ID of the course
- * @property {() => Promise<void>} fetchCourse a function to fetch the course
  * @returns {JSX.Element} the toolbar
  */
-const AdminToolbar = ({ courseID, fetchCourse }: { courseID: string, fetchCourse: () => Promise<void> }) => {
-    const [showDialog, setShowDialog] = useState(false);
+const AdminToolbar = ({ courseID }: { courseID: string, fetchCourse: () => Promise<void> }) => {
     const router = useRouter();
 
     return (
-        <>
-            <HeaderToolbar
-                aria-label="Admin Toolbar"
+        <HeaderToolbar
+            aria-label="Admin Toolbar"
+        >
+            <ToolbarButton
+                appearance="primary"
+                icon={<Shield24Filled />}
+                onClick={() => router.push(`/courses/${courseID}/admin`)}
             >
-                <ToolbarButton
-                    appearance="primary"
-                    icon={<Shield24Filled />}
-                    onClick={() => router.push(`/courses/${courseID}/admin`)}
-                >
-                    Admin page
-                </ToolbarButton>
+                Admin page
+            </ToolbarButton>
 
-                <ToolbarButton
-                    appearance="subtle"
-                    icon={<PersonAdd24Regular />}
-                    onClick={() => router.push(`/courses/${courseID}/admin/enroll`)}
-                >
-                    Enroll Students
-                </ToolbarButton>
+            <ToolbarButton
+                appearance="subtle"
+                icon={<PersonAdd24Regular />}
+                onClick={() => router.push(`/courses/${courseID}/admin/enroll`)}
+            >
+                Enroll Students
+            </ToolbarButton>
 
-                <ToolbarButton
-                    appearance="subtle"
-                    icon={<Add24Filled />}
-                    onClick={() => setShowDialog(true)}
-                >
-                    Add assignment
-                </ToolbarButton>
-            </HeaderToolbar>
-            <Dialog open={showDialog}
-                onOpenChange={(e: DialogOpenChangeEvent, data: DialogOpenChangeData) => setShowDialog(data.open)}>
-                <CreateAssignmentForm
-                    closeDialog={() => fetchCourse().then(() => setShowDialog(false))} />
-            </Dialog>
-        </>
+            <ToolbarButton
+                appearance="subtle"
+                icon={<Add24Filled />}
+                onClick={() => router.push(`/courses/${courseID}/admin/create_assignment`)}
+            >
+                Add assignment
+            </ToolbarButton>
+        </HeaderToolbar>
     );
 };
 
@@ -218,7 +89,7 @@ export default function Page() {
 
     return (
         <>
-            { userInfo.admin ? <AdminToolbar courseID={courseID as string} fetchCourse={fetchCourse} /> : undefined}
+            {userInfo.admin ? <AdminToolbar courseID={courseID as string} fetchCourse={fetchCourse} /> : undefined}
             <main>
                 <header className={styles.header}>
                     <Title2>
