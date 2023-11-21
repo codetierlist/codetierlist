@@ -111,11 +111,6 @@ export default function Page() {
                             courseID={courseID as string}
                         />
                     )) : "Loading..."}
-                    {userInfo.admin ? (
-                        <DialogTrigger disableButtonEnhancement>
-                            <Button><Title1>+</Title1></Button>
-                        </DialogTrigger>
-                    ) : undefined}
                 </div>
             </main >
         </>
