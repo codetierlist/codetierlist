@@ -14,6 +14,7 @@ import {
     MessageBarActions,
     MessageBarBody,
     MessageBarTitle,
+    Subtitle1,
     Tab, TabList, Title3, ToastIntent
 } from '@fluentui/react-components';
 import { Add16Regular, Clock16Regular } from '@fluentui/react-icons';
@@ -241,135 +242,116 @@ export default function Page() {
                     View tier list
                 </Tab>
             </TabList>
-            <Container fluid component="main">
+            <Container component="main" className={styles.container}>
                 {
                     stage === 0 && (
                         <>
-                            <Row>
-                                <Col sm={12}>
-                                    <Card className={styles.header} orientation="horizontal">
-                                        <CardHeader
-                                            className={styles.assignmentHeaderContent}
-                                            header={
-                                                <div className={styles.assignmentHeaderContent}>
-                                                    <Subtitle2 className={styles.dueDate}>
-                                                        <Clock16Regular
-                                                            className={styles.dueDateIcon} />
-                                                        Due {convertDate(assignment.due_date)} at {convertTime(assignment.due_date)}
-                                                    </Subtitle2>
-                                                    <Title2>
-                                                        <span
-                                                            className={`${colourHash(courseID as string)} ${styles.courseCode}`}>
-                                                            {courseID}
-                                                        </span>
-                                                        {assignment.title}
-                                                    </Title2>
-                                                </div>
-                                            }
-                                            action={
-                                                <TierChip tier={testContent !== null && solutionContent !== null ? "B" : "?"} />
-                                            }
-                                        />
-                                    </Card>
-                                </Col>
-                            </Row>
+                            <Card className={styles.header} orientation="horizontal">
+                                <CardHeader
+                                    className={styles.assignmentHeaderContent}
+                                    header={
+                                        <div className={styles.assignmentHeaderContent}>
+                                            <Subtitle2 className={styles.dueDate}>
+                                                <Clock16Regular
+                                                    className={styles.dueDateIcon} />
+                                                Due {convertDate(assignment.due_date)} at {convertTime(assignment.due_date)}
+                                            </Subtitle2>
+                                            <Title2>
+                                                <span
+                                                    className={`${colourHash(courseID as string)} ${styles.courseCode}`}>
+                                                    {courseID}
+                                                </span>
+                                                {assignment.title}
+                                            </Title2>
+                                        </div>
+                                    }
+                                    action={
+                                        <TierChip tier={testContent !== null && solutionContent !== null ? "B" : "?"} />
+                                    }
+                                />
+                            </Card>
 
-                            <Row>
-                                <Col sm={12} lg={4} md={4} className={styles.sidebarCards}>
-                                    <Card>
-                                        <CardHeader
-                                            header={<Title3>Uplodaded Tests</Title3>}
-                                        />
-                                        {
-                                            assignment.test_cases.length === 0 && (
-                                                <p>No tests uploaded yet</p>
-                                            )
-                                        }
-                                        <ul className={"d-flex flex-column " + styles.uploadedTests}>
-                                            {assignment.test_cases.map((test: TestCase, index: number) => (
-                                                // TODO this is not very informative
-                                                <li className={styles.uploadedTest}
-                                                    key={index}>{test.git_id}</li>
-                                            ))}
-                                        </ul>
-                                    </Card>
+                            {solutionContent === null && (
+                                <MessageBar intent={"warning"} className={styles.messageBar}>
+                                    <MessageBarBody>
+                                        <MessageBarTitle>You have not submitted a solution yet.</MessageBarTitle>
+                                        You can submit a solution by clicking on the &ldquo;Upload a solution&rdquo; tab.
+                                        You will not be able to see the tier list until you submit a solution.
+                                    </MessageBarBody>
+                                    <MessageBarActions>
+                                        <Button onClick={() => setStage(2)}>Upload a solution</Button>
+                                    </MessageBarActions>
+                                </MessageBar>
+                            )}
 
-                                    <Card>
-                                        <CardHeader
-                                            header={<Title3>Uplodaded Solutions</Title3>}
-                                        />
-                                        {
-                                            assignment.submissions.length === 0 && (
-                                                <p>No solutions uploaded yet</p>
-                                            )
-                                        }
-                                        <ul className={"d-flex flex-column " + styles.uploadedSolutions}>
-                                            {assignment.submissions.map((test: TestCase, index: number) => (
-                                                <li className={styles.uploadedTest}
-                                                    key={index}>{test.git_id}</li>
-                                            ))}
-                                        </ul>
-                                    </Card>
-                                </Col>
-                                <Col sm={12} lg={8} md={8}>
-                                    {solutionContent === null && (
-                                        <MessageBar intent={"warning"} className={styles.messageBar}>
-                                            <MessageBarBody>
-                                                <MessageBarTitle>You have not submitted a solution yet.</MessageBarTitle>
-                                                You can submit a solution by clicking on the &ldquo;Upload a solution&rdquo; tab.
-                                                You will not be able to see the tier list until you submit a solution.
-                                            </MessageBarBody>
-                                            <MessageBarActions>
-                                                <Button onClick={() => setStage(2)}>Upload a solution</Button>
-                                            </MessageBarActions>
-                                        </MessageBar>
-                                    )}
+                            {testContent === null && (
+                                <MessageBar intent={"warning"} className={styles.messageBar}>
+                                    <MessageBarBody>
+                                        <MessageBarTitle>You have not submitted a test yet.</MessageBarTitle>
+                                        You can submit a test by clicking on &ldquo;Submit a test&rdquo; tab.
+                                        You will not be able to see the tier list until you submit a test.
+                                    </MessageBarBody>
+                                    <MessageBarActions
+                                    >
+                                        <Button onClick={() => setStage(1)}>Submit a test</Button>
+                                    </MessageBarActions>
+                                </MessageBar>
+                            )}
 
-                                    {testContent === null && (
-                                        <MessageBar intent={"warning"} className={styles.messageBar}>
-                                            <MessageBarBody>
-                                                <MessageBarTitle>You have not submitted a test yet.</MessageBarTitle>
-                                                You can submit a test by clicking on &ldquo;Submit a test&rdquo; tab.
-                                                You will not be able to see the tier list until you submit a test.
-                                            </MessageBarBody>
-                                            <MessageBarActions
-                                            >
-                                                <Button onClick={() => setStage(1)}>Submit a test</Button>
-                                            </MessageBarActions>
-                                        </MessageBar>
-                                    )}
+                            <Subtitle1 block>Assignment Description</Subtitle1>
+                            <Card className={styles.gutter}>
+                                <p>
+                                    {assignment.description}
+                                </p>
+                            </Card>
 
-                                    <Card>
-                                        <CardHeader
-                                            header={<Title3>Assignment Description</Title3>}
-                                        />
-                                        <p>
-                                            {assignment.description}
-                                        </p>
-                                    </Card>
-                                </Col>
-                            </Row>
+                            <Subtitle1 block>Uplodaded Tests</Subtitle1>
+                            <Card className={styles.gutter}>
+                                {
+                                    assignment.test_cases.length === 0 && (
+                                        <p>No tests uploaded yet</p>
+                                    )
+                                }
+                                <ul className={"d-flex flex-column " + styles.uploadedTests}>
+                                    {assignment.test_cases.map((test: TestCase, index: number) => (
+                                        // TODO this is not very informative
+                                        <li className={styles.uploadedTest}
+                                            key={index}>{test.git_id}</li>
+                                    ))}
+                                </ul>
+                            </Card>
+
+                            <Subtitle1 block>Uplodaded Solutions</Subtitle1>
+                            <Card className={styles.gutter}>
+                                {
+                                    assignment.submissions.length === 0 && (
+                                        <p>No solutions uploaded yet</p>
+                                    )
+                                }
+                                <ul className={"d-flex flex-column " + styles.uploadedSolutions}>
+                                    {assignment.submissions.map((test: TestCase, index: number) => (
+                                        <li className={styles.uploadedTest}
+                                            key={index}>{test.git_id}</li>
+                                    ))}
+                                </ul>
+                            </Card>
                         </>
                     )
                 }{
                     stage === 1 && (
-                        <Row>
-                            <TestUpload
-                                uploadedTests={assignment.test_cases}
-                                fetchAssignment={fetchAssignment}
-                                content={testContent ?? ""}
-                                setContent={setTestContent} />
-                        </Row>
+                        <TestUpload
+                            uploadedTests={assignment.test_cases}
+                            fetchAssignment={fetchAssignment}
+                            content={testContent ?? ""}
+                            setContent={setTestContent} />
                     )
                 }{
                     stage === 2 && (
-                        <Row>
-                            <SolutionUpload
-                                uploadedSolutions={assignment.submissions}
-                                fetchAssignment={fetchAssignment}
-                                content={solutionContent ?? ""}
-                                setContent={setSolutionContent} />
-                        </Row>
+                        <SolutionUpload
+                            uploadedSolutions={assignment.submissions}
+                            fetchAssignment={fetchAssignment}
+                            content={solutionContent ?? ""}
+                            setContent={setSolutionContent} />
                     )
                 }{
                     stage === 3 && (
