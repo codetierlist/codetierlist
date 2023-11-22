@@ -1,0 +1,29 @@
+.you {
+    animation: shadowBurst 2s ease-in-out infinite;
+}
+
+@keyframes shadowBurst {
+    0% {
+        box-shadow: 0 0 0 0 var(--colorScrollbarOverlay);
+    }
+    100% {
+        box-shadow: 0 0 0 20px transparent;
+    }
+}
+
+.tier {
+    border-radius: 0;
+    height: 100%;
+    line-height: 2em;
+}
+
+.avatarGroup {
+    padding: var(--spacingVerticalL) 0;
+    flex-wrap: wrap;
+    display: flex;
+}
+
+.avatar {
+    margin-left: var(--spacingHorizontalS) !important;
+    margin-bottom: var(--spacingVerticalS) !important;
+}

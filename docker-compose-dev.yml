@@ -18,12 +18,13 @@ services:
       - db
     build:
       context: .
-      dockerfile: ./backend/Dockerfile
+      dockerfile: ./backend/Dockerfile-dev
     volumes:
       - repo_data:/repos
+      - ./backend/src:/backend/src:ro
     environment:
       - DATABASE_URL=postgres://postgres:example@db:5432/postgres
-      - NODE_ENV=production
+      - NODE_ENV=development
 
   frontend:
     restart: always
@@ -31,10 +32,17 @@ services:
       - backend
     build:
       context: .
-      dockerfile: ./frontend/Dockerfile
-      args:
-        - NODE_ENV=production
-        - NEXT_PUBLIC_API_URI=/api
+      dockerfile: ./frontend/Dockerfile-dev
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URI=/api
+    volumes:
+      - ./frontend/src:/frontend/src:ro
+      - ./frontend/components:/frontend/components:ro
+      - ./frontend/contexts:/frontend/contexts:ro
+      - ./frontend/pages:/frontend/pages:ro
+      - ./frontend/public:/frontend/public:ro
+      - ./frontend/styles:/frontend/styles:ro
 
   db:
     image: postgres

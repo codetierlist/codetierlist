@@ -1,0 +1,149 @@
+.darkRed {
+    background-color: var(--colorPaletteDarkRedForeground2);
+    color: var(--colorNeutralForegroundOnBrand);
+}
+
+.cranberry {
+    background-color: var(--colorPaletteCranberryForeground2);
+    color: var(--colorNeutralForegroundOnBrand);
+}
+
+.red {
+    background-color: var(--colorPaletteRedForeground2);
+    color: var(--colorNeutralForegroundOnBrand);
+}
+
+.pumpkin {
+    background-color: var(--colorPalettePumpkinForeground2);
+    color: var(--colorNeutralForegroundOnBrand);
+}
+
+.peach {
+    background-color: var(--colorPalettePeachForeground2);
+    color: var(--colorNeutralForegroundOnBrand);
+}
+
+.marigold {
+    background-color: var(--colorPaletteMarigoldForeground2);
+    color: var(--colorNeutralForegroundOnBrand);
+}
+
+.gold {
+    background-color: var(--colorPaletteGoldForeground2);
+    color: var(--colorNeutralForegroundOnBrand);
+}
+
+.brass {
+    background-color: var(--colorPaletteBrassForeground2);
+    color: var(--colorNeutralForegroundOnBrand);
+}
+
+.brown {
+    background-color: var(--colorPaletteBrownForeground2);
+    color: var(--colorNeutralForegroundOnBrand);
+}
+
+.forest {
+    background-color: var(--colorPaletteForestForeground2);
+    color: var(--colorNeutralForegroundOnBrand);
+}
+
+.seafoam {
+    background-color: var(--colorPaletteSeafoamForeground2);
+    color: var(--colorNeutralForegroundOnBrand);
+}
+
+.darkGreen {
+    background-color: var(--colorPaletteDarkGreenForeground2);
+    color: var(--colorNeutralForegroundOnBrand);
+}
+
+.lightTeal {
+    background-color: var(--colorPaletteLightTealForeground2);
+    color: var(--colorNeutralForegroundOnBrand);
+}
+
+.teal {
+    background-color: var(--colorPaletteTealForeground2);
+    color: var(--colorNeutralForegroundOnBrand);
+}
+
+.steel {
+    background-color: var(--colorPaletteSteelForeground2);
+    color: var(--colorNeutralForegroundOnBrand);
+}
+
+.blue {
+    background-color: var(--colorPaletteBlueForeground2);
+    color: var(--colorNeutralForegroundOnBrand);
+}
+
+.royalBlue {
+    background-color: var(--colorPaletteRoyalBlueForeground2);
+    color: var(--colorNeutralForegroundOnBrand);
+}
+
+.cornflower {
+    background-color: var(--colorPaletteCornflowerForeground2);
+    color: var(--colorNeutralForegroundOnBrand);
+}
+
+.navy {
+    background-color: var(--colorPaletteNavyForeground2);
+    color: var(--colorNeutralForegroundOnBrand);
+}
+
+.lavender {
+    background-color: var(--colorPaletteLavenderForeground2);
+    color: var(--colorNeutralForegroundOnBrand);
+}
+
+.purple {
+    background-color: var(--colorPalettePurpleForeground2);
+    color: var(--colorNeutralForegroundOnBrand);
+}
+
+.grape {
+    background-color: var(--colorPaletteGrapeForeground2);
+    color: var(--colorNeutralForegroundOnBrand);
+}
+
+.lilac {
+    background-color: var(--colorPaletteLilacForeground2);
+    color: var(--colorNeutralForegroundOnBrand);
+}
+
+.pink {
+    background-color: var(--colorPalettePinkForeground2);
+    color: var(--colorNeutralForegroundOnBrand);
+}
+
+.magenta {
+    background-color: var(--colorPaletteMagentaForeground2);
+    color: var(--colorNeutralForegroundOnBrand);
+}
+
+.plum {
+    background-color: var(--colorPalettePlumForeground2);
+    color: var(--colorNeutralForegroundOnBrand);
+}
+
+.beige {
+    background-color: var(--colorPaletteBeigeForeground2);
+    color: var(--colorNeutralForegroundOnBrand);
+}
+
+.mink {
+    background-color: var(--colorPaletteMinkForeground2);
+    color: var(--colorNeutralForegroundOnBrand);
+}
+
+.platinum {
+    background-color: var(--colorPalettePlatinumForeground2);
+    color: var(--colorNeutralForegroundOnBrand);
+}
+
+.anchor {
+    background-color: var(--colorPaletteAnchoForeground2);
+    color: var(--colorNeutralForegroundOnBrand);
+}

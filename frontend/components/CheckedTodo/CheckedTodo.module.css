@@ -1,0 +1,8 @@
+.checkedTodoItem {
+    font-size: var(--fontSizeBase400);
+    margin-bottom: var(--spacingVerticalS);
+}
+
+.todoText {
+    margin-left: var(--spacingHorizontalXS);
+}

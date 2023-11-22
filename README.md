@@ -1,34 +1,71 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<h1>
+<picture>
+  <img alt="Code Tier List" src="https://i.imgur.com/IJ0aAfV.png" height="25">
+</picture>
+Codetierlist
+</h1>
 
-## Getting Started
+Ever wondered when you complete an assignment and do not know how well you're
+doing compared to other students? Introducing the Codetierlist!
 
-First, run the development server:
+We provide to give users(students) an opportunity as the leading place to test
+your code for students to know their progress compared to their peers while they
+are working on their assignments, making coding more **interactive**, **fun**,
+and **easier**.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+On Codetierlist, instructors can create new projects (assignments) for students.
+In each project, students are able to upload their own test cases and code, how
+ well students do will be based on the accuracy of the students code in their
+ own test cases, this will be shown in a tier list for students to see.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Follow along below to ✨**learn more**✨:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+<picture>
+  <img alt="Code Tier List Demo" src="https://i.imgur.com/YmxU3dD.gif" height="">
+</picture>
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-## Learn More
+## 🗺️ [Then, try out our project!](https://codetierlist.utm.utoronto.ca/)
 
-To learn more about Next.js, take a look at the following resources:
+## 😋 Features
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 🔒 Login features
+For each course, only students enrolled are able to have access to the courses
+Codetierlist.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+### 🥇 Tierlist with real time updates
+Continuously updating the accuracy of each students code and repositioning them
+in the tier list.
 
-## Deploy on Vercel
+### 🧑‍💻 Straightforward REST API
+Allows for user addition of multiple files.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 🤫 Safety and Independent working
+While students do provide their test cases and code to rank their progress, these
+will not be shown to other students. This is done to ensures students work
+independently, and to prevent [Academic Offenses](https://www.utm.utoronto.ca/academic-integrity/students/sanctions).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## 🚀 Deployment
+
+### Tech stack:
+* Frontend
+    * [Fluent UI](https://fluent2.microsoft.design/) 🌊
+    * [Next.js](https://nextjs.org/) 🖖
+* Backend
+    * [Express.js](https://expressjs.com/) 🚂
+    * [Docker](https://www.docker.com/) 🐳
+* Database, ORM, and data storage
+    * [Postgres](https://www.postgresql.org/) 🐘
+    * [Prisma](https://www.prisma.io/) 🦄
+    * [Isomorphic-git](https://github.com/isomorphic-git/isomorphic-git) 🐙
+
+## 💪 Contributing
+
+Code Tier List is **free and open-source software** licensed under the
+[LGPL-3.0 License](https://www.gnu.org/licenses/lgpl-3.0.en.html)
+
+You can open issues for bugs you've found or features you think are missing.
+You can also submit pull requests to this repository.
+
+## ⚖️ License
+LGPL-3.0 License © 2023 Codetierlist
