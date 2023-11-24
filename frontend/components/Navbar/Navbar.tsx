@@ -23,7 +23,7 @@ export const Navbar = (): JSX.Element => {
                     textPosition="before"
                     avatar={GenerateInitalsAvatarProps(userInfo.utorid)}
                     primaryText={
-                        lastName && firstName ? `${firstName} ${lastName}` : firstName ? firstName : lastName ? lastName : userInfo.email.split('@')[0]
+                        `${userInfo.givenName} ${userInfo.surname}` == " " ? userInfo.utorid : `${userInfo.givenName} ${userInfo.surname}`
                     }
                     secondaryText={userInfo.utorid}
                 />
