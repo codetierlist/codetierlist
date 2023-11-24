@@ -1,4 +1,4 @@
-import { Link, Persona, SkeletonItem } from '@fluentui/react-components';
+import { Badge, Link, Persona, SkeletonItem } from '@fluentui/react-components';
 import styles from './Navbar.module.css';
 import { GenerateInitalsAvatarProps } from '@/components';
 import { useContext } from 'react';
@@ -23,7 +23,10 @@ export const Navbar = (): JSX.Element => {
                     textPosition="before"
                     avatar={GenerateInitalsAvatarProps(`${userInfo.givenName} ${userInfo.surname}`)}
                     primaryText={
-                        `${userInfo.givenName} ${userInfo.surname}` == " " ? userInfo.utorid : `${userInfo.givenName} ${userInfo.surname}`
+                        <>
+                            {userInfo.admin && <Badge className={styles.adminBadge} appearance="outline">Admin</Badge>}
+                            {`${userInfo.givenName} ${userInfo.surname}` == " " ? userInfo.utorid : `${userInfo.givenName} ${userInfo.surname}`}
+                        </>
                     }
                     secondaryText={userInfo.utorid}
                 />
