@@ -21,7 +21,7 @@ export const Navbar = (): JSX.Element => {
             {(userInfo.email !== defaultUser.email) && (
                 <Persona
                     textPosition="before"
-                    avatar={GenerateInitalsAvatarProps(userInfo.utorid)}
+                    avatar={GenerateInitalsAvatarProps(`${userInfo.givenName} ${userInfo.surname}`)}
                     primaryText={
                         `${userInfo.givenName} ${userInfo.surname}` == " " ? userInfo.utorid : `${userInfo.givenName} ${userInfo.surname}`
                     }
