@@ -9,7 +9,7 @@ import { UserContext, defaultUser } from '@/contexts/UserContext';
  * logo and the user's name and role.
  * @returns {JSX.Element} the navbar
  */
-export const Navbar = ({lastName, firstName}: {lastName?: string, firstName?: string}): JSX.Element => {
+export const Navbar = (): JSX.Element => {
     const { userInfo } = useContext(UserContext);
 
     return (
