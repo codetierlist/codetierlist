@@ -76,7 +76,7 @@ model User {
   roles      Role[]
   admin      Boolean    @default(false)
   TestCase   TestCase[]
-  commonName String?
+  surname    String?
   givenName  String?
 
   @@map("Users")
