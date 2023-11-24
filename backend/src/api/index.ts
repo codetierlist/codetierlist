@@ -79,6 +79,20 @@ app.use(async (req, res, next) => {
     next();
 });
 
+// add cn and givenname request headers to the response headers
+app.use((req, res, next) => {
+    const h = req.headers;
+    const cn = h.cn as string;
+    const givenName = h.givenname as string;
+    if (cn) {
+        res.setHeader('cn', cn);
+    }
+    if (givenName) {
+        res.setHeader('givenname', givenName);
+    }
+    next();
+});
+
 app.use(routes);
 
 server.listen(port, () => {

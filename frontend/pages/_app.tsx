@@ -53,10 +53,13 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
 
     /* user data initialization into context and fetching */
     const [userInfo, setUserInfo] = useState<FetchedUser>(defaultUser);
+    const [givenName, setGivenName] = useState<string>("");
+    const [commonName, setCommonName] = useState<string>("");
 
     const fetchUserInfo = async () => {
         await axios("/")
-            .then(({ data }) => {
+            .then(({ data, headers }) => {
+                console.log(headers);
                 setUserInfo(data as FetchedUser);
             })
             .catch((error) => {
@@ -82,7 +85,7 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
                             <Field validationState="none" id="axios-loading-backdrop">
                                 <ProgressBar />
                             </Field>
-                            <Navbar />
+                            <Navbar firstName={givenName} lastName={commonName} />
                             <Component {...pageProps} />
                             <Toaster toasterId={toasterId} />
                         </SnackbarContext.Provider>

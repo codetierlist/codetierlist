@@ -9,7 +9,7 @@ import { UserContext, defaultUser } from '@/contexts/UserContext';
  * logo and the user's name and role.
  * @returns {JSX.Element} the navbar
  */
-export const Navbar = (): JSX.Element => {
+export const Navbar = ({lastName, firstName}: {lastName?: string, firstName?: string}): JSX.Element => {
     const { userInfo } = useContext(UserContext);
 
     return (
@@ -22,7 +22,9 @@ export const Navbar = (): JSX.Element => {
                 <Persona
                     textPosition="before"
                     avatar={GenerateInitalsAvatarProps(userInfo.utorid)}
-                    primaryText={userInfo.email.split('@')[0]}
+                    primaryText={
+                        lastName && firstName ? `${firstName} ${lastName}` : firstName ? firstName : lastName ? lastName : userInfo.email.split('@')[0]
+                    }
                     secondaryText={userInfo.utorid}
                 />
             )}
