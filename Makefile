@@ -5,7 +5,7 @@ init:
 	cd ./types && npx prisma generate
 	cd ./backend && npm ci
 	cd ./backend && npx prisma generate --schema ../types/prisma/schema.prisma
-	cd ./frontend && yarn ci
+	cd ./frontend && npm ci
 
 start_backend:
 	cd ./backend && npm run build

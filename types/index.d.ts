@@ -71,6 +71,8 @@ export type UserTier = Tier | "?"
 export type TierlistEntry = { name: string, you: boolean }
 export type Tierlist = Record<Tier, TierlistEntry[]>;
 
+export type Session = "Fall" | "Winter" | "Summer"
+
 export {RoleType};
 
 

@@ -21,7 +21,7 @@ import {
 } from "@fluentui/react-components";
 import { Add24Filled, PersonAdd24Regular, Shield24Filled } from '@fluentui/react-icons';
 import { Title2 } from '@fluentui/react-text';
-import { FetchedCourseWithTiers } from "codetierlist-types";
+import { FetchedCourseWithTiers, Session } from "codetierlist-types";
 import { notFound } from "next/navigation";
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from "react";
@@ -89,6 +89,19 @@ export default function Page() {
         document.title = `${courseID} - Codetierlist`;
     }, [courseID]);
 
+    // Set the session based on the month the course was created at
+    let session: Session
+    const month = course?.createdAt.getMonth() as number
+
+    if ( 0 < month && month < 7) {
+        // Feb - July
+        session = "Summer"
+    } else if(7 <= month && month < 9) {
+        // Aug - Sep
+        session = "Fall"
+    }
+
+
     return (
         <>
             {userInfo.admin ? <AdminToolbar courseID={courseID as string} fetchCourse={fetchCourse} /> : undefined}
@@ -96,7 +109,7 @@ export default function Page() {
             <main>
                 <header className={styles.header}>
                     <Title2>
-                        <CourseSessionChip session="Fall">
+                        <CourseSessionChip session={session}>
                             {courseID}
                         </CourseSessionChip>
                     </Title2>
