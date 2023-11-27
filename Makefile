@@ -17,3 +17,15 @@ start_frontend_dev:
 clean:
 	cd ./frontend && rm -rf .next
 	cd ./backend && rm -rf out
+
+docker_up_db:
+	docker compose  -f "docker-compose.yml" up -d --build db
+
+docker_up:
+	docker compose  -f "docker-compose.yml" up -d --build
+
+docker_down:
+	docker compose  -f "docker-compose.yml" down
+
+docker_dev:
+	docker compose -f "docker-compose-dev.yml" up -d --build
