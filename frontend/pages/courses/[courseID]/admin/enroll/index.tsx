@@ -1,15 +1,15 @@
 import axios, { handleError } from "@/axios";
-import { HeaderToolbar } from "@/components";
+import { HeaderToolbar, promptForFileReader } from "@/components";
 import { SnackbarContext } from "@/contexts/SnackbarContext";
+import flex from '@/styles/flex-utils.module.css';
 import { Body2, Button, ToolbarButton } from "@fluentui/react-components";
-import { ArrowLeft24Regular, Add24Filled } from '@fluentui/react-icons';
+import { Add24Filled, ArrowLeft24Regular } from '@fluentui/react-icons';
 import { Title2 } from '@fluentui/react-text';
 import { Editor } from "@monaco-editor/react";
 import { isUTORid, isUofTEmail } from 'is-utorid';
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { useContext, useState } from "react";
-import flex from '@/styles/flex-utils.module.css';
-import Head from "next/head";
 
 /**
  * given a csv of students, enroll them in the course
@@ -54,32 +54,6 @@ async function massEnroll(courseID: string, csv: string) {
         .catch((e) => { throw new Error(e.message); });
 }
 
-/**
- * prompt the user to select a csv file
- * @returns the contents of the csv file
- */
-async function promptForFile(type: string): Promise<string | undefined> {
-    const fileInput = document.createElement("input");
-    fileInput.type = "file";
-    fileInput.accept = type;
-
-    return new Promise((resolve) => {
-        fileInput.addEventListener("change", () => {
-            if (fileInput.files && fileInput.files[0]) {
-                const file = fileInput.files[0];
-                const reader = new FileReader();
-                reader.addEventListener("load", () => {
-                    if (typeof reader.result === "string") {
-                        resolve(reader.result);
-                    }
-                });
-                reader.readAsText(file);
-            }
-        });
-        fileInput.click();
-    });
-}
-
 export default function Page(): JSX.Element {
     const [editorValue, setEditorValue] = useState("");
     const { showSnackSev } = useContext(SnackbarContext);
@@ -111,10 +85,10 @@ export default function Page(): JSX.Element {
                     <Button
                         icon={<Add24Filled />}
                         onClick={async () => {
-                            promptForFile(".csv")
+                            promptForFileReader(".csv")
                                 .then((csv) => {
                                     if (csv) {
-                                        setEditorValue(csv);
+                                        setEditorValue(csv.result as string);
                                     }
                                 });
                         }}

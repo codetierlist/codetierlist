@@ -70,6 +70,10 @@ router.post("/:assignment/testcases", fetchAssignmentMiddleware, upload.array('f
 router.get("/:assignment/submissions/:commitId?", fetchAssignmentMiddleware, async (req, res) => {
     const commit = await getCommit(req, "solution");
     if (commit === null) {
+        if(!req.params.commitId) {
+            res.send({log:[], files:[]} satisfies Commit);
+            return;
+        }
         res.statusCode = 404;
         res.send({error: 'Commit not found.'});
         return;
@@ -89,6 +93,10 @@ router.get("/:assignment/testcases/:commitId?", fetchAssignmentMiddleware, async
     const commit = await getCommit(req, "testCase");
 
     if (commit === null) {
+        if(!req.params.commitId) {
+            res.send({log:[], files:[]} satisfies Commit);
+            return;
+        }
         res.statusCode = 404;
         res.send({error: 'Commit not found.'});
         return;
