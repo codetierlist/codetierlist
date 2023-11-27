@@ -90,15 +90,15 @@ export default function Page() {
     }, [courseID]);
 
     // Set the session based on the month the course was created at
-    let session: Session
-    const month = course?.createdAt.getMonth() as number
+    let session: Session;
+    const month = course?.createdAt.getMonth() as number;
 
     if ( 0 < month && month < 7) {
         // Feb - July
-        session = "Summer"
+        session = "Summer";
     } else if(7 <= month && month < 9) {
         // Aug - Sep
-        session = "Fall"
+        session = "Fall";
     }
 
 
