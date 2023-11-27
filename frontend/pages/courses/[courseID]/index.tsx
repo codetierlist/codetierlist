@@ -22,7 +22,7 @@ import {
     ToolbarButton
 } from "@fluentui/react-components";
 import { Title2 } from '@fluentui/react-text';
-import { FetchedCourseWithTiers } from "codetierlist-types";
+import { FetchedCourseWithTiers, Session } from "codetierlist-types";
 import { notFound } from "next/navigation";
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from "react";
@@ -166,7 +166,7 @@ export default function Page() {
     }, [courseID]);
 
     // Set the session based on the month the course was created at
-    let session: "Fall" | "Winter" | "Summer" = "Winter"
+    let session: Session
     const month = course?.createdAt.getMonth() as number
 
     if ( 0 < month && month < 7) {

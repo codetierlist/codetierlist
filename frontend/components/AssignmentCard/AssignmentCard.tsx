@@ -11,7 +11,6 @@ import {type Tier, type UserTier} from "codetierlist-types";
 import { convertDate } from '../utils/TimeUtils/TimeUtils';
 
 export declare interface AssignmentCardProps {
-    key: string
     id: string
     name: string
     dueDate?: Date
