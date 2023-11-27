@@ -1,5 +1,7 @@
 /** @filesummary This file contains small utility functions for time. */
 
+import { Session } from "codetierlist-types";
+
 /**
  * Converts ISP 8601 date string to more readable format
  * @property date The date string in DD-MM-YYYY or ISP 8601 format
@@ -106,4 +108,24 @@ export const daysUntilDate = (targetDate: Date) => {
     const daysDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
 
     return daysDifference;
+};
+
+/**
+ * Get the session based on the month of the date
+ * @param date The date to get the session of
+ * @returns The session of the date
+ */
+export const getSession = (date: Date): Session => {
+    const month = date.getMonth() as number;
+
+    if (0 < month && month < 7) {
+        // Feb - July
+        return "Summer";
+    } else if (7 <= month && month < 9) {
+        // Aug - Sep
+        return "Fall";
+    } else {
+        // Oct - Jan
+        return "Winter";
+    }
 };

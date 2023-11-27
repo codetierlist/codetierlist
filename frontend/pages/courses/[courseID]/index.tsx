@@ -1,12 +1,12 @@
 import axios, { handleError } from "@/axios";
-import { AssignmentCard, CourseSessionChip, HeaderToolbar } from '@/components';
+import { AssignmentCard, CourseSessionChip, HeaderToolbar, getSession } from '@/components';
 import { UserContext } from "@/contexts/UserContext";
 import {
     ToolbarButton
 } from "@fluentui/react-components";
 import { Add24Filled, PersonAdd24Regular, Shield24Filled } from '@fluentui/react-icons';
 import { Title2 } from '@fluentui/react-text';
-import { FetchedCourseWithTiers, Session } from "codetierlist-types";
+import { FetchedCourseWithTiers } from "codetierlist-types";
 import { notFound } from "next/navigation";
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from "react";
@@ -71,20 +71,8 @@ export default function Page() {
     useEffect(() => {
         void fetchCourse();
         document.title = `${courseID} - Codetierlist`;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [courseID]);
-
-    // Set the session based on the month the course was created at
-    let session: Session;
-    const month = course?.createdAt.getMonth() as number;
-
-    if ( 0 < month && month < 7) {
-        // Feb - July
-        session = "Summer";
-    } else if(7 <= month && month < 9) {
-        // Aug - Sep
-        session = "Fall";
-    }
-
 
     return (
         <>
@@ -93,9 +81,12 @@ export default function Page() {
             <main>
                 <header className={styles.header}>
                     <Title2>
-                        <CourseSessionChip session={session}>
-                            {courseID}
-                        </CourseSessionChip>
+                        {course &&
+                            <CourseSessionChip
+                                session={getSession(course.createdAt)}>
+                                {courseID}
+                            </CourseSessionChip>
+                        }
                     </Title2>
                     <Title2>
                         {course?.name || 'Course not found'}

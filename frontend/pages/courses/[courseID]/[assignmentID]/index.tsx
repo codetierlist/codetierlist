@@ -88,7 +88,7 @@ const uploader = (url: string, fetchAssignment: () => void, setContent: (content
     input.click();
 };
 
-const TestUpload = ({ uploadedTests, fetchAssignment, content, setContent }: { uploadedTests: unknown[], fetchAssignment: () => void, content: string, setContent: (content: string) => void }) => {
+const TestUpload = ({ fetchAssignment, content, setContent }: { uploadedTests: unknown[], fetchAssignment: () => void, content: string, setContent: (content: string) => void }) => {
     const router = useRouter();
     const { courseID, assignmentID } = router.query;
     const { showSnackSev } = useContext(SnackbarContext);
@@ -103,7 +103,6 @@ const TestUpload = ({ uploadedTests, fetchAssignment, content, setContent }: { u
             />
 
             <Card className={styles.editor}>
-                {/* {uploadedTests.length === 0 ? ( */}
                 {content === null ? (
                     <NoUploadPlaceholder title="test" />
                 ) : (
@@ -120,12 +119,11 @@ const TestUpload = ({ uploadedTests, fetchAssignment, content, setContent }: { u
     );
 };
 const SolutionUpload = (
-    { uploadedSolutions,
+    {
         fetchAssignment,
         content,
         setContent
     }: {
-        uploadedSolutions: unknown[],
         fetchAssignment: () => void,
         content: string,
         setContent: (content: string) => void
@@ -212,6 +210,7 @@ export default function Page() {
         }
         void fetchAssignment();
         void fetchTierlist();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [courseID, assignmentID]);
 
     if (stage === -404) {
@@ -347,7 +346,6 @@ export default function Page() {
                 }{
                     stage === 2 && (
                         <SolutionUpload
-                            uploadedSolutions={assignment.submissions}
                             fetchAssignment={fetchAssignment}
                             content={solutionContent ?? ""}
                             setContent={setSolutionContent} />

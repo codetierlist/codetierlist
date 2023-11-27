@@ -40,6 +40,7 @@ export default function Page(): JSX.Element {
                 handleError(e.message, showSnackSev);
                 notFound();
             });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [params.courseID]);
 
     return (

@@ -66,6 +66,7 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
 
     useEffect(() => {
         void fetchUserInfo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
