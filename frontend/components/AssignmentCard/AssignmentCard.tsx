@@ -35,7 +35,7 @@ export const AssignmentCard = ({
                 </CardHeader>
                 <div className={styles.cardContent}>
                     {dueDate ?
-                        <Caption1>{formattedDueDate}</Caption1> : null}
+                        <Caption1>{"Due: " + formattedDueDate}</Caption1> : null}
                     <Title3>{name}</Title3>
                 </div>
             </Card>

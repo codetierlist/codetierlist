@@ -1,8 +1,9 @@
 import express, {NextFunction, Request, Response} from "express";
 import prisma, {fullFetchedAssignmentArgs} from "../../../../common/prisma";
 import {
+    deleteFile,
     fetchAssignmentMiddleware,
-    getCommit,
+    getCommit, getFile,
     isProf,
     processSubmission
 } from "../../../../common/utils";
@@ -61,10 +62,10 @@ const checkFilesMiddleware = (req: Request, res: Response, next: NextFunction) =
 };
 
 router.post("/:assignment/submissions", fetchAssignmentMiddleware, upload.array('files', 100), checkFilesMiddleware, async (req, res) =>
-    processSubmission(req, "solution").then(() => res.send({})));
+    processSubmission(req, "solution").then((commit) => commit === null ? res.sendStatus(404) : res.send({commit})));
 
 router.post("/:assignment/testcases", fetchAssignmentMiddleware, upload.array('files', 100), checkFilesMiddleware, async (req, res) =>
-    processSubmission(req, "testCase").then(() => res.send({})));
+    processSubmission(req, "testCase").then((commit) => commit === null ? res.sendStatus(404) : res.send({commit})));
 
 router.get("/:assignment/submissions/:commitId?", fetchAssignmentMiddleware, async (req, res) => {
     const commit = await getCommit(req, "solution");
@@ -76,6 +77,14 @@ router.get("/:assignment/submissions/:commitId?", fetchAssignmentMiddleware, asy
     res.send(commit satisfies Commit);
 });
 
+router.get("/:assignment/submissions/:commitId?/:file", fetchAssignmentMiddleware, async (req, res) => {
+    await getFile(req, res, "solution");
+});
+
+router.delete("/:assignment/submissions/:file", fetchAssignmentMiddleware, async (req, res) => {
+    await deleteFile(req, res, "solution");
+});
+
 router.get("/:assignment/testcases/:commitId?", fetchAssignmentMiddleware, async (req, res) => {
     const commit = await getCommit(req, "testCase");
 
@@ -85,6 +94,14 @@ router.get("/:assignment/testcases/:commitId?", fetchAssignmentMiddleware, async
         return;
     }
     res.send(commit satisfies Commit);
+});
+
+router.delete("/:assignment/testcases/:file", fetchAssignmentMiddleware, async (req, res) => {
+    await deleteFile(req, res, "testCase");
+});
+
+router.get("/:assignment/testcases/:commitId?/:file", fetchAssignmentMiddleware, async (req, res) => {
+    await getFile(req, res, "testCase");
 });
 
 router.get("/:assignment/tierlist", fetchAssignmentMiddleware, async (req, res) => {

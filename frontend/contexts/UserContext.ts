@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { createContext } from 'react';
 import { type FetchedUser } from 'codetierlist-types';
 
@@ -9,6 +10,8 @@ export const defaultUser: FetchedUser = {
     email: "hatsune.miku@utoronto.ca",
     roles: [],
     admin: false,
+    surname: "Hatsune",
+    givenName: "Miku"
 };
 
 /**

@@ -56,3 +56,12 @@
     white-space: pre-wrap !important;
     padding: var(--spacingVerticalS) var(--spacingHorizontalS);
 }
+
+.gutter {
+    margin-top: var(--spacingVerticalS) !important;
+    margin-bottom: var(--spacingVerticalXXL) !important;
+}
+
+.container {
+    margin-top: var(--spacingVerticalL);
+}
