@@ -27,5 +27,12 @@ docker_up:
 docker_down:
 	docker compose  -f "docker-compose.yml" down
 
+docker_restart: docker_down docker_up
+
 docker_dev:
 	docker compose -f "docker-compose-dev.yml" up -d --build
+
+docker_dev_down:
+	docker compose -f "docker-compose-dev.yml" down
+
+docker_dev_restart: docker_dev_down docker_dev
