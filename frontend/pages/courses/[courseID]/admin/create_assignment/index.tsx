@@ -23,6 +23,17 @@ export default function Page(): JSX.Element {
 
     const router = useRouter();
 
+    const submitAssignment = async () => {
+        axios.post(`/courses/${courseID}/assignments`, {
+            name: assignmentName,
+            description: description,
+            dueDate: dueDate.toISOString()
+        })
+            .then(fetchUserInfo)
+            .then(() => router.push(`/courses/${courseID}`))
+            .catch((error) => { handleError(error.message, showSnackSev); });
+    };
+
     return (
         <>
             <Head>
@@ -41,14 +52,7 @@ export default function Page(): JSX.Element {
             <main>
                 <form onSubmit={(e) => {
                     e.preventDefault();
-                    axios.post(`/courses/${courseID}/assignments`, {
-                        name: assignmentName,
-                        description: description,
-                        dueDate: dueDate.toISOString()
-                    })
-                        .then(fetchUserInfo)
-                        .then(() => router.push(`/courses/${courseID}`))
-                        .catch((error) => { handleError(error.message, showSnackSev); });
+                    submitAssignment();
                 }}>
                     <Title2 block>Create Assignment</Title2>
 
