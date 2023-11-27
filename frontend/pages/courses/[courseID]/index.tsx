@@ -83,7 +83,7 @@ export default function Page() {
                     <Title2>
                         {course &&
                             <CourseSessionChip
-                                session={getSession(course.createdAt)}>
+                                session={getSession(new Date(course.createdAt))}>
                                 {courseID}
                             </CourseSessionChip>
                         }
