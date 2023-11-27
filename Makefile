@@ -13,3 +13,7 @@ start_backend:
 
 start_frontend_dev:
 	cd ./frontend && npm run dev
+
+clean:
+	cd ./frontend && rm -rf .next
+	cd ./backend && rm -rf out
