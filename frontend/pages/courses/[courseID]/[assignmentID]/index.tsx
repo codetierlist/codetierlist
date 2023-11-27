@@ -5,7 +5,6 @@ import {
     colourHash,
     convertDate,
     convertTime,
-    promptForFile,
     promptForFileObject
 } from '@/components';
 import { SnackbarContext } from "@/contexts/SnackbarContext";
@@ -60,17 +59,18 @@ const TestUpload = ({ fetchAssignment, assignment, assignmentID }: { fetchAssign
 
     const getTestData = async () => {
         await axios.get<Commit>(`/courses/${assignment.course_id}/assignments/${assignmentID}/testcases`, { skipErrorHandling: true })
+            .then((res) => setContent(res.data))
             .catch(e => {
-                setContent({} as Commit);
                 handleError(e.message, showSnackSev);
-            })
-            .then(res => {
-                setContent(res.data);
+                setContent({"files": {}, "log": {}} as Commit);
             });
     };
 
-
-    console.log(content);
+    useEffect(() => {
+        void getTestData();
+        console.log(content);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [assignmentID]);
 
     return (
         <>
@@ -302,11 +302,12 @@ export default function Page() {
                     )
                 }{
                     stage === 2 && (
-                        <SolutionUpload
-                            fetchAssignment={fetchAssignment}
-                            assignment={assignment}
-                            assignmentID={assignmentID as string}
-                        />
+                        // <SolutionUpload
+                        // fetchAssignment={fetchAssignment}
+                        // assignment={assignment}
+                        // assignmentID={assignmentID as string}
+                        // />
+                        <></>
                     )
                 }{
                     stage === 3 && (
