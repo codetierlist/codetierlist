@@ -5,14 +5,11 @@ import prisma, {fetchedUserArgs} from "../common/prisma";
 import {isUofTEmail, isUTORid} from "is-utorid";
 import routes from "./routes";
 import * as http from "http";
-import socket from "./socket";
 
 const port = process.env.PORT || 3000;
 const app = express();
 const server = http.createServer(app);
-
-
-socket(server);
+import "./runner";
 
 if (process.env.NODE_ENV === 'development') {
     app.use(
