@@ -70,12 +70,14 @@ model TestCase {
 }
 
 model User {
-  utorid    String     @id
-  email     String
-  solutions Solution[]
-  roles     Role[]
-  admin     Boolean    @default(false)
-  TestCase  TestCase[]
+  utorid     String     @id
+  email      String
+  solutions  Solution[]
+  roles      Role[]
+  admin      Boolean    @default(false)
+  TestCase   TestCase[]
+  surname    String
+  givenName  String
 
   @@map("Users")
 }

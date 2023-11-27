@@ -48,9 +48,13 @@ app.use(async (req, res, next) => {
         });
         return;
     }
+
     const h = req.headers;
     const utorid = h.utorid as string;
     const email = h.http_mail as string;
+    const surname = h.sn as string;
+    const givenName = h.givenname as string;
+
     // header validation
     if (!utorid || !email || !isUTORid(utorid) || !isUofTEmail(email)) {
         res.statusCode = 401;
@@ -63,8 +67,8 @@ app.use(async (req, res, next) => {
 
     const user = await prisma.user.upsert({
         where: {utorid},
-        create: {utorid, email},
-        update: {utorid, email},
+        create: {utorid, email, surname, givenName},
+        update: {utorid, email, surname, givenName},
         ...fetchedUserArgs
     });
     if (user === null) {
@@ -82,5 +86,6 @@ app.use(async (req, res, next) => {
 app.use(routes);
 
 server.listen(port, () => {
+    //eslint-disable-next-line no-console
     console.log(`Server is listening on port ${port}.`);
 });
