@@ -15,19 +15,19 @@ import {
     MessageBarBody,
     MessageBarTitle,
     Subtitle1,
-    Tab, TabList, Title3, ToastIntent
+    Tab, TabList,
+    ToastIntent
 } from '@fluentui/react-components';
 import { Add16Regular, Clock16Regular } from '@fluentui/react-icons';
 import { Subtitle2, Title1, Title2 } from '@fluentui/react-text';
 import Editor from '@monaco-editor/react';
 import { FetchedAssignmentWithTier, TestCase, Tierlist } from "codetierlist-types";
 import Error from 'next/error';
-import { notFound } from "next/navigation";
+import Head from "next/head";
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
-import { Col, Container, Row } from "react-grid-system";
+import { Col, Container } from "react-grid-system";
 import styles from './page.module.css';
-import Head from "next/head";
 
 // TODO: clean technical debt
 
@@ -79,7 +79,6 @@ const uploader = (url: string, fetchAssignment: () => void, setContent: (content
         const reader = new FileReader();
         reader.readAsText(input.files![0]);
         reader.onloadend = () => {
-            console.log(reader.result);
             setContent(reader.result as string);
         };
         setContent("Loading...");

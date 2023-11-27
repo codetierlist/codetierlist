@@ -2,21 +2,6 @@ import axios, { handleError } from "@/axios";
 import { AssignmentCard, CourseSessionChip, HeaderToolbar } from '@/components';
 import { UserContext } from "@/contexts/UserContext";
 import {
-    Button,
-    Dialog,
-    DialogActions,
-    DialogBody,
-    DialogContent,
-    DialogOpenChangeData,
-    DialogOpenChangeEvent,
-    DialogSurface,
-    DialogTitle,
-    DialogTrigger,
-    Input,
-    Label,
-    Textarea,
-    Title1,
-    Title3,
     ToolbarButton
 } from "@fluentui/react-components";
 import { Add24Filled, PersonAdd24Regular, Shield24Filled } from '@fluentui/react-icons';
@@ -27,7 +12,6 @@ import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from "react";
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import styles from './page.module.css';
-import { Head } from "next/head";
 
 /**
  * Toolbar for admin page
