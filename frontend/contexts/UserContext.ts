@@ -10,6 +10,8 @@ export const defaultUser: FetchedUser = {
     email: "hatsune.miku@utoronto.ca",
     roles: [],
     admin: false,
+    surname: "Hatsune",
+    givenName: "Miku"
 };
 
 /**
