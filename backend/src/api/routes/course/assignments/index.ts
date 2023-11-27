@@ -2,7 +2,7 @@ import express, {NextFunction, Request, Response} from "express";
 import prisma, {fullFetchedAssignmentArgs} from "../../../../common/prisma";
 import {
     fetchAssignmentMiddleware,
-    getCommit,
+    getCommitFromRequest,
     isProf,
     processSubmission
 } from "../../../../common/utils";
@@ -67,7 +67,7 @@ router.post("/:assignment/testcases", fetchAssignmentMiddleware, upload.array('f
     processSubmission(req, "testCase").then(() => res.send({})));
 
 router.get("/:assignment/submissions/:commitId?", fetchAssignmentMiddleware, async (req, res) => {
-    const commit = await getCommit(req, "solution");
+    const commit = await getCommitFromRequest(req, "solution");
     if (commit === null) {
         res.statusCode = 404;
         res.send({error: 'Commit not found.'});
@@ -77,7 +77,7 @@ router.get("/:assignment/submissions/:commitId?", fetchAssignmentMiddleware, asy
 });
 
 router.get("/:assignment/testcases/:commitId?", fetchAssignmentMiddleware, async (req, res) => {
-    const commit = await getCommit(req, "testCase");
+    const commit = await getCommitFromRequest(req, "testCase");
 
     if (commit === null) {
         res.statusCode = 404;
