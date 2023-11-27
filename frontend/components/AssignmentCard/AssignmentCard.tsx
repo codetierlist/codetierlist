@@ -20,7 +20,6 @@ export declare interface AssignmentCardProps {
 }
 
 export const AssignmentCard = ({
-    key,
     id,
     name,
     dueDate,

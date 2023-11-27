@@ -165,6 +165,18 @@ export default function Page() {
         void fetchCourse();
     }, [courseID]);
 
+    // Set the session based on the month the course was created at
+    let session: "Fall" | "Winter" | "Summer" = "Winter"
+    const month = course?.createdAt.getMonth() as number
+
+    if ( 0 < month && month < 7) {
+        // Feb - July
+        session = "Summer"
+    } else if(7 <= month && month < 9) {
+        // Aug - Sep
+        session = "Fall"
+    }
+
 
     return (
         <>
@@ -214,7 +226,7 @@ export default function Page() {
             <main>
                 <header className={styles.header}>
                     <Title2>
-                        <CourseSessionChip session={course?.name ? course.name : "Fall"}>
+                        <CourseSessionChip session={session}>
                             {courseID}
                         </CourseSessionChip>
                     </Title2>
