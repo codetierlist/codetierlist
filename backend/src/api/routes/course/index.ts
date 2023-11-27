@@ -99,7 +99,7 @@ router.post("/:courseId/enroll", fetchCourseMiddleware, async (req, res) => {
         return;
     }
     await prisma.user.createMany({
-        data: utorids.map(utorid => ({utorid, email: ""})),
+        data: utorids.map(utorid => ({utorid, email: "", surname: "", givenName: ""})),
         skipDuplicates: true
     });
     await prisma.role.createMany({

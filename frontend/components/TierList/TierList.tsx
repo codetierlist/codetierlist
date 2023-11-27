@@ -1,10 +1,10 @@
-import { TierChip } from "..";
-import { GenerateInitalsAvatarProps, InitialsAvatar } from "../../components/InitialsAvatar/InitialsAvatar";
-import styles from "./TierList.module.css";
-import { Fragment } from "react";
-import { Tier, Tierlist, UserTier } from "codetierlist-types";
-import { Col, Row } from "react-grid-system";
 import { AvatarGroup, AvatarGroupItem } from "@fluentui/react-components";
+import { Tier, Tierlist, UserTier } from "codetierlist-types";
+import { Fragment } from "react";
+import { Col, Row } from "react-grid-system";
+import { TierChip } from "..";
+import { GenerateInitalsAvatarProps } from "../../components/InitialsAvatar/InitialsAvatar";
+import styles from "./TierList.module.css";
 
 const Hardcode = [
     {
