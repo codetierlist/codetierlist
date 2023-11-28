@@ -4,24 +4,29 @@ import {
     TierList,
     colourHash,
     convertDate,
-    convertTime
+    convertTime,
+    promptForFileObject
 } from '@/components';
 import { SnackbarContext } from "@/contexts/SnackbarContext";
 import flex from '@/styles/flex-utils.module.css';
 import {
-    Button, Card, CardHeader,
+    Accordion,
+    AccordionHeader,
+    AccordionItem,
+    AccordionPanel,
+    Button, Caption1, Card, CardHeader,
     MessageBar,
     MessageBarActions,
     MessageBarBody,
     MessageBarTitle,
     Subtitle1,
     Tab, TabList,
-    ToastIntent
+    Text
 } from '@fluentui/react-components';
-import { Add16Regular, Clock16Regular } from '@fluentui/react-icons';
-import { Subtitle2, Title1, Title2 } from '@fluentui/react-text';
+import { Add24Filled, Clock16Regular, Delete16Filled } from '@fluentui/react-icons';
+import { Subtitle2, Title2 } from '@fluentui/react-text';
 import Editor from '@monaco-editor/react';
-import { FetchedAssignmentWithTier, TestCase, Tierlist } from "codetierlist-types";
+import { Commit, FetchedAssignmentWithTier, Tierlist } from "codetierlist-types";
 import Error from 'next/error';
 import Head from "next/head";
 import { useRouter } from 'next/router';
@@ -29,150 +34,170 @@ import { useContext, useEffect, useState } from 'react';
 import { Col, Container } from "react-grid-system";
 import styles from './page.module.css';
 
-// TODO: clean technical debt
+const ListFiles = ({ commit, route, assignment, assignmentID, update }: { commit: Commit, route: "testcases" | "submissions", assignment: FetchedAssignmentWithTier, assignmentID: string, update?: () => void }) => {
+    const { showSnackSev } = useContext(SnackbarContext);
+    const [files, setFiles] = useState<{ [key: string]: string }>({});
 
-const UploadHeader = ({ title, action }: { title: string, action: () => void }) => {
-    return (
-        <div className={`${flex["d-flex"]} ${flex["justify-content-between"]}`}>
-            <Title1>{title}</Title1>
-            <Button appearance="subtle" onClick={() => action()}
-                icon={<Add16Regular />}>
-                Upload {title.toLowerCase()}
-            </Button>
-        </div>
-    );
-};
+    const getFileContents = async (file: string) => {
+        await axios.get<string>(`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/${commit.log[0]}/${file}`, { skipErrorHandling: true })
+            .then((res) => {
+                const fileContent = Object.values(res.data).map(value => {
+                    // each key one byte, convert to char
+                    return String.fromCharCode(Number(value));
+                }).join("");
 
-const NoUploadPlaceholder = ({ title }: { title: string }) => {
-    return (
-        <div className={`${flex["d-flex"]} ${flex["flex-column"]} ${flex["align-items-center"]} ${flex["justify-content-center"]}`}>
-            <Title2>
-                Nothing to see here...
-            </Title2>
-            <p>
-                Upload a {title} to get started!
-            </p>
-        </div>
-    );
-};
-
-const uploader = (url: string, fetchAssignment: () => void, setContent: (content: string) => void, showSnackSev: (message?: string, severity?: ToastIntent) => void) => () => {
-    const form = document.createElement('form');
-    const input = document.createElement('input');
-
-    input.type = 'file';
-    input.name = 'files';
-    input.oninput = async () => {
-        const formData = new FormData();
-        const filesLength = input.files!.length;
-        for (let i = 0; i < filesLength; i++) {
-            formData.append("files", input.files![i]);
-        }
-        await axios.post<void>(url, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        }).catch(e => { handleError(e.message, showSnackSev); });
-
-        document.body.removeChild(form);
-        // read file
-        const reader = new FileReader();
-        reader.readAsText(input.files![0]);
-        reader.onloadend = () => {
-            setContent(reader.result as string);
-        };
-        setContent("Loading...");
-        fetchAssignment();
+                setFiles((prev) => {
+                    return { ...prev, [file]: fileContent };
+                });
+            })
+            .catch(e => {
+                handleError(e.message, showSnackSev);
+            });
     };
-    document.body.append(form);
-    input.click();
-};
 
-const TestUpload = ({ fetchAssignment, content, setContent }: { uploadedTests: unknown[], fetchAssignment: () => void, content: string, setContent: (content: string) => void }) => {
-    const router = useRouter();
-    const { courseID, assignmentID } = router.query;
-    const { showSnackSev } = useContext(SnackbarContext);
+    const deleteFile = async (file: string) => {
+        await axios.delete(`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/${file}`, { skipErrorHandling: true })
+            .then(() => {
+                update && update();
+                showSnackSev("File deleted", "success");
+            })
+            .catch(e => {
+                handleError(e.message, showSnackSev);
+            });
+    };
 
-    return (
-        <Col sm={12}>
-            <UploadHeader
-                title="Test"
-                action={
-                    uploader(`/courses/${courseID}/assignments/${assignmentID}/testcases`, fetchAssignment, setContent, showSnackSev)
-                }
-            />
+    useEffect(() => {
+        if (commit.files) {
+            setFiles({});
 
-            <Card className={styles.editor}>
-                {content === null ? (
-                    <NoUploadPlaceholder title="test" />
-                ) : (
-                    <Editor
-                        defaultLanguage="python"
-                        defaultValue={content}
-                        height="90vh"
-                        options={{ readOnly: true }}
-                        theme="light"
-                    />
-                )}
-            </Card>
-        </Col>
-    );
-};
-const SolutionUpload = (
-    {
-        fetchAssignment,
-        content,
-        setContent
-    }: {
-        fetchAssignment: () => void,
-        content: string,
-        setContent: (content: string) => void
-    }) => {
-    const router = useRouter();
-    const { courseID, assignmentID } = router.query;
-    const { showSnackSev } = useContext(SnackbarContext);
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            Object.keys(commit.files).forEach((_, file) => {
+                void getFileContents(commit.files[file]);
+            });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [commit, assignment, route]);
 
     return (
-        <Col sm={12}>
-            <UploadHeader
-                title="Solution"
-                action={
-                    uploader(`/courses/${courseID}/assignments/${assignmentID}/submissions`, fetchAssignment, setContent, showSnackSev)
-                }
-            />
-
-            <Card className={styles.editor}>
+        commit.files && Object.keys(commit.files).length === 0 ? (
+            <Caption1>No files uploaded yet</Caption1>
+        ) : (
+            <Accordion collapsible>
                 {
-                    // uploadedSolutions.length === 0 ? (
-                    content === null ? (
-                        <NoUploadPlaceholder title="solution" />
-                    ) :
-                        (
-                            <Editor
-                                defaultLanguage="python"
-                                defaultValue={content}
-                                height="90vh"
-                                options={{ readOnly: true }}
-                                theme="light"
-                            />
-                        )
+                    Object.keys(commit.files).map((key, index) => (
+                        <AccordionItem value={index} key={key}>
+                            <AccordionHeader className={`${styles.accordionHeader}`}>
+                                <div className={`${flex["d-flex"]} ${flex["justify-content-between"]} ${flex["align-items-center"]} ${styles.accordionHeaderContent}`}>
+                                    <span>{commit.files[index]}</span>
+                                    <Button icon={<Delete16Filled />} onClick={() => deleteFile(commit.files[index])} />
+                                </div>
+                            </AccordionHeader>
+                            <AccordionPanel>
+                                <pre>
+                                    <Editor
+                                        height="50vh"
+                                        language="python"
+                                        value={files[commit.files[index]]}
+                                        options={{
+                                            readOnly: true,
+                                            minimap: {
+                                                enabled: false
+                                            }
+                                        }}
+                                    />
+                                </pre>
+                            </AccordionPanel>
+                        </AccordionItem>
+                    ))
                 }
-
-            </Card>
-        </Col>
+            </Accordion>
+        )
     );
 };
+
+const FilesTab = ({ fetchAssignment, assignment, assignmentID, routeName, route }: { fetchAssignment: () => Promise<void>, assignment: FetchedAssignmentWithTier, assignmentID: string, routeName: string, route: "testcases" | "submissions" }) => {
+    const [content, setContent] = useState<Commit>({ "files": [], "log": [] } as Commit);
+    const { showSnackSev } = useContext(SnackbarContext);
+
+    const getTestData = async () => {
+        await axios.get<Commit>(`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}`, { skipErrorHandling: true })
+            .then((res) => setContent(res.data))
+            .catch(e => {
+                handleError(e.message, showSnackSev);
+                setContent({ "files": [], "log": [] } as Commit);
+            });
+    };
+
+    const submitTest = async (files: FileList) => {
+        const formData = new FormData();
+        for (let i = 0; i < files!.length; i++) {
+            formData.append("files", files![i]);
+        }
+
+        axios.post(`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}`,
+            formData,
+            {
+                headers: { "Content-Type": "multipart/form-data" }
+            })
+            .then(() => {
+                fetchAssignment();
+            })
+            .catch(e => {
+                handleError(e.message, showSnackSev);
+            });
+    };
+
+    useEffect(() => {
+        void getTestData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [assignmentID, fetchAssignment, route, routeName, assignment.submissions]);
+
+    return (
+        <>
+            <div className={`${flex["d-flex"]} ${flex["justify-content-between"]}`}>
+                <Subtitle1 block>Uplodaded {routeName}s</Subtitle1>
+                <Button
+                    icon={<Add24Filled />}
+                    appearance="subtle"
+                    onClick={async () => {
+                        promptForFileObject(".py")
+                            .then(file => {
+                                if (file) {
+                                    submitTest(file);
+                                }
+                            })
+                            .catch(e => {
+                                handleError(e.message, showSnackSev);
+                            });
+                    }}
+                >
+                    Upload a {routeName}
+                </Button>
+            </div>
+
+            <Text block className={styles.commitId} font="numeric">{content.log[0]}</Text>
+
+            <Card>
+                <ListFiles
+                    commit={content}
+                    route={route}
+                    assignment={assignment}
+                    assignmentID={assignmentID}
+                    update={getTestData}
+                />
+            </Card>
+        </>
+    );
+};
+
 
 const ViewTierList = ({ tierlist }: { tierlist: Tierlist }) => {
     return (
-        <Col sm={12} lg={8} md={4}>
+        <Col sm={12}>
             <Title2>
                 Tier List
             </Title2>
-            <Card>
-                {/*TODO show actual tierlist*/}
-                <TierList tierlist={tierlist} />
-            </Card>
+            <TierList tierlist={tierlist} />
         </Col>
     );
 };
@@ -182,8 +207,6 @@ export default function Page() {
     const [stage, setStage] = useState(0);
     const [assignment, setAssignment] = useState<FetchedAssignmentWithTier | null>(null);
     const [tierlist, setTierlist] = useState<Tierlist | null>(null);
-    const [solutionContent, setSolutionContent] = useState<string | null>(null);
-    const [testContent, setTestContent] = useState<string | null>(null);
     const { showSnackSev } = useContext(SnackbarContext);
     const { courseID, assignmentID } = router.query;
 
@@ -210,7 +233,7 @@ export default function Page() {
         }
         void fetchAssignment();
         void fetchTierlist();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [courseID, assignmentID]);
 
     if (stage === -404) {
@@ -218,7 +241,6 @@ export default function Page() {
     } else if (!assignment || !courseID || !assignmentID) {
         return <p>Loading...</p>;
     }
-
 
     return (
         <>
@@ -230,13 +252,7 @@ export default function Page() {
                 <Tab value="tab0" onClick={() => setStage(0)}>
                     Assignment details
                 </Tab>
-                <Tab value="tab1" onClick={() => setStage(1)}>
-                    Submit a test
-                </Tab>
-                <Tab value="tab2" onClick={() => setStage(2)}>
-                    Upload a solution
-                </Tab>
-                <Tab value="tab3" onClick={() => setStage(3)} disabled={testContent === null || solutionContent === null}>
+                <Tab value="tab1" onClick={() => setStage(1)} disabled={assignment.test_cases.length === 0 || assignment.submissions.length === 0}>
                     View tier list
                 </Tab>
             </TabList>
@@ -264,12 +280,12 @@ export default function Page() {
                                         </div>
                                     }
                                     action={
-                                        <TierChip tier={testContent !== null && solutionContent !== null ? "B" : "?"} />
+                                        <TierChip tier={assignment.tier} />
                                     }
                                 />
                             </Card>
 
-                            {solutionContent === null && (
+                            {assignment.submissions.length === 0 && (
                                 <MessageBar intent={"warning"} className={styles.messageBar}>
                                     <MessageBarBody>
                                         <MessageBarTitle>You have not submitted a solution yet.</MessageBarTitle>
@@ -282,7 +298,7 @@ export default function Page() {
                                 </MessageBar>
                             )}
 
-                            {testContent === null && (
+                            {assignment.test_cases.length === 0 && (
                                 <MessageBar intent={"warning"} className={styles.messageBar}>
                                     <MessageBarBody>
                                         <MessageBarTitle>You have not submitted a test yet.</MessageBarTitle>
@@ -303,55 +319,29 @@ export default function Page() {
                                 </p>
                             </Card>
 
-                            <Subtitle1 block>Uplodaded Tests</Subtitle1>
-                            <Card className={styles.gutter}>
-                                {
-                                    assignment.test_cases.length === 0 && (
-                                        <p>No tests uploaded yet</p>
-                                    )
-                                }
-                                <ul className={"d-flex flex-column " + styles.uploadedTests}>
-                                    {assignment.test_cases.map((test: TestCase, index: number) => (
-                                        // TODO this is not very informative
-                                        <li className={styles.uploadedTest}
-                                            key={index}>{test.git_id}</li>
-                                    ))}
-                                </ul>
-                            </Card>
+                            <div className={styles.gutter}>
+                                <FilesTab
+                                    routeName="solution"
+                                    route="submissions"
+                                    fetchAssignment={fetchAssignment}
+                                    assignment={assignment}
+                                    assignmentID={assignmentID as string}
+                                />
+                            </div>
 
-                            <Subtitle1 block>Uplodaded Solutions</Subtitle1>
-                            <Card className={styles.gutter}>
-                                {
-                                    assignment.submissions.length === 0 && (
-                                        <p>No solutions uploaded yet</p>
-                                    )
-                                }
-                                <ul className={"d-flex flex-column " + styles.uploadedSolutions}>
-                                    {assignment.submissions.map((test: TestCase, index: number) => (
-                                        <li className={styles.uploadedTest}
-                                            key={index}>{test.git_id}</li>
-                                    ))}
-                                </ul>
-                            </Card>
+                            <div className={styles.gutter}>
+                                <FilesTab
+                                    routeName="test"
+                                    route="testcases"
+                                    fetchAssignment={fetchAssignment}
+                                    assignment={assignment}
+                                    assignmentID={assignmentID as string}
+                                />
+                            </div>
                         </>
                     )
                 }{
                     stage === 1 && (
-                        <TestUpload
-                            uploadedTests={assignment.test_cases}
-                            fetchAssignment={fetchAssignment}
-                            content={testContent ?? ""}
-                            setContent={setTestContent} />
-                    )
-                }{
-                    stage === 2 && (
-                        <SolutionUpload
-                            fetchAssignment={fetchAssignment}
-                            content={solutionContent ?? ""}
-                            setContent={setSolutionContent} />
-                    )
-                }{
-                    stage === 3 && (
                         tierlist ?
                             <ViewTierList tierlist={tierlist} /> : "No tierlist found"
                     )

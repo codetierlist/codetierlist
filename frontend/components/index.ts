@@ -16,5 +16,6 @@ export * from './TierList/TierList';
 export * from './UpcomingDeadlines/UpcomingDeadlines';
 
 export * from './utils/ColourHash/ColourHash';
-export * from './utils/TimeUtils/TimeUtils';
+export * from './utils/FileUploadUtils/FileUploadUtils';
 export * from './utils/Theme/Theme';
+export * from './utils/TimeUtils/TimeUtils';
