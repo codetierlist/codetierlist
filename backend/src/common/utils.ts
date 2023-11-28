@@ -30,7 +30,7 @@ export function isProf(course: Course & {
 }
 export const processSubmission = async (req: Request, table: "solution" | "testCase") => {
     // upload files
-    const repoPath = path.resolve(`./repos/${req.course!.id}/${req.assignment!.title}/${req.user.utorid}_${table}`);
+    const repoPath = path.resolve(`/repos/${req.course!.id}/${req.assignment!.title}/${req.user.utorid}_${table}`);
 
     // create folder if it doesnt exist
     await new Promise<undefined>((res, rej) => {
