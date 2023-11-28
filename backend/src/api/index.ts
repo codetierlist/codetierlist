@@ -64,6 +64,7 @@ app.use(async (req, res, next) => {
         update: {utorid, email},
         ...fetchedUserArgs
     });
+    
     if (user === null) {
         res.statusCode = 400;
         res.send({

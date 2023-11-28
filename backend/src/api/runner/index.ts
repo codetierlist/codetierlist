@@ -1,20 +1,17 @@
-import {
-    Submission,
-    TestCase
-} from "codetierlist-types";
+import {Submission, TestCase} from "codetierlist-types";
 import {spawn} from "child_process";
 import path from "path";
 import {getFiles} from "../../common/utils";
 
 interface Job {
-    submission?: Submission,
-    testCase?: TestCase
+    submission: Submission,
+    testCase: TestCase
 }
 
-const job_queue: {(): void}[] = [];
+const job_queue: { job: Job, execute: { (): void }, cancel: { (): void } }[] = [];
 
 let running_jobs = 0;
-
+export const getJobQueue = () => job_queue;
 export const runJob = async (job: Job) => {
     console.log("Running job");
     // get the files here somehow
@@ -27,8 +24,7 @@ export const runJob = async (job: Job) => {
     const img = 'python';
     const img_ver = '3.10.11';
 
-    // TODO: figure out how to use reject
-    return await new Promise((resolve) => {
+    return await new Promise((resolve, reject) => {
         // NOTE: change ulimit time to increase/decrease time relating to actual running resource
         // NOTE: change timeout to increase/decrease time relating to actual running resource
         const runner = spawn("bash",
@@ -63,18 +59,31 @@ export const runJob = async (job: Job) => {
         });
 
         runner.on('exit', (code, signal) => {
-            resolve({code, signal}); // fail case?
+            if (code != 0) {
+                reject({code, signal});
+            } else resolve({code, signal}); // fail case?
         });
     });
 };
 
 export const queueJob = (job: Job) => {
-    return new Promise((resolve) => {
-        job_queue.push(() => {
-            runJob(job).then(r => {
-                resolve(r);
+    return new Promise((resolve, reject) => {
+        let rejected = false;
+        job_queue.push({
+            job,
+            execute() {
+                runJob(this.job).then(r => {
+                    if (rejected) return;
+                    resolve(r);
+                    running_jobs--;
+                });
+            },
+            cancel() {
+                rejected = true;
                 running_jobs--;
-            });
+                job_queue.splice(job_queue.indexOf(this));
+                reject(new Error("Job canceled"));
+            }
         });
     });
 };
@@ -83,7 +92,6 @@ setInterval(() => {
     if (job_queue.length === 0) {
         return;
     }
-
     if (process.env.MAX_RUNNING_TASKS === undefined) {
         throw new Error("MAX_RUNNING_TASKS is undefined");
     }
@@ -94,17 +102,17 @@ setInterval(() => {
         if (job === undefined) {
             return;
         }
-        job();
+        job.execute();
     }
 }, 1000);
 
-for (let i = 0; i < 15; i++) {
-    console.log(`queueing job ${i}`);
-    queueJob({
-        submission: undefined,
-        testCase: undefined
-    }).then(r => {
-        console.log(`result ${i}`);
-        console.log(r);
-    });
-}
+// for (let i = 0; i < 15; i++) {
+//     console.log(`queueing job ${i}`);
+//     queueJob({
+//         submission: undefined,
+//         testCase: undefined
+//     }).then(r => {
+//         console.log(`result ${i}`);
+//         console.log(r);
+//     });
+// }
