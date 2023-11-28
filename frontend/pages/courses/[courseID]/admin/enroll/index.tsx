@@ -6,7 +6,7 @@ import { Body2, Button, ToolbarButton } from "@fluentui/react-components";
 import { Add24Filled, ArrowLeft24Regular } from '@fluentui/react-icons';
 import { Title2 } from '@fluentui/react-text';
 import { Editor } from "@monaco-editor/react";
-import { isUTORid, isUofTEmail } from 'is-utorid';
+import { isUTORid } from 'is-utorid';
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useContext, useState } from "react";
@@ -28,22 +28,16 @@ async function massEnroll(courseID: string, csv: string) {
 
     const headers = table.shift() || [];
     const utoridIndex = headers.indexOf("utorid");
-    const emailIndex = headers.indexOf("email");
 
     const students = table.map((row) => ({
         utorid: row[utoridIndex],
-        email: row[emailIndex]
     }));
 
     students.forEach((student) => {
         if (!isUTORid(student.utorid)) {
             throw new Error(`Invalid UTORid: ${student.utorid}`);
-        } else if (!isUofTEmail(student.email)) {
-            throw new Error(`Invalid email: ${student.email}`);
         }
     });
-
-    // todo: backend only accepts utorids..? make it accept emails too
 
     const utoridList = students.map((student) => student.utorid);
 
@@ -79,7 +73,7 @@ export default function Page(): JSX.Element {
                 <div className={`${flex["d-flex"]} ${flex["justify-content-between"]}`}>
                     <header>
                         <Title2 block>Enroll Students</Title2>
-                        <Body2 block>Enter a CSV of students to enroll in this course. The CSV must have a header row with the columns <code>utorid</code> and <code>email</code>.</Body2>
+                        <Body2 block>Enter a CSV of students to enroll in this course. The CSV must have a header row with the columns <code>utorid</code>.</Body2>
                     </header>
 
                     <Button
@@ -102,7 +96,7 @@ export default function Page(): JSX.Element {
                 <Editor
                     height="56vh"
                     defaultLanguage="csv"
-                    defaultValue="utorid,email"
+                    defaultValue="utorid"
                     value={editorValue}
                     onChange={(value) => setEditorValue(value || "")}
                 />
