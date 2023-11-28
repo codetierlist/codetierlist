@@ -4,33 +4,16 @@ import {
 } from "codetierlist-types";
 import {spawn} from "child_process";
 import path from "path";
-import {getCommit} from "../../common/utils";
-import {promises as fs} from "fs";
-import * as Path from "path";
+import {getFiles} from "../../common/utils";
 
 interface Job {
     submission?: Submission,
     testCase?: TestCase
 }
 
-type JobFiles = { [key:string] : string }
-
 const job_queue: {(): void}[] = [];
 
 let running_jobs = 0;
-
-export const getFiles = async (submission : Submission | TestCase) : Promise<JobFiles> => {
-    const res : JobFiles= {};
-    const commit = await getCommit(submission);
-    if(!commit){
-        throw new Error("Commit not found in runner");
-    }
-    await Promise.all(commit.files.map(async (x)=>{
-        res[x] = await fs.readFile(Path.resolve(submission.git_url,x), {encoding: 'base64'});
-    }));
-    return res;
-};
-
 
 export const runJob = async (job: Job) => {
     console.log("Running job");

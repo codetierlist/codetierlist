@@ -9,9 +9,10 @@ import {
 } from "@prisma/client";
 import {NextFunction, Request, Response} from "express";
 import path from "path";
-import fs from "fs";
+import Path from "path";
+import {promises as fs} from "fs";
 import git from "isomorphic-git";
-import {Commit} from "codetierlist-types";
+import {Commit, Submission} from "codetierlist-types";
 
 /**
  * Checks if a user is a prof in a course.
@@ -28,17 +29,13 @@ export function isProf(course: Course & {
 }) {
     return course.roles.some(role => role.user.utorid === user.utorid && ([RoleType.INSTRUCTOR, RoleType.TA] as RoleType[]).includes(role.type));
 }
+
 export const processSubmission = async (req: Request, table: "solution" | "testCase") => {
     // upload files
     const repoPath = path.resolve(`/repos/${req.course!.id}/${req.assignment!.title}/${req.user.utorid}_${table}`);
 
     // create folder if it doesnt exist
-    await new Promise<undefined>((res, rej) => {
-        fs.mkdir(repoPath, {recursive: true}, (err) => {
-            if (err) rej(err);
-            res(undefined);
-        });
-    });
+    await fs.mkdir(repoPath, {recursive: true});
 
     // check if git repo exists
     const query = {
@@ -64,7 +61,7 @@ export const processSubmission = async (req: Request, table: "solution" | "testC
     // get files from form data
     for (const file of req.files!) {
         if (file === null) continue;
-        fs.copyFileSync(file.path, `${repoPath}/${file.filename}`);
+        await fs.copyFile(file.path, `${repoPath}/${file.filename}`);
     }
 
 
@@ -223,3 +220,17 @@ export const fetchAssignmentMiddleware = async (req: Request, res: Response, nex
     req.course = assignment.course;
     next();
 };
+
+type JobFiles = { [key:string] : string }
+export const getFiles = async (submission: Submission | TestCase): Promise<JobFiles> => {
+    const res: JobFiles = {};
+    const commit = await getCommit(submission);
+    if (!commit) {
+        throw new Error("Commit not found in runner");
+    }
+    await Promise.all(commit.files.map(async (x) => {
+        res[x] = await fs.readFile(Path.resolve(submission.git_url, x), {encoding: 'base64'});
+    }));
+    return res;
+};
+
