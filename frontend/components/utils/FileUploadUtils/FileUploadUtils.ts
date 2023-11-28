@@ -30,17 +30,17 @@ export const promptForFileReader = async (type: string): Promise<FileReader> => 
  * @param type the file types to accept
  * @returns the file object
  */
-export const promptForFileObject = async (type: string): Promise<File> => {
+export const promptForFileObject = async (type: string): Promise<FileList> => {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
     fileInput.accept = type;
 
     return new Promise((resolve) => {
         fileInput.addEventListener("change", () => {
-            if (fileInput.files && fileInput.files[0]) {
-                const file = fileInput.files[0];
-
-                resolve(file);
+            if (fileInput.files) {
+                resolve(fileInput.files);
+            } else {
+                throw new Error("Select a file!");
             }
         });
         fileInput.click();

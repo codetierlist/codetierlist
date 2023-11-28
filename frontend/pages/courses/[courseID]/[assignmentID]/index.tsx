@@ -10,33 +10,23 @@ import {
 import { SnackbarContext } from "@/contexts/SnackbarContext";
 import flex from '@/styles/flex-utils.module.css';
 import {
-    Body1,
+    Accordion,
+    AccordionHeader,
+    AccordionItem,
+    AccordionPanel,
     Button, Caption1, Card, CardHeader,
-    DataGrid,
     MessageBar,
     MessageBarActions,
     MessageBarBody,
     MessageBarTitle,
     Subtitle1,
     Tab, TabList,
-    ToastIntent,
-    PresenceBadgeStatus,
-    Avatar,
-    DataGridBody,
-    DataGridRow,
-    DataGridHeader,
-    DataGridHeaderCell,
-    DataGridCell,
-    TableCellLayout,
-    TableColumnDefinition,
-    createTableColumn,
-    TableRowId,
-    DataGridProps,
+    Text
 } from '@fluentui/react-components';
-import { Add16Regular, Add24Filled, Clock16Regular } from '@fluentui/react-icons';
-import { Subtitle2, Title1, Title2 } from '@fluentui/react-text';
+import { Add24Filled, Clock16Regular, Delete16Filled } from '@fluentui/react-icons';
+import { Subtitle2, Title2 } from '@fluentui/react-text';
 import Editor from '@monaco-editor/react';
-import { Commit, FetchedAssignmentWithTier, TestCase, Tierlist } from "codetierlist-types";
+import { Commit, FetchedAssignmentWithTier, Tierlist } from "codetierlist-types";
 import Error from 'next/error';
 import Head from "next/head";
 import { useRouter } from 'next/router';
@@ -44,55 +34,158 @@ import { useContext, useEffect, useState } from 'react';
 import { Col, Container } from "react-grid-system";
 import styles from './page.module.css';
 
-const TestUpload = ({ fetchAssignment, assignment, assignmentID }: { fetchAssignment: () => Promise<void>, assignment: FetchedAssignmentWithTier, assignmentID: string }) => {
-    const [content, setContent] = useState<Commit>({} as Commit);
+const ListFiles = ({ commit, route, assignment, assignmentID, update }: { commit: Commit, route: "testcases" | "submissions", assignment: FetchedAssignmentWithTier, assignmentID: string, update?: () => void }) => {
     const { showSnackSev } = useContext(SnackbarContext);
+    const [files, setFiles] = useState<{ [key: string]: string }>({});
 
-    const submitTest = async (file: File) => {
-        axios.post(`/courses/${assignment.course_id}/assignments/${assignmentID}/testcases`, {
-            files: [file]
-        })
-            .then(() => {
-                fetchAssignment();
+    const getFileContents = async (file: string) => {
+        await axios.get<string>(`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/${commit.log[0]}/${file}`, { skipErrorHandling: true })
+            .then((res) => {
+                const fileContent = Object.values(res.data).map(value => {
+                    // each key one byte, convert to char
+                    return String.fromCharCode(Number(value));
+                }).join("");
+
+                setFiles((prev) => {
+                    return { ...prev, [file]: fileContent };
+                });
+            })
+            .catch(e => {
+                handleError(e.message, showSnackSev);
             });
     };
 
+    const deleteFile = async (file: string) => {
+        await axios.delete(`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/${file}`, { skipErrorHandling: true })
+            .then(() => {
+                update && update();
+                showSnackSev("File deleted", "success");
+            })
+            .catch(e => {
+                handleError(e.message, showSnackSev);
+            });
+    };
+
+    useEffect(() => {
+        if (commit.files) {
+            setFiles({});
+
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            Object.keys(commit.files).forEach((_, file) => {
+                void getFileContents(commit.files[file]);
+            });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [commit, assignment, route]);
+
+    return (
+        commit.files && Object.keys(commit.files).length === 0 ? (
+            <Caption1>No files uploaded yet</Caption1>
+        ) : (
+            <Accordion collapsible>
+                {
+                    Object.keys(commit.files).map((key, index) => (
+                        <AccordionItem value={index} key={key}>
+                            <AccordionHeader className={`${styles.accordionHeader}`}>
+                                <div className={`${flex["d-flex"]} ${flex["justify-content-between"]} ${flex["align-items-center"]} ${styles.accordionHeaderContent}`}>
+                                    <span>{commit.files[index]}</span>
+                                    <Button icon={<Delete16Filled />} onClick={() => deleteFile(commit.files[index])} />
+                                </div>
+                            </AccordionHeader>
+                            <AccordionPanel>
+                                <pre>
+                                    <Editor
+                                        height="50vh"
+                                        language="python"
+                                        value={files[commit.files[index]]}
+                                        options={{
+                                            readOnly: true,
+                                            minimap: {
+                                                enabled: false
+                                            }
+                                        }}
+                                    />
+                                </pre>
+                            </AccordionPanel>
+                        </AccordionItem>
+                    ))
+                }
+            </Accordion>
+        )
+    );
+};
+
+const FilesTab = ({ fetchAssignment, assignment, assignmentID, routeName, route }: { fetchAssignment: () => Promise<void>, assignment: FetchedAssignmentWithTier, assignmentID: string, routeName: string, route: "testcases" | "submissions" }) => {
+    const [content, setContent] = useState<Commit>({ "files": [], "log": [] } as Commit);
+    const { showSnackSev } = useContext(SnackbarContext);
+
     const getTestData = async () => {
-        await axios.get<Commit>(`/courses/${assignment.course_id}/assignments/${assignmentID}/testcases`, { skipErrorHandling: true })
+        await axios.get<Commit>(`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}`, { skipErrorHandling: true })
             .then((res) => setContent(res.data))
             .catch(e => {
                 handleError(e.message, showSnackSev);
-                setContent({"files": {}, "log": {}} as Commit);
+                setContent({ "files": [], "log": [] } as Commit);
+            });
+    };
+
+    const submitTest = async (files: FileList) => {
+        const formData = new FormData();
+        for (let i = 0; i < files!.length; i++) {
+            formData.append("files", files![i]);
+        }
+
+        axios.post(`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}`,
+            formData,
+            {
+                headers: { "Content-Type": "multipart/form-data" }
+            })
+            .then(() => {
+                fetchAssignment();
+            })
+            .catch(e => {
+                handleError(e.message, showSnackSev);
             });
     };
 
     useEffect(() => {
         void getTestData();
-        console.log(content);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [assignmentID]);
+    }, [assignmentID, fetchAssignment, route, routeName, assignment.submissions]);
 
     return (
         <>
-            <Button
-                icon={<Add24Filled />}
-                onClick={async () => {
-                    promptForFileObject(".py")
-                        .then(file => {
-                            if (file) {
-                                submitTest(file);
-                            }
-                        })
-                        .catch(e => {
-                            handleError(e.message, showSnackSev);
-                        });
-                }}
-            >
-                Upload test
-            </Button>
+            <div className={`${flex["d-flex"]} ${flex["justify-content-between"]}`}>
+                <Subtitle1 block>Uplodaded {routeName}s</Subtitle1>
+                <Button
+                    icon={<Add24Filled />}
+                    appearance="subtle"
+                    onClick={async () => {
+                        promptForFileObject(".py")
+                            .then(file => {
+                                if (file) {
+                                    submitTest(file);
+                                }
+                            })
+                            .catch(e => {
+                                handleError(e.message, showSnackSev);
+                            });
+                    }}
+                >
+                    Upload a {routeName}
+                </Button>
+            </div>
 
-            <Col sm={12} lg={8} md={4}>
-            </Col>
+            <Text block className={styles.commitId} font="numeric">{content.log[0]}</Text>
+
+            <Card>
+                <ListFiles
+                    commit={content}
+                    route={route}
+                    assignment={assignment}
+                    assignmentID={assignmentID}
+                    update={getTestData}
+                />
+            </Card>
         </>
     );
 };
@@ -100,14 +193,11 @@ const TestUpload = ({ fetchAssignment, assignment, assignmentID }: { fetchAssign
 
 const ViewTierList = ({ tierlist }: { tierlist: Tierlist }) => {
     return (
-        <Col sm={12} lg={8} md={4}>
+        <Col sm={12}>
             <Title2>
                 Tier List
             </Title2>
-            <Card>
-                {/*TODO show actual tierlist*/}
-                <TierList tierlist={tierlist} />
-            </Card>
+            <TierList tierlist={tierlist} />
         </Col>
     );
 };
@@ -152,7 +242,6 @@ export default function Page() {
         return <p>Loading...</p>;
     }
 
-
     return (
         <>
             <Head>
@@ -163,13 +252,7 @@ export default function Page() {
                 <Tab value="tab0" onClick={() => setStage(0)}>
                     Assignment details
                 </Tab>
-                <Tab value="tab1" onClick={() => setStage(1)}>
-                    Submit a test
-                </Tab>
-                <Tab value="tab2" onClick={() => setStage(2)}>
-                    Upload a solution
-                </Tab>
-                <Tab value="tab3" onClick={() => setStage(3)} disabled={assignment.test_cases.length === 0 || assignment.submissions.length === 0}>
+                <Tab value="tab1" onClick={() => setStage(1)} disabled={assignment.test_cases.length === 0 || assignment.submissions.length === 0}>
                     View tier list
                 </Tab>
             </TabList>
@@ -236,81 +319,29 @@ export default function Page() {
                                 </p>
                             </Card>
 
-                            <div className={`${flex["d-flex"]} ${flex["justify-content-between"]}`}>
-                                <Subtitle1 block>Uplodaded Tests</Subtitle1>
-                                <Button appearance="subtle" onClick={() => setStage(1)}
-                                    icon={<Add16Regular />}>
-                                    Upload a test
-                                </Button>
+                            <div className={styles.gutter}>
+                                <FilesTab
+                                    routeName="solution"
+                                    route="submissions"
+                                    fetchAssignment={fetchAssignment}
+                                    assignment={assignment}
+                                    assignmentID={assignmentID as string}
+                                />
                             </div>
 
-                            <Card className={styles.gutter}>
-                                {
-                                    assignment.test_cases.length === 0 && (
-                                        <>
-                                            <Caption1>No tests uploaded yet</Caption1>
-                                            <Body1>
-                                                Click &ldquo;Submit a test&rdquo; to upload a test!
-                                            </Body1>
-                                        </>
-                                    )
-                                }
-                                <ul className={"d-flex flex-column " + styles.uploadedTests}>
-                                    {assignment.test_cases.map((test: TestCase, index: number) => (
-                                        // TODO this is not very informative
-                                        <li className={styles.uploadedTest}
-                                            key={index}>{test.git_id}</li>
-                                    ))}
-                                </ul>
-                            </Card>
-
-                            <div className={`${flex["d-flex"]} ${flex["justify-content-between"]}`}>
-                                <Subtitle1 block>Uploaded Solutions</Subtitle1>
-                                <Button appearance="subtle" onClick={() => setStage(2)}
-                                    icon={<Add16Regular />}>
-                                    Upload a solution
-                                </Button>
+                            <div className={styles.gutter}>
+                                <FilesTab
+                                    routeName="test"
+                                    route="testcases"
+                                    fetchAssignment={fetchAssignment}
+                                    assignment={assignment}
+                                    assignmentID={assignmentID as string}
+                                />
                             </div>
-
-                            <Card className={styles.gutter}>
-                                {
-                                    assignment.submissions.length === 0 && (
-                                        <>
-                                            <Caption1>No solutions uploaded yet</Caption1>
-                                            <Body1>
-                                                Click &ldquo;Upload a solution&rdquo; to upload a solution!
-                                            </Body1>
-                                        </>
-                                    )
-                                }
-                                <ul className={"d-flex flex-column " + styles.uploadedSolutions}>
-                                    {assignment.submissions.map((test: TestCase, index: number) => (
-                                        <li className={styles.uploadedTest}
-                                            key={index}>{test.git_id}</li>
-                                    ))}
-                                </ul>
-                            </Card>
                         </>
                     )
                 }{
                     stage === 1 && (
-                        <TestUpload
-                            fetchAssignment={fetchAssignment}
-                            assignment={assignment}
-                            assignmentID={assignmentID as string}
-                        />
-                    )
-                }{
-                    stage === 2 && (
-                        // <SolutionUpload
-                        // fetchAssignment={fetchAssignment}
-                        // assignment={assignment}
-                        // assignmentID={assignmentID as string}
-                        // />
-                        <></>
-                    )
-                }{
-                    stage === 3 && (
                         tierlist ?
                             <ViewTierList tierlist={tierlist} /> : "No tierlist found"
                     )
