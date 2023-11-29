@@ -76,6 +76,8 @@ model User {
   roles     Role[]
   admin     Boolean    @default(false)
   TestCase  TestCase[]
+  surname   String
+  givenName String
 
   @@map("Users")
 }
