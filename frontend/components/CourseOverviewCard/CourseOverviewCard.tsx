@@ -11,10 +11,11 @@ import {useRouter} from 'next/navigation';
 import {useState} from 'react';
 import styles from './CourseOverviewCard.module.css';
 import {SessionBlock} from '@/components/SessionBlock/SessionBlock';
+import { Session } from 'codetierlist-types';
 
 export declare interface CourseSessionChipProps {
     /** the session of the course */
-    session: "Fall"
+    session: Session
 
     /** the children of the component */
     children?: React.ReactNode
