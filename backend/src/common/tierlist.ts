@@ -6,8 +6,23 @@ import {
     UserTier
 } from "codetierlist-types";
 
+/** @return a two letter hash of the string */
+export const twoLetterHash = (str: string) => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = ((hash << 5) - hash) + str.charCodeAt(i);
+        hash |= 0;
+    }
+    return Math.abs(hash).toString(36).substr(0, 2);
+};
+
+/** @return true if the user is the same as the utorid or user object */
+const isSelf = (user: User, utorid: string) => utorid === (user ? (typeof user === "string" ? user : user.utorid) : false);
+
+/** @return the mean of the data */
 const getMean = (data: number[]) => data.reduce((a, b) => Number(a) + Number(b)) / data.length;
 
+/** @return the standard deviation of the data */
 const getStandardDeviation = (data: number[]) => Math.sqrt(data.reduce((sq, n) => sq + Math.pow(n - getMean(data), 2), 0) / (data.length - 1));
 
 function generateList(assignment: Omit<FullFetchedAssignment, "due_date">, user?: string | User): [Tierlist, UserTier] {
@@ -24,8 +39,8 @@ function generateList(assignment: Omit<FullFetchedAssignment, "due_date">, user?
     }
     const scores = assignment.submissions.map(submission =>
         ({
-            you: submission.author.utorid === (user ? (typeof user === "string" ? user : user.utorid) : false),
-            name: submission.author.email[0] + submission.author.email[submission.author.email.indexOf(".") + 1],
+            you: isSelf(user as User, submission.author.utorid),
+            name: isSelf(user as User, submission.author.utorid) ? submission.author.email[0] + submission.author.email[submission.author.email.indexOf(".") + 1] : twoLetterHash(submission.author.utorid),
             score: submission.scores.filter(x => x.pass).length / submission.scores.length,
         })
     );
@@ -59,5 +74,8 @@ function generateList(assignment: Omit<FullFetchedAssignment, "due_date">, user?
     return [res, yourTier];
 }
 
+/** @return the tierlist and your tier */
 export const generateTierList = (assignment: Omit<FullFetchedAssignment, "due_date">, user?: string | User): Tierlist => generateList(assignment, user)[0];
+
+/** @return your tier */
 export const generateYourTier = (assignment: Omit<FullFetchedAssignment, "due_date">, user?: string | User): UserTier => generateList(assignment, user)[1];
