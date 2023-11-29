@@ -44,7 +44,7 @@ export type Assignment = Omit<Prisma.AssignmentGetPayload<{}>, "due_date"> & {
 };
 export type Course = Prisma.CourseGetPayload<{}>;
 export type User = Prisma.UserGetPayload<{}>;
-export type Submission = Prisma.SolutionGetPayload<{}>;
+export type Submission = Prisma.SubmissionGetPayload<{}>;
 export type Score = Prisma.ScoreGetPayload<{}>;
 export type Role = Prisma.RoleGetPayload<{}>;
 export type TestCase = Prisma.TestCaseGetPayload<{}>;
