@@ -122,6 +122,7 @@ export const processSubmission = async (req: Request, table: "solution" | "testC
         author_id: req.user.utorid
     }, table);
 };
+
 /**
  * Gets a commit from a submission.
  *
@@ -129,36 +130,13 @@ export const processSubmission = async (req: Request, table: "solution" | "testC
  * @param table the table to get the commit from. Either "solution" or "testCase"
  * @returns the commit or null if it does not exist
  */
-export const getCommit = async (req: Request, table: "solution" | "testCase"): Promise<Commit | null> => {
-    const query = {
-        where: {
-            id: {
-                author_id: req.user.utorid,
-                assignment_title: req.assignment!.title,
-                course_id: req.course!.id
-            }
-        }
-    };
-
-    let submission: TestCase | Solution | null;
-
-    if (table === "solution") {
-        submission = await prisma.solution.findUnique(query);
-    } else {
-        submission = await prisma.testCase.findUnique(query);
-    }
-
-    if (submission === null) {
-        return null;
-    }
-
+export const getCommit = async (submission: Solution | TestCase, commitId?: string | null) => {
     let commit = null;
-
     try {
         commit = await git.readCommit({
             fs,
             dir: submission.git_url,
-            oid: req.params.commitId ?? submission.git_id
+            oid: commitId ?? submission.git_id
         });
     } catch (e: unknown) {
         // readCommit throws throws an error if the commit is not found
@@ -179,7 +157,7 @@ export const getCommit = async (req: Request, table: "solution" | "testCase"): P
         const log = await git.log({fs, dir: submission.git_url});
         return {files, log: log.map(commitIterator => commitIterator.oid)};
     } catch (e: unknown) {
-        // listFiles throws an error if the commit is not found
+        // listFiles/log throws an error if the commit is not found
         // https://github.com/isomorphic-git/isomorphic-git/blob/90ea0e34f6bb0956858213281fafff0fd8e94309/src/api/listFiles.js#L33
         return null;
     }
@@ -269,6 +247,38 @@ export const deleteFile = async (req: Request, res: Response, table: "solution" 
         return;
     }
     res.send({commit});
+};
+/**
+ * Gets a commit from a submission.
+ *
+ * @param req the request
+ * @param table the table to get the commit from. Either "solution" or "testCase"
+ * @returns the commit or null if it does not exist
+ */
+export const getCommitFromRequest = async (req: Request, table: "solution" | "testCase"): Promise<Commit | null> => {
+    const query = {
+        where: {
+            id: {
+                author_id: req.user.utorid,
+                assignment_title: req.assignment!.title,
+                course_id: req.course!.id
+            }
+        }
+    };
+
+    let submission: TestCase | Solution | null;
+
+    if (table === "solution") {
+        submission = await prisma.solution.findUnique(query);
+    } else {
+        submission = await prisma.testCase.findUnique(query);
+    }
+
+    if (submission === null) {
+        return null;
+    }
+
+    return await getCommit(submission, req.params.commitId);
 };
 
 export const fetchCourseMiddleware = async (req: Request, res: Response, next: NextFunction) => {
