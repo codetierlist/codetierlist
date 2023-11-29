@@ -37,7 +37,7 @@ app.use((req, res, next) => {
 });
 app.use(bodyParser.json());
 app.use(async (req, res, next) => {
-    if (!req.headers.utorid || !req.headers.http_mail) {
+    if (!req.headers.utorid || !req.headers.http_mail || !req.headers.sn || !req.headers.givename) {
         res.statusCode = 401;
         res.send({
             status: 401,
