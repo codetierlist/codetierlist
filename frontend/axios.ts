@@ -1,4 +1,3 @@
-import { ToastIntent } from "@fluentui/react-components";
 import axios from "axios";
 
 declare module "axios" {
@@ -7,19 +6,16 @@ declare module "axios" {
     }
 }
 
-export const handleError = (message: string, showSnackSev?: (message?: string, severity?: ToastIntent) => void) => {
-    if (showSnackSev) {
-        showSnackSev(message, "error");
-    } else {
-        console.error(message);
-    }
+const handleError = (message: string) => {
+    // TODO: show error message
+    console.error(message);
 };
 
 /**
  * Axios instance
  */
 export const instance = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL || "/api"
+    baseURL: process.env.NEXT_PUBLIC_API_URI || "/api"
 });
 
 let loading = 0;
@@ -64,6 +60,7 @@ instance.interceptors.response.use(
                 loadingWheel.style.display = 'none';
             }
         }, 500);
+        handleError(error.message);
         return Promise.reject(error);
     },
 );

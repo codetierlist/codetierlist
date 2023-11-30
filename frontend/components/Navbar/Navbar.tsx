@@ -1,4 +1,4 @@
-import { Badge, Link, Persona, SkeletonItem } from '@fluentui/react-components';
+import { Link, Persona, SkeletonItem } from '@fluentui/react-components';
 import styles from './Navbar.module.css';
 import { GenerateInitalsAvatarProps } from '@/components';
 import { useContext } from 'react';
@@ -21,13 +21,8 @@ export const Navbar = (): JSX.Element => {
             {(userInfo.email !== defaultUser.email) && (
                 <Persona
                     textPosition="before"
-                    avatar={GenerateInitalsAvatarProps(`${userInfo.givenName} ${userInfo.surname}`)}
-                    primaryText={
-                        <>
-                            {userInfo.admin && <Badge className={styles.adminBadge} appearance="outline">Admin</Badge>}
-                            {`${userInfo.givenName} ${userInfo.surname}` == " " ? userInfo.utorid : `${userInfo.givenName} ${userInfo.surname}`}
-                        </>
-                    }
+                    avatar={GenerateInitalsAvatarProps(userInfo.utorid)}
+                    primaryText={userInfo.email.split('@')[0]}
                     secondaryText={userInfo.utorid}
                 />
             )}

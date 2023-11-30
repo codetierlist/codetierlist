@@ -27,7 +27,3 @@
     width: 10em;
     gap: var(--spacingVerticalS);
 }
-
-.adminBadge {
-    margin-right: var(--spacingHorizontalXS);
-}

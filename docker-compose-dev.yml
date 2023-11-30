@@ -25,6 +25,9 @@ services:
     environment:
       - DATABASE_URL=postgres://postgres:example@db:5432/postgres
       - NODE_ENV=development
+      - MAX_RUNNING_TASKS=10
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    privileged: true
 
   frontend:
     restart: always
@@ -35,7 +38,7 @@ services:
       dockerfile: ./frontend/Dockerfile-dev
     environment:
       - NODE_ENV=development
-      - NEXT_PUBLIC_API_URL=/api
+      - NEXT_PUBLIC_API_URI=/api
     volumes:
       - ./frontend/src:/frontend/src:ro
       - ./frontend/components:/frontend/components:ro
