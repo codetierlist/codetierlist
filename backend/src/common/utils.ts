@@ -1,5 +1,6 @@
 import prisma, {fetchedAssignmentArgs, fetchedCourseArgs} from "./prisma";
-import {Prisma,
+import {
+    Prisma,
     Assignment as PrismaAssignment,
     Course,
     RoleType,
@@ -9,7 +10,7 @@ import {Prisma,
 } from "@prisma/client";
 import {NextFunction, Request, Response} from "express";
 import path from "path";
-import fs from "fs";
+import {PathLike, promises as fs} from "fs";
 import git, {ReadBlobResult} from "isomorphic-git";
 import {Commit} from "codetierlist-types";
 
@@ -61,7 +62,7 @@ const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'date
     }
 };
 
-const getObjectFromRequest = async (req: Request, table: "solution" | "testCase") =>{
+const getObjectFromRequest = async (req: Request, table: "solution" | "testCase") => {
     let object: Solution | TestCase | null;
     const query1 = {
         where: {
@@ -71,10 +72,15 @@ const getObjectFromRequest = async (req: Request, table: "solution" | "testCase"
         },
         orderBy: {
             datetime: "desc"
-        }};
-    const query : typeof query1 & {where:{git_id?:string}}=query1;
+        }
+    };
+    const query: typeof query1 & {
+        where: {
+            git_id?: string
+        }
+    } = query1;
     if (req.params.commitId) {
-        query.where.git_id=req.params.commitId;
+        query.where.git_id = req.params.commitId;
     }
     if (table === "solution") {
         object = await prisma.solution.findFirst(query as Prisma.SolutionFindFirstArgs);
@@ -83,6 +89,15 @@ const getObjectFromRequest = async (req: Request, table: "solution" | "testCase"
     }
     return object;
 };
+export const exists = async (p: PathLike) => {
+    try {
+        await fs.access(p);
+        return true;
+    } catch {
+        return false;
+    }
+};
+
 export const processSubmission = async (req: Request, table: "solution" | "testCase") => {
     // upload files
     const repoPath = path.resolve(`/repos/${req.course!.id}/${req.assignment!.title}/${req.user.utorid}_${table}`);
@@ -90,29 +105,26 @@ export const processSubmission = async (req: Request, table: "solution" | "testC
     // check if git repo exists
     let submission = await getObjectFromRequest(req, table);
 
-    if (submission === null || !fs.existsSync(repoPath)) {
+    if (submission === null || !(await exists(submission.git_url))) {
         if (submission !== null) {
-            await prisma.solution.deleteMany({where:{
-                assignment_title: req.assignment!.title,
-                course_id:req.course!.id,
-                author_id: req.user.utorid
-            }});
+            await prisma.solution.deleteMany({
+                where: {
+                    assignment_title: req.assignment!.title,
+                    course_id: req.course!.id,
+                    author_id: req.user.utorid
+                }
+            });
             submission = null;
         }
         // // create folder if it doesnt exist
-        await new Promise<undefined>((res, rej) => {
-            fs.mkdir(repoPath, {recursive: true}, (err) => {
-                if (err) rej(err);
-                res(undefined);
-            });
-        });
+        await fs.mkdir(repoPath, {recursive: true});
         await git.init({fs, dir: repoPath});
     }
 
     // get files from form data
     for (const file of req.files!) {
         if (file === null) continue;
-        fs.copyFileSync(file.path, `${repoPath}/${file.filename}`);
+        await fs.copyFile(file.path, `${repoPath}/${file.filename}`);
     }
 
     // commit files
@@ -128,9 +140,9 @@ export const processSubmission = async (req: Request, table: "solution" | "testC
 /**
  * Gets a commit from a submission.
  *
- * @param req the request
- * @param table the table to get the commit from. Either "solution" or "testCase"
  * @returns the commit or null if it does not exist
+ * @param submission
+ * @param commitId
  */
 export const getCommit = async (submission: Solution | TestCase, commitId?: string | null) => {
     let commit = null;
@@ -164,9 +176,20 @@ export const getCommit = async (submission: Solution | TestCase, commitId?: stri
         return null;
     }
 };
-
+export const getFile = async (file: string, dir: string, commitId: string) => {
+    try {
+        return git.readBlob({
+            fs,
+            dir: dir,
+            oid: commitId,
+            filepath: file
+        });
+    } catch (e) {
+        return null;
+    }
+};
 export const getFileFromRequest = async (req: Request, res: Response, table: "solution" | "testCase") => {
-    const object = await getObjectFromRequest(req,table);
+    const object = await getObjectFromRequest(req, table);
     if (object === null) {
         res.statusCode = 404;
         res.send({error: 'Submission not found.'});
@@ -174,12 +197,7 @@ export const getFileFromRequest = async (req: Request, res: Response, table: "so
     }
     let file: ReadBlobResult | null = null;
     try {
-        file = await git.readBlob({
-            fs,
-            dir: object.git_url,
-            oid: req.params.commitId ?? object.git_id,
-            filepath: req.params.file
-        });
+        file = await getFile(req.params.file, object.git_url, req.params.commitId ?? object.git_id);
     } catch (e) { /* empty */
     }
     if (file === null) {
@@ -191,7 +209,7 @@ export const getFileFromRequest = async (req: Request, res: Response, table: "so
 };
 
 export const deleteFile = async (req: Request, res: Response, table: "solution" | "testCase") => {
-    const object= await getObjectFromRequest(req,table);
+    const object = await getObjectFromRequest(req, table);
     if (object === null) {
         res.statusCode = 404;
         res.send({error: 'Submission not found.'});
@@ -199,7 +217,7 @@ export const deleteFile = async (req: Request, res: Response, table: "solution" 
     }
     // TODO error handling
     await git.remove({fs, dir: object.git_url, filepath: req.params.file});
-    await new Promise<void>(r => fs.unlink(`${object!.git_url}/${req.params.file}`, () => r()));
+    await fs.unlink(`${object!.git_url}/${req.params.file}`);
     const commit = await commitFiles(req, object, table);
     if (commit === null) {
         res.statusCode = 500;
@@ -216,7 +234,7 @@ export const deleteFile = async (req: Request, res: Response, table: "solution" 
  * @returns the commit or null if it does not exist
  */
 export const getCommitFromRequest = async (req: Request, table: "solution" | "testCase"): Promise<Commit | null> => {
-    const object = await getObjectFromRequest(req,table);
+    const object = await getObjectFromRequest(req, table);
 
     if (object === null) {
         return null;
