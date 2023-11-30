@@ -19,6 +19,9 @@ export const twoLetterHash = (str: string) => {
 /** @return true if the user is the same as the utorid or user object */
 const isSelf = (user: User, utorid: string) => utorid === (user ? (typeof user === "string" ? user : user.utorid) : false);
 
+/** @return user initials based on email */
+const getUserInitials = (email: string) => email[0] + email[email.indexOf(".") + 1];
+
 /** @return the mean of the data */
 const getMean = (data: number[]) => data.reduce((a, b) => Number(a) + Number(b)) / data.length;
 
@@ -40,7 +43,7 @@ function generateList(assignment: Omit<FullFetchedAssignment, "due_date">, user?
     const scores = assignment.submissions.map(submission =>
         ({
             you: isSelf(user as User, submission.author.utorid),
-            name: isSelf(user as User, submission.author.utorid) ? submission.author.email[0] + submission.author.email[submission.author.email.indexOf(".") + 1] : twoLetterHash(submission.author.utorid),
+            name: isSelf(user as User, submission.author.utorid) ? getUserInitials(submission.author.email) : twoLetterHash(submission.author.utorid + (user as User).utorid),
             score: submission.scores.filter(x => x.pass).length / submission.scores.length,
         })
     );
