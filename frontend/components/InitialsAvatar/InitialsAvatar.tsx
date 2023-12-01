@@ -1,24 +1,20 @@
 import { Avatar } from '@fluentui/react-components';
 import type { AvatarProps } from '@fluentui/react-components';
+import { FetchedUser } from 'codetierlist-types';
+
+export const generateInitals = (user: FetchedUser): string =>
+    `${user.givenName.substring(0, 1)}${user.surname.substring(0, 1)}`;
 
 /**
  * Given a name get the initials of the name up to 2 characters into an avatar
  * @returns {AvatarProps} the props to pass to the avatar
  */
-export const GenerateInitalsAvatarProps = (name: string, props?: AvatarProps): AvatarProps => {
-    const initials = (name ?? '')
-        .match(/(^\S\S?|\s\S)?/g) // matches the first character of each word
-        ?.map((v) => v.trim()) // removes the spaces
-        .join('') // joins the characters
-        .match(/(^\S|\S$)?/g) // matches the first and last character
-        ?.join('') // joins the characters
-        .toLocaleUpperCase(); // makes the characters uppercase
-
+export const GenerateInitalsAvatarProps = (initials: string, props?: AvatarProps): AvatarProps => {
     return {
-        'aria-label': name,
-        initials,
+        'aria-label': initials,
+        initials: initials.substring(0, 2).toUpperCase(),
         color: 'colorful',
-        idForColor: name,
+        idForColor: initials,
         ...props
     };
 };

@@ -1,4 +1,4 @@
-import {User} from "@prisma/client";
+import { User } from "@prisma/client";
 import {
     FullFetchedAssignment,
     Tier,
@@ -23,7 +23,10 @@ const getUtorid = (user: User | string) => typeof user === "string" ? user : use
 const isSelf = (user: User | string, utorid: string) => utorid === getUtorid(user);
 
 /** @return user initials based on email */
-const getUserInitials = (email: string) => email[0] + email[email.indexOf(".") + 1];
+const getUserInitials = (user: User | string) =>
+    // the idea here is to catch weird names like "c" from erroring out
+    (typeof user === "string") ? (user.substring(0, 2)) : (`${user.givenName.substring(0, 1)}${user.surname.substring(0, 1)}`);
+
 
 /** @return the mean of the data */
 const getMean = (data: number[]) => data.reduce((a, b) => Number(a) + Number(b)) / data.length;
@@ -43,11 +46,11 @@ function generateList(assignment: Omit<FullFetchedAssignment, "due_date">, user?
         return [res, "?" as UserTier];
     }
     const scores = assignment.submissions.map(submission =>
-        ({
-            you: user ? isSelf(user, submission.author.utorid) : false,
-            name: (user ? isSelf(user, submission.author.utorid) : false) ? getUserInitials(submission.author.email) : twoLetterHash(submission.author.utorid + (user ? getUtorid(user) : "")),
-            score: submission.scores.filter(x => x.pass).length / submission.scores.length,
-        })
+    ({
+        you: user ? isSelf(user, submission.author.utorid) : false,
+        name: (user ? isSelf(user, submission.author.utorid) : false) ? getUserInitials(submission.author.email) : twoLetterHash(submission.author.utorid + (user ? getUtorid(user) : "")),
+        score: submission.scores.filter(x => x.pass).length / submission.scores.length,
+    })
     );
     const mean = getMean(scores.map(x => x.score));
     const std = getStandardDeviation(scores.map(x => x.score));
