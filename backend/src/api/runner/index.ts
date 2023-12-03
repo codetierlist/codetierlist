@@ -36,8 +36,6 @@ export const getFiles = async (submission: Submission | TestCase): Promise<JobFi
 
 
 export const runJob = async (job: Job) => {
-    console.log("Running job");
-    // get the files here somehow
     let query = {};
 
     try {
@@ -127,13 +125,29 @@ setInterval(() => {
     }
 }, 1000);
 
-// for (let i = 0; i < 15; i++) {
-//     console.log(`queueing job ${i}`);
-//     queueJob({
-//         submission: undefined,
-//         testCase: undefined
-//     }).then(r => {
-//         console.log(`result ${i}`);
-//         console.log(r);
-//     });
-// }
+for (let i = 0; i < 3; i++) {
+    console.log(`queueing job ${i}`);
+    queueJob({
+        submission: {
+            id: "6abd504b-1add-4cea-91f2-4c0330870b79",
+            git_url: "/repos/KITTY101-0/become gamer/malho258_solution",
+            git_id: "d30c6a994bca03801694c96f506fab684a0fb539",
+            datetime: new Date(),
+            author_id: "malho258",
+            course_id: "KITTY101-0",
+            assignment_title: "become gamer"
+        },
+        testCase: {
+            id: "6c629b6f-7a35-47f6-b25d-e7e044f9ec9e",
+            git_url: "/repos/KITTY101-0/become gamer/malho258_testCase",
+            git_id: "5593450b49875baa663722f79fddd767ba164995",
+            datetime: new Date(),
+            author_id: "malho258",
+            course_id: "KITTY101-0",
+            assignment_title: "become gamer"
+        }
+    }).then(r => {
+        console.log(`result ${i}`);
+        console.log(r);
+    });
+}
