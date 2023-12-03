@@ -1,5 +1,5 @@
 import {Submission, TestCase} from "codetierlist-types";
-import {spawn} from "child_process";
+import {spawn, spawnSync} from "child_process";
 import path from "path";
 import {getCommit, getFile} from "../../common/utils";
 
@@ -58,27 +58,31 @@ export const runJob = async (job: Job) => {
     return await new Promise((resolve) => {
         // NOTE: change ulimit time to increase/decrease time relating to actual running resource
         // NOTE: change timeout to increase/decrease time relating to actual running resource
+
+        // NOTE: don't ask me to explain this, because i can't
+        const max_seconds = 10;
         const runner = spawn("bash",
-            ["-c", `exec docker run --network none --ulimit cpu=1000 --rm -i $(docker build --rm -q -f Dockerfile .)`],
+            ["-c", `serviceid=$(docker service create -d --replicas 1 --restart-condition=none --ulimit cpu=${max_seconds} -e RUN_FILES 127.0.0.1:5000/runner-image-${img}-${img_ver}); ` +
+                `timeout ${max_seconds*10} bash -c "echo sid $serviceid dis; while [[ \\$(docker service ps -q --filter "desired-state=Running" $serviceid) ]]; do sleep 1; done; docker service logs --raw $serviceid"; ` +
+                "docker service rm $serviceid > /dev/null"
+            ],
             {
                 cwd: path.join('/', 'backend', 'src', 'api', 'runner', 'images', img, img_ver),
-                timeout: 60000,
-                killSignal: 'SIGKILL'
+                env: {"RUN_FILES": JSON.stringify(query)}
             }
         );
-
-        // send query to docker container
-        runner.stdin.write(JSON.stringify(query) + "\n");
 
         let buffer = "";
 
         runner.stdout.on('data', (data) => {
             buffer += data;
+            console.log(`stdout: ${data}`);
             try {
                 const resultJSON = JSON.parse(buffer);
                 runner?.stdout?.removeAllListeners();
                 runner?.stderr?.removeAllListeners();
                 runner?.removeAllListeners();
+                console.log(resultJSON);
                 resolve(resultJSON);
             } catch (e) {
                 // ignore because incomplete json, keep buffering
@@ -106,6 +110,23 @@ export const queueJob = (job: Job) => {
     });
 };
 
+const create_images = () => {
+    console.log("creating images");
+    const img = 'python';
+    const img_ver = '3.10.11';
+    const ret = spawnSync("bash",
+        ["-c",
+            `docker build . -t 127.0.0.1:5000/runner-image-${img}-${img_ver}; ` +
+            `docker push 127.0.0.1:5000/runner-image-${img}-${img_ver}`
+        ],
+        {
+            cwd: path.join('/', 'backend', 'src', 'api', 'runner', 'images', img, img_ver)
+        }
+    );
+    console.log(ret.stdout.toString());
+    console.log("done creating images");
+};
+
 setInterval(() => {
     if (job_queue.length === 0) {
         return;
@@ -125,22 +146,24 @@ setInterval(() => {
     }
 }, 1000);
 
+create_images();
+
 for (let i = 0; i < 3; i++) {
     console.log(`queueing job ${i}`);
     queueJob({
         submission: {
-            id: "6abd504b-1add-4cea-91f2-4c0330870b79",
+            id: "c143e734-ed83-428a-aa68-50e182c58eae",
             git_url: "/repos/KITTY101-0/become gamer/malho258_solution",
-            git_id: "d30c6a994bca03801694c96f506fab684a0fb539",
+            git_id: "e727a176e41e3ea9e62b136f5ab5fe81782a33c9",
             datetime: new Date(),
             author_id: "malho258",
             course_id: "KITTY101-0",
             assignment_title: "become gamer"
         },
         testCase: {
-            id: "6c629b6f-7a35-47f6-b25d-e7e044f9ec9e",
+            id: "9f6b74f3-ca76-4119-94f1-82ba4d63740c",
             git_url: "/repos/KITTY101-0/become gamer/malho258_testCase",
-            git_id: "5593450b49875baa663722f79fddd767ba164995",
+            git_id: "e6c7ab2f7fd5917125b2ed60d7f06ccc74c96136",
             datetime: new Date(),
             author_id: "malho258",
             course_id: "KITTY101-0",

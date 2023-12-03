@@ -36,3 +36,7 @@ docker_dev_down:
 	docker compose -f "docker-compose-dev.yml" down
 
 docker_dev_restart: docker_dev_down docker_dev
+
+docker_init:
+    docker swarm init
+    docker service create --name registry --publish published=5000,target=5000 registry:2

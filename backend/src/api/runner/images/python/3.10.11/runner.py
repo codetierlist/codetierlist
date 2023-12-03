@@ -24,7 +24,7 @@ def suppress_output():
 
 if __name__ == '__main__':
     sleep(5)
-    run_data = input()
+    run_data = os.getenv("RUN_FILES")
     data = json.loads(run_data)
     sol_files = data['solution_files']
     test_files = data['test_case_files']
