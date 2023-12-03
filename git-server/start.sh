@@ -3,9 +3,8 @@
 trap 'kill -SIGTERM $(jobs -p)' SIGTERM
 trap 'kill -SIGINT $(jobs -p)' SIGINT
 
-npm run migrate
-nice -n 19 dockerd &>/dev/null &
-nodemon --legacy-watch ./src/index.ts &
+ssh-keygen -A
+/usr/sbin/sshd -D -e "$@" &
 
 wait -n
 exit $?

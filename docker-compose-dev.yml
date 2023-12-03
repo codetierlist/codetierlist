@@ -25,6 +25,9 @@ services:
     environment:
       - DATABASE_URL=postgres://postgres:example@db:5432/postgres
       - NODE_ENV=development
+      - MAX_RUNNING_TASKS=10
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    privileged: true
 
   frontend:
     restart: always

@@ -1,0 +1,19 @@
+docker swarm init # creates a swarm
+docker swarm join-token worker # shows the command to join a worker to the swarm
+docker swarm join-token manager # shows the command to join a manager to the swarm
+
+docker service create --name registry --publish published=5000,target=5000 registry:2 # creates a registry service
+docker service ls # lists all services
+
+docker compose build # builds the images
+docker compose push # pushes the images to the registry
+
+docker stack deploy --compose-file docker-compose.yml codetl # deploys the stack
+docker stack services codetl # shows info about codetl
+
+docker network create --driver overlay codetl-runner # creates a network for the runners
+
+
+
+
+so maybe just run each runner on swarm, pipe in the data

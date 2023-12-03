@@ -1,4 +1,7 @@
-FROM node:lts
+FROM docker:dind
+RUN apk update
+RUN apk add bash
+RUN apk add --update nodejs npm
 RUN npm install -g typescript
 
 # npm install types
