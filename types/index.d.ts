@@ -74,23 +74,3 @@ export type Tierlist = Record<Tier, TierlistEntry[]>;
 export type Session = "Fall" | "Winter" | "Summer"
 
 export {RoleType};
-
-
-// socket types
-export interface ServerToClientEvents {
-    job: (data: {
-        submission: Submission,
-        testCase: TestCase,
-        submissionFiles: Buffer[],
-        testCaseFiles: Buffer[],
-    }, callback: (e: number) => void) => void,
-}
-
-export interface ClientToServerEvents {
-}
-
-export interface InterServerEvents {
-}
-
-export interface SocketData {
-}

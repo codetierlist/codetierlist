@@ -4,8 +4,8 @@ import path from "path";
 import {getCommit, getFile} from "../../common/utils";
 
 interface Job {
-    submission?: Submission,
-    testCase?: TestCase
+    submission: Submission,
+    testCase: TestCase
 }
 
 type JobFiles = {
@@ -38,11 +38,20 @@ export const getFiles = async (submission: Submission | TestCase): Promise<JobFi
 export const runJob = async (job: Job) => {
     console.log("Running job");
     // get the files here somehow
+    let query = {};
 
-    const query = {
-        'solution_files': await getFiles(job.submission),
-        'test_case_files': await getFiles(job.testCase),
-    };
+    try {
+        query = {
+            'solution_files': await getFiles(job.submission),
+            'test_case_files': await getFiles(job.testCase),
+        };
+    } catch (e) {
+        console.log(e);
+        return await new Promise((resolve) => {
+            resolve({error: e}); // slightly more graceful error handling?
+        });
+    }
+
 
     const img = 'python';
     const img_ver = '3.10.11';
