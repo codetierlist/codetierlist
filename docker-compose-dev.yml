@@ -38,7 +38,7 @@ services:
       dockerfile: ./frontend/Dockerfile-dev
     environment:
       - NODE_ENV=development
-      - NEXT_PUBLIC_API_URI=/api
+      - NEXT_PUBLIC_API_URL=/api
     volumes:
       - ./frontend/src:/frontend/src:ro
       - ./frontend/components:/frontend/components:ro

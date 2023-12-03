@@ -37,7 +37,7 @@ services:
       dockerfile: ./frontend/Dockerfile
       args:
         - NODE_ENV=production
-        - NEXT_PUBLIC_API_URI=/api
+        - NEXT_PUBLIC_API_URL=/api
 
   db:
     image: postgres

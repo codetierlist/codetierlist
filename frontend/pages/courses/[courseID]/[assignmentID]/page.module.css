@@ -56,3 +56,29 @@
     white-space: pre-wrap !important;
     padding: var(--spacingVerticalS) var(--spacingHorizontalS);
 }
+
+.gutter {
+    margin-top: var(--spacingVerticalS) !important;
+    margin-bottom: var(--spacingVerticalXXXL) !important;
+}
+
+.container {
+    margin-top: var(--spacingVerticalL);
+}
+
+.commitId {
+    margin: var(--spacingVerticalXL) 0;
+}
+
+.commitId::before {
+    content: "Submission ID: ";
+    font-weight: var(--fontWeightBold);
+}
+
+.table {
+    width: 100%;
+}
+
+.accordionHeaderContent {
+    width: 100%;
+}
