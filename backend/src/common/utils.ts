@@ -285,3 +285,18 @@ export const fetchAssignmentMiddleware = async (req: Request, res: Response, nex
     req.course = assignment.course;
     next();
 };
+
+
+/**
+ * returns a user object given a utorid. if it doesnt exist then return null
+ *
+ * @param utorid the utorid of the user
+ * @returns the user object or null
+ */
+export const getUser = async (utorid: string) => {
+    return await prisma.user.findUnique({
+        where: {
+            utorid
+        }
+    });
+};

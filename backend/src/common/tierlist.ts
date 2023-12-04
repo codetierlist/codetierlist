@@ -46,11 +46,11 @@ function generateList(assignment: Omit<FullFetchedAssignment, "due_date">, user?
         return [res, "?" as UserTier];
     }
     const scores = assignment.submissions.map(submission =>
-    ({
-        you: user ? isSelf(user, submission.author.utorid) : false,
-        name: (user ? isSelf(user, submission.author.utorid) : false) ? getUserInitials(submission.author.email) : twoLetterHash(submission.author.utorid + (user ? getUtorid(user) : "")),
-        score: submission.scores.filter(x => x.pass).length / submission.scores.length,
-    })
+        ({
+            you: user ? isSelf(user, submission.author.utorid) : false,
+            name: (user ? isSelf(user, submission.author.utorid) : false) ? getUserInitials(submission.author) : twoLetterHash(submission.author.utorid + (user ? getUtorid(user) : "")),
+            score: submission.scores.filter(x => x.pass).length / submission.scores.length,
+        })
     );
     const mean = getMean(scores.map(x => x.score));
     const std = getStandardDeviation(scores.map(x => x.score));
