@@ -65,6 +65,7 @@ model TestCase {
   scores           Score[]
   course_id        String
   assignment_title String
+  valid            Boolean    @default(false)
 
   @@id(fields: [course_id, assignment_title, author_id, git_id])
   @@unique([course_id, assignment_title, author_id, git_id], name: "_id")

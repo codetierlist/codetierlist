@@ -205,7 +205,7 @@ export const getFileFromRequest = async (req: Request, res: Response, table: "so
         res.send({error: 'Commit not found.'});
         return;
     }
-    res.send(file.blob);
+    res.send(Buffer.from(file.blob));
 };
 
 export const deleteFile = async (req: Request, res: Response, table: "solution" | "testCase") => {

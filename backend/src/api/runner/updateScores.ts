@@ -1,41 +1,21 @@
 import {RoleType, Submission, TestCase} from "codetierlist-types";
 import prisma from "../../common/prisma";
-import {getJobQueue, queueJob} from "./index";
+import {queueJob} from "./index";
 
-const cancelTestCase = (testCase: TestCase) => {
-    getJobQueue().filter(x => x.job.testCase.id !== testCase.id).forEach(x => x.cancel());
-};
-const cancelSubmission = (submission:Submission) => {
-    getJobQueue().filter(x => x.job.testCase.id !== submission.id).forEach(x => x.cancel());
-};
 const updateScore = (submission: Submission, testCase: TestCase, pass: boolean) =>
-    prisma.score.upsert({
-        where: {
-            id: {
-                course_id: submission.course_id,
-                assignment_title: submission.assignment_title,
-                solution_author_id: submission.author_id,
-                testcase_author_id: testCase.author_id,
-                solution_commit: submission.git_id,
-                test_case_commit: testCase.git_id
-            }
-        },
-        create: {
+    prisma.score.create({
+        data: {
             pass,
             course_id: submission.course_id,
             assignment_title: submission.assignment_title,
             solution_author_id: submission.author_id,
             testcase_author_id: testCase.author_id,
-            solution_commit: submission.git_id,
-            test_case_commit: testCase.git_id
-        },
-        update: {
-            pass
+            solution_commit_id: submission.git_id,
+            testcase_commit_id: testCase.git_id
         }
     });
 
 export const onNewSubmission = async (submission: Submission) => {
-    cancelSubmission(submission);
     const testCases = await prisma.testCase.findMany({
         where: {
             course_id: submission.course_id,
@@ -55,8 +35,7 @@ export const onNewSubmission = async (submission: Submission) => {
 };
 
 export const onNewTestCase = async (testCase: TestCase) => {
-    cancelTestCase(testCase);
-    const profSubmissions = await prisma.solution.findMany({
+    const profSubmission = await prisma.solution.findFirst({
         where: {
             course_id: testCase.course_id,
             assignment_title: testCase.assignment_title,
@@ -68,22 +47,22 @@ export const onNewTestCase = async (testCase: TestCase) => {
                     }
                 }
             }
-        }
+        }, orderBy: {datetime: "desc"}
     });
     try {
-        const map = await Promise.all(profSubmissions.map(submission => queueJob({
-            submission: submission,
+        const result = await queueJob({
+            submission: profSubmission,
             testCase
             //TODO actually convert x to boolean
-        }).then(x =>{console.log(x); return x as boolean;})));
-        if (!map.every(x => x)) {
+        });
+        if (!result) {
             return;
         }
     } catch (e) {
         return;
     }
 
-    prisma.testCase.update({
+    await prisma.testCase.update({
         where: {
             _id: {
                 ...testCase
