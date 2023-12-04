@@ -205,7 +205,7 @@ export const getFileFromRequest = async (req: Request, res: Response, table: "so
         res.send({error: 'Commit not found.'});
         return;
     }
-    res.send(file.blob);
+    res.send(Buffer.from(file.blob));
 };
 
 export const deleteFile = async (req: Request, res: Response, table: "solution" | "testCase") => {
@@ -284,4 +284,19 @@ export const fetchAssignmentMiddleware = async (req: Request, res: Response, nex
     req.assignment = serializeAssignment(assignment);
     req.course = assignment.course;
     next();
+};
+
+
+/**
+ * returns a user object given a utorid. if it doesnt exist then return null
+ *
+ * @param utorid the utorid of the user
+ * @returns the user object or null
+ */
+export const getUser = async (utorid: string) => {
+    return await prisma.user.findUnique({
+        where: {
+            utorid
+        }
+    });
 };
