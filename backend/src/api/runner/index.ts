@@ -18,6 +18,28 @@ const job_queue: {
 
 let running_jobs = 0;
 
+enum JobStatus {
+    PASS = "PASS", // passes all test cases
+    FAIL = "FAIL", // fails at least one test case
+    ERROR = "ERROR", // code error, server error, or timeout
+}
+
+type JobResult =
+    {
+        status: JobStatus.PASS,
+        amount: number // amount of testcases & amount passed
+    } |
+    {
+        status: JobStatus.FAIL,
+        amount: number // amount of testcases
+        score: number // amount passed
+        failed: string[] // list of failed testcase info
+    } |
+    {
+        status: JobStatus.ERROR
+    };
+
+
 export const getFiles = async (submission: Submission | TestCase): Promise<JobFiles> => {
     const res: JobFiles = {};
     const commit = await getCommit(submission);
@@ -35,7 +57,7 @@ export const getFiles = async (submission: Submission | TestCase): Promise<JobFi
 };
 
 
-export const runJob = async (job: Job) => {
+export const runJob = async (job: Job): Promise<JobResult> => {
     let query = {};
 
     try {
@@ -44,9 +66,9 @@ export const runJob = async (job: Job) => {
             'test_case_files': await getFiles(job.testCase),
         };
     } catch (e) {
-        console.log(e);
+        console.error(e);
         return await new Promise((resolve) => {
-            resolve({error: e}); // slightly more graceful error handling?
+            resolve({status: JobStatus.ERROR}); // slightly more graceful error handling?
         });
     }
 
@@ -56,14 +78,12 @@ export const runJob = async (job: Job) => {
 
     // TODO: figure out how to use reject
     return await new Promise((resolve) => {
-        // NOTE: change ulimit time to increase/decrease time relating to actual running resource
-        // NOTE: change timeout to increase/decrease time relating to actual running resource
+        // NOTE: change max_seconds to change cpu seconds & absolute timeout
 
-        // NOTE: don't ask me to explain this, because i can't
         const max_seconds = 10;
         const runner = spawn("bash",
             ["-c", `serviceid=$(docker service create -d --replicas 1 --restart-condition=none --ulimit cpu=${max_seconds} -e RUN_FILES 127.0.0.1:5000/runner-image-${img}-${img_ver}); ` +
-                `timeout ${max_seconds*10} bash -c "echo sid $serviceid dis; while [[ \\$(docker service ps -q --filter "desired-state=Running" $serviceid) ]]; do sleep 1; done; docker service logs --raw $serviceid"; ` +
+                `timeout ${max_seconds*10} bash -c "while [[ \\$(docker service ps -q --filter "desired-state=Running" $serviceid) ]]; do sleep 1; done; docker service logs --raw $serviceid"; ` +
                 "docker service rm $serviceid > /dev/null"
             ],
             {
@@ -78,11 +98,12 @@ export const runJob = async (job: Job) => {
             buffer += data;
             console.log(`stdout: ${data}`);
             try {
-                const resultJSON = JSON.parse(buffer);
+                const resultJSON: JobResult = JSON.parse(buffer) as JobResult;
                 runner?.stdout?.removeAllListeners();
                 runner?.stderr?.removeAllListeners();
                 runner?.removeAllListeners();
                 console.log(resultJSON);
+
                 resolve(resultJSON);
             } catch (e) {
                 // ignore because incomplete json, keep buffering
@@ -93,8 +114,14 @@ export const runJob = async (job: Job) => {
             console.log(`stderr: ${data}`);
         });
 
-        runner.on('exit', (code, signal) => {
-            resolve({code, signal}); // fail case?
+        runner.on('exit', (code) => {
+            if (code === 0) {
+                runner.stdout.on('end', () => {
+                    resolve({status: JobStatus.ERROR}); // read all output and still no result
+                });
+            }
+
+            resolve({status: JobStatus.ERROR}); // fail case?
         });
     });
 };
