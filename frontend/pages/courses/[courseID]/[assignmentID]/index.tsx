@@ -160,7 +160,7 @@ const FilesTab = ({ fetchAssignment, assignment, assignmentID, routeName, route 
                     icon={<Add24Filled />}
                     appearance="subtle"
                     onClick={async () => {
-                        promptForFileObject(".py")
+                        promptForFileObject(".py",true)
                             .then(file => {
                                 if (file) {
                                     submitTest(file);

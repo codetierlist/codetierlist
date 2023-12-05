@@ -81,8 +81,8 @@ export default function Home() {
                 <div className="flex-wrap">
                     {userInfo.roles.map(x => x.course).map(x => (
                         // TODO session probably shouldn't be hardcoded, image placeholder should be replaced with actual course image
-                        <CourseOverviewCard key={x.id} id={x.id} name={x.code}
-                            image="https://placehold.co/300x200"
+                        <CourseOverviewCard key={x.id} id={x.id} name={x.code} admin={userInfo.admin}
+                            image={process.env.NEXT_PUBLIC_API_URL+"/courses/"+x.id+"/cover"}
                             session={"Fall"}></CourseOverviewCard>
                     ))}
 

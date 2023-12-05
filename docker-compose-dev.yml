@@ -21,6 +21,7 @@ services:
       dockerfile: ./backend/Dockerfile-dev
     volumes:
       - repo_data:/repos
+      - uploads:/uploads
       - ./backend/src:/backend/src:ro
     environment:
       - DATABASE_URL=postgres://postgres:example@db:5432/postgres
@@ -60,3 +61,4 @@ services:
 volumes:
   db_data:
   repo_data:
+  uploads:
