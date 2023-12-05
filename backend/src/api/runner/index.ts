@@ -18,13 +18,13 @@ const job_queue: {
 
 let running_jobs = 0;
 
-enum JobStatus {
+export enum JobStatus {
     PASS = "PASS", // passes all test cases
     FAIL = "FAIL", // fails at least one test case
     ERROR = "ERROR", // code error, server error, or timeout
 }
 
-type JobResult =
+export type JobResult =
     {
         status: JobStatus.PASS,
         amount: number // amount of testcases & amount passed
@@ -126,7 +126,7 @@ export const runJob = async (job: Job): Promise<JobResult> => {
     });
 };
 
-export const queueJob = (job: Job) => {
+export const queueJob = (job: Job) : Promise<JobResult> => {
     return new Promise((resolve) => {
         job_queue.push(() => {
             runJob(job).then(r => {
@@ -194,7 +194,8 @@ for (let i = 0; i < 3; i++) {
             datetime: new Date(),
             author_id: "malho258",
             course_id: "KITTY101-0",
-            assignment_title: "become gamer"
+            assignment_title: "become gamer",
+            valid: true
         }
     }).then(r => {
         console.log(`result ${i}`);
