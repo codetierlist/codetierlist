@@ -52,6 +52,7 @@ export declare interface CourseOverviewCardProps {
     image: string
     /** the session of the course */
     session: "Fall",
+    /** whether the user can change cover image */
     admin: boolean,
     /** the props of the component */
     props?: React.HTMLAttributes<HTMLDivElement>
@@ -98,7 +99,6 @@ export const CourseOverviewCard = ({
                     src={image+"?"+seed}
                     width={300}
                     height={200}
-                    alt="Developer Art"
                     onError={(event)=>{event.currentTarget.onerror=null; event.currentTarget.src='https://placehold.co/300x200';}}
                 />
                 {admin ? <Button appearance="primary" style={{
@@ -118,12 +118,12 @@ export const CourseOverviewCard = ({
                     zIndex:100
                 }} onClick={async (event) => {
                     event.stopPropagation();
-                    const x = await promptForFileObject("image/*");
-                    if (!x || x.length != 1) {
+                    const files = await promptForFileObject("image/*");
+                    if (!files || files.length != 1) {
                         return;
                     }
                     const formData = new FormData();
-                    formData.append("file", x[0]);
+                    formData.append("file", files[0]);
 
                     axios.post(`/courses/${id}/cover`,
                         formData,
