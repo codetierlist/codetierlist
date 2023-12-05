@@ -52,56 +52,6 @@ import {
 
 // import { notFound } from 'next/navigation';
 import { Add24Filled, Shield24Filled, PersonAdd24Regular } from '@fluentui/react-icons';
-// TODO this code is duplicated from course page
-function CreateAssignmentForm({ closeDialog }: { closeDialog: () => void }) {
-    const [assignmentName, setAssignmentName] = useState("");
-    const [description, setDescription] = useState("");
-    const [dueDate, setDueDate] = useState(new Date());
-    const { courseID } = useRouter().query;
-    const { fetchUserInfo } = useContext(UserContext);
-    return (
-        <DialogSurface>
-            <DialogBody>
-                <form onSubmit={(e) => {
-                    e.preventDefault();
-                    axios.post(`/courses/${courseID}/assignments`, {
-                        name: assignmentName,
-                        description: description,
-                        dueDate: dueDate.toISOString()
-                    }).then(fetchUserInfo).then(closeDialog);
-                }}>
-                    <DialogTitle>Create Assignment</DialogTitle>
-                    <DialogContent>
-                        <Label htmlFor="name">Name:</Label><br />
-                        <Input type="text" id="name" name="courseCode"
-                            value={assignmentName}
-                            onChange={e => setAssignmentName(e.target.value)} /><br />
-                        <Label htmlFor="description">Description:</Label><br />
-                        <Textarea id="description" name="courseName"
-                            value={description}
-                            onChange={e => setDescription(e.target.value)} /><br />
-                        <Label htmlFor="dueDate">Due Date:</Label><br />
-                        <Input type="datetime-local" id="dueDate" name="dueDate"
-                            value={dueDate.toISOString().slice(0, -8)}
-                            onChange={e => setDueDate(new Date(e.target.value))} />
-                        <br /><br />
-                    </DialogContent>
-                    <DialogActions>
-                        <DialogTrigger disableButtonEnhancement>
-                            <Button appearance="secondary">Close</Button>
-                        </DialogTrigger>
-                        <Button type="submit"
-                            appearance="primary">Create</Button>
-                    </DialogActions>
-                </form>
-            </DialogBody>
-        </DialogSurface>
-    );
-}
-
-function parseFileContent(content: string) {
-
-}
 
 function EnrollStudentsForm({ closeDialog }: { closeDialog: () => void }) {
     const [csvText, setCsvText] = useState("");
@@ -203,41 +153,51 @@ export default function Page() {
     // Hard coded data; change later
     const items = [
         {
+
         utorid: { label: "zhan8725" },
+        name: {label: "something"},
         gitRepo: { label: "https://github.com/" },
         bestMark: { label: "13/20" },
-        placeholder: { label: "" },
+        tier: { label: "S" },
+        submissions: {label: "5"}
         },
         {
         utorid: { label: "zhan8725" },
+        name: {label: "something"},
         gitRepo: { label: "https://github.com/" },
         bestMark: { label: "15/20" },
-        placeholder: { label: "" },
+        tier: { label: "C" },
+        submissions: {label: "5"}
         },
         {
         utorid: { label: "zhan8725" },
+        name: {label: "something"},
         gitRepo: { label: "https://github.com/" },
         bestMark: { label: "9/20" },
-        placeholder: { label: "" },
+        tier: { label: "B" },
+        submissions: {label: "5"}
         },
         {
         utorid: { label: "zhan8725" },
+        name: {label: "something"},
         gitRepo: { label: "https://github.com/" },
         bestMark: { label: "17/20" },
-        placeholder: { label: "" },
+        tier: { label: "A" },
+        submissions: {label: "5"}
         },
     ];
 
     const columns = [
         { columnKey: "utorid", label: "UTORid" },
-        { columnKey: "gitRepo", label: "GitHub Repository" },
+        { columnKey: "name", label: "Full Name" },
+        // { columnKey: "gitRepo", label: "GitHub Repository" },
         { columnKey: "bestMark", label: "Best Mark" },
-        { columnKey: "placeholder", label: "Placeholder" },
+        { columnKey: "submissions", label: "Submissions" }
     ];
 
-    const openRepo = (url: string) => () => {
-        window.open(url, '_blank');
-      };
+    // const openRepo = (url: string) => () => {
+    //     window.open(url, '_blank');
+    //   };
 
     return (
         <>
@@ -302,9 +262,10 @@ export default function Page() {
                     {items.map((item) => (
                     <TableRow key={item.utorid.label}>
                         <TableCell> {item.utorid.label} </TableCell>
-                        <TableCell onClick={openRepo(item.gitRepo.label)} style={{ cursor: 'pointer', textDecoration: 'underline' }}> Link </TableCell>
+                        <TableCell> {item.name.label} </TableCell>
+                        {/* <TableCell onClick={openRepo(item.gitRepo.label)} style={{ cursor: 'pointer', textDecoration: 'underline' }}> Link </TableCell> */}
                         <TableCell> {item.bestMark.label} </TableCell>
-                        <TableCell> {item.placeholder.label} </TableCell>
+                        <TableCell> {item.submissions.label} </TableCell>
                     </TableRow>
                     ))}
                 </TableBody>
