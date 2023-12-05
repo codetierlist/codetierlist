@@ -108,6 +108,7 @@ router.post("/:courseId/enroll", fetchCourseMiddleware, async (req, res) => {
         res.send({error: 'utorids must be an array of valid utorids.'});
         return;
     }
+
     await prisma.user.createMany({
         data: utorids.map(utorid => ({utorid, email: "", surname: "", givenName: ""})),
         skipDuplicates: true
@@ -120,15 +121,30 @@ router.post("/:courseId/enroll", fetchCourseMiddleware, async (req, res) => {
         })),
         skipDuplicates: true
     });
+
+    res.send({});
+
+});
+
+router.post("/:courseId/remove", fetchCourseMiddleware, async (req, res) => {
+    const {utorids, role}: { utorids: unknown, role?: string } = req.body;
+    if (role !== undefined && !(Object.values(RoleType) as string[]).includes(role)) {
+        res.statusCode = 400;
+        res.send({error: 'Invalid role.'});
+        return;
+    }
+    const newRole = role as RoleType | undefined ?? RoleType.STUDENT;
+    if (!utorids || !Array.isArray(utorids) || utorids.some(utorid => typeof utorid !== 'string' || !isUTORid(utorid))) {
+        res.statusCode = 400;
+        res.send({error: 'utorids must be an array of valid utorids.'});
+        return;
+    }
     await prisma.role.deleteMany({
         where: {
-            course_id: req.course!.id,
-            NOT: {
-                user_id: {
-                    in: utorids,
-                }
+            user_id: {
+                in: utorids,
             },
-            type: RoleType.STUDENT
+            type: RoleType.STUDENT,
         }
     })
 
