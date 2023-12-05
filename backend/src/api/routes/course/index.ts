@@ -8,7 +8,7 @@ import assignmentsRoute from "./assignments";
 import {PrismaClientKnownRequestError} from "@prisma/client/runtime/library";
 import {generateYourTier} from "../../../common/tierlist";
 import {
-    fetchCourseMiddleware,
+    fetchCourseMiddleware, isProf,
     serializeAssignment
 } from "../../../common/utils";
 import {
@@ -17,7 +17,17 @@ import {
     FetchedCourseWithTiers
 } from "codetierlist-types";
 import {isUTORid} from "is-utorid";
+import multer from "multer";
+import {randomUUID} from "crypto";
+import {promises as fs} from "fs";
+import path from "path";
+const storage = multer.diskStorage({
+    filename: function (req, file, callback) {
+        callback(null, randomUUID()+"."+path.extname(file.originalname));
+    }
+});
 
+const upload = multer({storage});
 const router = express.Router();
 router.post("/", async (req, res) => {
     if (!req.user.admin) {
@@ -115,6 +125,26 @@ router.post("/:courseId/enroll", fetchCourseMiddleware, async (req, res) => {
 
 });
 
+router.post("/:courseId/cover", fetchCourseMiddleware, upload.single("file"), async (req, res)=>{
+    if(!req.file || !isProf(req.course!, req.user)){
+        res.statusCode = 400;
+        res.send({message:"Must upload a file."});
+        return;
+    }
+    console.log(await fs.readFile(req.file.path));
+    await fs.copyFile(req.file.path, `/uploads/${req.file.filename}`);
+    await prisma.course.update({where:{id: req.course!.id}, data: {cover:req.file.filename}});
+    res.send({});
+});
+
+router.get("/:courseId/cover", fetchCourseMiddleware, async (req, res) =>{
+    if(!req.course?.cover){
+        res.statusCode=404;
+        res.send({message:"No cover found"});
+        return;
+    }
+    res.sendFile("/uploads/"+req.course!.cover);
+});
 router.post("/:courseId/assignments", fetchCourseMiddleware, async (req, res) => {
     const {name, dueDate, description} = req.body;
     const date = new Date(dueDate);
