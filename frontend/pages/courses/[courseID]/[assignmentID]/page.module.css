@@ -62,8 +62,21 @@
     margin-bottom: var(--spacingVerticalXXXL) !important;
 }
 
-.container {
+.gutterTop {
+    margin-top: var(--spacingVerticalXXXL) !important;
+    margin-bottom: var(--spacingVerticalXXXL) !important;
+}
+
+.massiveGap {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacingVerticalXXXL);
+}
+
+main.container {
     margin-top: var(--spacingVerticalL);
+    background-color: transparent !important;
+    box-shadow: none !important;
 }
 
 .commitId {
