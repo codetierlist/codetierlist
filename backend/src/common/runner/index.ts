@@ -1,7 +1,7 @@
 import {Submission, TestCase} from "codetierlist-types";
 import {spawn, spawnSync} from "child_process";
 import path from "path";
-import {getCommit, getFile} from "../../common/utils";
+import {getCommit, getFile} from "../utils";
 
 interface Job {
     submission: Submission,

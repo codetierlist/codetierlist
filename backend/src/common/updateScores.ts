@@ -1,6 +1,6 @@
 import {RoleType, Submission, TestCase} from "codetierlist-types";
-import prisma from "../../common/prisma";
-import {queueJob, JobStatus} from "./index";
+import prisma from "./prisma";
+import {queueJob, JobStatus} from "./runner";
 
 const updateScore = (submission: Submission, testCase: TestCase, pass: boolean) =>
     prisma.score.create({
@@ -37,7 +37,7 @@ export const onNewSubmission = async (submission: Submission) => {
 export const onNewTestCase = async (testCase: TestCase) => {
 
     // a valid test case should
-    // 1. not error or timeout
+    // 1. not error or timeout against a valid submission
     // 2. pass a valid submission
     // 3. fail starter code
 

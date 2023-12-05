@@ -13,6 +13,7 @@ import path from "path";
 import {PathLike, promises as fs} from "fs";
 import git, {ReadBlobResult} from "isomorphic-git";
 import {Commit} from "codetierlist-types";
+import {onNewSubmission, onNewTestCase} from "./updateScores";
 
 /**
  * Checks if a user is a prof in a course.
@@ -52,9 +53,12 @@ const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'date
             author_id: req.user.utorid
         };
         if (table === "solution") {
-            await prisma.solution.create({data});
+            const solution = await prisma.solution.create({data});
+            onNewSubmission(solution).then();
+
         } else {
-            await prisma.testCase.create({data});
+            const testCase = await prisma.testCase.create({data});
+            onNewTestCase(testCase).then();
         }
         return commit;
     } catch (e) {

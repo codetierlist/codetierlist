@@ -4,4 +4,4 @@ prisma.$connect().then(async () => {
     console.log("Connected to database");
     console.log("Starting server");
     await import("./api");
-})
+});

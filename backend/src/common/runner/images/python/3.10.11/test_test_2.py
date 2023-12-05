@@ -20,7 +20,7 @@ class Test(unittest.TestCase):
     def test_1_get_name(self):
         self.person2.set_name("Daksh")  # id = 0
         name = self.person2.get_name(2)
-        self.assertEqual(name, 'There is no such user')
+        self.assertEqual(name, 'There')
 
 
 if __name__ == '__main__':
