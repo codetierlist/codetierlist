@@ -28,12 +28,14 @@ export const promptForFileReader = async (type: string): Promise<FileReader> => 
 /**
  * prompt the user to select a file
  * @param type the file types to accept
+ * @param multiple whether multiple files can be uploaded
  * @returns the file object
  */
-export const promptForFileObject = async (type: string): Promise<FileList> => {
+export const promptForFileObject = async (type: string, multiple  = false): Promise<FileList> => {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
     fileInput.accept = type;
+    fileInput.multiple=multiple;
 
     return new Promise((resolve) => {
         fileInput.addEventListener("change", () => {

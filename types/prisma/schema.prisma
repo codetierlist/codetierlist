@@ -29,6 +29,7 @@ model Course {
   roles       Role[]
   solutions   Solution[]
   testcases   TestCase[]
+  cover       String?
 
   createdAt DateTime @default(now())
 
