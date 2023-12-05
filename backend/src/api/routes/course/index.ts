@@ -120,6 +120,17 @@ router.post("/:courseId/enroll", fetchCourseMiddleware, async (req, res) => {
         })),
         skipDuplicates: true
     });
+    await prisma.role.deleteMany({
+        where: {
+            course_id: req.course!.id,
+            NOT: {
+                user_id: {
+                    in: utorids,
+                }
+            },
+            type: RoleType.STUDENT
+        }
+    })
 
     res.send({});
 

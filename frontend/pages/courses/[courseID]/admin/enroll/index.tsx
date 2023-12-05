@@ -72,7 +72,7 @@ export default function Page(): JSX.Element {
                 <div className={`${flex["d-flex"]} ${flex["justify-content-between"]}`}>
                     <header>
                         <Title2 block>Enroll Students</Title2>
-                        <Body2 block>Enter a CSV of students to enroll in this course. The CSV must have a header row with the columns <code>utorid</code>.</Body2>
+                        <Body2 block>Update the students enrolled in this course by uploading a CSV of students. The CSV must have a header row with the column <code>utorid</code>.</Body2>
                     </header>
 
                     <Button
