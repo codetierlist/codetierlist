@@ -339,11 +339,12 @@ export default function Page() {
                     )
                 }{
                     stage === 2 && (
-                        tierlist ?
-                            <ViewTierList tierlist={tierlist} /> : "No tierlist found"
+                        tierlist
+                            ? <ViewTierList tierlist={tierlist} />
+                            : "No tierlist found"
                     )
                 }
-            </Container >
+            </Container>
         </>
     );
 }
