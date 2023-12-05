@@ -62,8 +62,10 @@
     margin-bottom: var(--spacingVerticalXXXL) !important;
 }
 
-.container {
+main.container {
     margin-top: var(--spacingVerticalL);
+    background-color: transparent !important;
+    box-shadow: none !important;
 }
 
 .commitId {
