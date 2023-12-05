@@ -190,7 +190,7 @@ for (let i = 0; i < 3; i++) {
         testCase: {
             id: "9f6b74f3-ca76-4119-94f1-82ba4d63740c",
             git_url: "/repos/KITTY101-0/become gamer/malho258_testCase",
-            git_id: "e6c7ab2f7fd5917125b2ed60d7f06ccc74c96136",
+            git_id: "89974c5b8066182629396f375c8af868dbe85cf3",
             datetime: new Date(),
             author_id: "malho258",
             course_id: "KITTY101-0",

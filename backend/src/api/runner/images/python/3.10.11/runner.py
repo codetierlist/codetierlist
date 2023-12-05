@@ -41,6 +41,14 @@ if __name__ == '__main__':
 
     suite = unittest.TestLoader().discover('../tests')
     with suppress_output():
-        json = ciunittest.JsonTestRunner().run(suite, formatted=True)
+        unittest_out = unittest.TestResult()
+        suite.run(unittest_out)
 
-    print(json)
+    if unittest_out.wasSuccessful():
+        print(json.dumps({'status': 'PASS', 'amount': unittest_out.testsRun}))
+    else:
+        print(json.dumps({'status': 'FAIL',
+                          'amount': unittest_out.testsRun,
+                          'score': unittest_out.testsRun - len(unittest_out.failures) - len(unittest_out.errors),
+                          'failed': [f"id: {x[0].id()} output: {x[1]}" for x in (unittest_out.failures + unittest_out.errors)]
+                          }))
