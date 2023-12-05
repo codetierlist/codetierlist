@@ -41,13 +41,9 @@ const ListFiles = ({ commit, route, assignment, assignmentID, update }: { commit
     const getFileContents = async (file: string) => {
         await axios.get<string>(`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/${commit.log[0]}/${file}`, { skipErrorHandling: true })
             .then((res) => {
-                const fileContent = Object.values(res.data).map(value => {
-                    // each key one byte, convert to char
-                    return String.fromCharCode(Number(value));
-                }).join("");
-
+                // read the file contents from buffer
                 setFiles((prev) => {
-                    return { ...prev, [file]: fileContent };
+                    return { ...prev, [file]: Buffer.from(res.data).toString("utf-8") };
                 });
             })
             .catch(e => {
