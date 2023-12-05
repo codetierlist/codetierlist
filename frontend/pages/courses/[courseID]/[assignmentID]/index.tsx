@@ -149,7 +149,7 @@ const FilesTab = ({ fetchAssignment, assignment, assignmentID, routeName, route 
     }, [assignmentID, fetchAssignment, route, routeName, assignment.submissions]);
 
     return (
-        <>
+        <div className={styles.gutter}>
             <div className={`${flex["d-flex"]} ${flex["justify-content-between"]}`}>
                 <Subtitle1 block>Uplodaded {routeName}s</Subtitle1>
                 <Button
@@ -182,7 +182,7 @@ const FilesTab = ({ fetchAssignment, assignment, assignmentID, routeName, route 
                     update={getTestData}
                 />
             </Card>
-        </>
+        </div>
     );
 };
 
@@ -190,9 +190,7 @@ const FilesTab = ({ fetchAssignment, assignment, assignmentID, routeName, route 
 const ViewTierList = ({ tierlist }: { tierlist: Tierlist }) => {
     return (
         <Col sm={12}>
-            <Title2>
-                Tier List
-            </Title2>
+            <Subtitle1 className={styles.gutter} block>Tierlist</Subtitle1>
             <TierList tierlist={tierlist} />
         </Col>
     );
@@ -249,6 +247,9 @@ export default function Page() {
                     Assignment details
                 </Tab>
                 <Tab value="tab1" onClick={() => setStage(1)} disabled={assignment.test_cases.length === 0 || assignment.submissions.length === 0}>
+                    Upload
+                </Tab>
+                <Tab value="tab2" onClick={() => setStage(2)} disabled={assignment.test_cases.length === 0 || assignment.submissions.length === 0}>
                     View tier list
                 </Tab>
             </TabList>
@@ -289,7 +290,7 @@ export default function Page() {
                                         You will not be able to see the tier list until you submit a solution.
                                     </MessageBarBody>
                                     <MessageBarActions>
-                                        <Button onClick={() => setStage(2)}>Upload a solution</Button>
+                                        <Button onClick={() => setStage(1)}>Upload a solution</Button>
                                     </MessageBarActions>
                                 </MessageBar>
                             )}
@@ -308,36 +309,36 @@ export default function Page() {
                                 </MessageBar>
                             )}
 
-                            <Subtitle1 block>Assignment Description</Subtitle1>
+                            <Subtitle1 block className={styles.gutterTop}>Assignment Description</Subtitle1>
                             <Card className={styles.gutter}>
                                 <p>
                                     {assignment.description}
                                 </p>
                             </Card>
-
-                            <div className={styles.gutter}>
-                                <FilesTab
-                                    routeName="solution"
-                                    route="submissions"
-                                    fetchAssignment={fetchAssignment}
-                                    assignment={assignment}
-                                    assignmentID={assignmentID as string}
-                                />
-                            </div>
-
-                            <div className={styles.gutter}>
-                                <FilesTab
-                                    routeName="test"
-                                    route="testcases"
-                                    fetchAssignment={fetchAssignment}
-                                    assignment={assignment}
-                                    assignmentID={assignmentID as string}
-                                />
-                            </div>
                         </>
                     )
                 }{
                     stage === 1 && (
+                        <div className={`${styles.gutter} ${styles.massiveGap}`}>
+                            <FilesTab
+                                routeName="solution"
+                                route="submissions"
+                                fetchAssignment={fetchAssignment}
+                                assignment={assignment}
+                                assignmentID={assignmentID as string}
+                            />
+
+                            <FilesTab
+                                routeName="test"
+                                route="testcases"
+                                fetchAssignment={fetchAssignment}
+                                assignment={assignment}
+                                assignmentID={assignmentID as string}
+                            />
+                        </div>
+                    )
+                }{
+                    stage === 2 && (
                         tierlist ?
                             <ViewTierList tierlist={tierlist} /> : "No tierlist found"
                     )
