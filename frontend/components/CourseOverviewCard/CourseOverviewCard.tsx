@@ -92,7 +92,7 @@ export const CourseOverviewCard = ({
             }}
             {...props}
         >
-            <CardPreview style={{maxHeight: 200, maxWidth: 300}}>a
+            <CardPreview style={{maxHeight: 200, maxWidth: 300}}>
                 <img
                     style={{objectFit:"cover", height:200, width:300}}
                     src={image+"?"+seed}
