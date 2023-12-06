@@ -101,6 +101,7 @@ export const CourseOverviewCard = ({
                         appearance="primary"
                         icon={<ImageAdd20Regular/>}
                         className={styles.coverButton}
+                        title="Change cover image"
                         onClick={async (event) => {
                             event.stopPropagation();
                             const files = await promptForFileObject("image/*");

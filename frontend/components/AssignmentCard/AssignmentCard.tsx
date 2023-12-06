@@ -28,7 +28,7 @@ export const AssignmentCard = ({
     const formattedDueDate = dueDate ? convertDate(dueDate) :null;
     return (
         <Link href={`${courseID}/${id}`} className={styles.cardLink}>
-            <Card className={styles.card}>
+            <Card className={styles.card} selected={false}>
                 <CardHeader header={(<TierChip tier={tier as UserTier}/>)} />
                 <div className={styles.cardContent}>
                     {dueDate && <Caption1 className={styles.cardText}><strong>Due</strong> {formattedDueDate}</Caption1>}

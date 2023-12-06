@@ -90,7 +90,10 @@ const ListFiles = ({ commit, route, assignment, assignmentID, update }: { commit
                             <AccordionHeader className={`${styles.accordionHeader}`}>
                                 <div className={`${flex["d-flex"]} ${flex["justify-content-between"]} ${flex["align-items-center"]} ${styles.accordionHeaderContent}`}>
                                     <span>{commit.files[index]}</span>
-                                    <Button icon={<Delete16Filled />} onClick={() => deleteFile(commit.files[index])} />
+
+                                    <Tooltip content="Delete file">
+                                        <Button icon={<Delete16Filled />} onClick={() => deleteFile(commit.files[index])} />
+                                    </Tooltip>
                                 </div>
                             </AccordionHeader>
                             <AccordionPanel>
