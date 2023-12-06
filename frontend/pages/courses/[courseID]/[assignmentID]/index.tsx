@@ -25,7 +25,7 @@ import {
     Tab, TabList,
     Text
 } from '@fluentui/react-components';
-import { Add24Filled, Clock16Regular, Delete16Filled } from '@fluentui/react-icons';
+import { Add24Filled, Delete16Filled } from '@fluentui/react-icons';
 import { Subtitle2, Title2 } from '@fluentui/react-text';
 import Editor from '@monaco-editor/react';
 import { Commit, FetchedAssignmentWithTier, Tierlist } from "codetierlist-types";
@@ -292,8 +292,7 @@ export default function Page() {
                                     header={
                                         <div className={styles.assignmentHeaderContent}>
                                             <Subtitle2 className={styles.dueDate}>
-                                                <Clock16Regular className={styles.dueDateIcon} />
-                                                Due {convertDate(assignment.due_date)} at {convertTime(assignment.due_date)}
+                                                <strong>Due</strong> {convertDate(assignment.due_date)} at {convertTime(assignment.due_date)}
                                             </Subtitle2>
                                             <Title2>
                                                 {assignment.title}
