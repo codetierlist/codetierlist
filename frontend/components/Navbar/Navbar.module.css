@@ -31,3 +31,9 @@
 .adminBadge {
     margin-right: var(--spacingHorizontalXS);
 }
+
+@media (max-width: 768px) {
+    .subtext {
+        display: none;
+    }
+}

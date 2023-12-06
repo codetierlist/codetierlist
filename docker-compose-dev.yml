@@ -41,6 +41,7 @@ services:
     environment:
       - NODE_ENV=development
       - NEXT_PUBLIC_API_URL=/api
+      - WATCHPACK_POLLING true
     volumes:
       - ./frontend/src:/frontend/src:ro
       - ./frontend/components:/frontend/components:ro
