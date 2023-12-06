@@ -20,7 +20,7 @@ router.post("/set-theme", async (req, res) => {
         return;
     }
     if (req.body.theme !== "light" && req.body.theme !== "dark") {
-        res.status(400).send(`Invalid theme ${req.body.theme}.`);
+        res.status(400).send({message:`Invalid theme ${req.body.theme}.`});
         return;
     }
 
