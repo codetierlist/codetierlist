@@ -5,7 +5,7 @@ import {
     Caption1,
     ToolbarButton
 } from "@fluentui/react-components";
-import { Add24Filled, PersonAdd24Regular, Shield24Filled } from '@fluentui/react-icons';
+import { Add24Filled, PersonAdd24Regular } from '@fluentui/react-icons';
 import { Title2 } from '@fluentui/react-text';
 import { FetchedCourseWithTiers } from "codetierlist-types";
 import { notFound } from "next/navigation";
@@ -26,14 +26,6 @@ const AdminToolbar = ({ courseID }: { courseID: string, fetchCourse: () => Promi
         <HeaderToolbar
             aria-label="Admin Toolbar"
         >
-            <ToolbarButton
-                appearance="primary"
-                icon={<Shield24Filled />}
-                onClick={() => router.push(`/courses/${courseID}/admin`)}
-            >
-                Admin page
-            </ToolbarButton>
-
             <ToolbarButton
                 appearance="subtle"
                 icon={<PersonAdd24Regular />}
@@ -81,7 +73,7 @@ export default function Page() {
 
             <main>
                 <header className={styles.header}>
-                    <Title2>
+                    <Title2 className={styles.courseTitle}>
                         {course &&
                             <CourseSessionChip
                                 session={getSession(new Date(course.createdAt))}>

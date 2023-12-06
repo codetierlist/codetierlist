@@ -1,10 +1,12 @@
 import axios, { handleError } from "@/axios";
 import {
+    CourseSessionChip,
     TierChip,
     TierList,
     colourHash,
     convertDate,
     convertTime,
+    getSession,
     promptForFileObject
 } from '@/components';
 import { SnackbarContext } from "@/contexts/SnackbarContext";
@@ -294,9 +296,6 @@ export default function Page() {
                                                 Due {convertDate(assignment.due_date)} at {convertTime(assignment.due_date)}
                                             </Subtitle2>
                                             <Title2>
-                                                <span className={`${colourHash(courseID as string)} ${styles.courseCode}`}>
-                                                    {courseID}
-                                                </span>
                                                 {assignment.title}
                                             </Title2>
                                         </div>

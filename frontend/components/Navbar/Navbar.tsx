@@ -39,7 +39,7 @@ export const Navbar = (): JSX.Element => {
 
             {(userInfo.email === defaultUser.email) && (
                 <div className={styles.skeletonPersona}>
-                    <div className={`${styles.skeletonPersonaText} ${styles.subtext}`}>
+                    <div className={`${styles.skeletonName} ${styles.subtext}`}>
                         <SkeletonItem size={12} />
                         <SkeletonItem size={12} />
                     </div>

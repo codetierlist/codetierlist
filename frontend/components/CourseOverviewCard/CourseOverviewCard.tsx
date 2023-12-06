@@ -98,6 +98,7 @@ export const CourseOverviewCard = ({
                     style={{objectFit:"cover", height:200, width:300}}
                     src={image+"?"+seed}
                     width={300}
+                    alt=""
                     height={200}
                     onError={(event)=>{event.currentTarget.onerror=null; event.currentTarget.src='https://placehold.co/300x200';}}
                 />
