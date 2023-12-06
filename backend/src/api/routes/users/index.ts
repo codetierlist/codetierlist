@@ -28,7 +28,8 @@ router.post("/set-theme", async (req, res) => {
         data: {theme: req.body.theme satisfies Theme}
     });
 
-    res.status(200).send(`Set theme to ${req.body.theme}.`);
+    res.status(200).send({message:`Set theme to ${req.body.theme}.`});
+
 });
 
 export default router;
