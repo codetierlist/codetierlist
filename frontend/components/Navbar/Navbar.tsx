@@ -5,6 +5,10 @@ import Link from 'next/link';
 import { useContext, useState, useCallback } from 'react';
 import styles from './Navbar.module.css';
 
+/**
+ * The user popover content is the content that appears when
+ * the user clicks on their avatar.
+ */
 const UserPopoverContent = (): JSX.Element => {
     const { userInfo } = useContext(UserContext);
     const [checked, setChecked] = useState(true);
@@ -49,6 +53,10 @@ const UserPopoverContent = (): JSX.Element => {
     );
 };
 
+/**
+ * The user avatar is the avatar that appears in the navbar. It contains
+ * the user's name and role. It is also a button that opens the user popover.
+ */
 const UserAvatar = (): JSX.Element => {
     const { userInfo } = useContext(UserContext);
 
