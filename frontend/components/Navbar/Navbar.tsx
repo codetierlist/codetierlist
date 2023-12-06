@@ -11,6 +11,8 @@ import styles from './Navbar.module.css';
  */
 const UserPopoverContent = (): JSX.Element => {
     const { userInfo } = useContext(UserContext);
+
+    // TODO remove this later!!
     const [checked, setChecked] = useState(true);
     const onChange = useCallback(
         (ev) => {
