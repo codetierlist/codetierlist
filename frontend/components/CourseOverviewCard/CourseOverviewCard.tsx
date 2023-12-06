@@ -93,49 +93,40 @@ export const CourseOverviewCard = ({
             }}
             {...props}
         >
-            <CardPreview style={{maxHeight: 200, maxWidth: 300}}>
+            <CardPreview
+                style={{maxHeight: 200, maxWidth: 300}}
+            >
+                {admin &&
+                    <Button
+                        appearance="primary"
+                        icon={<ImageAdd20Regular/>}
+                        className={styles.coverButton}
+                        title="Change cover image"
+                        onClick={async (event) => {
+                            event.stopPropagation();
+                            const files = await promptForFileObject("image/*");
+                            if (!files || files.length != 1) { return; }
+
+                            const formData = new FormData();
+                            formData.append("file", files[0]);
+
+                            axios.post(`/courses/${id}/cover`,
+                                formData,
+                                {
+                                    headers: { "Content-Type": "multipart/form-data" }
+                                })
+                                .then(() => {
+                                    reset();
+                                });
+                        }}/>}
                 <img
                     style={{objectFit:"cover", height:200, width:300}}
                     src={image+"?"+seed}
                     width={300}
+                    alt=""
                     height={200}
                     onError={(event)=>{event.currentTarget.onerror=null; event.currentTarget.src='https://placehold.co/300x200';}}
                 />
-                {admin ? <Button appearance="primary" style={{
-                    position: "absolute",
-                    top: "5%",
-                    right: "5%",
-                    maxWidth: 30,
-                    minWidth:30,
-                    minHeight:30,
-                    maxHeight: 30,
-                    padding:0,
-                    alignItems:"center",
-                    textAlign:"center",
-                    justifyContent:"center",
-                    display:"flex",
-                    borderRadius: "50%",
-                    zIndex:100
-                }} onClick={async (event) => {
-                    event.stopPropagation();
-                    const files = await promptForFileObject("image/*");
-                    if (!files || files.length != 1) {
-                        return;
-                    }
-                    const formData = new FormData();
-                    formData.append("file", files[0]);
-
-                    axios.post(`/courses/${id}/cover`,
-                        formData,
-                        {
-                            headers: { "Content-Type": "multipart/form-data" }
-                        })
-                        .then(() => {
-                            reset();
-                        });
-                }}>
-                    <ImageAdd20Regular></ImageAdd20Regular>
-                </Button>: undefined}
             </CardPreview>
 
             <CardHeader

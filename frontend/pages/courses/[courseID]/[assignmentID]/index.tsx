@@ -2,7 +2,6 @@ import axios, { handleError } from "@/axios";
 import {
     TierChip,
     TierList,
-    colourHash,
     convertDate,
     convertTime,
     promptForFileObject
@@ -19,11 +18,12 @@ import {
     MessageBarActions,
     MessageBarBody,
     MessageBarTitle,
+    Tooltip,
     Subtitle1,
     Tab, TabList,
     Text
 } from '@fluentui/react-components';
-import { Add24Filled, Clock16Regular, Delete16Filled } from '@fluentui/react-icons';
+import { Add24Filled, Delete16Filled, Settings24Regular } from '@fluentui/react-icons';
 import { Subtitle2, Title2 } from '@fluentui/react-text';
 import Editor from '@monaco-editor/react';
 import { Commit, FetchedAssignmentWithTier, Tierlist } from "codetierlist-types";
@@ -33,6 +33,8 @@ import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import { Col, Container } from "react-grid-system";
 import styles from './page.module.css';
+import { UserContext } from "@/contexts/UserContext";
+import Link from 'next/link';
 
 const ListFiles = ({ commit, route, assignment, assignmentID, update }: { commit: Commit, route: "testcases" | "submissions", assignment: FetchedAssignmentWithTier, assignmentID: string, update?: () => void }) => {
     const { showSnackSev } = useContext(SnackbarContext);
@@ -85,7 +87,10 @@ const ListFiles = ({ commit, route, assignment, assignmentID, update }: { commit
                             <AccordionHeader className={`${styles.accordionHeader}`}>
                                 <div className={`${flex["d-flex"]} ${flex["justify-content-between"]} ${flex["align-items-center"]} ${styles.accordionHeaderContent}`}>
                                     <span>{commit.files[index]}</span>
-                                    <Button icon={<Delete16Filled />} onClick={() => deleteFile(commit.files[index])} />
+
+                                    <Tooltip content="Delete file" relationship="label">
+                                        <Button icon={<Delete16Filled />} onClick={() => deleteFile(commit.files[index])} />
+                                    </Tooltip>
                                 </div>
                             </AccordionHeader>
                             <AccordionPanel>
@@ -218,6 +223,7 @@ export default function Page() {
     const [tierlist, setTierlist] = useState<Tierlist | null>(null);
     const { showSnackSev } = useContext(SnackbarContext);
     const { courseID, assignmentID } = router.query;
+    const { userInfo } = useContext(UserContext);
 
     const fetchAssignment = async () => {
         await axios.get<FetchedAssignmentWithTier>(`/courses/${courseID}/assignments/${assignmentID}`, { skipErrorHandling: true })
@@ -278,7 +284,27 @@ export default function Page() {
                 <Tab value="tab2" onClick={() => setStage(2)} disabled={!shouldViewTierList(assignment, tierlist)}>
                     View tierlist
                 </Tab>
+
+                {
+                    /* TODO proper permissions check */
+
+                    userInfo.admin && (
+                        <div className={styles.adminButton}>
+                            <Tooltip content="Admin page" relationship="label">
+                                <Link href={`/courses/${courseID}/${assignmentID}/admin`}>
+                                    <Button
+                                        appearance="subtle"
+                                        icon={<Settings24Regular />}
+                                        aria-label="Admin page"
+                                    />
+                                </Link>
+                            </Tooltip>
+                        </div>
+                    )
+                }
             </TabList>
+
+
             <Container component="main" className={styles.container}>
                 {
                     stage === 0 && (
@@ -290,13 +316,9 @@ export default function Page() {
                                     header={
                                         <div className={styles.assignmentHeaderContent}>
                                             <Subtitle2 className={styles.dueDate}>
-                                                <Clock16Regular className={styles.dueDateIcon} />
-                                                Due {convertDate(assignment.due_date)} at {convertTime(assignment.due_date)}
+                                                <strong>Due</strong> {convertDate(assignment.due_date)} at {convertTime(assignment.due_date)}
                                             </Subtitle2>
                                             <Title2>
-                                                <span className={`${colourHash(courseID as string)} ${styles.courseCode}`}>
-                                                    {courseID}
-                                                </span>
                                                 {assignment.title}
                                             </Title2>
                                         </div>

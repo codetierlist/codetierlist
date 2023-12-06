@@ -36,3 +36,6 @@ export const darkTheme: Theme = {
 
 lightTheme.fontFamilyNumeric = spaceGrotesk.style.fontFamily;
 lightTheme.fontFamilyBase = inter.style.fontFamily;
+
+darkTheme.fontFamilyNumeric = spaceGrotesk.style.fontFamily;
+darkTheme.fontFamilyBase = inter.style.fontFamily;

@@ -88,6 +88,7 @@ model User {
   TestCase  TestCase[]
   surname   String
   givenName String
+  theme     Theme      @default(LIGHT)
 
   @@map("Users")
 }
@@ -96,6 +97,11 @@ enum RoleType {
   INSTRUCTOR
   TA
   STUDENT
+}
+
+enum Theme {
+  LIGHT
+  DARK
 }
 
 model Role {
