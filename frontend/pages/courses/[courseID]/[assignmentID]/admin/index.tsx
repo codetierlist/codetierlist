@@ -1,23 +1,8 @@
-import { AssignmentCard, CourseSessionChip } from '@/components';
+import { CourseSessionChip } from '@/components';
 // import { type Course, getCourses } from '@/contexts/UserContext';
 import axios from "@/axios";
 import { UserContext } from "@/contexts/UserContext";
 import {
-    Button,
-    Dialog,
-    DialogActions,
-    DialogBody,
-    DialogContent,
-    DialogOpenChangeData,
-    DialogOpenChangeEvent,
-    DialogSurface,
-    DialogTitle,
-    DialogTrigger,
-    Input,
-    Label,
-    Textarea,
-    Title1,
-    Title3,
     Toolbar,
     ToolbarButton
 } from "@fluentui/react-components";
@@ -29,94 +14,18 @@ import { useContext, useEffect, useState } from "react";
 import styles from './page.module.css';
 import { FetchedAssignmentWithTier } from "codetierlist-types";
 import Error from 'next/error';
-import {
-    FolderRegular,
-    EditRegular,
-    OpenRegular,
-    DocumentRegular,
-    PeopleRegular,
-    DocumentPdfRegular,
-    VideoRegular,
-} from "@fluentui/react-icons";
+
 import {
     TableBody,
     TableCell,
     TableRow,
     Table,
     TableHeader,
-    TableHeaderCell,
-    TableCellLayout,
-    PresenceBadgeStatus,
-    Avatar,
+    TableHeaderCell
 } from "@fluentui/react-components";
 
 // import { notFound } from 'next/navigation';
 import { Add24Filled, Shield24Filled, PersonAdd24Regular } from '@fluentui/react-icons';
-
-function EnrollStudentsForm({ closeDialog }: { closeDialog: () => void }) {
-    const [csvText, setCsvText] = useState("");
-    const { courseID } = useRouter().query;
-    const { fetchUserInfo } = useContext(UserContext);
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-
-        // Split the input text into lines
-        const lines = csvText.split('\n');
-
-        // Initialize an array to store the extracted data
-        const data: string[] = [];
-
-        lines.forEach((line) => {
-            // Split each line by a comma
-            const [utorid] = line.trim().split('\n');
-
-            // Check if both utorid and role exist
-            if (utorid) {
-                // Push the data to the array
-                data.push(utorid);
-            }
-        });
-
-        // Now 'data' contains an array of objects with 'utorid' and 'role'
-
-        // Send 'data' to the server endpoint using axios or your preferred method
-        axios.post(`/courses/${courseID}/enroll`, { utorids: data, role: "STUDENT" })
-            .then(() => {
-                fetchUserInfo();
-                closeDialog();
-            })
-            .catch((error) => {
-                console.error("Error sending data to the server:", error);
-            });
-    };
-
-    return (
-        <DialogSurface>
-            <DialogBody>
-                <form onSubmit={handleSubmit}>
-                    <DialogContent>
-                        <Title2 style={{ marginBottom: 7 }}>Enroll Students</Title2><br/>
-                        <Title3 style={{ fontSize: 18 }}>Input a list of students</Title3>
-                        <Textarea
-                            id="csvText"
-                            placeholder="utorid1,utorid2,utorid3,..."
-                            value={csvText}
-                            onChange={(e) => setCsvText(e.target.value)}
-                            required
-                        />
-                    </DialogContent>
-                    <DialogActions>
-                        <DialogTrigger disableButtonEnhancement>
-                            <Button appearance="secondary">Close</Button>
-                        </DialogTrigger>
-                        <Button type="submit" appearance="primary">Submit</Button>
-                    </DialogActions>
-                </form>
-            </DialogBody>
-        </DialogSurface>
-    );
-}
 
 export default function Page() {
     const { userInfo } = useContext(UserContext);
@@ -130,7 +39,7 @@ export default function Page() {
     const { courseID, assignmentID } = router.query;
 
     const fetchAssignment = async () => {
-        await axios.get<FetchedAssignmentWithTier>(`/courses/${courseID}/assignments/${assignmentID}`, { skipErrorHandling: true }).then((res) => setAssignment(res.data)).catch(e => {
+        await axios.get<FetchedAssignmentWithTier>(`/courses/${courseID}/${assignmentID}`, { skipErrorHandling: true }).then((res) => setAssignment(res.data)).catch(e => {
             // console.log(e);
             notFound();
         });
