@@ -77,3 +77,5 @@ export type Session = "Fall" | "Winter" | "Summer"
 
 const role :Role;
 export type RoleType = typeof role.type
+
+export type Theme = "light" | "dark";

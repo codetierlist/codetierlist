@@ -88,6 +88,7 @@ model User {
   TestCase  TestCase[]
   surname   String
   givenName String
+  theme     String?    @default("light")
 
   @@map("Users")
 }

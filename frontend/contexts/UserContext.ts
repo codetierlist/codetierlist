@@ -11,7 +11,8 @@ export const defaultUser: FetchedUser = {
     roles: [],
     admin: false,
     surname: "Hatsune",
-    givenName: "Miku"
+    givenName: "Miku",
+    theme: "light",
 };
 
 /**

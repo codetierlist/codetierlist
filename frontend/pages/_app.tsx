@@ -1,4 +1,4 @@
-import { lightTheme, Navbar } from '@/components';
+import { darkTheme, lightTheme, Navbar } from '@/components';
 import '@/styles/globals.css';
 import {
     createDOMRenderer,
@@ -76,7 +76,7 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
             <SSRProvider>
                 <UserContext.Provider
                     value={{ userInfo, setUserInfo, fetchUserInfo }}>
-                    <FluentProvider theme={lightTheme}>
+                    <FluentProvider theme={userInfo.theme === "dark" ? darkTheme : lightTheme}>
                         <SnackbarContext.Provider
                             value={{ showSnack, showSnackSev }}
                         >

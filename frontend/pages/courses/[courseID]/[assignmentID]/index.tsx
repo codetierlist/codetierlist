@@ -1,12 +1,9 @@
 import axios, { handleError } from "@/axios";
 import {
-    CourseSessionChip,
     TierChip,
     TierList,
-    colourHash,
     convertDate,
     convertTime,
-    getSession,
     promptForFileObject
 } from '@/components';
 import { SnackbarContext } from "@/contexts/SnackbarContext";
@@ -91,7 +88,7 @@ const ListFiles = ({ commit, route, assignment, assignmentID, update }: { commit
                                 <div className={`${flex["d-flex"]} ${flex["justify-content-between"]} ${flex["align-items-center"]} ${styles.accordionHeaderContent}`}>
                                     <span>{commit.files[index]}</span>
 
-                                    <Tooltip content="Delete file">
+                                    <Tooltip content="Delete file" relationship="label">
                                         <Button icon={<Delete16Filled />} onClick={() => deleteFile(commit.files[index])} />
                                     </Tooltip>
                                 </div>
@@ -293,7 +290,7 @@ export default function Page() {
 
                     userInfo.admin && (
                         <div className={styles.adminButton}>
-                            <Tooltip content="Admin page">
+                            <Tooltip content="Admin page" relationship="label">
                                 <Link href={`/courses/${courseID}/${assignmentID}/admin`}>
                                     <Button
                                         appearance="subtle"

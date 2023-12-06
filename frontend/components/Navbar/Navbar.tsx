@@ -2,33 +2,41 @@ import { GenerateInitalsAvatarProps, generateInitals } from '@/components';
 import { UserContext, defaultUser } from '@/contexts/UserContext';
 import { Button, Badge, Persona, SkeletonItem, Popover, Switch, PopoverSurface, PopoverTrigger } from '@fluentui/react-components';
 import Link from 'next/link';
-import { useContext, useState, useCallback } from 'react';
+import { useContext } from 'react';
 import styles from './Navbar.module.css';
+import { Theme } from 'codetierlist-types';
+import axios, { handleError } from "@/axios";
+import { SnackbarContext } from '@/contexts/SnackbarContext';
 
 /**
  * The user popover content is the content that appears when
  * the user clicks on their avatar.
  */
 const UserPopoverContent = (): JSX.Element => {
-    const { userInfo } = useContext(UserContext);
+    const { userInfo, fetchUserInfo } = useContext(UserContext);
+    const { showSnackSev } = useContext(SnackbarContext);
 
-    // TODO remove this later!!
-    const [checked, setChecked] = useState(true);
-    const onChange = useCallback(
-        (ev) => {
-            setChecked(ev.currentTarget.checked);
-        },
-        [setChecked]
-    );
+    /**
+     * Change the user's theme.
+     * @param theme the theme to change to
+     */
+    const changeTheme = (theme: Theme) => {
+        axios.post('/users/set-theme', {
+            theme,
+        }).catch((e) => {
+            handleError(e.message, showSnackSev);
+        }).finally(() => {
+            fetchUserInfo();
+        });
+    };
 
     return (
         <div>
             <div className={styles.popoverButtonContainer}>
                 <Switch
-                    checked={checked}
-                    onChange={onChange}
-                    label={checked ? "Dark mode" : "Light mode"}
-                    className={styles}
+                    checked={userInfo.theme === "dark"}
+                    onChange={() => changeTheme(userInfo.theme === "dark" ? "light" : "dark")}
+                    label={userInfo.theme === "dark" ? "Dark Mode" : "Light Mode"}
                 />
 
                 <Link href="">
