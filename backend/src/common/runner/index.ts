@@ -120,9 +120,9 @@ export const runJob = async (job: Job): Promise<JobResult> => {
                 runner.stdout.on('end', () => {
                     resolve({status: JobStatus.ERROR}); // read all output and still no result
                 });
+            } else {
+                resolve({status: JobStatus.ERROR}); // fail case
             }
-
-            resolve({status: JobStatus.ERROR}); // fail case?
         });
     });
 };
