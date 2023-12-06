@@ -15,7 +15,8 @@ router.get("/", (req, res) => {
  */
 router.post("/set-theme", async (req, res) => {
     if (!req.body.theme) {
-        res.status(400).send("No theme specified.");
+        res.status(400).send({message:"No theme specified."});
+
         return;
     }
     if (req.body.theme !== "light" && req.body.theme !== "dark") {
