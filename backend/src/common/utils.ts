@@ -219,9 +219,10 @@ export const deleteFile = async (req: Request, res: Response, table: "solution" 
         res.send({error: 'Submission not found.'});
         return;
     }
-    // TODO error handling
-    await git.remove({fs, dir: object.git_url, filepath: req.params.file});
-    await fs.unlink(`${object!.git_url}/${req.params.file}`);
+    try{
+        await git.remove({fs, dir: object.git_url, filepath: req.params.file});
+        await fs.unlink(`${object!.git_url}/${req.params.file}`);
+    }catch (_) { /* empty */ }
     const commit = await commitFiles(req, object, table);
     if (commit === null) {
         res.statusCode = 500;
