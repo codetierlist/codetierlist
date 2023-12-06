@@ -1,5 +1,5 @@
 import axios, { handleError } from "@/axios";
-import { HeaderToolbar, promptForFileReader, Monaco } from "@/components";
+import { HeaderToolbar, promptForFileReader, Monaco, modifyEnrollment } from "@/components";
 import { SnackbarContext } from "@/contexts/SnackbarContext";
 import flex from '@/styles/flex-utils.module.css';
 import { Body2, Button, ToolbarButton } from "@fluentui/react-components";
@@ -9,7 +9,6 @@ import { isUTORid } from 'is-utorid';
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useContext, useState } from "react";
-import { modifyEnrollment } from "../../../../../components/utils/Enrolment/enrolmentStatus";
 
 export default function Page(): JSX.Element {
     const [editorValue, setEditorValue] = useState("");
