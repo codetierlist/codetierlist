@@ -37,8 +37,8 @@ import {
     PeopleRegular,
     DocumentPdfRegular,
     VideoRegular,
-  } from "@fluentui/react-icons";
-  import {
+} from "@fluentui/react-icons";
+import {
     TableBody,
     TableCell,
     TableRow,
@@ -48,7 +48,7 @@ import {
     TableCellLayout,
     PresenceBadgeStatus,
     Avatar,
-  } from "@fluentui/react-components";
+} from "@fluentui/react-components";
 
 // import { notFound } from 'next/navigation';
 import { Add24Filled, Shield24Filled, PersonAdd24Regular } from '@fluentui/react-icons';
@@ -154,36 +154,36 @@ export default function Page() {
     const items = [
         {
 
-        utorid: { label: "zhan8725" },
-        name: {label: "something"},
-        gitRepo: { label: "https://github.com/" },
-        bestMark: { label: "13/20" },
-        tier: { label: "S" },
-        submissions: {label: "5"}
+            utorid: { label: "zhan8725" },
+            name: {label: "something"},
+            gitRepo: { label: "https://github.com/" },
+            bestMark: { label: "13/20" },
+            tier: { label: "S" },
+            submissions: {label: "5"}
         },
         {
-        utorid: { label: "zhan8725" },
-        name: {label: "something"},
-        gitRepo: { label: "https://github.com/" },
-        bestMark: { label: "15/20" },
-        tier: { label: "C" },
-        submissions: {label: "5"}
+            utorid: { label: "zhan8725" },
+            name: {label: "something"},
+            gitRepo: { label: "https://github.com/" },
+            bestMark: { label: "15/20" },
+            tier: { label: "C" },
+            submissions: {label: "5"}
         },
         {
-        utorid: { label: "zhan8725" },
-        name: {label: "something"},
-        gitRepo: { label: "https://github.com/" },
-        bestMark: { label: "9/20" },
-        tier: { label: "B" },
-        submissions: {label: "5"}
+            utorid: { label: "zhan8725" },
+            name: {label: "something"},
+            gitRepo: { label: "https://github.com/" },
+            bestMark: { label: "9/20" },
+            tier: { label: "B" },
+            submissions: {label: "5"}
         },
         {
-        utorid: { label: "zhan8725" },
-        name: {label: "something"},
-        gitRepo: { label: "https://github.com/" },
-        bestMark: { label: "17/20" },
-        tier: { label: "A" },
-        submissions: {label: "5"}
+            utorid: { label: "zhan8725" },
+            name: {label: "something"},
+            gitRepo: { label: "https://github.com/" },
+            bestMark: { label: "17/20" },
+            tier: { label: "A" },
+            submissions: {label: "5"}
         },
     ];
 
@@ -249,26 +249,26 @@ export default function Page() {
                 </header>
 
                 <Table arial-label="Default table">
-                <TableHeader>
-                    <TableRow>
-                    {columns.map((column) => (
-                        <TableHeaderCell key={column.columnKey}>
-                        {column.label}
-                        </TableHeaderCell>
-                    ))}
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {items.map((item) => (
-                    <TableRow key={item.utorid.label}>
-                        <TableCell> {item.utorid.label} </TableCell>
-                        <TableCell> {item.name.label} </TableCell>
-                        {/* <TableCell onClick={openRepo(item.gitRepo.label)} style={{ cursor: 'pointer', textDecoration: 'underline' }}> Link </TableCell> */}
-                        <TableCell> {item.bestMark.label} </TableCell>
-                        <TableCell> {item.submissions.label} </TableCell>
-                    </TableRow>
-                    ))}
-                </TableBody>
+                    <TableHeader>
+                        <TableRow>
+                            {columns.map((column) => (
+                                <TableHeaderCell key={column.columnKey}>
+                                    {column.label}
+                                </TableHeaderCell>
+                            ))}
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {items.map((item) => (
+                            <TableRow key={item.utorid.label}>
+                                <TableCell> {item.utorid.label} </TableCell>
+                                <TableCell> {item.name.label} </TableCell>
+                                {/* <TableCell onClick={openRepo(item.gitRepo.label)} style={{ cursor: 'pointer', textDecoration: 'underline' }}> Link </TableCell> */}
+                                <TableCell> {item.bestMark.label} </TableCell>
+                                <TableCell> {item.submissions.label} </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
                 </Table>
             </main >
         </>
