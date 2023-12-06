@@ -5,19 +5,7 @@
 }
 
 .dueDate {
-    display: inline-block !important;
-    padding: var(--spaceVerticalNone) var(--spacingHorizontalXS) !important;
-    line-height: var(--lineHeightBase200) !important;
-    height: var(--spacingVerticalL) !important;
     font-weight: var(--fontWeightRegular) !important;
-}
-
-.dueDateIcon {
-    line-height: inherit !important;
-    display: inline-block !important;
-    position: relative !important;
-    top: 0.1em !important;
-    margin-right: var(--spacingHorizontalXS);
 }
 
 .header {
