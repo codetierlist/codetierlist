@@ -54,19 +54,25 @@ model Solution {
   @@map("Solutions")
 }
 
+enum TestCaseStatus {
+  INVALID
+  VALID
+  PENDING
+}
+
 model TestCase {
-  id               String     @unique @default(dbgenerated("gen_random_uuid()")) @map("_id")
+  id               String         @unique @default(dbgenerated("gen_random_uuid()")) @map("_id")
   git_url          String
   git_id           String
-  datetime         DateTime   @default(now())
+  datetime         DateTime       @default(now())
   author_id        String
-  author           User       @relation(fields: [author_id], references: [utorid], onDelete: Cascade, onUpdate: Cascade)
-  assignment       Assignment @relation(onDelete: Cascade, onUpdate: Cascade, fields: [course_id, assignment_title], references: [course_id, title])
-  course           Course     @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  author           User           @relation(fields: [author_id], references: [utorid], onDelete: Cascade, onUpdate: Cascade)
+  assignment       Assignment     @relation(onDelete: Cascade, onUpdate: Cascade, fields: [course_id, assignment_title], references: [course_id, title])
+  course           Course         @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   scores           Score[]
   course_id        String
   assignment_title String
-  valid            Boolean    @default(false)
+  valid            TestCaseStatus @default(PENDING)
 
   @@id(fields: [course_id, assignment_title, author_id, git_id])
   @@unique([course_id, assignment_title, author_id, git_id], name: "_id")

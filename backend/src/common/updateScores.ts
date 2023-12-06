@@ -1,4 +1,4 @@
-import {RoleType, Submission, TestCase} from "codetierlist-types";
+import {Submission, TestCase} from "codetierlist-types";
 import prisma from "./prisma";
 import {queueJob, JobStatus} from "./runner";
 
@@ -20,7 +20,7 @@ export const onNewSubmission = async (submission: Submission) => {
         where: {
             course_id: submission.course_id,
             assignment_title: submission.assignment_title,
-            valid: true
+            valid: "VALID"
         }
     });
 
@@ -69,12 +69,11 @@ export const onNewTestCase = async (testCase: TestCase) => {
     // }
 
     // test case has been validated
+
     await prisma.testCase.update({
         where: {
-            _id: {
-                ...testCase
-            }
-        }, data: {valid: true}
+            id: testCase.id
+        }, data: {valid: "VALID"}
     });
 
     // find all student submissions
@@ -86,7 +85,7 @@ export const onNewTestCase = async (testCase: TestCase) => {
                 roles: {
                     some: {
                         course_id: testCase.course_id,
-                        type: {in: [RoleType.STUDENT]}
+                        type: {in: ["STUDENT"]}
                     }
                 }
             }

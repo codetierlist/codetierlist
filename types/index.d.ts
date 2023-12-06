@@ -48,6 +48,8 @@ export type Submission = Prisma.SolutionGetPayload<{}>;
 export type Score = Prisma.ScoreGetPayload<{}>;
 export type Role = Prisma.RoleGetPayload<{}>;
 export type TestCase = Prisma.TestCaseGetPayload<{}>;
+const test : TestCase;
+export type TestCaseStatus = typeof test.valid
 
 export type FetchedUser = Prisma.UserGetPayload<typeof fetchedUserArgs>;
 export type FetchedCourse = Prisma.CourseGetPayload<typeof fetchedCourseArgs>;
@@ -73,4 +75,5 @@ export type Tierlist = Record<Tier, TierlistEntry[]>;
 
 export type Session = "Fall" | "Winter" | "Summer"
 
-export {RoleType};
+const role :Role;
+export type RoleType = typeof role.type
