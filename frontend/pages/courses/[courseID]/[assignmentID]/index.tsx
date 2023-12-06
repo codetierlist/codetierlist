@@ -248,7 +248,18 @@ export default function Page() {
     if (stage === -404) {
         return <Error statusCode={404} />;
     } else if (!assignment || !courseID || !assignmentID) {
-        return <p>Loading...</p>;
+        return (
+            <>
+                <Head> <title>Codetierlist</title> </Head>
+                <TabList className={styles.tabList} size="large" selectedValue={`tab${stage}`}>
+                    <Tab value="tab0" disabled> Assignment details </Tab>
+                    <Tab value="tab1" disabled> Upload </Tab>
+                    <Tab value="tab2" disabled> View tierlist </Tab>
+                </TabList>
+                <Container component="main" className={styles.container}>
+                </Container>
+            </>
+        );
     }
 
     return (
@@ -265,7 +276,7 @@ export default function Page() {
                     Upload
                 </Tab>
                 <Tab value="tab2" onClick={() => setStage(2)} disabled={!shouldViewTierList(assignment, tierlist)}>
-                    View tier list
+                    View tierlist
                 </Tab>
             </TabList>
             <Container component="main" className={styles.container}>
@@ -275,7 +286,7 @@ export default function Page() {
                             <Card className={styles.header} orientation="horizontal">
                                 <CardHeader
                                     className={styles.assignmentHeaderContent}
-                                    action={ <TierChip tier={assignment.tier} /> }
+                                    action={<TierChip tier={assignment.tier} />}
                                     header={
                                         <div className={styles.assignmentHeaderContent}>
                                             <Subtitle2 className={styles.dueDate}>
@@ -298,7 +309,7 @@ export default function Page() {
                                     <MessageBarBody>
                                         <MessageBarTitle>You have not submitted a solution yet.</MessageBarTitle>
                                         You can submit a solution by clicking on the &ldquo;Upload&rdquo; tab.
-                                        You will not be able to see the tier list until you submit a solution.
+                                        You will not be able to see the tierlist until you submit a solution.
                                     </MessageBarBody>
                                     <MessageBarActions>
                                         <Button onClick={() => setStage(1)}>Upload a solution</Button>
@@ -311,7 +322,7 @@ export default function Page() {
                                     <MessageBarBody>
                                         <MessageBarTitle>You have not submitted a test yet.</MessageBarTitle>
                                         You can submit a test by clicking on &ldquo;Upload&rdquo; tab.
-                                        You will not be able to see the tier list until you submit a test.
+                                        You will not be able to see the tierlist until you submit a test.
                                     </MessageBarBody>
                                     <MessageBarActions>
                                         <Button onClick={() => setStage(1)}>Submit a test</Button>
