@@ -1,6 +1,7 @@
 import { GenerateInitalsAvatarProps, generateInitals } from '@/components';
 import { UserContext, defaultUser } from '@/contexts/UserContext';
-import { Badge, Link, Persona, SkeletonItem } from '@fluentui/react-components';
+import { Badge, Persona, SkeletonItem } from '@fluentui/react-components';
+import Link from 'next/link';
 import { useContext } from 'react';
 import styles from './Navbar.module.css';
 

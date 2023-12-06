@@ -3,6 +3,7 @@ import { CourseOverviewCard } from '@/components';
 import { UserContext } from "@/contexts/UserContext";
 import {
     Button,
+    Caption1,
     Dialog,
     DialogActions,
     DialogBody,
@@ -85,6 +86,11 @@ export default function Home() {
                             image={process.env.NEXT_PUBLIC_API_URL+"/courses/"+x.id+"/cover"}
                             session={"Fall"}></CourseOverviewCard>
                     ))}
+
+                    {(!userInfo.admin && userInfo.roles.length == 0) &&
+                        <Caption1>You are not enrolled in any courses. If your believe that this message you are
+                        receiving is incorrect, please contact your instructor to correct this issue.</Caption1>
+                    }
 
                     {userInfo.admin ?
                         <Dialog open={showDialog} onOpenChange={(e: DialogOpenChangeEvent, data: DialogOpenChangeData) => setShowDialog(data.open)}>

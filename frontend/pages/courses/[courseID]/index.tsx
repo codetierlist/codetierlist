@@ -2,6 +2,7 @@ import axios, { handleError } from "@/axios";
 import { AssignmentCard, CourseSessionChip, HeaderToolbar, getSession } from '@/components';
 import { UserContext } from "@/contexts/UserContext";
 import {
+    Caption1,
     ToolbarButton
 } from "@fluentui/react-components";
 import { Add24Filled, PersonAdd24Regular, Shield24Filled } from '@fluentui/react-icons';
@@ -93,6 +94,11 @@ export default function Page() {
                     </Title2>
                 </header>
                 <div className="flex-wrap">
+                    {((course !== null) && course.assignments.length === 0) &&
+                        <Caption1>This course has no assignments yet. If your believe that this message you are
+                        receiving is incorrect, please contact your instructor to correct this issue.</Caption1>
+                    }
+
                     {course ? course.assignments.map((assignment) => (
                         <AssignmentCard key={assignment.title.replaceAll(" ", "_")}
                             id={assignment.title.replaceAll(" ", "_")}

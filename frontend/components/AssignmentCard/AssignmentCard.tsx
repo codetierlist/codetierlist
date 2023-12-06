@@ -2,13 +2,13 @@ import {
     Caption1,
     Card,
     CardHeader,
-    Link,
     Title3
 } from '@fluentui/react-components';
 import styles from './AssignmentCard.module.css';
 import {TierChip} from '@/components';
 import {type Tier, type UserTier} from "codetierlist-types";
 import { convertDate } from '../utils/TimeUtils/TimeUtils';
+import Link from 'next/link';
 
 export declare interface AssignmentCardProps {
     id: string
