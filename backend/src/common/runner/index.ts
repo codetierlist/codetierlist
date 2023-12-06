@@ -150,7 +150,8 @@ const create_images = () => {
             cwd: path.join('/', 'backend', 'src', 'api', 'runner', 'images', img, img_ver)
         }
     );
-    console.log(ret.stdout.toString());
+    if(ret?.stdout)
+        console.log(ret.stdout.toString());
     console.log("done creating images");
 };
 
@@ -195,7 +196,7 @@ for (let i = 0; i < 3; i++) {
             author_id: "malho258",
             course_id: "KITTY101-0",
             assignment_title: "become gamer",
-            valid: true
+            valid: "VALID"
         }
     }).then(r => {
         console.log(`result ${i}`);
