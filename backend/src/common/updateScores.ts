@@ -21,17 +21,18 @@ export const onNewSubmission = async (submission: Submission) => {
             course_id: submission.course_id,
             assignment_title: submission.assignment_title,
             valid: "VALID"
-        }
+        },
+        orderBy: {datetime:"desc"},
+        distinct: "author_id",
     });
 
-    testCases.forEach(testCase => queueJob({
+    void Promise.all(testCases.map(testCase => queueJob({
         submission: submission,
         testCase
-    }).then(x => {
-        // TODO not sure what the type of x is
+    }).then(async x => {
         const pass = x.status === JobStatus.PASS;
-        updateScore(submission, testCase, pass); // a blank pass or fail, but we have more data than that
-    }));
+        await updateScore(submission, testCase, pass); // a blank pass or fail, but we have more data than that
+    })));
 };
 
 export const onNewTestCase = async (testCase: TestCase) => {
@@ -78,26 +79,20 @@ export const onNewTestCase = async (testCase: TestCase) => {
 
     // find all student submissions
     const submissions = await prisma.solution.findMany({
-        where: {
+        where:{
             course_id: testCase.course_id,
-            assignment_title: testCase.assignment_title,
-            author: {
-                roles: {
-                    some: {
-                        course_id: testCase.course_id,
-                        type: {in: ["STUDENT"]}
-                    }
-                }
-            }
-        }
+            assignment_title: testCase.assignment_title
+        },
+        orderBy: {datetime:"desc"},
+        distinct: "author_id",
     });
-
     // for every student submission, run the test case, and update the score
-    submissions.forEach(submission => queueJob({
+    void Promise.all(submissions.map(submission => queueJob({
         submission: submission,
         testCase
-    }).then(x => {
+    }).then(async x => {
         const pass = x.status === JobStatus.PASS;
-        updateScore(submission, testCase, pass); // a blank pass or fail, but we have more data than that
-    }));
+
+        await updateScore(submission, testCase, pass); // a blank pass or fail, but we have more data than that
+    })));
 };

@@ -58,6 +58,7 @@ export const getFiles = async (submission: Submission | TestCase): Promise<JobFi
 
 
 export const runJob = async (job: Job): Promise<JobResult> => {
+    console.log("Running job" + job.submission.git_url + "             " + job.testCase.git_url);
     let query = {};
 
     try {
@@ -176,30 +177,30 @@ setInterval(() => {
 
 create_images();
 
-for (let i = 0; i < 3; i++) {
-    console.log(`queueing job ${i}`);
-    queueJob({
-        submission: {
-            id: "c143e734-ed83-428a-aa68-50e182c58eae",
-            git_url: "/repos/KITTY101-0/become gamer/malho258_solution",
-            git_id: "e727a176e41e3ea9e62b136f5ab5fe81782a33c9",
-            datetime: new Date(),
-            author_id: "malho258",
-            course_id: "KITTY101-0",
-            assignment_title: "become gamer"
-        },
-        testCase: {
-            id: "9f6b74f3-ca76-4119-94f1-82ba4d63740c",
-            git_url: "/repos/KITTY101-0/become gamer/malho258_testCase",
-            git_id: "89974c5b8066182629396f375c8af868dbe85cf3",
-            datetime: new Date(),
-            author_id: "malho258",
-            course_id: "KITTY101-0",
-            assignment_title: "become gamer",
-            valid: "VALID"
-        }
-    }).then(r => {
-        console.log(`result ${i}`);
-        console.log(r);
-    });
-}
+// for (let i = 0; i < 3; i++) {
+//     console.log(`queueing job ${i}`);
+//     queueJob({
+//         submission: {
+//             id: "c143e734-ed83-428a-aa68-50e182c58eae",
+//             git_url: "/repos/KITTY101-0/become gamer/malho258_solution",
+//             git_id: "e727a176e41e3ea9e62b136f5ab5fe81782a33c9",
+//             datetime: new Date(),
+//             author_id: "malho258",
+//             course_id: "KITTY101-0",
+//             assignment_title: "become gamer"
+//         },
+//         testCase: {
+//             id: "9f6b74f3-ca76-4119-94f1-82ba4d63740c",
+//             git_url: "/repos/KITTY101-0/become gamer/malho258_testCase",
+//             git_id: "89974c5b8066182629396f375c8af868dbe85cf3",
+//             datetime: new Date(),
+//             author_id: "malho258",
+//             course_id: "KITTY101-0",
+//             assignment_title: "become gamer",
+//             valid: "VALID"
+//         }
+//     }).then(r => {
+//         console.log(`result ${i}`);
+//         console.log(r);
+//     });
+// }
