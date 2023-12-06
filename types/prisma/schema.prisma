@@ -111,6 +111,7 @@ model Role {
 }
 
 model Score {
+  datetime           DateTime @default(now())
   id                 String   @id @default(dbgenerated("gen_random_uuid()"))
   pass               Boolean
   solution           Solution @relation(references: [course_id, assignment_title, author_id, git_id], onDelete: Cascade, onUpdate: Cascade, fields: [course_id, assignment_title, solution_author_id, solution_commit_id])
