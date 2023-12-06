@@ -23,6 +23,7 @@ services:
       - repo_data:/repos
       - uploads:/uploads
       - ./backend/src:/backend/src:ro
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - DATABASE_URL=postgres://postgres:example@db:5432/postgres
       - NODE_ENV=development
@@ -40,6 +41,7 @@ services:
     environment:
       - NODE_ENV=development
       - NEXT_PUBLIC_API_URL=/api
+      - WATCHPACK_POLLING true
     volumes:
       - ./frontend/src:/frontend/src:ro
       - ./frontend/components:/frontend/components:ro

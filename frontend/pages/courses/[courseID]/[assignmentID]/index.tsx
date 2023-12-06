@@ -156,7 +156,7 @@ const FilesTab = ({ fetchAssignment, assignment, assignmentID, routeName, route 
                     icon={<Add24Filled />}
                     appearance="subtle"
                     onClick={async () => {
-                        promptForFileObject(".py",true)
+                        promptForFileObject(".py", true)
                             .then(file => {
                                 if (file) {
                                     submitTest(file);
@@ -196,6 +196,21 @@ const ViewTierList = ({ tierlist }: { tierlist: Tierlist }) => {
     );
 };
 
+/**
+ * Checks if the tierlist should be displayed
+ * @param assignment
+ * @param tierlist can be null
+ */
+const shouldViewTierList = (assignment: FetchedAssignmentWithTier, tierlist: Tierlist | null) => {
+    if (tierlist === null) {
+        return false;
+    }
+    if (Object.values(tierlist).every((tier) => tier.length === 0)) {
+        return false;
+    }
+    return (assignment.submissions.length > 0 && assignment.test_cases.length > 0);
+};
+
 export default function Page() {
     const router = useRouter();
     const [stage, setStage] = useState(0);
@@ -233,7 +248,18 @@ export default function Page() {
     if (stage === -404) {
         return <Error statusCode={404} />;
     } else if (!assignment || !courseID || !assignmentID) {
-        return <p>Loading...</p>;
+        return (
+            <>
+                <Head> <title>Codetierlist</title> </Head>
+                <TabList className={styles.tabList} size="large" selectedValue={`tab${stage}`}>
+                    <Tab value="tab0" disabled> Assignment details </Tab>
+                    <Tab value="tab1" disabled> Upload </Tab>
+                    <Tab value="tab2" disabled> View tierlist </Tab>
+                </TabList>
+                <Container component="main" className={styles.container}>
+                </Container>
+            </>
+        );
     }
 
     return (
@@ -246,11 +272,11 @@ export default function Page() {
                 <Tab value="tab0" onClick={() => setStage(0)}>
                     Assignment details
                 </Tab>
-                <Tab value="tab1" onClick={() => setStage(1)} disabled={assignment.test_cases.length === 0 || assignment.submissions.length === 0}>
+                <Tab value="tab1" onClick={() => setStage(1)}>
                     Upload
                 </Tab>
-                <Tab value="tab2" onClick={() => setStage(2)} disabled={assignment.test_cases.length === 0 || assignment.submissions.length === 0}>
-                    View tier list
+                <Tab value="tab2" onClick={() => setStage(2)} disabled={!shouldViewTierList(assignment, tierlist)}>
+                    View tierlist
                 </Tab>
             </TabList>
             <Container component="main" className={styles.container}>
@@ -260,24 +286,20 @@ export default function Page() {
                             <Card className={styles.header} orientation="horizontal">
                                 <CardHeader
                                     className={styles.assignmentHeaderContent}
+                                    action={<TierChip tier={assignment.tier} />}
                                     header={
                                         <div className={styles.assignmentHeaderContent}>
                                             <Subtitle2 className={styles.dueDate}>
-                                                <Clock16Regular
-                                                    className={styles.dueDateIcon} />
+                                                <Clock16Regular className={styles.dueDateIcon} />
                                                 Due {convertDate(assignment.due_date)} at {convertTime(assignment.due_date)}
                                             </Subtitle2>
                                             <Title2>
-                                                <span
-                                                    className={`${colourHash(courseID as string)} ${styles.courseCode}`}>
+                                                <span className={`${colourHash(courseID as string)} ${styles.courseCode}`}>
                                                     {courseID}
                                                 </span>
                                                 {assignment.title}
                                             </Title2>
                                         </div>
-                                    }
-                                    action={
-                                        <TierChip tier={assignment.tier} />
                                     }
                                 />
                             </Card>
@@ -286,8 +308,8 @@ export default function Page() {
                                 <MessageBar intent={"warning"} className={styles.messageBar}>
                                     <MessageBarBody>
                                         <MessageBarTitle>You have not submitted a solution yet.</MessageBarTitle>
-                                        You can submit a solution by clicking on the &ldquo;Upload a solution&rdquo; tab.
-                                        You will not be able to see the tier list until you submit a solution.
+                                        You can submit a solution by clicking on the &ldquo;Upload&rdquo; tab.
+                                        You will not be able to see the tierlist until you submit a solution.
                                     </MessageBarBody>
                                     <MessageBarActions>
                                         <Button onClick={() => setStage(1)}>Upload a solution</Button>
@@ -299,11 +321,10 @@ export default function Page() {
                                 <MessageBar intent={"warning"} className={styles.messageBar}>
                                     <MessageBarBody>
                                         <MessageBarTitle>You have not submitted a test yet.</MessageBarTitle>
-                                        You can submit a test by clicking on &ldquo;Submit a test&rdquo; tab.
-                                        You will not be able to see the tier list until you submit a test.
+                                        You can submit a test by clicking on &ldquo;Upload&rdquo; tab.
+                                        You will not be able to see the tierlist until you submit a test.
                                     </MessageBarBody>
-                                    <MessageBarActions
-                                    >
+                                    <MessageBarActions>
                                         <Button onClick={() => setStage(1)}>Submit a test</Button>
                                     </MessageBarActions>
                                 </MessageBar>

@@ -1,4 +1,4 @@
-import { User } from "@prisma/client";
+import {User} from "@prisma/client";
 import {
     FullFetchedAssignment,
     Tier,
@@ -31,9 +31,13 @@ const getUserInitials = (user: User | string) =>
 /** @return the mean of the data */
 const getMean = (data: number[]) => data.reduce((a, b) => Number(a) + Number(b)) / data.length;
 
-const getStandardDeviation = (data: number[]) => Math.sqrt(data.reduce((sq, n) => sq + Math.pow(n - getMean(data), 2), 0) / (data.length - 1));
+function getStandardDeviation(array: number[]) {
+    const n = array.length
+    const mean = array.reduce((a, b) => a + b) / n
+    return Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n)
+}
 
-function generateList(assignment: Omit<FullFetchedAssignment, "due_date">, user?: string | User): [Tierlist, UserTier] {
+export function generateList(assignment: Omit<FullFetchedAssignment, "due_date">, user?: string | User): [Tierlist, UserTier] {
     const res: Tierlist = {
         S: [],
         A: [],
@@ -51,7 +55,7 @@ function generateList(assignment: Omit<FullFetchedAssignment, "due_date">, user?
             name: (user ? isSelf(user, submission.author.utorid) : false)
                 ? getUserInitials(submission.author)
                 : twoLetterHash(submission.author.utorid + (user ? getUtorid(user) : "")),
-            score: submission.scores.filter(x => x.pass).length / submission.scores.length,
+            score: submission.scores.length === 0 ? 0.0 : submission.scores.filter(x => x.pass).length / submission.scores.length,
         })
     );
     const mean = getMean(scores.map(x => x.score));
@@ -59,13 +63,14 @@ function generateList(assignment: Omit<FullFetchedAssignment, "due_date">, user?
     let yourTier: UserTier | undefined = undefined;
     for (const score of scores) {
         let tier: Tier;
+        const {score:_, ...scoreNew}=score;
         if (score.score == 0) {
             tier = "F";
         } else if (score.score == 1 || score.score > mean + 2 * std) {
             tier = "S";
         } else if (score.score > mean + std) {
             tier = "A";
-        } else if (score.score > mean) {
+        } else if (score.score >= mean) {
             tier = "B";
         } else if (score.score > mean - std) {
             tier = "C";
@@ -77,7 +82,7 @@ function generateList(assignment: Omit<FullFetchedAssignment, "due_date">, user?
         if (score.you) {
             yourTier = tier;
         }
-        res[tier].push(score);
+        res[tier].push(scoreNew);
     }
     if (!yourTier) yourTier = "?";
 

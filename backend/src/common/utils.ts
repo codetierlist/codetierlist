@@ -13,6 +13,7 @@ import path from "path";
 import {PathLike, promises as fs} from "fs";
 import git, {ReadBlobResult} from "isomorphic-git";
 import {Commit} from "codetierlist-types";
+import {onNewSubmission, onNewTestCase} from "./updateScores";
 
 /**
  * Checks if a user is a prof in a course.
@@ -52,9 +53,12 @@ const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'date
             author_id: req.user.utorid
         };
         if (table === "solution") {
-            await prisma.solution.create({data});
+            const solution = await prisma.solution.create({data});
+            onNewSubmission(solution).then();
+
         } else {
-            await prisma.testCase.create({data});
+            const testCase = await prisma.testCase.create({data});
+            onNewTestCase(testCase).then();
         }
         return commit;
     } catch (e) {
@@ -215,9 +219,10 @@ export const deleteFile = async (req: Request, res: Response, table: "solution" 
         res.send({error: 'Submission not found.'});
         return;
     }
-    // TODO error handling
-    await git.remove({fs, dir: object.git_url, filepath: req.params.file});
-    await fs.unlink(`${object!.git_url}/${req.params.file}`);
+    try{
+        await git.remove({fs, dir: object.git_url, filepath: req.params.file});
+        await fs.unlink(`${object!.git_url}/${req.params.file}`);
+    }catch (_) { /* empty */ }
     const commit = await commitFiles(req, object, table);
     if (commit === null) {
         res.statusCode = 500;
