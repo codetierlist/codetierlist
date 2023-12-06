@@ -9,12 +9,15 @@ import {
     processSubmission
 } from "../../../../common/utils";
 import multer from 'multer';
-import {generateTierList, generateYourTier} from "../../../../common/tierlist";
+import {
+    generateList,
+    generateYourTier
+} from "../../../../common/tierlist";
 import {
     AssignmentWithTier,
     Commit, FetchedAssignment,
     FetchedAssignmentWithTier, FullFetchedAssignment,
-    Tierlist
+    Tierlist, UserTier
 } from "codetierlist-types";
 
 const storage = multer.diskStorage({
@@ -115,7 +118,12 @@ router.get("/:assignment/testcases/:commitId?/:file", fetchAssignmentMiddleware,
 
 router.get("/:assignment/tierlist", fetchAssignmentMiddleware, async (req, res) => {
     const fullFetchedAssignment = await prisma.assignment.findUniqueOrThrow({where:{id: {title: req.assignment!.title, course_id: req.assignment!.course_id}}, ...fullFetchedAssignmentArgs});
-    res.send(generateTierList(fullFetchedAssignment, req.user) satisfies Tierlist);
+    const tierlist = generateList(fullFetchedAssignment, req.user);
+    if(tierlist[1] === "?" as UserTier){
+        res.send({S:[],A:[],B:[],C:[],D:[],F:[]} satisfies Tierlist);
+        return;
+    }
+    res.send(tierlist[0] satisfies Tierlist);
 });
 
 export default router;
