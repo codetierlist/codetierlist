@@ -202,15 +202,13 @@ const ViewTierList = ({ tierlist }: { tierlist: Tierlist }) => {
  * @param tierlist can be null
  */
 const shouldViewTierList = (assignment: FetchedAssignmentWithTier, tierlist: Tierlist | null) => {
-    if (assignment.submissions.length > 0 && assignment.test_cases.length > 0) {
-        return true;
-    }
     if (tierlist === null) {
         return false;
     }
     if (Object.values(tierlist).every((tier) => tier.length === 0)) {
-        return true;
+        return false;
     }
+    return (assignment.submissions.length > 0 && assignment.test_cases.length > 0);
 };
 
 export default function Page() {
