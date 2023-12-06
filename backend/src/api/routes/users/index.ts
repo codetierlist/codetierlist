@@ -10,7 +10,7 @@ router.get("/", (req, res) => {
 
 /**
  * Sets the user's theme to the specified theme.
- * @param theme the theme to set. Must be "light" or "dark".
+ * @param theme the theme to set. Must be "LIGHT" or "DARK".
  * @returns 200 if success, 400 if fail
  */
 router.post("/theme", async (req, res) => {
@@ -19,7 +19,7 @@ router.post("/theme", async (req, res) => {
 
         return;
     }
-    if (req.body.theme !== "light" && req.body.theme !== "dark") {
+    if (req.body.theme !== "LIGHT" && req.body.theme !== "DARK") {
         res.status(400).send({message:`Invalid theme ${req.body.theme}.`});
         return;
     }

@@ -34,9 +34,9 @@ const UserPopoverContent = (): JSX.Element => {
         <div>
             <div className={styles.popoverButtonContainer}>
                 <Switch
-                    checked={userInfo.theme === "dark"}
-                    onChange={() => changeTheme(userInfo.theme === "dark" ? "light" : "dark")}
-                    label={userInfo.theme === "dark" ? "Dark Mode" : "Light Mode"}
+                    checked={userInfo.theme === "DARK"}
+                    onChange={() => changeTheme(userInfo.theme === "DARK" ? "LIGHT" : "DARK")}
+                    label={userInfo.theme === "DARK" ? "Dark Mode" : "Light Mode"}
                 />
 
                 <Link href="">

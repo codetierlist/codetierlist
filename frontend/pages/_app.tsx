@@ -76,7 +76,7 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
             <SSRProvider>
                 <UserContext.Provider
                     value={{ userInfo, setUserInfo, fetchUserInfo }}>
-                    <FluentProvider theme={userInfo.theme === "dark" ? darkTheme : lightTheme}>
+                    <FluentProvider theme={userInfo.theme === "DARK" ? darkTheme : lightTheme}>
                         <SnackbarContext.Provider
                             value={{ showSnack, showSnackSev }}
                         >

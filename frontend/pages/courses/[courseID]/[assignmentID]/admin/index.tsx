@@ -19,9 +19,6 @@ import {
     TableHeaderCell
 } from "@fluentui/react-components";
 
-// import { notFound } from 'next/navigation';
-import { Add24Filled, Shield24Filled, PersonAdd24Regular } from '@fluentui/react-icons';
-
 export default function Page() {
     const { userInfo } = useContext(UserContext);
     const [assignment, setAssignment] = useState<FetchedAssignmentWithTier | null>(null);

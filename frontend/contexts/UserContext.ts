@@ -12,7 +12,7 @@ export const defaultUser: FetchedUser = {
     admin: false,
     surname: "Hatsune",
     givenName: "Miku",
-    theme: "light",
+    theme: "LIGHT",
 };
 
 /**
