@@ -39,7 +39,7 @@ const UserPopoverContent = (): JSX.Element => {
                     label={userInfo.theme === "DARK" ? "Dark Mode" : "Light Mode"}
                 />
 
-                <Link href="">
+                <Link href="https://codetierlist.utm.utoronto.ca/Shibboleth.sso/Logout">
                     <Button appearance="subtle">
                         Sign out
                     </Button>
