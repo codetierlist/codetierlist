@@ -23,4 +23,4 @@ ENV NEXT_TELEMETRY_DISABLED 1
 
 # build nextjs
 RUN npm run build
-CMD ["npm", "run", "start"]
+CMD ["./node_modules/.bin/next", "start"]
