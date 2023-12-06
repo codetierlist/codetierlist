@@ -25,7 +25,7 @@ router.post("/set-theme", async (req, res) => {
 
     await prisma.user.update({
         where: {utorid: req.user.utorid},
-        data: {theme: req.body.theme as Theme}
+        data: {theme: req.body.theme satisfies Theme}
     });
 
     res.status(200).send(`Set theme to ${req.body.theme}.`);
