@@ -15,11 +15,12 @@ router.get("/", (req, res) => {
  */
 router.post("/theme", async (req, res) => {
     if (!req.body.theme) {
-        res.status(400).send("No theme specified.");
+        res.status(400).send({message:"No theme specified."});
+
         return;
     }
     if (req.body.theme !== "light" && req.body.theme !== "dark") {
-        res.status(400).send(`Invalid theme ${req.body.theme}.`);
+        res.status(400).send({message:`Invalid theme ${req.body.theme}.`});
         return;
     }
 
@@ -28,7 +29,8 @@ router.post("/theme", async (req, res) => {
         data: {theme: req.body.theme satisfies Theme}
     });
 
-    res.status(200).send(`Set theme to ${req.body.theme}.`);
+    res.status(200).send({message:`Set theme to ${req.body.theme}.`});
+
 });
 
 export default router;
