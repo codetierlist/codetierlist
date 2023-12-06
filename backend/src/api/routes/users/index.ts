@@ -13,7 +13,7 @@ router.get("/", (req, res) => {
  * @param theme the theme to set. Must be "light" or "dark".
  * @returns 200 if success, 400 if fail
  */
-router.post("/set-theme", async (req, res) => {
+router.post("/theme", async (req, res) => {
     if (!req.body.theme) {
         res.status(400).send("No theme specified.");
         return;

@@ -21,7 +21,7 @@ const UserPopoverContent = (): JSX.Element => {
      * @param theme the theme to change to
      */
     const changeTheme = (theme: Theme) => {
-        axios.post('/users/set-theme', {
+        axios.post('/users/theme', {
             theme,
         }).catch((e) => {
             handleError(e.message, showSnackSev);
