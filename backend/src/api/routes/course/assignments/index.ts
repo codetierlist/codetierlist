@@ -3,17 +3,21 @@ import prisma, {fullFetchedAssignmentArgs} from "../../../../common/prisma";
 import {
     deleteFile,
     fetchAssignmentMiddleware,
-    getCommit, getFile,
+    getCommitFromRequest,
+    getFileFromRequest,
     isProf,
     processSubmission
 } from "../../../../common/utils";
 import multer from 'multer';
-import {generateTierList, generateYourTier} from "../../../../common/tierlist";
+import {
+    generateList,
+    generateYourTier
+} from "../../../../common/tierlist";
 import {
     AssignmentWithTier,
     Commit, FetchedAssignment,
     FetchedAssignmentWithTier, FullFetchedAssignment,
-    Tierlist
+    Tierlist, UserTier
 } from "codetierlist-types";
 
 const storage = multer.diskStorage({
@@ -68,7 +72,7 @@ router.post("/:assignment/testcases", fetchAssignmentMiddleware, upload.array('f
     processSubmission(req, "testCase").then((commit) => commit === null ? res.sendStatus(404) : res.send({commit})));
 
 router.get("/:assignment/submissions/:commitId?", fetchAssignmentMiddleware, async (req, res) => {
-    const commit = await getCommit(req, "solution");
+    const commit = await getCommitFromRequest(req, "solution");
     if (commit === null) {
         if(!req.params.commitId) {
             res.send({log:[], files:[]} satisfies Commit);
@@ -82,7 +86,7 @@ router.get("/:assignment/submissions/:commitId?", fetchAssignmentMiddleware, asy
 });
 
 router.get("/:assignment/submissions/:commitId?/:file", fetchAssignmentMiddleware, async (req, res) => {
-    await getFile(req, res, "solution");
+    await getFileFromRequest(req, res, "solution");
 });
 
 router.delete("/:assignment/submissions/:file", fetchAssignmentMiddleware, async (req, res) => {
@@ -90,7 +94,7 @@ router.delete("/:assignment/submissions/:file", fetchAssignmentMiddleware, async
 });
 
 router.get("/:assignment/testcases/:commitId?", fetchAssignmentMiddleware, async (req, res) => {
-    const commit = await getCommit(req, "testCase");
+    const commit = await getCommitFromRequest(req, "testCase");
 
     if (commit === null) {
         if(!req.params.commitId) {
@@ -109,12 +113,17 @@ router.delete("/:assignment/testcases/:file", fetchAssignmentMiddleware, async (
 });
 
 router.get("/:assignment/testcases/:commitId?/:file", fetchAssignmentMiddleware, async (req, res) => {
-    await getFile(req, res, "testCase");
+    await getFileFromRequest(req, res, "testCase");
 });
 
 router.get("/:assignment/tierlist", fetchAssignmentMiddleware, async (req, res) => {
     const fullFetchedAssignment = await prisma.assignment.findUniqueOrThrow({where:{id: {title: req.assignment!.title, course_id: req.assignment!.course_id}}, ...fullFetchedAssignmentArgs});
-    res.send(generateTierList(fullFetchedAssignment, req.user) satisfies Tierlist);
+    const tierlist = generateList(fullFetchedAssignment, req.user);
+    if(tierlist[1] === "?" as UserTier){
+        res.send({S:[],A:[],B:[],C:[],D:[],F:[]} satisfies Tierlist);
+        return;
+    }
+    res.send(tierlist[0] satisfies Tierlist);
 });
 
 export default router;

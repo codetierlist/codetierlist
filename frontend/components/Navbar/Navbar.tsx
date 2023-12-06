@@ -1,8 +1,8 @@
-import { Badge, Link, Persona, SkeletonItem } from '@fluentui/react-components';
-import styles from './Navbar.module.css';
-import { GenerateInitalsAvatarProps } from '@/components';
-import { useContext } from 'react';
+import { GenerateInitalsAvatarProps, generateInitals } from '@/components';
 import { UserContext, defaultUser } from '@/contexts/UserContext';
+import { Badge, Link, Persona, SkeletonItem } from '@fluentui/react-components';
+import { useContext } from 'react';
+import styles from './Navbar.module.css';
 
 /**
  * The navbar component is the top bar of the website. It contains the
@@ -21,14 +21,18 @@ export const Navbar = (): JSX.Element => {
             {(userInfo.email !== defaultUser.email) && (
                 <Persona
                     textPosition="before"
-                    avatar={GenerateInitalsAvatarProps(`${userInfo.givenName} ${userInfo.surname}`)}
+                    avatar={GenerateInitalsAvatarProps(generateInitals(userInfo))}
                     primaryText={
-                        <>
+                        <span className={styles.subtext}>
                             {userInfo.admin && <Badge className={styles.adminBadge} appearance="outline">Admin</Badge>}
                             {`${userInfo.givenName} ${userInfo.surname}` == " " ? userInfo.utorid : `${userInfo.givenName} ${userInfo.surname}`}
-                        </>
+                        </span>
                     }
-                    secondaryText={userInfo.utorid}
+                    secondaryText={
+                        <span className={styles.subtext}>
+                            { userInfo.utorid }
+                        </span>
+                    }
                 />
             )}
 

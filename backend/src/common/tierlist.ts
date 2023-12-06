@@ -6,11 +6,38 @@ import {
     UserTier
 } from "codetierlist-types";
 
+/** @return a two letter hash of the string */
+export const twoLetterHash = (str: string) => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = ((hash << 5) - hash) + str.charCodeAt(i);
+        hash |= 0;
+    }
+    return Math.abs(hash).toString(36).substr(0, 2);
+};
+
+/** @return utorid of user if string or user object */
+const getUtorid = (user: User | string) => typeof user === "string" ? user : user.utorid;
+
+/** @return true if the user is the same as the utorid or user object */
+const isSelf = (user: User | string, utorid: string) => utorid === getUtorid(user);
+
+/** @return user initials based on email */
+const getUserInitials = (user: User | string) =>
+    // the idea here is to catch weird names like "c" from erroring out
+    (typeof user === "string") ? (user.substring(0, 2)) : (`${user.givenName.substring(0, 1)}${user.surname.substring(0, 1)}`);
+
+
+/** @return the mean of the data */
 const getMean = (data: number[]) => data.reduce((a, b) => Number(a) + Number(b)) / data.length;
 
-const getStandardDeviation = (data: number[]) => Math.sqrt(data.reduce((sq, n) => sq + Math.pow(n - getMean(data), 2), 0) / (data.length - 1));
+function getStandardDeviation(array: number[]) {
+    const n = array.length
+    const mean = array.reduce((a, b) => a + b) / n
+    return Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n)
+}
 
-function generateList(assignment: Omit<FullFetchedAssignment, "due_date">, user?: string | User): [Tierlist, UserTier] {
+export function generateList(assignment: Omit<FullFetchedAssignment, "due_date">, user?: string | User): [Tierlist, UserTier] {
     const res: Tierlist = {
         S: [],
         A: [],
@@ -24,9 +51,11 @@ function generateList(assignment: Omit<FullFetchedAssignment, "due_date">, user?
     }
     const scores = assignment.submissions.map(submission =>
         ({
-            you: submission.author.utorid === (user ? (typeof user === "string" ? user : user.utorid) : false),
-            name: submission.author.email[0] + submission.author.email[submission.author.email.indexOf(".") + 1],
-            score: submission.scores.filter(x => x.pass).length / submission.scores.length,
+            you: user ? isSelf(user, submission.author.utorid) : false,
+            name: (user ? isSelf(user, submission.author.utorid) : false)
+                ? getUserInitials(submission.author)
+                : twoLetterHash(submission.author.utorid + (user ? getUtorid(user) : "")),
+            score: submission.scores.length === 0 ? 0.0 : submission.scores.filter(x => x.pass).length / submission.scores.length,
         })
     );
     const mean = getMean(scores.map(x => x.score));
@@ -34,13 +63,14 @@ function generateList(assignment: Omit<FullFetchedAssignment, "due_date">, user?
     let yourTier: UserTier | undefined = undefined;
     for (const score of scores) {
         let tier: Tier;
+        const {score:_, ...scoreNew}=score;
         if (score.score == 0) {
             tier = "F";
         } else if (score.score == 1 || score.score > mean + 2 * std) {
             tier = "S";
         } else if (score.score > mean + std) {
             tier = "A";
-        } else if (score.score > mean) {
+        } else if (score.score >= mean) {
             tier = "B";
         } else if (score.score > mean - std) {
             tier = "C";
@@ -52,7 +82,7 @@ function generateList(assignment: Omit<FullFetchedAssignment, "due_date">, user?
         if (score.you) {
             yourTier = tier;
         }
-        res[tier].push(score);
+        res[tier].push(scoreNew);
     }
     if (!yourTier) yourTier = "?";
 

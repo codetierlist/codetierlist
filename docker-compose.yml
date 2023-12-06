@@ -21,9 +21,14 @@ services:
       dockerfile: ./backend/Dockerfile
     volumes:
       - repo_data:/repos
+      - /var/run/docker.sock:/var/run/docker.sock
+      - uploads:/uploads
     environment:
       - DATABASE_URL=postgres://postgres:example@db:5432/postgres
       - NODE_ENV=production
+      - MAX_RUNNING_TASKS=10
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    privileged: true
 
   frontend:
     restart: always
@@ -49,3 +54,4 @@ services:
 volumes:
   db_data:
   repo_data:
+  uploads:

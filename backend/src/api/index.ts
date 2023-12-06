@@ -5,14 +5,10 @@ import prisma, {fetchedUserArgs} from "../common/prisma";
 import {isUofTEmail, isUTORid} from "is-utorid";
 import routes from "./routes";
 import * as http from "http";
-import socket from "./socket";
 
 const port = process.env.PORT || 3000;
 const app = express();
 const server = http.createServer(app);
-
-
-socket(server);
 
 if (process.env.NODE_ENV === 'development') {
     app.use(
@@ -40,7 +36,7 @@ app.use((req, res, next) => {
 });
 app.use(bodyParser.json());
 app.use(async (req, res, next) => {
-    if (!req.headers.utorid || !req.headers.http_mail) {
+    if (!req.headers.utorid || !req.headers.http_mail || !req.headers.sn || !req.headers.givenname) {
         res.statusCode = 401;
         res.send({
             status: 401,
@@ -71,6 +67,7 @@ app.use(async (req, res, next) => {
         update: {utorid, email, surname, givenName},
         ...fetchedUserArgs
     });
+    
     if (user === null) {
         res.statusCode = 400;
         res.send({

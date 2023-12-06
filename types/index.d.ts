@@ -44,10 +44,12 @@ export type Assignment = Omit<Prisma.AssignmentGetPayload<{}>, "due_date"> & {
 };
 export type Course = Prisma.CourseGetPayload<{}>;
 export type User = Prisma.UserGetPayload<{}>;
-export type Submission = Prisma.SubmissionGetPayload<{}>;
+export type Submission = Prisma.SolutionGetPayload<{}>;
 export type Score = Prisma.ScoreGetPayload<{}>;
 export type Role = Prisma.RoleGetPayload<{}>;
 export type TestCase = Prisma.TestCaseGetPayload<{}>;
+const test : TestCase;
+export type TestCaseStatus = typeof test.valid
 
 export type FetchedUser = Prisma.UserGetPayload<typeof fetchedUserArgs>;
 export type FetchedCourse = Prisma.CourseGetPayload<typeof fetchedCourseArgs>;
@@ -73,24 +75,5 @@ export type Tierlist = Record<Tier, TierlistEntry[]>;
 
 export type Session = "Fall" | "Winter" | "Summer"
 
-export {RoleType};
-
-
-// socket types
-export interface ServerToClientEvents {
-    job: (data: {
-        submission: Submission,
-        testCase: TestCase,
-        submissionFiles: Buffer[],
-        testCaseFiles: Buffer[],
-    }, callback: (e: number) => void) => void,
-}
-
-export interface ClientToServerEvents {
-}
-
-export interface InterServerEvents {
-}
-
-export interface SocketData {
-}
+const role :Role;
+export type RoleType = typeof role.type
