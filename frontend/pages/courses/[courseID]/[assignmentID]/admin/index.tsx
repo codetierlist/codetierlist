@@ -2,12 +2,7 @@ import { CourseSessionChip } from '@/components';
 // import { type Course, getCourses } from '@/contexts/UserContext';
 import axios from "@/axios";
 import { UserContext } from "@/contexts/UserContext";
-import {
-    Toolbar,
-    ToolbarButton
-} from "@fluentui/react-components";
 import { Title2 } from '@fluentui/react-text';
-import { FetchedCourseWithTiers } from "codetierlist-types";
 import { notFound } from "next/navigation";
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from "react";
@@ -24,15 +19,9 @@ import {
     TableHeaderCell
 } from "@fluentui/react-components";
 
-// import { notFound } from 'next/navigation';
-import { Add24Filled, Shield24Filled, PersonAdd24Regular } from '@fluentui/react-icons';
-
 export default function Page() {
     const { userInfo } = useContext(UserContext);
-    const [course, setCourse] = useState<FetchedCourseWithTiers | null>(null);
     const [assignment, setAssignment] = useState<FetchedAssignmentWithTier | null>(null);
-    const [showDialog, setShowDialog] = useState(false);
-    const [showEnrollDialog, setShowEnrollDialog] = useState(false);
     const router = useRouter();
 
     // TODO: guard against invalid courseID, invalid assignmentID
@@ -110,41 +99,6 @@ export default function Page() {
 
     return (
         <>
-            {
-                userInfo.admin ? (
-                    <Toolbar
-                        aria-label="Large Toolbar"
-                        size="large"
-                        className={styles.toolbar}
-                    >
-                        <ToolbarButton
-                            appearance="primary"
-                            icon={<Shield24Filled />}
-                            onClick={() => router.push(`/courses/${courseID}/admin`)}
-                        >
-                            Admin page
-                        </ToolbarButton>
-
-                        <ToolbarButton
-                            appearance="subtle"
-                            icon={<PersonAdd24Regular />}
-                            onClick={() => setShowEnrollDialog(true)}
-                        >
-                            Enroll Students
-                        </ToolbarButton>
-
-                        <ToolbarButton
-                            appearance="subtle"
-                            icon={<Add24Filled />}
-                            onClick={() => setShowDialog(true)}
-                        >
-                            Add assignment
-                        </ToolbarButton>
-                    </Toolbar>
-                ) : undefined
-            }
-
-
             <main>
                 <header className={styles.header}>
                     <Title2>
