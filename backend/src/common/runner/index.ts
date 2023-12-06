@@ -87,7 +87,7 @@ export const runJob = async (job: Job): Promise<JobResult> => {
                 "docker service rm $serviceid > /dev/null"
             ],
             {
-                cwd: path.join('/', 'backend', 'src', 'api', 'runner', 'images', img, img_ver),
+                cwd: path.join('/', 'backend', 'src', 'common', 'runner', 'images', img, img_ver),
                 env: {"RUN_FILES": JSON.stringify(query)}
             }
         );
@@ -147,7 +147,7 @@ const create_images = () => {
             `docker push 127.0.0.1:5000/runner-image-${img}-${img_ver}`
         ],
         {
-            cwd: path.join('/', 'backend', 'src', 'api', 'runner', 'images', img, img_ver)
+            cwd: path.join('/', 'backend', 'src', 'common', 'runner', 'images', img, img_ver)
         }
     );
     if(ret?.stdout)
