@@ -4,7 +4,8 @@ import {
     TierList,
     convertDate,
     convertTime,
-    promptForFileObject
+    promptForFileObject,
+    Monaco
 } from '@/components';
 import { SnackbarContext } from "@/contexts/SnackbarContext";
 import flex from '@/styles/flex-utils.module.css';
@@ -25,7 +26,6 @@ import {
 } from '@fluentui/react-components';
 import { Add24Filled, Delete16Filled, Settings24Regular } from '@fluentui/react-icons';
 import { Subtitle2, Title2 } from '@fluentui/react-text';
-import Editor from '@monaco-editor/react';
 import { Commit, FetchedAssignmentWithTier, Tierlist } from "codetierlist-types";
 import Error from 'next/error';
 import Head from "next/head";
@@ -95,7 +95,7 @@ const ListFiles = ({ commit, route, assignment, assignmentID, update }: { commit
                             </AccordionHeader>
                             <AccordionPanel>
                                 <pre>
-                                    <Editor
+                                    <Monaco
                                         height="50vh"
                                         language="python"
                                         value={files[commit.files[index]]}
