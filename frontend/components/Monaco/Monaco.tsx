@@ -20,9 +20,6 @@ export const Monaco = (props: EditorProps): JSX.Element => {
                     enabled: false,
                 },
                 scrollBeyondLastLine: false,
-                scrollbar: {
-                    vertical: 'hidden',
-                },
                 ...props.options,
             }}
         />

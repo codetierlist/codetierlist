@@ -100,10 +100,7 @@ const ListFiles = ({ commit, route, assignment, assignmentID, update }: { commit
                                         language="python"
                                         value={files[commit.files[index]]}
                                         options={{
-                                            readOnly: true,
-                                            minimap: {
-                                                enabled: false
-                                            }
+                                            readOnly: true
                                         }}
                                     />
                                 </pre>
