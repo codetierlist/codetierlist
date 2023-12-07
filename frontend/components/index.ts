@@ -14,6 +14,7 @@ export * from './SessionBlock/SessionBlock';
 export * from './TierChip/TierChip';
 export * from './TierList/TierList';
 export * from './UpcomingDeadlines/UpcomingDeadlines';
+export * from './Monaco/Monaco';
 
 export * from './utils/ColourHash/ColourHash';
 export * from './utils/FileUploadUtils/FileUploadUtils';
