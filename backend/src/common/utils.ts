@@ -33,6 +33,9 @@ export function isProf(course: Course & {
 
 const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'datetime' | 'id'>, table: "solution" | "testCase") => {
     const repoPath = path.resolve(`/repos/${object.course_id}/${object.assignment_title}/${object.author_id}_${table}`);
+    if(["unmodified", "unmodified"].includes(await git.status({fs, dir: repoPath, filepath:'.'}))){
+        return null;
+    }
     await git.add({fs, dir: repoPath, filepath: '.'});
     try {
         const commit = await git.commit({
@@ -289,19 +292,4 @@ export const fetchAssignmentMiddleware = async (req: Request, res: Response, nex
     req.assignment = serializeAssignment(assignment);
     req.course = assignment.course;
     next();
-};
-
-
-/**
- * returns a user object given a utorid. if it doesnt exist then return null
- *
- * @param utorid the utorid of the user
- * @returns the user object or null
- */
-export const getUser = async (utorid: string) => {
-    return await prisma.user.findUnique({
-        where: {
-            utorid
-        }
-    });
 };
