@@ -59,7 +59,7 @@ export const getFiles = async (submission: Submission | TestCase): Promise<JobFi
 
 export const runJob = async (job: Job): Promise<JobResult> => {
     console.log("Running job" + job.submission.git_url + "             " + job.testCase.git_url);
-    let query = {};
+    let query:{solution_files: JobFiles, test_case_files: JobFiles}
 
     try {
         query = {
@@ -68,9 +68,11 @@ export const runJob = async (job: Job): Promise<JobResult> => {
         };
     } catch (e) {
         console.error(e);
-        return await new Promise((resolve) => {
-            resolve({status: JobStatus.ERROR}); // slightly more graceful error handling?
-        });
+        return {status: JobStatus.ERROR}
+    }
+
+    if(Object.keys(query.solution_files).length == 0){
+        return {status: JobStatus.FAIL,amount:0,failed:[],score:0}
     }
 
 
