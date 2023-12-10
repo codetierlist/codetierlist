@@ -13,7 +13,11 @@ import path from "path";
 import {PathLike, promises as fs} from "fs";
 import git, {ReadBlobResult} from "isomorphic-git";
 import {Commit} from "codetierlist-types";
-import {onNewSubmission, onNewTestCase} from "./updateScores";
+import {
+    onNewProfSubmission,
+    onNewSubmission,
+    onNewTestCase
+} from "./updateScores";
 
 /**
  * Checks if a user is a prof in a course.
@@ -57,8 +61,11 @@ const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'date
         };
         if (table === "solution") {
             const solution = await prisma.solution.create({data});
-            onNewSubmission(solution).then();
-
+            if(isProf(req.course!,req.user)){
+                void onNewProfSubmission(solution);
+            } else {
+                void onNewSubmission(solution);
+            }
         } else {
             const testCase = await prisma.testCase.create({data});
             onNewTestCase(testCase).then();
@@ -176,9 +183,9 @@ export const getCommit = async (submission: Solution | TestCase, commitId?: stri
             ref: commit.oid
         });
         const log = await git.log({fs, dir: submission.git_url});
-        const res :Commit= {files, log: log.map(commitIterator => commitIterator.oid)}
+        const res :Commit= {files, log: log.map(commitIterator => commitIterator.oid)};
         if((submission as TestCase).valid){
-            res.valid = (submission as TestCase).valid
+            res.valid = (submission as TestCase).valid;
         }
         return res;
     } catch (e: unknown) {

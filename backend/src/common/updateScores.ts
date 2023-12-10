@@ -35,9 +35,35 @@ export const onNewSubmission = async (submission: Submission) => {
         await updateScore(submission, testCase, pass); // a blank pass or fail, but we have more data than that
     })));
 };
+export const onNewProfSubmission = async (submission:Submission) =>{
+    const testCases = await prisma.testCase.findMany({
+        where: {
+            course_id: submission.course_id,
+            assignment_title: submission.assignment_title,
+        },
+        orderBy: {datetime: "desc"},
+        distinct: "author_id",
+    });
 
+    // TODO possible race condition when prof submits twice in a row?
+    void Promise.all(testCases.map(testCase => queueJob({
+        submission: submission,
+        testCase
+    }).then(async x => {
+        let status:TestCaseStatus = "VALID";
+        if([JobStatus.ERROR, JobStatus.FAIL].includes(x.status)){
+            status="INVALID";
+        } else if (x.status == JobStatus.TESTCASE_EMPTY){
+            status="EMPTY";
+        }
+        await prisma.testCase.update({
+            where: {
+                id: testCase.id
+            }, data: {valid: status}
+        });
+    })));
+};
 export const onNewTestCase = async (testCase: TestCase) => {
-
     // a valid test case should
     // 1. not error or timeout against a valid submission
     // 2. pass a valid submission
@@ -68,7 +94,7 @@ export const onNewTestCase = async (testCase: TestCase) => {
             if (!result || [JobStatus.FAIL, JobStatus.ERROR].includes(result.status)) {
                 status="INVALID";
             }
-            if(result.status == JobStatus.EMPTY){
+            if(result.status == JobStatus.TESTCASE_EMPTY){
                 status="EMPTY";
             }
         } catch (e) {
@@ -84,7 +110,7 @@ export const onNewTestCase = async (testCase: TestCase) => {
         }, data: {valid: status}
     });
     if(status !="VALID") {
-       return;
+        return;
     }
     // find all student submissions
     const submissions = await prisma.solution.findMany({
