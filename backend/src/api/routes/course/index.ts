@@ -133,7 +133,6 @@ router.post("/:courseId/remove", fetchCourseMiddleware, async (req, res) => {
         res.send({error: 'Invalid role.'});
         return;
     }
-    const newRole = role as RoleType | undefined ?? RoleType.STUDENT;
     if (!utorids || !Array.isArray(utorids) || utorids.some(utorid => typeof utorid !== 'string' || !isUTORid(utorid))) {
         res.statusCode = 400;
         res.send({error: 'utorids must be an array of valid utorids.'});
@@ -146,19 +145,18 @@ router.post("/:courseId/remove", fetchCourseMiddleware, async (req, res) => {
             },
             type: RoleType.STUDENT,
         }
-    })
+    });
 
     res.send({});
 
 });
 
 router.post("/:courseId/cover", fetchCourseMiddleware, upload.single("file"), async (req, res)=>{
-    if(!req.file || !isProf(req.course!, req.user)){
+    if(!req.file || !isProf(req.course!, req.user)) {
         res.statusCode = 400;
-        res.send({message:"Must upload a file."});
+        res.send({message: "Must upload a file."});
         return;
     }
-    console.log(await fs.readFile(req.file.path));
     await fs.copyFile(req.file.path, `/uploads/${req.file.filename}`);
     await prisma.course.update({where:{id: req.course!.id}, data: {cover:req.file.filename}});
     res.send({});
