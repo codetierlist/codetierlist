@@ -72,7 +72,7 @@ router.post("/", async (req, res) => {
 router.get("/:courseId", fetchCourseMiddleware, async (req, res) => {
     const course = await prisma.course.findUniqueOrThrow({
         where: {id: req.course!.id},
-        include: {roles: true, assignments: fullFetchedAssignmentArgs},
+        include: {roles: isProf(req.course!, req.user) ? true : {where: {user_id: req.user.utorid}}, assignments: fullFetchedAssignmentArgs},
     });
 
     const assignments: AssignmentWithTier[] = course!.assignments.map(assignment => ({
