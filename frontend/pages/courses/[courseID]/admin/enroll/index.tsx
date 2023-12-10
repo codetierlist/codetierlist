@@ -66,7 +66,7 @@ export default function Page(): JSX.Element {
                     onClick={() => {
                         modifyEnrollment(router.query.courseID as string, editorValue, "enroll")
                             .then(() => showSnackSev("Enrolled students successfully", "success"))
-                            .catch((e) => handleError(e.message, showSnackSev));
+                            .catch(handleError(showSnackSev));
 
                     }}>
                     Enroll

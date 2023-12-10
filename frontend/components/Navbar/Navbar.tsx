@@ -23,10 +23,8 @@ const UserPopoverContent = (): JSX.Element => {
     const changeTheme = (theme: Theme) => {
         axios.post('/users/theme', {
             theme,
-        }).catch((e) => {
-            handleError(e.message, showSnackSev);
-        }).finally(() => {
-            fetchUserInfo();
+        }).catch(handleError(showSnackSev)).finally(() => {
+            void fetchUserInfo();
         });
     };
 

@@ -39,7 +39,7 @@ function CreateCourseForm({ closeDialog }: { closeDialog: () => void }) {
                     })
                         .then(fetchUserInfo)
                         .then(closeDialog)
-                        .catch((error) => { handleError(error.message, showSnackSev); });
+                        .catch(handleError(showSnackSev));
                 }}>
                     <DialogTitle>Create Course</DialogTitle>
                     <DialogContent>

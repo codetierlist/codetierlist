@@ -35,13 +35,16 @@ export default function Page(): JSX.Element {
         })
             .then(fetchUserInfo)
             .then(() => router.push(`/courses/${courseID}`))
-            .catch((error) => {
-                handleError(error.message, showSnackSev);
-            });
+            .catch(
+                handleError(showSnackSev)
+            );
     };
 
     const fetchRunners = async () => {
-        const res = await axios.get<RunnerImage[]>("/runner/images");
+        const res = await axios.get<RunnerImage[]>("/runner/images").catch(handleError(showSnackSev));
+        if(!res){
+            return;
+        }
         setRunners(res.data.reduce((a, x) => {
             a[x.image] = a[x.image] ?? [];
             a[x.image].push(x.image_version);

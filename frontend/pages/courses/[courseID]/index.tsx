@@ -64,7 +64,7 @@ export default function Page() {
         await axios.get<FetchedCourseWithTiers>(`/courses/${courseID}`, { skipErrorHandling: true })
             .then((res) => setCourse(res.data))
             .catch(e => {
-                handleError(e.message, showSnackSev);
+                handleError(showSnackSev)(e);
                 notFound();
             });
     };
