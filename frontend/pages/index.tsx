@@ -1,5 +1,5 @@
 import axios, { handleError } from "@/axios";
-import { CourseOverviewCard } from '@/components';
+import { CourseOverviewCard, getSession } from '@/components';
 import { UserContext } from "@/contexts/UserContext";
 import {
     Button,
@@ -80,16 +80,18 @@ export default function Home() {
             </Head>
             <main className={`${inter.className}`}>
                 <div className="flex-wrap">
-                    {userInfo.roles.map(x => x.course).map(x => (
-                        // TODO session probably shouldn't be hardcoded, image placeholder should be replaced with actual course image
-                        <CourseOverviewCard key={x.id} id={x.id} name={x.code} admin={userInfo.admin}
-                            image={process.env.NEXT_PUBLIC_API_URL+"/courses/"+x.id+"/cover"}
-                            session={"Fall"}></CourseOverviewCard>
+                    {userInfo.roles.map(role => role).map(role => (
+                        <CourseOverviewCard
+                            key={role.course.id} id={role.course.id}
+                            name={role.course.code} admin={userInfo.admin}
+                            role={role.type} session={getSession(new Date(role.course.createdAt))}
+                            image={process.env.NEXT_PUBLIC_API_URL + "/courses/" + role.course.id + "/cover"}
+                        />
                     ))}
 
                     {(!userInfo.admin && userInfo.roles.length == 0) &&
                         <Caption1>You are not enrolled in any courses. If your believe that this message you are
-                        receiving is incorrect, please contact your instructor to correct this issue.</Caption1>
+                            receiving is incorrect, please contact your instructor to correct this issue.</Caption1>
                     }
 
                     {userInfo.admin ?
