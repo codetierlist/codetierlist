@@ -71,7 +71,8 @@ export const runJob = async (job: Job): Promise<JobResult> => {
         return {status: JobStatus.ERROR}
     }
 
-    if(Object.keys(query.solution_files).length == 0){
+    // fail empty commits
+    if (Object.keys(query.solution_files).length == 0){
         return {status: JobStatus.FAIL,amount:0,failed:[],score:0}
     }
 
