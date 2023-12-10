@@ -21,6 +21,8 @@ import multer from "multer";
 import {randomUUID} from "crypto";
 import {promises as fs} from "fs";
 import path from "path";
+import {images} from "../../../common/runner";
+
 const storage = multer.diskStorage({
     filename: function (req, file, callback) {
         callback(null, randomUUID()+"."+path.extname(file.originalname));
@@ -80,6 +82,8 @@ router.get("/:courseId", fetchCourseMiddleware, async (req, res) => {
         course_id: assignment.course_id,
         due_date: assignment.due_date?.toISOString(),
         description: assignment.description,
+        image_version: assignment.image_version,
+        runner_image: assignment.runner_image,
         tier: generateYourTier(serializeAssignment(assignment), req.user)
     }));
     res.send({...req.course!, assignments} satisfies FetchedCourseWithTiers);
@@ -172,10 +176,21 @@ router.get("/:courseId/cover", fetchCourseMiddleware, async (req, res) =>{
 });
 router.post("/:courseId/assignments", fetchCourseMiddleware, async (req, res) => {
     const {name, dueDate, description} = req.body;
+    let {image, image_version} = req.body;
     const date = new Date(dueDate);
     if (typeof name !== 'string' || isNaN(date.getDate()) || typeof description !== 'string' || name.length === 0 || description.length === 0) {
         res.statusCode = 400;
         res.send({error: 'Invalid request.'});
+        return;
+    }
+    if (!image && !image_version) {
+        const runnerConf = images[0];
+        image = runnerConf.image;
+        image_version = runnerConf.image_version;
+    }
+    if (image && !image_version || image_version && !image || !images.some(x => x.image == image && x.image_version == image_version)) {
+        res.statusCode = 400;
+        res.send({error: 'Invalid image.'});
         return;
     }
     if (!name.match(/^[A-Za-z0-9 ]*/)) {
@@ -189,6 +204,8 @@ router.post("/:courseId/assignments", fetchCourseMiddleware, async (req, res) =>
                 title: name,
                 due_date: dueDate,
                 description,
+                image_version,
+                runner_image: image,
                 course: {connect: {id: req.course!.id}}
             }, ...fetchedAssignmentArgs
         });

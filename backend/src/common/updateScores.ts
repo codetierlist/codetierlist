@@ -1,4 +1,4 @@
-import {Submission, TestCase, TestCaseStatus} from "codetierlist-types";
+import {Assignment, Submission, TestCase, TestCaseStatus} from "codetierlist-types";
 import prisma from "./prisma";
 import {JobStatus, queueJob} from "./runner";
 import {RoleType} from "@prisma/client";
@@ -16,7 +16,7 @@ const updateScore = (submission: Submission, testCase: TestCase, pass: boolean) 
         }
     });
 
-export const onNewSubmission = async (submission: Submission) => {
+export const onNewSubmission = async (submission: Submission, assignment: Assignment) => {
     const testCases = await prisma.testCase.findMany({
         where: {
             course_id: submission.course_id,
@@ -29,13 +29,14 @@ export const onNewSubmission = async (submission: Submission) => {
 
     void Promise.all(testCases.map(testCase => queueJob({
         submission: submission,
-        testCase
+        testCase,
+        assignment
     }).then(async x => {
         const pass = x.status === JobStatus.PASS;
         await updateScore(submission, testCase, pass); // a blank pass or fail, but we have more data than that
     })));
 };
-export const onNewProfSubmission = async (submission:Submission) =>{
+export const onNewProfSubmission = async (submission:Submission, assignment: Assignment) =>{
     const testCases = await prisma.testCase.findMany({
         where: {
             course_id: submission.course_id,
@@ -48,7 +49,8 @@ export const onNewProfSubmission = async (submission:Submission) =>{
     // TODO possible race condition when prof submits twice in a row?
     void Promise.all(testCases.map(testCase => queueJob({
         submission: submission,
-        testCase
+        testCase,
+        assignment
     }).then(async x => {
         let status:TestCaseStatus = "VALID";
         if([JobStatus.ERROR, JobStatus.FAIL].includes(x.status)){
@@ -63,7 +65,7 @@ export const onNewProfSubmission = async (submission:Submission) =>{
         });
     })));
 };
-export const onNewTestCase = async (testCase: TestCase) => {
+export const onNewTestCase = async (testCase: TestCase, assignment: Assignment) => {
     // a valid test case should
     // 1. not error or timeout against a valid submission
     // 2. pass a valid submission
@@ -89,7 +91,8 @@ export const onNewTestCase = async (testCase: TestCase) => {
         try {
             const result = await queueJob({
                 submission: profSubmission,
-                testCase
+                testCase,
+                assignment
             });
             if (!result || [JobStatus.FAIL, JobStatus.ERROR].includes(result.status)) {
                 status="INVALID";
@@ -132,7 +135,8 @@ export const onNewTestCase = async (testCase: TestCase) => {
     // for every student submission, run the test case, and update the score
     void Promise.all(submissions.map(submission => queueJob({
         submission: submission,
-        testCase
+        testCase,
+        assignment
     }).then(async x => {
         const pass = x.status === JobStatus.PASS;
 
