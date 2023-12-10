@@ -65,6 +65,7 @@ export type FetchedCourseWithTiers = Omit<FetchedCourse, "assignments"> & {
 
 export type Commit = {
     files: string[],
+    valid?: TestCaseStatus,
     log: string[],
 }
 
@@ -80,3 +81,4 @@ export type RoleType = typeof role.type
 
 const user :User;
 export type Theme = typeof user.theme
+
