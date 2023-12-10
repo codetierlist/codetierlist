@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import {
+    Badge,
     Button,
     Card,
     CardFooter,
@@ -12,7 +13,7 @@ import {useRouter} from 'next/navigation';
 import {useState} from 'react';
 import styles from './CourseOverviewCard.module.css';
 import {SessionBlock} from '@/components/SessionBlock/SessionBlock';
-import {Session} from 'codetierlist-types';
+import {RoleType, Session} from 'codetierlist-types';
 import {ImageAdd20Regular} from "@fluentui/react-icons";
 import axios from "@/axios";
 import {promptForFileObject} from "@/components";
@@ -51,7 +52,9 @@ export declare interface CourseOverviewCardProps {
     /** the image of the course */
     image: string
     /** the session of the course */
-    session: "Fall",
+    session: Session,
+    /** the role of the user */
+    role: RoleType,
     /** whether the user can change cover image */
     admin: boolean,
     /** the props of the component */
@@ -63,6 +66,7 @@ export declare interface CourseOverviewCardProps {
  * @property {string} name the name of the course
  * @property {string} image the image of the course
  * @property {Session} session the session of the course
+ * @property {role} role the role of the user
  * @returns {JSX.Element} the course overview card
  */
 export const CourseOverviewCard = ({
@@ -71,6 +75,7 @@ export const CourseOverviewCard = ({
     image,
     session,
     props,
+    role,
     admin
 }: CourseOverviewCardProps): JSX.Element => {
     // trigger reset of image
@@ -96,7 +101,7 @@ export const CourseOverviewCard = ({
             <CardPreview
                 style={{maxHeight: 200, maxWidth: 300}}
             >
-                {admin &&
+                {(role === "INSTRUCTOR" || admin) &&
                     <Button
                         appearance="primary"
                         icon={<ImageAdd20Regular/>}
@@ -132,7 +137,7 @@ export const CourseOverviewCard = ({
             <CardHeader
                 header={
                     <Title3 className={styles.courseTitle}>
-                        {name}
+                        {name} <Badge appearance="outline">{`${role.slice(0, 1)}${role.slice(1).toLowerCase()}`}</Badge>
                     </Title3>
                 }
                 className={styles.courseHeader}

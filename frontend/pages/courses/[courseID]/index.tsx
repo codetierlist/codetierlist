@@ -5,7 +5,7 @@ import {
     Caption1,
     ToolbarButton
 } from "@fluentui/react-components";
-import { Add24Filled, PersonAdd24Regular } from '@fluentui/react-icons';
+import { Add24Filled, PersonAdd24Regular, PersonDelete24Regular } from '@fluentui/react-icons';
 import { Title2 } from '@fluentui/react-text';
 import { FetchedCourseWithTiers } from "codetierlist-types";
 import { notFound } from "next/navigation";
@@ -32,6 +32,14 @@ const AdminToolbar = ({ courseID }: { courseID: string, fetchCourse: () => Promi
                 onClick={() => router.push(`/courses/${courseID}/admin/enroll`)}
             >
                 Enroll Students
+            </ToolbarButton>
+
+            <ToolbarButton
+                appearance="subtle"
+                icon={<PersonDelete24Regular />}
+                onClick={() => router.push(`/courses/${courseID}/admin/remove`)}
+            >
+                Remove Students
             </ToolbarButton>
 
             <ToolbarButton
