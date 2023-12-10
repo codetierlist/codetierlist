@@ -5,7 +5,8 @@ import {
     convertDate,
     convertTime,
     promptForFileObject,
-    Monaco
+    Monaco,
+    ToolTipIcon
 } from '@/components';
 import { SnackbarContext } from "@/contexts/SnackbarContext";
 import flex from '@/styles/flex-utils.module.css';
@@ -24,13 +25,23 @@ import {
     Tab, TabList,
     Text
 } from '@fluentui/react-components';
-import { Add24Filled, Delete16Filled, Settings24Regular } from '@fluentui/react-icons';
+import {
+    Add24Filled,
+    ArrowCounterclockwiseDashes24Filled, CheckmarkCircle24Regular,
+    Delete16Filled,
+    DismissCircle24Regular, Settings24Regular
+} from '@fluentui/react-icons';
 import { Subtitle2, Title2 } from '@fluentui/react-text';
-import { Commit, FetchedAssignmentWithTier, Tierlist } from "codetierlist-types";
+import {
+    Commit,
+    FetchedAssignmentWithTier,
+    TestCaseStatus,
+    Tierlist
+} from "codetierlist-types";
 import Error from 'next/error';
 import Head from "next/head";
 import { useRouter } from 'next/router';
-import { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState} from 'react';
 import { Col, Container } from "react-grid-system";
 import styles from './page.module.css';
 import { UserContext } from "@/contexts/UserContext";
@@ -113,6 +124,36 @@ const ListFiles = ({ commit, route, assignment, assignmentID, update }: { commit
     );
 };
 
+/**
+ * return an icon reflecting the status of the testcase
+ * @param status the status of the testcase
+ */
+const TestCaseStatusIcon = ({status}: {status:TestCaseStatus}): JSX.Element=>{
+    switch (status) {
+        case "INVALID":
+            return <DismissCircle24Regular fill={"var(--colorStatusDangerForeground1)"} primaryFill={"var(--colorStatusDangerForeground1)"}/>
+        case "PENDING":
+            return <ArrowCounterclockwiseDashes24Filled fill={"var(--colorPaletteGoldForeground2)"} primaryFill={"var(--colorPaletteGoldForeground2)"}/>
+        case "VALID":
+            return <CheckmarkCircle24Regular fill={"var(--colorStatusSuccessForeground1)"} primaryFill={"var(--colorStatusSuccessForeground1)"}/>
+        default: return <></>
+    }
+}
+/**
+ * return an icon with tooltip reflecting the status of the testcase
+ * @param status the status of the testcase
+ */
+const TestCaseStatus = ({status}: {status?:TestCaseStatus})=>{
+    if(!status || status === "EMPTY"){
+        return undefined
+    }
+    const contents : Record<Exclude<TestCaseStatus,"EMPTY">, string> = {
+        "INVALID": "One or more of your uploaded tests are invalid and did not pass the solution",
+        "VALID": "All uploaded testcases are valid and passed the solution",
+        "PENDING": "Your testcases are currently in the queue for validation",
+    }
+    return <ToolTipIcon tooltip={contents[status]} icon={TestCaseStatusIcon({status})}/>
+}
 const FilesTab = ({ fetchAssignment, assignment, assignmentID, routeName, route }: { fetchAssignment: () => Promise<void>, assignment: FetchedAssignmentWithTier, assignmentID: string, routeName: string, route: "testcases" | "submissions" }) => {
     const [content, setContent] = useState<Commit>({ "files": [], "log": [] } as Commit);
     const { showSnackSev } = useContext(SnackbarContext);
@@ -153,7 +194,7 @@ const FilesTab = ({ fetchAssignment, assignment, assignmentID, routeName, route 
     return (
         <div className={styles.gutter}>
             <div className={`${flex["d-flex"]} ${flex["justify-content-between"]}`}>
-                <Subtitle1 block>Uplodaded {routeName}s</Subtitle1>
+                <Subtitle1 block>Uploaded {routeName}s <TestCaseStatus status={content.valid}/></Subtitle1>
                 <Button
                     icon={<Add24Filled />}
                     appearance="subtle"

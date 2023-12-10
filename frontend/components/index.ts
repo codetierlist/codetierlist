@@ -16,6 +16,8 @@ export * from './TierList/TierList';
 export * from './UpcomingDeadlines/UpcomingDeadlines';
 export * from './Monaco/Monaco';
 
+export * from './TooltipIcon/TooltipeIcon'
+
 export * from './utils/ColourHash/ColourHash';
 export * from './utils/FileUploadUtils/FileUploadUtils';
 export * from './utils/Theme/Theme';

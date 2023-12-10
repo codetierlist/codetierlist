@@ -22,6 +22,8 @@ export enum JobStatus {
     PASS = "PASS", // passes all test cases
     FAIL = "FAIL", // fails at least one test case
     ERROR = "ERROR", // code error, server error, or timeout
+    SUBMISSION_EMPTY="SUBMISSION_EMPTY",
+    TESTCASE_EMPTY="TESTCASE_EMPTY"
 }
 
 export type JobResult =
@@ -36,7 +38,7 @@ export type JobResult =
         failed: string[] // list of failed testcase info
     } |
     {
-        status: JobStatus.ERROR
+        status: JobStatus.ERROR | JobStatus.SUBMISSION_EMPTY | JobStatus.TESTCASE_EMPTY
     };
 
 
@@ -59,7 +61,7 @@ export const getFiles = async (submission: Submission | TestCase): Promise<JobFi
 
 export const runJob = async (job: Job): Promise<JobResult> => {
     console.log("Running job" + job.submission.git_url + "             " + job.testCase.git_url);
-    let query:{solution_files: JobFiles, test_case_files: JobFiles}
+    let query:{solution_files: JobFiles, test_case_files: JobFiles};
 
     try {
         query = {
@@ -68,14 +70,15 @@ export const runJob = async (job: Job): Promise<JobResult> => {
         };
     } catch (e) {
         console.error(e);
-        return {status: JobStatus.ERROR}
+        return {status: JobStatus.ERROR};
     }
 
-    // fail empty commits
-    if (Object.keys(query.solution_files).length == 0){
-        return {status: JobStatus.FAIL,amount:0,failed:[],score:0}
+    if(Object.keys(query.solution_files).length == 0){
+        return {status: JobStatus.SUBMISSION_EMPTY};
     }
-
+    if(Object.keys(query.test_case_files).length == 0){
+        return {status: JobStatus.TESTCASE_EMPTY};
+    }
 
     const img = 'python';
     const img_ver = '3.10.11';

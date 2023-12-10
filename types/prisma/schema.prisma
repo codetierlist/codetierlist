@@ -58,6 +58,7 @@ enum TestCaseStatus {
   INVALID
   VALID
   PENDING
+  EMPTY
 }
 
 model TestCase {
