@@ -6,17 +6,16 @@ export * from './AssignmentCard/AssignmentCard';
 export * from './CheckedTodo/CheckedTodo';
 export * from './CourseBlock/CourseBlock';
 export * from './CourseOverviewCard/CourseOverviewCard';
+export * from './HeaderToolbar/HeaderToolbar';
 export * from './InitialsAvatar/InitialsAvatar';
+export * from './Monaco/Monaco';
 export * from './Navbar/Navbar';
 export * from './ReturnHomeButton/ReturnHomeButton';
-export * from './HeaderToolbar/HeaderToolbar';
 export * from './SessionBlock/SessionBlock';
 export * from './TierChip/TierChip';
 export * from './TierList/TierList';
+export * from './TooltipIcon/TooltipIcon';
 export * from './UpcomingDeadlines/UpcomingDeadlines';
-export * from './Monaco/Monaco';
-
-export * from './TooltipIcon/TooltipeIcon';
 
 export * from './utils/ColourHash/ColourHash';
 export * from './utils/FileUploadUtils/FileUploadUtils';

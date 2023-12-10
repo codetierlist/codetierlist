@@ -6,13 +6,16 @@ import {
 import React, {useState} from "react";
 
 /**
- * Add a tooltip to an icon
+ * A tooltip with an icon that can be hovered over to show the tooltip.
  * @param props tooltip string, icon
+ * @property tooltip the tooltip to show
+ * @property icon the icon to show, should be a fluent 9 icon satisfying the IconProps interface
  */
 export const ToolTipIcon = (props: Partial<TooltipProps> & {tooltip: string, icon?: JSX.Element}) => {
     const contentId = useId("content");
     const [visible, setVisible] = useState(false);
-    if(!props.icon) {
+
+    if (!props.icon) {
         return undefined;
     }
     return (
