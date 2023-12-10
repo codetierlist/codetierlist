@@ -35,13 +35,13 @@ const router = express.Router();
 router.post("/", errorHandler(async (req, res) => {
     if (!req.user.admin) {
         res.statusCode = 403;
-        res.send({error: 'You are not an admin.'});
+        res.send({message: 'You are not an admin.'});
         return;
     }
     const {name, code} = req.body;
     if (typeof name !== 'string' || typeof code !== 'string') {
         res.statusCode = 400;
-        res.send({error: 'Invalid body.'});
+        res.send({message: 'Invalid body.'});
         return;
     }
     const oldCourse = await prisma.course.findFirst({orderBy: {createdAt: "desc"}});
@@ -93,7 +93,7 @@ router.get("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) =>
 router.delete("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) => {
     if (!req.user.admin) {
         res.statusCode = 403;
-        res.send({error: 'You are not an admin.'});
+        res.send({message: 'You are not an admin.'});
         return;
     }
     await prisma.course.delete({where: {id: req.course!.id}});
@@ -104,13 +104,13 @@ router.post("/:courseId/enroll", fetchCourseMiddleware, errorHandler(async (req,
     const {utorids, role}: { utorids: unknown, role?: string } = req.body;
     if (role !== undefined && !(Object.values(RoleType) as string[]).includes(role)) {
         res.statusCode = 400;
-        res.send({error: 'Invalid role.'});
+        res.send({message: 'Invalid role.'});
         return;
     }
     const newRole = role as RoleType | undefined ?? RoleType.STUDENT;
     if (!utorids || !Array.isArray(utorids) || utorids.some(utorid => typeof utorid !== 'string' || !isUTORid(utorid))) {
         res.statusCode = 400;
-        res.send({error: 'utorids must be an array of valid utorids.'});
+        res.send({message: 'utorids must be an array of valid utorids.'});
         return;
     }
 
@@ -135,12 +135,12 @@ router.post("/:courseId/remove", fetchCourseMiddleware, errorHandler(async (req,
     const {utorids, role}: { utorids: unknown, role?: string } = req.body;
     if (role !== undefined && !(Object.values(RoleType) as string[]).includes(role)) {
         res.statusCode = 400;
-        res.send({error: 'Invalid role.'});
+        res.send({message: 'Invalid role.'});
         return;
     }
     if (!utorids || !Array.isArray(utorids) || utorids.some(utorid => typeof utorid !== 'string' || !isUTORid(utorid))) {
         res.statusCode = 400;
-        res.send({error: 'utorids must be an array of valid utorids.'});
+        res.send({message: 'utorids must be an array of valid utorids.'});
         return;
     }
     await prisma.role.deleteMany({
@@ -181,7 +181,7 @@ router.post("/:courseId/assignments", fetchCourseMiddleware, errorHandler(async 
     const date = new Date(dueDate);
     if (typeof name !== 'string' || isNaN(date.getDate()) || typeof description !== 'string' || name.length === 0 || description.length === 0) {
         res.statusCode = 400;
-        res.send({error: 'Invalid request.'});
+        res.send({message: 'Invalid request.'});
         return;
     }
     if (!image && !image_version) {
@@ -191,12 +191,12 @@ router.post("/:courseId/assignments", fetchCourseMiddleware, errorHandler(async 
     }
     if (image && !image_version || image_version && !image || !images.some(x => x.image == image && x.image_version == image_version)) {
         res.statusCode = 400;
-        res.send({error: 'Invalid image.'});
+        res.send({message: 'Invalid image.'});
         return;
     }
     if (!name.match(/^[A-Za-z0-9 ]*/)) {
         res.statusCode = 400;
-        res.send({error: 'Invalid name.'});
+        res.send({message: 'Invalid name.'});
         return;
     }
     try {
@@ -215,7 +215,7 @@ router.post("/:courseId/assignments", fetchCourseMiddleware, errorHandler(async 
     } catch (e) {
         if ((e as PrismaClientKnownRequestError).code === 'P2002') {
             res.statusCode = 400;
-            res.send({error: 'Assignment already exists.'});
+            res.send({message: 'Assignment already exists.'});
         } else {
             throw e;
         }

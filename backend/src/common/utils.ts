@@ -21,7 +21,7 @@ import {
 
 export const errorHandler = (cb: (req: Request, res: Response, next: NextFunction) => Promise<unknown>) => {
     return (req: Request, res: Response, next: NextFunction) => {
-        cb(req, res, next).then(() => next()).catch(e => next(e));
+        cb(req, res, next).catch(e => next(e));
     };
 };
 
@@ -217,7 +217,7 @@ export const getFileFromRequest = async (req: Request, res: Response, table: "so
     const object = await getObjectFromRequest(req, table);
     if (object === null) {
         res.statusCode = 404;
-        res.send({error: 'Submission not found.'});
+        res.send({message: 'Submission not found.'});
         return;
     }
     let file: ReadBlobResult | null = null;
@@ -227,7 +227,7 @@ export const getFileFromRequest = async (req: Request, res: Response, table: "so
     }
     if (file === null) {
         res.statusCode = 404;
-        res.send({error: 'Commit not found.'});
+        res.send({message: 'Commit not found.'});
         return;
     }
     res.send(Buffer.from(file.blob));
@@ -237,7 +237,7 @@ export const deleteFile = async (req: Request, res: Response, table: "solution" 
     const object = await getObjectFromRequest(req, table);
     if (object === null) {
         res.statusCode = 404;
-        res.send({error: 'Submission not found.'});
+        res.send({message: 'Submission not found.'});
         return;
     }
     try {
@@ -249,7 +249,7 @@ export const deleteFile = async (req: Request, res: Response, table: "solution" 
     const commit = await commitFiles(req, object, table);
     if (commit === null) {
         res.statusCode = 500;
-        res.send({error: 'Failed to commit.'});
+        res.send({message: 'Failed to commit.'});
         return;
     }
     res.send({commit});

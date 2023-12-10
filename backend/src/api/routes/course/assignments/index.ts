@@ -42,7 +42,7 @@ router.get("/:assignment", fetchAssignmentMiddleware, errorHandler(async (req, r
 router.delete("/:assignment", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     if (!isProf(req.course!, req.user)) {
         res.statusCode = 403;
-        res.send({error: 'You are not an instructor.'});
+        res.send({message: 'You are not an instructor.'});
         return;
     }
     await prisma.assignment.delete({
@@ -59,7 +59,7 @@ router.delete("/:assignment", fetchAssignmentMiddleware, errorHandler(async (req
 const checkFilesMiddleware = (req: Request, res: Response, next: NextFunction) => {
     if (req.files === undefined) {
         res.statusCode = 400;
-        res.send({error: 'No files were uploaded.'});
+        res.send({message: 'No files were uploaded.'});
         return;
     }
     next();
@@ -82,7 +82,7 @@ router.get("/:assignment/submissions/:commitId?", fetchAssignmentMiddleware,
                 return;
             }
             res.statusCode = 404;
-            res.send({error: 'Commit not found.'});
+            res.send({message: 'Commit not found.'});
             return;
         }
         res.send(commit satisfies Commit);
@@ -105,7 +105,7 @@ router.get("/:assignment/testcases/:commitId?", fetchAssignmentMiddleware, error
             return;
         }
         res.statusCode = 404;
-        res.send({error: 'Commit not found.'});
+        res.send({message: 'Commit not found.'});
         return;
     }
     res.send(commit satisfies Commit);
