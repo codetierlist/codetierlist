@@ -2,9 +2,10 @@ import axios, { handleError } from "@/axios";
 import { AssignmentCard, CourseSessionChip, HeaderToolbar, getSession } from '@/components';
 import { UserContext } from "@/contexts/UserContext";
 import {
+    Caption1,
     ToolbarButton
 } from "@fluentui/react-components";
-import { Add24Filled, PersonAdd24Regular, Shield24Filled } from '@fluentui/react-icons';
+import { Add24Filled, PersonAdd24Regular } from '@fluentui/react-icons';
 import { Title2 } from '@fluentui/react-text';
 import { FetchedCourseWithTiers } from "codetierlist-types";
 import { notFound } from "next/navigation";
@@ -25,14 +26,6 @@ const AdminToolbar = ({ courseID }: { courseID: string, fetchCourse: () => Promi
         <HeaderToolbar
             aria-label="Admin Toolbar"
         >
-            <ToolbarButton
-                appearance="primary"
-                icon={<Shield24Filled />}
-                onClick={() => router.push(`/courses/${courseID}/admin`)}
-            >
-                Admin page
-            </ToolbarButton>
-
             <ToolbarButton
                 appearance="subtle"
                 icon={<PersonAdd24Regular />}
@@ -80,7 +73,7 @@ export default function Page() {
 
             <main>
                 <header className={styles.header}>
-                    <Title2>
+                    <Title2 className={styles.courseTitle}>
                         {course &&
                             <CourseSessionChip
                                 session={getSession(new Date(course.createdAt))}>
@@ -93,6 +86,11 @@ export default function Page() {
                     </Title2>
                 </header>
                 <div className="flex-wrap">
+                    {((course !== null) && course.assignments.length === 0) &&
+                        <Caption1>This course has no assignments yet. If your believe that this message you are
+                        receiving is incorrect, please contact your instructor to correct this issue.</Caption1>
+                    }
+
                     {course ? course.assignments.map((assignment) => (
                         <AssignmentCard key={assignment.title.replaceAll(" ", "_")}
                             id={assignment.title.replaceAll(" ", "_")}

@@ -1,5 +1,6 @@
 import express from "express";
 import courseRoute from "./course";
+import userRoute from "./users";
 import {FetchedUser} from "codetierlist-types";
 
 const router = express.Router();
@@ -9,5 +10,7 @@ router.get("/", (req, res) => {
 });
 
 router.use("/courses", courseRoute);
+
+router.use("/users", userRoute);
 
 export default router;

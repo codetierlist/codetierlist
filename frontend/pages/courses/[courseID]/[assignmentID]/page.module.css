@@ -5,15 +5,7 @@
 }
 
 .dueDate {
-    display: inline-block !important;
-    padding: var(--spaceVerticalNone) var(--spacingHorizontalXS) !important;
-    line-height: var(--lineHeightBase200) !important;
-    height: var(--spacingVerticalL) !important;
     font-weight: var(--fontWeightRegular) !important;
-}
-
-.dueDateIcon {
-    line-height: inherit !important;
 }
 
 .header {
@@ -48,6 +40,7 @@
 
 .tabList {
     margin-left: var(--spacingHorizontalS);
+    overflow-x: auto;
 }
 
 .messageBar {
@@ -94,4 +87,12 @@ main.container {
 
 .accordionHeaderContent {
     width: 100%;
+}
+
+.adminButton {
+    flex-grow: 1;
+    align-self: center;
+    display: flex;
+    justify-content: right;
+    margin-right: var(--spacingHorizontalS);
 }
