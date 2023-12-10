@@ -19,6 +19,12 @@ import {
     onNewTestCase
 } from "./updateScores";
 
+export const errorHandler = (cb: (req: Request, res: Response, next: NextFunction) => Promise<unknown>) => {
+    return (req: Request, res: Response, next: NextFunction) => {
+        cb(req, res, next).then(() => next()).catch(e => next(e));
+    };
+};
+
 /**
  * Checks if a user is a prof in a course.
  * @param course
@@ -38,7 +44,7 @@ export function isProf(course: Course & {
 
 const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'datetime' | 'id'>, table: "solution" | "testCase") => {
     const repoPath = path.resolve(`/repos/${object.course_id}/${object.assignment_title}/${object.author_id}_${table}`);
-    if(["unmodified", "unmodified"].includes(await git.status({fs, dir: repoPath, filepath:'.'}))){
+    if (["unmodified", "unmodified"].includes(await git.status({fs, dir: repoPath, filepath: '.'}))) {
         return null;
     }
     await git.add({fs, dir: repoPath, filepath: '.'});
@@ -62,7 +68,7 @@ const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'date
         };
         if (table === "solution") {
             const solution = await prisma.solution.create({data});
-            if(isProf(req.course!,req.user)){
+            if (isProf(req.course!, req.user)) {
                 void onNewProfSubmission(solution, req.assignment!);
             } else {
                 void onNewSubmission(solution, req.assignment!);
@@ -184,8 +190,8 @@ export const getCommit = async (submission: Solution | TestCase, commitId?: stri
             ref: commit.oid
         });
         const log = await git.log({fs, dir: submission.git_url});
-        const res :Commit= {files, log: log.map(commitIterator => commitIterator.oid)};
-        if((submission as TestCase).valid){
+        const res: Commit = {files, log: log.map(commitIterator => commitIterator.oid)};
+        if ((submission as TestCase).valid) {
             res.valid = (submission as TestCase).valid;
         }
         return res;
@@ -234,10 +240,12 @@ export const deleteFile = async (req: Request, res: Response, table: "solution" 
         res.send({error: 'Submission not found.'});
         return;
     }
-    try{
+    try {
         await git.remove({fs, dir: object.git_url, filepath: req.params.file});
         await fs.unlink(`${object!.git_url}/${req.params.file}`);
-    }catch (_) { /* empty */ }
+    } catch (_) {
+        /* empty */
+    }
     const commit = await commitFiles(req, object, table);
     if (commit === null) {
         res.statusCode = 500;

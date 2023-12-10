@@ -8,6 +8,7 @@ import assignmentsRoute from "./assignments";
 import {PrismaClientKnownRequestError} from "@prisma/client/runtime/library";
 import {generateYourTier} from "../../../common/tierlist";
 import {
+    errorHandler,
     fetchCourseMiddleware, isProf,
     serializeAssignment
 } from "../../../common/utils";
@@ -31,7 +32,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({storage});
 const router = express.Router();
-router.post("/", async (req, res) => {
+router.post("/", errorHandler(async (req, res) => {
     if (!req.user.admin) {
         res.statusCode = 403;
         res.send({error: 'You are not an admin.'});
@@ -68,10 +69,10 @@ router.post("/", async (req, res) => {
     });
     res.statusCode = 201;
     res.send(course);
-});
+}));
 
 
-router.get("/:courseId", fetchCourseMiddleware, async (req, res) => {
+router.get("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) => {
     const course = await prisma.course.findUniqueOrThrow({
         where: {id: req.course!.id},
         include: {roles: isProf(req.course!, req.user) ? true : {where: {user_id: req.user.utorid}}, assignments: fullFetchedAssignmentArgs},
@@ -87,9 +88,9 @@ router.get("/:courseId", fetchCourseMiddleware, async (req, res) => {
         tier: generateYourTier(serializeAssignment(assignment), req.user)
     }));
     res.send({...req.course!, assignments} satisfies FetchedCourseWithTiers);
-});
+}));
 
-router.delete("/:courseId", fetchCourseMiddleware, async (req, res) => {
+router.delete("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) => {
     if (!req.user.admin) {
         res.statusCode = 403;
         res.send({error: 'You are not an admin.'});
@@ -97,9 +98,9 @@ router.delete("/:courseId", fetchCourseMiddleware, async (req, res) => {
     }
     await prisma.course.delete({where: {id: req.course!.id}});
     res.send({});
-});
+}));
 
-router.post("/:courseId/enroll", fetchCourseMiddleware, async (req, res) => {
+router.post("/:courseId/enroll", fetchCourseMiddleware, errorHandler(async (req, res) => {
     const {utorids, role}: { utorids: unknown, role?: string } = req.body;
     if (role !== undefined && !(Object.values(RoleType) as string[]).includes(role)) {
         res.statusCode = 400;
@@ -128,9 +129,9 @@ router.post("/:courseId/enroll", fetchCourseMiddleware, async (req, res) => {
 
     res.send({});
 
-});
+}));
 
-router.post("/:courseId/remove", fetchCourseMiddleware, async (req, res) => {
+router.post("/:courseId/remove", fetchCourseMiddleware, errorHandler(async (req, res) => {
     const {utorids, role}: { utorids: unknown, role?: string } = req.body;
     if (role !== undefined && !(Object.values(RoleType) as string[]).includes(role)) {
         res.statusCode = 400;
@@ -153,9 +154,9 @@ router.post("/:courseId/remove", fetchCourseMiddleware, async (req, res) => {
 
     res.send({});
 
-});
+}));
 
-router.post("/:courseId/cover", fetchCourseMiddleware, upload.single("file"), async (req, res)=>{
+router.post("/:courseId/cover", fetchCourseMiddleware, upload.single("file"), errorHandler(async (req, res)=>{
     if(!req.file || !isProf(req.course!, req.user)) {
         res.statusCode = 400;
         res.send({message: "Must upload a file."});
@@ -164,17 +165,17 @@ router.post("/:courseId/cover", fetchCourseMiddleware, upload.single("file"), as
     await fs.copyFile(req.file.path, `/uploads/${req.file.filename}`);
     await prisma.course.update({where:{id: req.course!.id}, data: {cover:req.file.filename}});
     res.send({});
-});
+}));
 
-router.get("/:courseId/cover", fetchCourseMiddleware, async (req, res) =>{
+router.get("/:courseId/cover", fetchCourseMiddleware, errorHandler(async (req, res) =>{
     if(!req.course?.cover){
         res.statusCode=404;
         res.send({message:"No cover found"});
         return;
     }
     res.sendFile("/uploads/"+req.course!.cover);
-});
-router.post("/:courseId/assignments", fetchCourseMiddleware, async (req, res) => {
+}));
+router.post("/:courseId/assignments", fetchCourseMiddleware, errorHandler(async (req, res) => {
     const {name, dueDate, description} = req.body;
     let {image, image_version} = req.body;
     const date = new Date(dueDate);
@@ -219,7 +220,7 @@ router.post("/:courseId/assignments", fetchCourseMiddleware, async (req, res) =>
             throw e;
         }
     }
-});
+}));
 
 router.use("/:courseId/assignments", assignmentsRoute);
 

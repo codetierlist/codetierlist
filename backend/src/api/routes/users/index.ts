@@ -1,6 +1,7 @@
 import express from "express";
 import {Theme, FetchedUser} from "codetierlist-types";
 import prisma from "../../../common/prisma";
+import {errorHandler} from "../../../common/utils";
 
 const router = express.Router();
 
@@ -13,7 +14,7 @@ router.get("/", (req, res) => {
  * @param theme the theme to set. Must be "LIGHT" or "DARK".
  * @returns 200 if success, 400 if fail
  */
-router.post("/theme", async (req, res) => {
+router.post("/theme", errorHandler(async (req, res) => {
     if (!req.body.theme) {
         res.status(400).send({message:"No theme specified."});
 
@@ -31,6 +32,6 @@ router.post("/theme", async (req, res) => {
 
     res.status(200).send({message:`Set theme to ${req.body.theme}.`});
 
-});
+}));
 
 export default router;
