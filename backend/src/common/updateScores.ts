@@ -1,6 +1,7 @@
-import {Submission, TestCase} from "codetierlist-types";
+import {Submission, TestCase, TestCaseStatus} from "codetierlist-types";
 import prisma from "./prisma";
-import {queueJob, JobStatus} from "./runner";
+import {JobStatus, queueJob} from "./runner";
+import {RoleType} from "@prisma/client";
 
 const updateScore = (submission: Submission, testCase: TestCase, pass: boolean) =>
     prisma.score.create({
@@ -22,7 +23,7 @@ export const onNewSubmission = async (submission: Submission) => {
             assignment_title: submission.assignment_title,
             valid: "VALID"
         },
-        orderBy: {datetime:"desc"},
+        orderBy: {datetime: "desc"},
         distinct: "author_id",
     });
 
@@ -43,47 +44,63 @@ export const onNewTestCase = async (testCase: TestCase) => {
     // 3. fail starter code
 
     // checks condition 1
-    // const profSubmission = await prisma.solution.findFirst({
-    //     where: {
-    //         course_id: testCase.course_id,
-    //         assignment_title: testCase.assignment_title,
-    //         author: {
-    //             roles: {
-    //                 some: {
-    //                     course_id: testCase.course_id,
-    //                     type: {in: [RoleType.INSTRUCTOR, RoleType.TA]}
-    //                 }
-    //             }
-    //         }
-    //     }, orderBy: {datetime: "desc"}
-    // });
-    // try {
-    //     const result = await queueJob({
-    //         submission: profSubmission,
-    //         testCase
-    //     });
-    //     if (!result || result.status === JobStatus.ERROR) {
-    //         return; // TODO: inform user that the test case is invalid
-    //     }
-    // } catch (e) {
-    //     return; // TODO: inform user that the test case is invalid
-    // }
+    const profSubmission = await prisma.solution.findFirst({
+        where: {
+            course_id: testCase.course_id,
+            assignment_title: testCase.assignment_title,
+            author: {
+                roles: {
+                    some: {
+                        course_id: testCase.course_id,
+                        type: {in: [RoleType.INSTRUCTOR, RoleType.TA]}
+                    }
+                }
+            }
+        }, orderBy: {datetime: "desc"}, take: 1
+    });
+    let status: TestCaseStatus="VALID";
+    if (profSubmission) {
+        try {
+            const result = await queueJob({
+                submission: profSubmission,
+                testCase
+            });
+            if (!result || [JobStatus.FAIL, JobStatus.ERROR].includes(result.status)) {
+                status="INVALID";
+            }
+            if(result.status == JobStatus.EMPTY){
+                status="EMPTY";
+            }
+        } catch (e) {
+            status="INVALID";
+        }
+    }
 
     // test case has been validated
 
     await prisma.testCase.update({
         where: {
             id: testCase.id
-        }, data: {valid: "VALID"}
+        }, data: {valid: status}
     });
-
+    if(status !="VALID") {
+       return;
+    }
     // find all student submissions
     const submissions = await prisma.solution.findMany({
-        where:{
+        where: {
             course_id: testCase.course_id,
-            assignment_title: testCase.assignment_title
+            assignment_title: testCase.assignment_title,
+            author: {
+                roles: {
+                    some: {
+                        course_id: testCase.course_id,
+                        type: RoleType.STUDENT
+                    }
+                }
+            }
         },
-        orderBy: {datetime:"desc"},
+        orderBy: {datetime: "desc"},
         distinct: "author_id",
     });
     // for every student submission, run the test case, and update the score

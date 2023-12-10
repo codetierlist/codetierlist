@@ -22,6 +22,7 @@ export enum JobStatus {
     PASS = "PASS", // passes all test cases
     FAIL = "FAIL", // fails at least one test case
     ERROR = "ERROR", // code error, server error, or timeout
+    EMPTY="EMPTY"
 }
 
 export type JobResult =
@@ -36,7 +37,7 @@ export type JobResult =
         failed: string[] // list of failed testcase info
     } |
     {
-        status: JobStatus.ERROR
+        status: JobStatus.ERROR | JobStatus.EMPTY
     };
 
 
@@ -71,8 +72,8 @@ export const runJob = async (job: Job): Promise<JobResult> => {
         return {status: JobStatus.ERROR}
     }
 
-    if(Object.keys(query.solution_files).length == 0){
-        return {status: JobStatus.FAIL,amount:0,failed:[],score:0}
+    if(Object.keys(query.solution_files).length == 0 || Object.keys(query.test_case_files).length == 0 ){
+        return {status: JobStatus.EMPTY}
     }
 
 

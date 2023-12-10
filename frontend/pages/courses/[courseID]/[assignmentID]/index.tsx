@@ -136,6 +136,7 @@ const TestCaseStatusIcon = ({status}: {status:TestCaseStatus}): JSX.Element=>{
             return <ArrowCounterclockwiseDashes24Filled fill={"var(--colorPaletteGoldForeground2)"} primaryFill={"var(--colorPaletteGoldForeground2)"}/>
         case "VALID":
             return <CheckmarkCircle24Regular fill={"var(--colorStatusSuccessForeground1)"} primaryFill={"var(--colorStatusSuccessForeground1)"}/>
+        default: return <></>
     }
 }
 /**
@@ -143,13 +144,13 @@ const TestCaseStatusIcon = ({status}: {status:TestCaseStatus}): JSX.Element=>{
  * @param status the status of the testcase
  */
 const TestCaseStatus = ({status}: {status?:TestCaseStatus})=>{
-    if(!status){
+    if(!status || status === "EMPTY"){
         return undefined
     }
-    const contents : Record<TestCaseStatus, string> = {
+    const contents : Record<Exclude<TestCaseStatus,"EMPTY">, string> = {
         "INVALID": "One or more of your uploaded tests are invalid and did not pass the solution",
         "VALID": "All uploaded testcases are valid and passed the solution",
-        "PENDING": "Your testcases are currently in the queue for validation"
+        "PENDING": "Your testcases are currently in the queue for validation",
     }
     return <ToolTipIcon tooltip={contents[status]} icon={TestCaseStatusIcon({status})}/>
 }
