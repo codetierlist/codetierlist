@@ -79,11 +79,12 @@ export const runJob = async (job: Job): Promise<JobResult> => {
         return {status: JobStatus.ERROR};
     }
 
-    if(Object.keys(query.solution_files).length == 0){
-        return {status: JobStatus.SUBMISSION_EMPTY};
-    }
     if(Object.keys(query.test_case_files).length == 0){
         return {status: JobStatus.TESTCASE_EMPTY};
+    }
+
+    if(Object.keys(query.solution_files).length == 0){
+        return {status: JobStatus.SUBMISSION_EMPTY};
     }
 
     const img = job.assignment.runner_image;
