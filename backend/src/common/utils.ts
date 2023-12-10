@@ -30,9 +30,10 @@ export function isProf(course: Course & {
         type: RoleType
     }>
 }, user: {
-    utorid: string
+    utorid: string,
+    admin?: boolean
 }) {
-    return course.roles.some(role => role.user.utorid === user.utorid && ([RoleType.INSTRUCTOR, RoleType.TA] as RoleType[]).includes(role.type));
+    return user.admin === true || course.roles.some(role => role.user.utorid === user.utorid && ([RoleType.INSTRUCTOR, RoleType.TA] as RoleType[]).includes(role.type));
 }
 
 const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'datetime' | 'id'>, table: "solution" | "testCase") => {
