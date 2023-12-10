@@ -41,7 +41,7 @@ import {
 import Error from 'next/error';
 import Head from "next/head";
 import { useRouter } from 'next/router';
-import React, { useContext, useEffect, useState} from 'react';
+import { useContext, useEffect, useState} from 'react';
 import { Col, Container } from "react-grid-system";
 import styles from './page.module.css';
 import { UserContext } from "@/contexts/UserContext";
@@ -130,30 +130,30 @@ const ListFiles = ({ commit, route, assignment, assignmentID, update }: { commit
  */
 const TestCaseStatusIcon = ({status}: {status:TestCaseStatus}): JSX.Element=>{
     switch (status) {
-        case "INVALID":
-            return <DismissCircle24Regular fill={"var(--colorStatusDangerForeground1)"} primaryFill={"var(--colorStatusDangerForeground1)"}/>
-        case "PENDING":
-            return <ArrowCounterclockwiseDashes24Filled fill={"var(--colorPaletteGoldForeground2)"} primaryFill={"var(--colorPaletteGoldForeground2)"}/>
-        case "VALID":
-            return <CheckmarkCircle24Regular fill={"var(--colorStatusSuccessForeground1)"} primaryFill={"var(--colorStatusSuccessForeground1)"}/>
-        default: return <></>
+    case "INVALID":
+        return <DismissCircle24Regular fill={"var(--colorStatusDangerForeground1)"} primaryFill={"var(--colorStatusDangerForeground1)"}/>;
+    case "PENDING":
+        return <ArrowCounterclockwiseDashes24Filled fill={"var(--colorPaletteGoldForeground2)"} primaryFill={"var(--colorPaletteGoldForeground2)"}/>;
+    case "VALID":
+        return <CheckmarkCircle24Regular fill={"var(--colorStatusSuccessForeground1)"} primaryFill={"var(--colorStatusSuccessForeground1)"}/>;
+    default: return <></>;
     }
-}
+};
 /**
  * return an icon with tooltip reflecting the status of the testcase
  * @param status the status of the testcase
  */
 const TestCaseStatus = ({status}: {status?:TestCaseStatus})=>{
     if(!status || status === "EMPTY"){
-        return undefined
+        return undefined;
     }
     const contents : Record<Exclude<TestCaseStatus,"EMPTY">, string> = {
         "INVALID": "One or more of your uploaded tests are invalid and did not pass the solution",
         "VALID": "All uploaded testcases are valid and passed the solution",
         "PENDING": "Your testcases are currently in the queue for validation",
-    }
-    return <ToolTipIcon tooltip={contents[status]} icon={TestCaseStatusIcon({status})}/>
-}
+    };
+    return <ToolTipIcon tooltip={contents[status]} icon={TestCaseStatusIcon({status})}/>;
+};
 const FilesTab = ({ fetchAssignment, assignment, assignmentID, routeName, route }: { fetchAssignment: () => Promise<void>, assignment: FetchedAssignmentWithTier, assignmentID: string, routeName: string, route: "testcases" | "submissions" }) => {
     const [content, setContent] = useState<Commit>({ "files": [], "log": [] } as Commit);
     const { showSnackSev } = useContext(SnackbarContext);

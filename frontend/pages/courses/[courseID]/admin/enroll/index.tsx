@@ -1,11 +1,10 @@
-import axios, { handleError } from "@/axios";
+import { handleError } from "@/axios";
 import { HeaderToolbar, promptForFileReader, Monaco, modifyEnrollment } from "@/components";
 import { SnackbarContext } from "@/contexts/SnackbarContext";
 import flex from '@/styles/flex-utils.module.css';
 import { Body2, Button, ToolbarButton } from "@fluentui/react-components";
 import { Add24Filled, ArrowLeft24Regular } from '@fluentui/react-icons';
 import { Title2 } from '@fluentui/react-text';
-import { isUTORid } from 'is-utorid';
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useContext, useState } from "react";
