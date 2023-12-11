@@ -8,7 +8,8 @@
     "build": "prisma generate && tsc",
     "migrate": "prisma migrate deploy",
     "start": "node out/index.js",
-    "prisma": "prisma generate --schema ./prisma/schema.prisma"
+    "prisma": "prisma generate --schema ./prisma/schema.prisma",
+    "eslint": "eslint src"
   },
   "keywords": [],
   "author": "",
@@ -51,7 +52,7 @@
         4
       ],
       "no-console": [
-        "warn"
+        "off"
       ],
       "semi": [
         "error",
@@ -73,7 +74,14 @@
           "varsIgnorePattern": "^_",
           "caughtErrorsIgnorePattern": "^_"
         }
-      ]
+      ],
+      "no-restricted-syntax": [
+            "warn",
+            {
+                "selector": "CallExpression[callee.object.name='console'][callee.property.name=/^(log|trace)$/]",
+                "message": "No console.log, use console.info|warn|err"
+            }
+        ]
     },
     "env": {
       "browser": true
