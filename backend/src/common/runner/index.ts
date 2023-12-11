@@ -1,11 +1,17 @@
-import {Submission, TestCase} from "codetierlist-types";
+import {
+    Assignment,
+    RunnerImage,
+    Submission,
+    TestCase
+} from "codetierlist-types";
 import {spawn, spawnSync} from "child_process";
 import path from "path";
 import {getCommit, getFile} from "../utils";
 
 interface Job {
     submission: Submission,
-    testCase: TestCase
+    testCase: TestCase,
+    assignment: Assignment
 }
 
 type JobFiles = {
@@ -80,8 +86,8 @@ export const runJob = async (job: Job): Promise<JobResult> => {
         return {status: JobStatus.TESTCASE_EMPTY};
     }
 
-    const img = 'python';
-    const img_ver = '3.10.11';
+    const img = job.assignment.runner_image;
+    const img_ver = job.assignment.image_version;
 
     // TODO: figure out how to use reject
     return await new Promise((resolve) => {
@@ -144,10 +150,13 @@ export const queueJob = (job: Job) : Promise<JobResult> => {
     });
 };
 
-const create_images = () => {
-    console.log("creating images");
-    const img = 'python';
-    const img_ver = '3.10.11';
+// Add new images here
+export const images : RunnerImage[] = [
+    {image: 'python', image_version: '3.10.11'},
+    {image: 'python', image_version: '3.12.1'}
+];
+
+const createImage = (img : string, img_ver: string) => {
     const ret = spawnSync("bash",
         ["-c",
             `docker build . -t 127.0.0.1:5000/runner-image-${img}-${img_ver}; ` +
@@ -159,6 +168,11 @@ const create_images = () => {
     );
     if(ret?.stdout)
         console.log(ret.stdout.toString());
+    console.log(`Image ${img}/${img_ver} created`);
+};
+const createImages = () => {
+    console.log("creating images");
+    images.forEach(x=>createImage(x.image,x.image_version));
     console.log("done creating images");
 };
 
@@ -181,7 +195,7 @@ setInterval(() => {
     }
 }, 1000);
 
-create_images();
+createImages();
 
 // for (let i = 0; i < 3; i++) {
 //     console.log(`queueing job ${i}`);
