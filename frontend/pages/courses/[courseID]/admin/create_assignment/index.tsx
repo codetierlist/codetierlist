@@ -1,5 +1,5 @@
 import axios, {handleError} from "@/axios";
-import {HeaderToolbar} from "@/components";
+import {HeaderToolbar, ToolTipIcon} from "@/components";
 import {SnackbarContext} from "@/contexts/SnackbarContext";
 import {UserContext} from "@/contexts/UserContext";
 import {
@@ -8,7 +8,10 @@ import {
     Label, OptionGroup, Option,
     Textarea, Title2, ToolbarButton, Select
 } from "@fluentui/react-components";
-import {ArrowLeft24Regular} from '@fluentui/react-icons';
+import {
+    ArrowLeft24Regular, QuestionCircle16Regular,
+    QuestionCircle24Regular
+} from '@fluentui/react-icons';
 import Head from "next/head";
 import {useRouter} from "next/router";
 import {useContext, useEffect, useState} from "react";
@@ -93,8 +96,12 @@ export default function Page(): JSX.Element {
                         name="dueDate"
                         value={dueDate.toISOString().slice(0, -8)}
                         onChange={e => setDueDate(new Date(e.target.value))}/><br/>
-
-                    <Label htmlFor="runner">Runner image:</Label><br/>
+                    <Label htmlFor="runner">Runner image
+                        <ToolTipIcon
+                            tooltip={"The runner image is the image that the runners use to run uploaded code. If you think an image is missing please contact the maintainers."}
+                            icon={<QuestionCircle16Regular/>} />
+                    </Label>
+                    <br/>
                     <Dropdown id="runner" name="runner"
                         value={selectedRunner?.image + "/" + selectedRunner?.image_version}
                         onOptionSelect={(_, data) => setSelectedRunner(JSON.parse(data.optionValue ?? "undefined") as RunnerImage)}
