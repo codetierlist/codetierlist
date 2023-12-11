@@ -6,13 +6,22 @@ import {
     ToolbarButton
 } from "@fluentui/react-components";
 import { Add24Filled, PersonAdd24Regular, PersonDelete24Regular } from '@fluentui/react-icons';
-import { Title2 } from '@fluentui/react-text';
-import { FetchedCourseWithTiers } from "codetierlist-types";
+import { Title2, Title3 } from '@fluentui/react-text';
+import { FetchedCourseWithTiers, FetchedAssignmentWithTier } from "codetierlist-types";
 import { notFound } from "next/navigation";
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from "react";
 import { SnackbarContext } from '../../../../../contexts/SnackbarContext';
 import styles from './page.module.css';
+import Error from 'next/error';
+import {
+    TableBody,
+    TableCell,
+    TableRow,
+    Table,
+    TableHeader,
+    TableHeaderCell
+} from "@fluentui/react-components";
 
 /**
  * Toolbar for admin page
@@ -56,8 +65,17 @@ const AdminToolbar = ({ courseID }: { courseID: string, fetchCourse: () => Promi
 export default function Page() {
     const { userInfo } = useContext(UserContext);
     const [course, setCourse] = useState<FetchedCourseWithTiers | null>(null);
-    const { courseID } = useRouter().query;
+    const { courseID, assignmentID } = useRouter().query;
     const { showSnackSev } = useContext(SnackbarContext);
+    const [assignment, setAssignment] = useState<FetchedAssignmentWithTier | null>(null);
+
+    const fetchAssignment = async () => {
+        await axios.get<FetchedAssignmentWithTier>(`/courses/${courseID}/assignments/${assignmentID}`, { skipErrorHandling: true })
+            .then((res) => setAssignment(res.data))
+            .catch(e => {
+                handleError(e.message, showSnackSev);
+            });
+    };
 
     const fetchCourse = async () => {
         if (!courseID) return;
@@ -75,6 +93,67 @@ export default function Page() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [courseID]);
 
+    useEffect(() => {
+        if (!courseID || !assignmentID) {
+            return;
+        }
+        void fetchAssignment();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [courseID, assignmentID]);
+
+    if (!assignment || !courseID || !assignmentID) {
+        return <Error statusCode={404} />;
+    }
+
+    // Hard coded data; change later
+    const items = [
+        {
+            utorid: { label: "zhan8725" },
+            name: {label: "something"},
+            // gitRepo: { label: "https://github.com/" },
+            testsPassed: { label: "13/20" },
+            tier: { label: "S" },
+            submitSol: {label: "5"},
+            submitTest: {label: "3"}
+        },
+        {
+            utorid: { label: "zhan8725" },
+            name: {label: "something"},
+            // gitRepo: { label: "https://github.com/" },
+            testsPassed: { label: "13/20" },
+            tier: { label: "S" },
+            submitSol: {label: "5"},
+            submitTest: {label: "3"}
+        },
+        {
+            utorid: { label: "zhan8725" },
+            name: {label: "something"},
+            // gitRepo: { label: "https://github.com/" },
+            testsPassed: { label: "13/20" },
+            tier: { label: "S" },
+            submitSol: {label: "5"},
+            submitTest: {label: "3"}
+        },
+        {
+            utorid: { label: "zhan8725" },
+            name: {label: "something"},
+            // gitRepo: { label: "https://github.com/" },
+            testsPassed: { label: "13/20" },
+            tier: { label: "S" },
+            submitSol: {label: "5"},
+            submitTest: {label: "3"}
+        },
+    ];
+    
+    const columns = [
+        { columnKey: "utorid", label: "UTORid" },
+        { columnKey: "name", label: "Full Name" },
+        // { columnKey: "gitRepo", label: "GitHub Repository" },
+        { columnKey: "testsPassed", label: "Tests Passed" },
+        { columnKey: "submitSol", label: "Submitted Solutions" },
+        { columnKey: "submitTest", label: "Submitted Tests" }
+    ];
+
     return (
         <>
             {userInfo.admin ? <AdminToolbar courseID={courseID as string} fetchCourse={fetchCourse} /> : undefined}
@@ -89,26 +168,33 @@ export default function Page() {
                             </CourseSessionChip>
                         }
                     </Title2>
-                    <Title2>
-                        {course?.name || 'Course not found'}
-                    </Title2>
+                    <Title2>{assignment.title}</Title2>
                 </header>
-                <div className="flex-wrap">
-                    {((course !== null) && course.assignments.length === 0) &&
-                        <Caption1>This course has no assignments yet. If your believe that this message you are
-                        receiving is incorrect, please contact your instructor to correct this issue.</Caption1>
-                    }
 
-                    {course ? course.assignments.map((assignment) => (
-                        <AssignmentCard key={assignment.title.replaceAll(" ", "_")}
-                            id={assignment.title.replaceAll(" ", "_")}
-                            name={assignment.title}
-                            dueDate={assignment.due_date ? new Date(assignment.due_date) : undefined}
-                            tier={assignment.tier}
-                            courseID={courseID as string}
-                        />
-                    )) : "Loading..."}
-                </div>
+                <Title3>Student Data</Title3>
+                <Table arial-label="Default table">
+                    <TableHeader>
+                        <TableRow>
+                            {columns.map((column) => (
+                                <TableHeaderCell key={column.columnKey}>
+                                    {column.label}
+                                </TableHeaderCell>
+                            ))}
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {items.map((item) => (
+                            <TableRow key={item.utorid.label}>
+                                <TableCell> {item.utorid.label} </TableCell>
+                                <TableCell> {item.name.label} </TableCell>
+                                {/* <TableCell onClick={openRepo(item.gitRepo.label)} style={{ cursor: 'pointer', textDecoration: 'underline' }}> Link </TableCell> */}
+                                <TableCell> {item.testsPassed.label} </TableCell>
+                                <TableCell> {item.submitSol.label} </TableCell>
+                                <TableCell> {item.submitTest.label} </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
             </main >
         </>
     );
