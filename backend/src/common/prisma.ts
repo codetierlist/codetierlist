@@ -34,12 +34,8 @@ export const fullFetchedAssignmentArgs = Prisma.validator<Prisma.AssignmentDefau
                 author: true,
                 scores: {
                     orderBy: [{test_case: {datetime: "desc"}}, {datetime: "desc"}],
-                    where: {
-                        test_case: {
-                            valid: "VALID"
-                        },
-                    },
-                    distinct: "testcase_author_id"
+                    distinct: "testcase_author_id",
+                    include: {test_case:true}
                 }
             }
         },

@@ -144,8 +144,8 @@ router.get('/:assignment/stats', fetchAssignmentMiddleware, async (req, res) => 
         surname: submission.author.surname,
         email: submission.author.email,
         tier: invertedTierlist[submission.author.utorid],
-        testsPassed: submission.scores.length === 0 ? 0
-            : submission.scores.filter(x => x.pass).length / submission.scores.length
+        testsPassed: submission.scores.filter(x => x.test_case.valid === "VALID").length === 0 ? 0
+            : submission.scores.filter(x => x.test_case.valid === "VALID" && x.pass).length / submission.scores.filter(x => x.test_case.valid === "VALID").length
     }));
     res.send(students satisfies AssignmentStudentStats);
 });

@@ -25,18 +25,14 @@ const fetchedAssignmentArgs = Prisma.validator<Prisma.AssignmentDefaultArgs>()({
 const fullFetchedAssignmentArgs = Prisma.validator<Prisma.AssignmentDefaultArgs>()({
     include: {
         submissions: {
-            distinct:"author_id",
-            orderBy: {datetime:"desc"},
+            distinct: "author_id",
+            orderBy: {datetime: "desc"},
             include: {
                 author: true,
                 scores: {
-                    orderBy:{datetime:"desc"},
-                    where: {
-                        test_case:{
-                            valid: "VALID"
-                        },
-                    },
-                    distinct: "testcase_author_id"
+                    orderBy: [{test_case: {datetime: "desc"}}, {datetime: "desc"}],
+                    distinct: "testcase_author_id",
+                    include: {test_case:true}
                 }
             }
         },
