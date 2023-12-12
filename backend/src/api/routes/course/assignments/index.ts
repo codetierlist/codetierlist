@@ -10,13 +10,14 @@ import {
 } from "../../../../common/utils";
 import multer from 'multer';
 import {
-    generateList,
+    generateList, generateTierList,
     generateYourTier
 } from "../../../../common/tierlist";
 import {
+    AssignmentStudentStats,
     AssignmentWithTier,
     Commit, FetchedAssignment,
-    FetchedAssignmentWithTier, FullFetchedAssignment,
+    FetchedAssignmentWithTier, FullFetchedAssignment, Tier,
     Tierlist, UserTier
 } from "codetierlist-types";
 
@@ -30,11 +31,11 @@ const router = express.Router({mergeParams: true});
 
 router.get("/:assignment", fetchAssignmentMiddleware, async (req, res) => {
     const assignment: FetchedAssignment = {...req.assignment!};
-    if(!isProf(req.course!, req.user)) {
+    if (!isProf(req.course!, req.user)) {
         assignment.submissions = assignment.submissions.filter(submission => submission.author_id === req.user.utorid);
         assignment.test_cases = assignment.test_cases.filter(testCase => testCase.author_id === req.user.utorid);
     }
-    const fullFetchedAssignment: FullFetchedAssignment = await prisma.assignment.findUniqueOrThrow({where:{id: {title: assignment.title, course_id: assignment.course_id}}, ...fullFetchedAssignmentArgs});
+    const fullFetchedAssignment: FullFetchedAssignment = await prisma.assignment.findUniqueOrThrow({where: {id: {title: assignment.title, course_id: assignment.course_id}}, ...fullFetchedAssignmentArgs});
 
     res.send({...assignment, tier: generateYourTier(fullFetchedAssignment)} satisfies (FetchedAssignmentWithTier | AssignmentWithTier));
 });
@@ -74,8 +75,8 @@ router.post("/:assignment/testcases", fetchAssignmentMiddleware, upload.array('f
 router.get("/:assignment/submissions/:commitId?", fetchAssignmentMiddleware, async (req, res) => {
     const commit = await getCommitFromRequest(req, "solution");
     if (commit === null) {
-        if(!req.params.commitId) {
-            res.send({log:[], files:[]} satisfies Commit);
+        if (!req.params.commitId) {
+            res.send({log: [], files: []} satisfies Commit);
             return;
         }
         res.statusCode = 404;
@@ -97,8 +98,8 @@ router.get("/:assignment/testcases/:commitId?", fetchAssignmentMiddleware, async
     const commit = await getCommitFromRequest(req, "testCase");
 
     if (commit === null) {
-        if(!req.params.commitId) {
-            res.send({log:[], files:[]} satisfies Commit);
+        if (!req.params.commitId) {
+            res.send({log: [], files: []} satisfies Commit);
             return;
         }
         res.statusCode = 404;
@@ -117,13 +118,35 @@ router.get("/:assignment/testcases/:commitId?/:file", fetchAssignmentMiddleware,
 });
 
 router.get("/:assignment/tierlist", fetchAssignmentMiddleware, async (req, res) => {
-    const fullFetchedAssignment = await prisma.assignment.findUniqueOrThrow({where:{id: {title: req.assignment!.title, course_id: req.assignment!.course_id}}, ...fullFetchedAssignmentArgs});
+    const fullFetchedAssignment = await prisma.assignment.findUniqueOrThrow({where: {id: {title: req.assignment!.title, course_id: req.assignment!.course_id}}, ...fullFetchedAssignmentArgs});
     const tierlist = generateList(fullFetchedAssignment, req.user);
-    if(tierlist[1] === "?" as UserTier){
-        res.send({S:[],A:[],B:[],C:[],D:[],F:[]} satisfies Tierlist);
+    if (tierlist[1] === "?" as UserTier) {
+        res.send({S: [], A: [], B: [], C: [], D: [], F: []} satisfies Tierlist);
         return;
     }
     res.send(tierlist[0] satisfies Tierlist);
 });
 
+router.get('/:assignment/stats', fetchAssignmentMiddleware, async (req, res) => {
+    const fullFetchedAssignment = await prisma.assignment.findUniqueOrThrow({
+        where: {
+            id:
+                {title: req.assignment!.title, course_id: req.assignment!.course_id}
+        },
+        ...fullFetchedAssignmentArgs,
+    });
+    const tierlist = generateTierList(fullFetchedAssignment, req.user, false);
+    const invertedTierlist: Record<string, Tier> = {};
+    (Object.keys(tierlist) as Tier[]).forEach(tier => tierlist[tier].forEach(name => invertedTierlist[name.name] = tier));
+    const students = fullFetchedAssignment.submissions.map(submission => ({
+        utorid: submission.author.utorid,
+        givenName: submission.author.givenName,
+        surname: submission.author.surname,
+        email: submission.author.email,
+        tier: invertedTierlist[submission.author.utorid],
+        testsPassed: submission.scores.length === 0 ? 0
+            : submission.scores.filter(x => x.pass).length / submission.scores.length
+    }));
+    res.send(students satisfies AssignmentStudentStats);
+});
 export default router;

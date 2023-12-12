@@ -25,17 +25,21 @@ const fetchedAssignmentArgs = Prisma.validator<Prisma.AssignmentDefaultArgs>()({
 const fullFetchedAssignmentArgs = Prisma.validator<Prisma.AssignmentDefaultArgs>()({
     include: {
         submissions: {
+            distinct:"author_id",
+            orderBy: {datetime:"desc"},
             include: {
                 author: true,
-                scores: true
+                scores: {
+                    orderBy:{datetime:"desc"},
+                    where: {
+                        test_case:{
+                            valid: "VALID"
+                        },
+                    },
+                    distinct: "testcase_author_id"
+                }
             }
         },
-        test_cases: {
-            include: {
-                author: true,
-                scores: true
-            }
-        }
     }
 });
 
@@ -83,4 +87,6 @@ const user :User;
 export type Theme = typeof user.theme;
 
 export type RunnerImage = {image:string, image_version: string}
+
+export type AssignmentStudentStats = (Omit<User,"admin" | "theme"> & { tier: Tier, testsPassed: number })[]
 

@@ -28,21 +28,21 @@ export const fetchedAssignmentArgs = Prisma.validator<Prisma.AssignmentDefaultAr
 export const fullFetchedAssignmentArgs = Prisma.validator<Prisma.AssignmentDefaultArgs>()({
     include: {
         submissions: {
-            distinct:"author_id",
-            orderBy: {datetime:"desc"},
+            distinct: "author_id",
+            orderBy: {datetime: "desc"},
             include: {
                 author: true,
-                scores: {orderBy:{datetime:"desc"}, take:1}
+                scores: {
+                    orderBy: [{test_case: {datetime: "desc"}}, {datetime: "desc"}],
+                    where: {
+                        test_case: {
+                            valid: "VALID"
+                        },
+                    },
+                    distinct: "testcase_author_id"
+                }
             }
         },
-        test_cases: {
-            distinct:"author_id",
-            orderBy: {datetime:"desc"},
-            include: {
-                author: true,
-                scores: {orderBy:{datetime:"desc"}, take:1}
-            }
-        }
     }
 });
 

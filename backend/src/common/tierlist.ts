@@ -37,7 +37,7 @@ function getStandardDeviation(array: number[]) {
     return Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n);
 }
 
-export function generateList(assignment: Omit<FullFetchedAssignment, "due_date">, user?: string | User): [Tierlist, UserTier] {
+export function generateList(assignment: Omit<FullFetchedAssignment, "due_date">, user?: string | User, anonymize = true): [Tierlist, UserTier] {
     const res: Tierlist = {
         S: [],
         A: [],
@@ -52,7 +52,7 @@ export function generateList(assignment: Omit<FullFetchedAssignment, "due_date">
     const scores = assignment.submissions.map(submission =>
         ({
             you: user ? isSelf(user, submission.author.utorid) : false,
-            name: (user ? isSelf(user, submission.author.utorid) : false)
+            name: anonymize ? submission.author.utorid : (user ? isSelf(user, submission.author.utorid) : false)
                 ? getUserInitials(submission.author)
                 : twoLetterHash(submission.author.utorid + (user ? getUtorid(user) : "")),
             score: submission.scores.length === 0 ? 0.0 : submission.scores.filter(x => x.pass).length / submission.scores.length,
@@ -89,5 +89,5 @@ export function generateList(assignment: Omit<FullFetchedAssignment, "due_date">
     return [res, yourTier];
 }
 
-export const generateTierList = (assignment: Omit<FullFetchedAssignment, "due_date">, user?: string | User): Tierlist => generateList(assignment, user)[0];
+export const generateTierList = (assignment: Omit<FullFetchedAssignment, "due_date">, user?: string | User, anonymize=true): Tierlist => generateList(assignment, user, anonymize)[0];
 export const generateYourTier = (assignment: Omit<FullFetchedAssignment, "due_date">, user?: string | User): UserTier => generateList(assignment, user)[1];
