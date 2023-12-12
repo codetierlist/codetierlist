@@ -50,13 +50,15 @@ export function generateList(assignment: Omit<FullFetchedAssignment, "due_date">
         return [res, "?" as UserTier];
     }
     const scores = assignment.submissions.map(submission =>
-        ({
+    {
+        const validScores = submission.scores.filter(x=>x.test_case.valid==="VALID");
+        return{
             you: user ? isSelf(user, submission.author.utorid) : false,
             name: anonymize ? submission.author.utorid : (user ? isSelf(user, submission.author.utorid) : false)
                 ? getUserInitials(submission.author)
                 : twoLetterHash(submission.author.utorid + (user ? getUtorid(user) : "")),
-            score: submission.scores.length === 0 ? 0.0 : submission.scores.filter(x => x.pass).length / submission.scores.length,
-        })
+            score: validScores.length === 0 ? 0.0 : validScores.filter(x => x.pass).length / validScores.length,
+        };}
     );
     const mean = getMean(scores.map(x => x.score));
     const std = getStandardDeviation(scores.map(x => x.score));
