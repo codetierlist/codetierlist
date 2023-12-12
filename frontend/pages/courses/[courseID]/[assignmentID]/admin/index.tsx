@@ -1,8 +1,7 @@
 import axios, { handleError } from "@/axios";
-import { AssignmentCard, CourseSessionChip, HeaderToolbar, getSession } from '@/components';
+import { CourseSessionChip, HeaderToolbar, getSession } from '@/components';
 import { UserContext } from "@/contexts/UserContext";
 import {
-    Caption1,
     ToolbarButton
 } from "@fluentui/react-components";
 import { Add24Filled, PersonAdd24Regular, PersonDelete24Regular } from '@fluentui/react-icons';
@@ -111,10 +110,10 @@ export default function Page() {
             utorid: { label: "zhan8725" },
             name: {label: "something"},
             // gitRepo: { label: "https://github.com/" },
-            testsPassed: { label: "13/20" },
+            // testsPassed: { label: "13/20" },
             tier: { label: "S" },
-            submitSol: {label: "5"},
-            submitTest: {label: "3"}
+            // submitSol: {label: "5"},
+            // submitTest: {label: "3"}
         },
         {
             utorid: { label: "zhan8725" },
@@ -171,7 +170,7 @@ export default function Page() {
                     <Title2>{assignment.title}</Title2>
                 </header>
 
-                <Title3>Student Data</Title3>
+                {/* <Title3>Student Data</Title3> */}
                 <Table arial-label="Default table">
                     <TableHeader>
                         <TableRow>
