@@ -80,5 +80,7 @@ const role :Role;
 export type RoleType = typeof role.type
 
 const user :User;
-export type Theme = typeof user.theme
+export type Theme = typeof user.theme;
+
+export type RunnerImage = {image:string, image_version: string}
 

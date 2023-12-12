@@ -63,13 +63,13 @@ const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'date
         if (table === "solution") {
             const solution = await prisma.solution.create({data});
             if(isProf(req.course!,req.user)){
-                void onNewProfSubmission(solution);
+                void onNewProfSubmission(solution, req.assignment!);
             } else {
-                void onNewSubmission(solution);
+                void onNewSubmission(solution, req.assignment!);
             }
         } else {
             const testCase = await prisma.testCase.create({data});
-            onNewTestCase(testCase).then();
+            onNewTestCase(testCase, req.assignment!).then();
         }
         return commit;
     } catch (e) {
