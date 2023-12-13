@@ -1,65 +1,9 @@
-import { GenerateInitalsAvatarProps, generateInitals } from '@/components';
+import { GenerateInitalsAvatarProps, NavbarUserPopover, generateInitals } from '@/components';
 import { UserContext, defaultUser } from '@/contexts/UserContext';
-import { Button, Badge, Persona, SkeletonItem, Popover, Switch, PopoverSurface, PopoverTrigger } from '@fluentui/react-components';
+import { Badge, Button, Persona, Popover, PopoverSurface, PopoverTrigger, SkeletonItem } from '@fluentui/react-components';
 import Link from 'next/link';
 import { useContext } from 'react';
 import styles from './Navbar.module.css';
-import { Theme } from 'codetierlist-types';
-import axios, { handleError } from "@/axios";
-import { SnackbarContext } from '@/contexts/SnackbarContext';
-
-/**
- * The user popover content is the content that appears when
- * the user clicks on their avatar.
- */
-const UserPopoverContent = (): JSX.Element => {
-    const { userInfo, fetchUserInfo } = useContext(UserContext);
-    const { showSnackSev } = useContext(SnackbarContext);
-
-    /**
-     * Change the user's theme.
-     * @param theme the theme to change to
-     */
-    const changeTheme = (theme: Theme) => {
-        axios.post('/users/theme', {
-            theme,
-        }).catch(handleError(showSnackSev)).finally(() => {
-            void fetchUserInfo();
-        });
-    };
-
-    return (
-        <div>
-            <div className={styles.popoverButtonContainer}>
-                <Switch
-                    checked={userInfo.theme === "DARK"}
-                    onChange={() => changeTheme(userInfo.theme === "DARK" ? "LIGHT" : "DARK")}
-                    label={userInfo.theme === "DARK" ? "Dark Mode" : "Light Mode"}
-                />
-
-                <Link href="https://codetierlist.utm.utoronto.ca/Shibboleth.sso/Logout">
-                    <Button appearance="subtle">
-                        Sign out
-                    </Button>
-                </Link>
-            </div>
-
-            <Persona
-                size="huge"
-                className={styles.popoverPersona}
-                avatar={GenerateInitalsAvatarProps(generateInitals(userInfo))}
-                primaryText={
-                    <>
-                        {`${userInfo.givenName} ${userInfo.surname}` == " " ? userInfo.utorid : `${userInfo.givenName} ${userInfo.surname}`}
-                        {userInfo.admin && <Badge className={styles.adminBadge} appearance="outline">Admin</Badge>}
-                    </>
-                }
-                secondaryText={userInfo.email}
-                tertiaryText={userInfo.utorid}
-            />
-        </div>
-    );
-};
 
 /**
  * The user avatar is the avatar that appears in the navbar. It contains
@@ -109,7 +53,7 @@ export const Navbar = (): JSX.Element => {
                         </Button>
                     </PopoverTrigger>
                     <PopoverSurface>
-                        <UserPopoverContent />
+                        <NavbarUserPopover />
                     </PopoverSurface>
                 </Popover>
             )}

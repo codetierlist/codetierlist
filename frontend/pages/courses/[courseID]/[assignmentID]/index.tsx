@@ -335,7 +335,7 @@ export default function Page() {
             </TabList>
 
 
-            <Container component="main" className={styles.container}>
+            <Container component="main" className="m-t-xxxl">
                 {
                     stage === 0 && (
                         <>

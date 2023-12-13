@@ -33,27 +33,6 @@
     margin-left: var(--spacingHorizontalXS);
 }
 
-.popoverButtonContainer {
-    display: flex;
-    width: 100%;
-    flex-direction: row;
-    justify-content: space-between;
-    gap: var(--spacingVerticalS);
-    align-items: center;
-    margin-bottom: var(--spacingVerticalS);
-}
-
-.popoverLink {
-    display: block;
-    margin-bottom: var(--spacingVerticalS);
-
-    & .popoverButton {
-        margin: 0 !important;
-        padding: 0 !important;
-        min-width: 0 !important;
-    }
-}
-
 .userButton {
     margin: 0 !important;
     padding: 0 !important;

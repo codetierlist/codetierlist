@@ -2,7 +2,7 @@ import { createDarkTheme, createLightTheme } from '@fluentui/react-components';
 
 import type { BrandVariants, Theme } from '@fluentui/react-components';
 
-import { Space_Grotesk, Inter } from 'next/font/google';
+import { Space_Grotesk, Inter, Space_Mono } from 'next/font/google';
 
 const greenTheme: BrandVariants = {
     10: '#020402',
@@ -25,6 +25,7 @@ const greenTheme: BrandVariants = {
 
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--spaceGrotesk' });
 const inter = Inter({ subsets: ['latin'], variable: '--inter' });
+const spaceMono = Space_Mono({ subsets: ['latin'], variable: '--spaceMono', weight: "400" });
 
 export const lightTheme: Theme = {
     ...createLightTheme(greenTheme)
@@ -36,6 +37,8 @@ export const darkTheme: Theme = {
 
 lightTheme.fontFamilyNumeric = spaceGrotesk.style.fontFamily;
 lightTheme.fontFamilyBase = inter.style.fontFamily;
+lightTheme.fontFamilyMonospace = spaceMono.style.fontFamily;
 
 darkTheme.fontFamilyNumeric = spaceGrotesk.style.fontFamily;
 darkTheme.fontFamilyBase = inter.style.fontFamily;
+darkTheme.fontFamilyMonospace = spaceMono.style.fontFamily;
