@@ -1,20 +1,22 @@
 import axios, { handleError } from "@/axios";
-import { ControlCard, HeaderToolbar, RichTextEditor } from "@/components";
+import { ControlCard, HeaderToolbar, Monaco } from "@/components";
 import { SnackbarContext } from "@/contexts/SnackbarContext";
 import { UserContext } from "@/contexts/UserContext";
 import {
-    Button, Dropdown,
+    Button, Caption1, Card, CardHeader, Dropdown,
     Input,
+    Label,
     Option,
     OptionGroup,
-    Subtitle1,
+    Text,
     Title2, ToolbarButton
 } from "@fluentui/react-components";
 import {
     ArrowLeft24Regular,
     Calendar24Regular,
     Rename24Regular,
-    Run24Regular
+    Run24Regular,
+    TextDescription24Regular
 } from '@fluentui/react-icons';
 import { RunnerImage } from "codetierlist-types";
 import Head from "next/head";
@@ -102,10 +104,17 @@ export default function Page(): JSX.Element {
                         description="The date and time when the assignment is due."
                         icon={<Calendar24Regular />}
                         htmlFor="dueDate">
-                        <Input required type="datetime-local" id="dueDate"
+                        <Input
+                            required
+                            type="datetime-local"
+                            id="dueDate"
                             name="dueDate"
                             value={dueDate.toISOString().slice(0, -8)}
-                            onChange={e => setDueDate(new Date(e.target.value))} />
+                            onChange={e => {
+                                // check if the date is valid
+                                if (new Date(e.target.value).toString() !== "Invalid Date")
+                                    setDueDate(new Date(e.target.value));
+                            }} />
                     </ControlCard>
 
                     <ControlCard
@@ -131,6 +140,27 @@ export default function Page(): JSX.Element {
                             )}
                         </Dropdown>
                     </ControlCard>
+
+                    <Card size="large">
+                        <CardHeader
+                            image={
+                                <TextDescription24Regular />
+                            }
+                            header={<Label className={styles.semibold} htmlFor="description">Description</Label>}
+                            description={
+                                <Caption1>The description is displayed to the students.</Caption1>
+                            }
+                        />
+
+                        <Monaco
+                            value={description}
+                            onChange={setDescription}
+                            language="markdown"
+                            id="description"
+                            height="500px"
+                        />
+
+                    </Card>
 
                     <Button type="submit"
                         appearance="primary">Create</Button>
