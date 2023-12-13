@@ -85,4 +85,3 @@ export type Theme = typeof user.theme;
 export type RunnerImage = {image:string, image_version: string}
 
 export type AssignmentStudentStats = (Omit<User,"admin" | "theme"> & { tier: Tier, testsPassed: number })[]
-

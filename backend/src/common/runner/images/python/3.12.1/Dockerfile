@@ -12,4 +12,3 @@ RUN pip install CIUnitTest
 COPY runner.py ./
 
 CMD ["python", "runner.py"]
-
