@@ -5,6 +5,7 @@ import {
     ToolbarButton
 } from "@fluentui/react-components";
 import { Add24Filled, PersonAdd24Regular, PersonDelete24Regular, ArrowLeft24Regular } from '@fluentui/react-icons';
+// import { type Course, getCourses } from '@/contexts/UserContext';
 import { Title2 } from '@fluentui/react-text';
 import {
     FetchedCourseWithTiers,
@@ -68,14 +69,18 @@ const AdminToolbar = ({ courseID }: { courseID: string, fetchCourse: () => Promi
 };
 
 export default function Page() {
+<<<<<<< HEAD
     const { userInfo } = useContext(UserContext);
     const [course, setCourse] = useState<FetchedCourseWithTiers | null>(null);
     const { courseID, assignmentID } = useRouter().query;
     const { showSnackSev } = useContext(SnackbarContext);
+=======
+>>>>>>> fa69a2b... Rebase
     const [assignment, setAssignment] = useState<FetchedAssignmentWithTier | null>(null);
     const [studentData, setStudentData] = useState<AssignmentStudentStats>([]);
     const router = useRouter();
 
+<<<<<<< HEAD
     const fetchAssignment = async () => {
         await axios.get<FetchedAssignmentWithTier>(`/courses/${courseID}/assignments/${assignmentID}`, { skipErrorHandling: true })
             .then((res) => setAssignment(res.data))
@@ -102,8 +107,18 @@ export default function Page() {
         document.title = `${courseID} - Codetierlist`;
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [courseID]);
+=======
+    // TODO: guard against invalid courseID, invalid assignmentID
+    const { courseID, assignmentID } = router.query;
+>>>>>>> fa69a2b... Rebase
 
     useEffect(() => {
+        const fetchAssignment = async () => {
+            await axios.get<FetchedAssignmentWithTier>(`/courses/${courseID}/${assignmentID}`, { skipErrorHandling: true }).then((res) => setAssignment(res.data)).catch(_ => {
+                _; // to suppress ts error
+                notFound();
+            });
+        };
         if (!courseID || !assignmentID) {
             return;
         }
