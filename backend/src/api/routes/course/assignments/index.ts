@@ -10,13 +10,14 @@ import {
 } from "../../../../common/utils";
 import multer from 'multer';
 import {
-    generateList,
+    generateList, generateTierList,
     generateYourTier
 } from "../../../../common/tierlist";
 import {
+    AssignmentStudentStats,
     AssignmentWithTier,
     Commit, FetchedAssignment,
-    FetchedAssignmentWithTier, FullFetchedAssignment,
+    FetchedAssignmentWithTier, FullFetchedAssignment, Tier,
     Tierlist, UserTier
 } from "codetierlist-types";
 
@@ -129,4 +130,26 @@ router.get("/:assignment/tierlist", fetchAssignmentMiddleware, errorHandler(asyn
     res.send(tierlist[0] satisfies Tierlist);
 }));
 
+router.get('/:assignment/stats', fetchAssignmentMiddleware, errorHandler(async (req, res) => {
+    const fullFetchedAssignment = await prisma.assignment.findUniqueOrThrow({
+        where: {
+            id:
+                {title: req.assignment!.title, course_id: req.assignment!.course_id}
+        },
+        ...fullFetchedAssignmentArgs,
+    });
+    const tierlist = generateTierList(fullFetchedAssignment, req.user, false);
+    const invertedTierlist: Record<string, Tier> = {};
+    (Object.keys(tierlist) as Tier[]).forEach(tier => tierlist[tier].forEach(name => invertedTierlist[name.name] = tier));
+    const students = fullFetchedAssignment.submissions.map(submission => ({
+        utorid: submission.author.utorid,
+        givenName: submission.author.givenName,
+        surname: submission.author.surname,
+        email: submission.author.email,
+        tier: invertedTierlist[submission.author.utorid],
+        testsPassed: submission.scores.filter(x => x.test_case.valid === "VALID").length === 0 ? 0
+            : submission.scores.filter(x => x.test_case.valid === "VALID" && x.pass).length / submission.scores.filter(x => x.test_case.valid === "VALID").length
+    }));
+    res.send(students satisfies AssignmentStudentStats);
+}));
 export default router;

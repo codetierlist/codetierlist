@@ -100,15 +100,35 @@ export default function Page() {
                         receiving is incorrect, please contact your instructor to correct this issue.</Caption1>
                     }
 
-                    {course ? course.assignments.map((assignment) => (
-                        <AssignmentCard key={assignment.title.replaceAll(" ", "_")}
-                            id={assignment.title.replaceAll(" ", "_")}
-                            name={assignment.title}
-                            dueDate={assignment.due_date ? new Date(assignment.due_date) : undefined}
-                            tier={assignment.tier}
-                            courseID={courseID as string}
-                        />
-                    )) : "Loading..."}
+                {course ? (
+                    userInfo.admin ? (
+                        course.assignments.map((assignment) => (
+                            <AssignmentCard
+                                key={assignment.title.replaceAll(" ", "_")}
+                                id={assignment.title.replaceAll(" ", "_")}
+                                name={assignment.title}
+                                dueDate={assignment.due_date ? new Date(assignment.due_date) : undefined}
+                                tier={assignment.tier}
+                                courseID={courseID as string}
+                                isAdmin={true}
+                            />
+                        ))
+                    ) : (
+                        course.assignments.map((assignment) => (
+                            <AssignmentCard
+                                key={assignment.title.replaceAll(" ", "_")}
+                                id={assignment.title.replaceAll(" ", "_")}
+                                name={assignment.title}
+                                dueDate={assignment.due_date ? new Date(assignment.due_date) : undefined}
+                                tier={assignment.tier}
+                                courseID={courseID as string}
+                                isAdmin={false}
+                            />
+                        ))
+                    )
+                ) : (
+                    "Loading..."
+                )}
                 </div>
             </Container>
         </>

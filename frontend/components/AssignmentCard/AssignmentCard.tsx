@@ -16,6 +16,7 @@ export declare interface AssignmentCardProps {
     dueDate?: Date
     tier: UserTier | Tier,
     courseID: string
+    isAdmin: boolean
 }
 
 export const AssignmentCard = ({
@@ -23,18 +24,34 @@ export const AssignmentCard = ({
     name,
     dueDate,
     tier,
-    courseID
+    courseID,
+    isAdmin
 }: AssignmentCardProps): JSX.Element => {
-    const formattedDueDate = dueDate ? convertDate(dueDate) :null;
+    const formattedDueDate = dueDate ? convertDate(dueDate) : null;
+
     return (
-        <Link href={`${courseID}/${id}`} className={styles.cardLink}>
-            <Card className={styles.card} selected={false}>
-                <CardHeader header={(<TierChip tier={tier as UserTier}/>)} />
-                <div className={styles.cardContent}>
-                    {dueDate && <Caption1 className={styles.cardText}><strong>Due</strong> {formattedDueDate}</Caption1>}
-                    <Title3 className={styles.cardText}>{name}</Title3>
-                </div>
-            </Card>
-        </Link>
+        <>
+            {isAdmin ? (
+                <Link href={`${courseID}/${id}/admin`} className={styles.cardLink}>
+                    <Card className={styles.card} selected={false}>
+                        <CardHeader header={(<TierChip tier={tier as UserTier}/>)} />
+                        <div className={styles.cardContent}>
+                            {dueDate && <Caption1 className={styles.cardText}><strong>Due</strong> {formattedDueDate}</Caption1>}
+                            <Title3 className={styles.cardText}>{name}</Title3>
+                        </div>
+                    </Card>
+                </Link>
+            ) : (
+                <Link href={`${courseID}/${id}`} className={styles.cardLink}>
+                    <Card className={styles.card} selected={false}>
+                        <CardHeader header={(<TierChip tier={tier as UserTier}/>)} />
+                        <div className={styles.cardContent}>
+                            {dueDate && <Caption1 className={styles.cardText}><strong>Due</strong> {formattedDueDate}</Caption1>}
+                            <Title3 className={styles.cardText}>{name}</Title3>
+                        </div>
+                    </Card>
+                </Link>
+            )}
+        </>
     );
 };
