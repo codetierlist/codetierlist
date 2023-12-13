@@ -244,7 +244,7 @@ export const deleteFile = async (req: Request, res: Response, table: "solution" 
         await git.remove({fs, dir: object.git_url, filepath: req.params.file});
         await fs.unlink(`${object!.git_url}/${req.params.file}`);
     } catch (_) {
-        /* empty */
+        /* if the file doesn't exist then continue */
     }
     const commit = await commitFiles(req, object, table);
     if (commit === null) {

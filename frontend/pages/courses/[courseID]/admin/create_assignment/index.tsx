@@ -48,11 +48,12 @@ export default function Page(): JSX.Element {
         if(!res){
             return;
         }
-        setRunners(res.data.reduce((a, x) => {
-            a[x.image] = a[x.image] ?? [];
-            a[x.image].push(x.image_version);
-            return a;
+        setRunners(res.data.reduce((acc, runner) => {
+            acc[runner.image] = acc[runner.image] ?? [];
+            acc[runner.image].push(runner.image_version);
+            return acc;
         }, {} as Record<string, string[]>));
+
         setSelectedRunner(res.data[0]);
     };
     useEffect(() => {
