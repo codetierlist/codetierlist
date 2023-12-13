@@ -4,6 +4,15 @@
     margin-bottom: var(--spacingVerticalL);
 }
 
+.table {
+    margin-top: -20px;
+}
+
+.mainCard {
+    margin-left: 5%;
+    margin-right: 5%;
+    padding-bottom: 2%;
+}
 
 .info {
     display: flex;
