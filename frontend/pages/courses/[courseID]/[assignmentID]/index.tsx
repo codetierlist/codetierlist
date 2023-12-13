@@ -272,6 +272,25 @@ export default function Page() {
             });
     };
 
+    /**
+     * the polling rate for fetching the assignment and tierlist
+     */
+    const POLLING_RATE = 5000;
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (!courseID || !assignmentID) {
+                return;
+            }
+
+            void fetchAssignment();
+            void fetchTierlist();
+        }
+        , POLLING_RATE);
+        return () => clearInterval(interval);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    });
+
     useEffect(() => {
         if (!courseID || !assignmentID) {
             return;
