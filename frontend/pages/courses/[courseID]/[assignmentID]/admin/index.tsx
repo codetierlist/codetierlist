@@ -142,41 +142,43 @@ export default function Page() {
 
             <main>
                 <Card className={styles.mainCard}>
-                    <header className={styles.header}>
-                        <Title2 className={styles.courseTitle}>
-                            {course &&
-                                <CourseSessionChip
-                                    session={getSession(new Date(course.createdAt))}>
-                                    {courseID}
-                                </CourseSessionChip>
-                            }
-                        </Title2>
-                        <Title2>{assignment.title}</Title2>
-                    </header>
+                    <div className={styles.cardContents}>
+                        <header className={styles.header}>
+                            <Title2 className={styles.courseTitle}>
+                                {course &&
+                                    <CourseSessionChip
+                                        session={getSession(new Date(course.createdAt))}>
+                                        {courseID}
+                                    </CourseSessionChip>
+                                }
+                            </Title2>
+                            <Title2>{assignment.title}</Title2>
+                        </header>
 
-                    <Table arial-label="Default table" className={styles.table}>
-                        <TableHeader>
-                            <TableRow>
-                                {columns.map((column) => (
-                                    <TableHeaderCell key={column.columnKey}>
-                                        {column.label}
-                                    </TableHeaderCell>
-                                ))}
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {studentData.map((item) => (
-                                <TableRow key={item.utorid}>
-                                    <TableCell> {item.utorid} </TableCell>
-                                    <TableCell> {item.givenName + " " + item.surname} </TableCell>
-                                    {/* <TableCell onClick={openRepo(item.gitRepo.label)} style={{ cursor: 'pointer', textDecoration: 'underline' }}> Link </TableCell> */}
-                                    <TableCell> {item.testsPassed} </TableCell>
-                                    {/*<TableCell> {item.submitSol.label} </TableCell>*/}
-                                    {/*<TableCell> {item.submitTest.label} </TableCell>*/}
+                        <Table arial-label="Default table" className={styles.table}>
+                            <TableHeader>
+                                <TableRow>
+                                    {columns.map((column) => (
+                                        <TableHeaderCell key={column.columnKey}>
+                                            {column.label}
+                                        </TableHeaderCell>
+                                    ))}
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
+                            </TableHeader>
+                            <TableBody>
+                                {studentData.map((item) => (
+                                    <TableRow key={item.utorid}>
+                                        <TableCell> {item.utorid} </TableCell>
+                                        <TableCell> {item.givenName + " " + item.surname} </TableCell>
+                                        {/* <TableCell onClick={openRepo(item.gitRepo.label)} style={{ cursor: 'pointer', textDecoration: 'underline' }}> Link </TableCell> */}
+                                        <TableCell> {item.testsPassed} </TableCell>
+                                        {/*<TableCell> {item.submitSol.label} </TableCell>*/}
+                                        {/*<TableCell> {item.submitTest.label} </TableCell>*/}
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </div>
                 </Card>
             </main >
         </>

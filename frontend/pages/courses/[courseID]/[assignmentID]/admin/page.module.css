@@ -5,13 +5,17 @@
 }
 
 .table {
-    margin-top: -20px;
+    margin-top: 0.5%;
 }
 
 .mainCard {
     margin-left: 5%;
     margin-right: 5%;
-    padding-bottom: 2%;
+    margin-top: 20px;
+}
+
+.cardContents {
+    margin: 0.5%;
 }
 
 .info {
