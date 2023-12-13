@@ -138,6 +138,7 @@ router.post("/:courseId/remove", fetchCourseMiddleware, errorHandler(async (req,
         res.send({message: 'Invalid role.'});
         return;
     }
+    const newRole = role as RoleType | undefined ?? RoleType.STUDENT;
     if (!utorids || !Array.isArray(utorids) || utorids.some(utorid => typeof utorid !== 'string' || !isUTORid(utorid))) {
         res.statusCode = 400;
         res.send({message: 'utorids must be an array of valid utorids.'});

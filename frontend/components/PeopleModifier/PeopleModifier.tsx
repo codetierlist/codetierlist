@@ -69,7 +69,7 @@ export const PeopleModifier = ({
                 onClick={() => {
                     modifyEnrollment(router.query.courseID as string, editorValue, action, roleType)
                         .then(() => showSnackSev(`${modalActionText} ${peopleType} successfully`, "success"))
-                        .catch((e) => handleError(e.message, showSnackSev));
+                        .catch((e) => handleError(showSnackSev, e.message));
 
                 }}>
                 Submit
