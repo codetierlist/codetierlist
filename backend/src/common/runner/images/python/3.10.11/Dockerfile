@@ -8,8 +8,6 @@ WORKDIR /tests
 
 # for runner data
 WORKDIR /setup
-RUN pip install CIUnitTest
 COPY runner.py ./
 
 CMD ["python", "runner.py"]
-
