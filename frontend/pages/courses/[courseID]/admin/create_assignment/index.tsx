@@ -71,6 +71,7 @@ export default function Page(): JSX.Element {
     };
     useEffect(() => {
         void fetchRunners();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
@@ -84,7 +85,7 @@ export default function Page(): JSX.Element {
                     icon={<ArrowLeft24Regular />}
                     onClick={() => router.push(`/courses/${router.query.courseID}`)}
                 >
-                    Back
+                    Back to Course
                 </ToolbarButton>
             </HeaderToolbar>
 

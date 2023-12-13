@@ -29,7 +29,7 @@ export default function Page(): JSX.Element {
                     icon={<ArrowLeft24Regular />}
                     onClick={() => router.push(`/courses/${router.query.courseID}`)}
                 >
-                    Back
+                    Back to Course
                 </ToolbarButton>
             </HeaderToolbar>
 

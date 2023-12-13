@@ -1,5 +1,5 @@
 import axios, { handleError } from "@/axios";
-import { AssignmentCard, CourseSessionChip, HeaderToolbar, getSession } from '@/components';
+import { AssignmentCard, CourseSessionChip, HeaderToolbar, checkIfCourseAdmin, getSession } from '@/components';
 import { UserContext } from "@/contexts/UserContext";
 import {
     Caption1,
@@ -73,7 +73,7 @@ export default function Page() {
     useEffect(() => {
         void fetchCourse();
         document.title = `${courseID} - Codetierlist`;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [courseID]);
 
     return (
@@ -97,18 +97,24 @@ export default function Page() {
                 <div className="flex-wrap">
                     {((course !== null) && course.assignments.length === 0) &&
                         <Caption1>This course has no assignments yet. If your believe that this message you are
-                        receiving is incorrect, please contact your instructor to correct this issue.</Caption1>
+                            receiving is incorrect, please contact your instructor to correct this issue.</Caption1>
                     }
 
-                    {course ? course.assignments.map((assignment) => (
-                        <AssignmentCard key={assignment.title.replaceAll(" ", "_")}
-                            id={assignment.title.replaceAll(" ", "_")}
-                            name={assignment.title}
-                            dueDate={assignment.due_date ? new Date(assignment.due_date) : undefined}
-                            tier={assignment.tier}
-                            courseID={courseID as string}
-                        />
-                    )) : "Loading..."}
+                    {course ? (
+                        course.assignments.map((assignment) => (
+                            <AssignmentCard
+                                key={assignment.title.replaceAll(" ", "_")}
+                                id={assignment.title.replaceAll(" ", "_")}
+                                name={assignment.title}
+                                dueDate={assignment.due_date ? new Date(assignment.due_date) : undefined}
+                                tier={assignment.tier}
+                                courseID={courseID as string}
+                                hasAdminPerms={checkIfCourseAdmin(userInfo, course.id)}
+                            />
+                        ))
+                    ) : (
+                        "Loading..."
+                    )}
                 </div>
             </Container>
         </>
