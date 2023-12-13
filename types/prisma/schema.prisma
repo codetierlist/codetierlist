@@ -8,13 +8,15 @@ datasource db {
 }
 
 model Assignment {
-  title       String
-  due_date    DateTime?
-  description String
-  course_id   String
-  course      Course     @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  test_cases  TestCase[]
-  submissions Solution[]
+  title         String
+  due_date      DateTime?
+  description   String
+  course_id     String
+  course        Course     @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  test_cases    TestCase[]
+  submissions   Solution[]
+  runner_image  String     @default("python")
+  image_version String     @default("3.10.11")
 
   @@id(fields: [course_id, title])
   @@unique([course_id, title], name: "id")
@@ -58,6 +60,7 @@ enum TestCaseStatus {
   INVALID
   VALID
   PENDING
+  EMPTY
 }
 
 model TestCase {

@@ -25,17 +25,17 @@ const fetchedAssignmentArgs = Prisma.validator<Prisma.AssignmentDefaultArgs>()({
 const fullFetchedAssignmentArgs = Prisma.validator<Prisma.AssignmentDefaultArgs>()({
     include: {
         submissions: {
+            distinct: "author_id",
+            orderBy: {datetime: "desc"},
             include: {
                 author: true,
-                scores: true
+                scores: {
+                    orderBy: [{test_case: {datetime: "desc"}}, {datetime: "desc"}],
+                    distinct: "testcase_author_id",
+                    include: {test_case:true}
+                }
             }
         },
-        test_cases: {
-            include: {
-                author: true,
-                scores: true
-            }
-        }
     }
 });
 
@@ -65,6 +65,7 @@ export type FetchedCourseWithTiers = Omit<FetchedCourse, "assignments"> & {
 
 export type Commit = {
     files: string[],
+    valid?: TestCaseStatus,
     log: string[],
 }
 
@@ -79,4 +80,8 @@ const role :Role;
 export type RoleType = typeof role.type
 
 const user :User;
-export type Theme = typeof user.theme
+export type Theme = typeof user.theme;
+
+export type RunnerImage = {image:string, image_version: string}
+
+export type AssignmentStudentStats = (Omit<User,"admin" | "theme"> & { tier: Tier, testsPassed: number })[]

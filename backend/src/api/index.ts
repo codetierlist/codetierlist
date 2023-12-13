@@ -1,10 +1,11 @@
-import express from 'express';
+import express, {ErrorRequestHandler} from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import prisma, {fetchedUserArgs} from "../common/prisma";
 import {isUofTEmail, isUTORid} from "is-utorid";
 import routes from "./routes";
 import * as http from "http";
+import {errorHandler} from "../common/utils";
 
 const port = process.env.PORT || 3000;
 const app = express();
@@ -18,24 +19,8 @@ if (process.env.NODE_ENV === 'development') {
         }),
     );
 }
-app.use((req, res, next) => {
-    try {
-        next();
-    } catch (e) {
-        console.log(e);
-        let message = 'Internal server error.';
-        if (process.env.NODE_ENV === 'development') {
-            message += `\n${e}`;
-        }
-        res.statusCode = 500;
-        res.send({
-            status: 500,
-            message,
-        });
-    }
-});
 app.use(bodyParser.json());
-app.use(async (req, res, next) => {
+app.use(errorHandler(async (req, res, next) => {
     if (!req.headers.utorid || !req.headers.http_mail || !req.headers.sn || !req.headers.givenname) {
         res.statusCode = 401;
         res.send({
@@ -78,11 +63,22 @@ app.use(async (req, res, next) => {
     }
     req.user = user;
     next();
-});
+}));
 
 app.use(routes);
+app.use(((err, req, res, _) => {
+    let message = 'Internal server error.';
+    if (process.env.NODE_ENV === 'development') {
+        message += `\n${err}`;
+    }
+    res.statusCode = 500;
+    res.send({
+        status: 500,
+        message,
+    });
+}) as ErrorRequestHandler);
 
 server.listen(port, () => {
     //eslint-disable-next-line no-console
-    console.log(`Server is listening on port ${port}.`);
+    console.info(`Server is listening on port ${port}.`);
 });

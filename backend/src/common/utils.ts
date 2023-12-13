@@ -13,7 +13,17 @@ import path from "path";
 import {PathLike, promises as fs} from "fs";
 import git, {ReadBlobResult} from "isomorphic-git";
 import {Commit} from "codetierlist-types";
-import {onNewSubmission, onNewTestCase} from "./updateScores";
+import {
+    onNewProfSubmission,
+    onNewSubmission,
+    onNewTestCase
+} from "./updateScores";
+
+export const errorHandler = (cb: (req: Request, res: Response, next: NextFunction) => Promise<unknown>) => {
+    return (req: Request, res: Response, next: NextFunction) => {
+        cb(req, res, next).catch(e => next(e));
+    };
+};
 
 /**
  * Checks if a user is a prof in a course.
@@ -26,13 +36,17 @@ export function isProf(course: Course & {
         type: RoleType
     }>
 }, user: {
-    utorid: string
+    utorid: string,
+    admin?: boolean
 }) {
-    return course.roles.some(role => role.user.utorid === user.utorid && ([RoleType.INSTRUCTOR, RoleType.TA] as RoleType[]).includes(role.type));
+    return user.admin === true || course.roles.some(role => role.user.utorid === user.utorid && ([RoleType.INSTRUCTOR, RoleType.TA] as RoleType[]).includes(role.type));
 }
 
 const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'datetime' | 'id'>, table: "solution" | "testCase") => {
     const repoPath = path.resolve(`/repos/${object.course_id}/${object.assignment_title}/${object.author_id}_${table}`);
+    if (["unmodified", "unmodified"].includes(await git.status({fs, dir: repoPath, filepath: '.'}))) {
+        return null;
+    }
     await git.add({fs, dir: repoPath, filepath: '.'});
     try {
         const commit = await git.commit({
@@ -54,11 +68,14 @@ const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'date
         };
         if (table === "solution") {
             const solution = await prisma.solution.create({data});
-            onNewSubmission(solution).then();
-
+            if (isProf(req.course!, req.user)) {
+                void onNewProfSubmission(solution, req.assignment!);
+            } else {
+                void onNewSubmission(solution, req.assignment!);
+            }
         } else {
             const testCase = await prisma.testCase.create({data});
-            onNewTestCase(testCase).then();
+            onNewTestCase(testCase, req.assignment!).then();
         }
         return commit;
     } catch (e) {
@@ -173,7 +190,11 @@ export const getCommit = async (submission: Solution | TestCase, commitId?: stri
             ref: commit.oid
         });
         const log = await git.log({fs, dir: submission.git_url});
-        return {files, log: log.map(commitIterator => commitIterator.oid)};
+        const res: Commit = {files, log: log.map(commitIterator => commitIterator.oid)};
+        if ((submission as TestCase).valid) {
+            res.valid = (submission as TestCase).valid;
+        }
+        return res;
     } catch (e: unknown) {
         // listFiles/log throws an error if the commit is not found
         // https://github.com/isomorphic-git/isomorphic-git/blob/90ea0e34f6bb0956858213281fafff0fd8e94309/src/api/listFiles.js#L33
@@ -196,7 +217,7 @@ export const getFileFromRequest = async (req: Request, res: Response, table: "so
     const object = await getObjectFromRequest(req, table);
     if (object === null) {
         res.statusCode = 404;
-        res.send({error: 'Submission not found.'});
+        res.send({message: 'Submission not found.'});
         return;
     }
     let file: ReadBlobResult | null = null;
@@ -206,7 +227,7 @@ export const getFileFromRequest = async (req: Request, res: Response, table: "so
     }
     if (file === null) {
         res.statusCode = 404;
-        res.send({error: 'Commit not found.'});
+        res.send({message: 'Commit not found.'});
         return;
     }
     res.send(Buffer.from(file.blob));
@@ -216,17 +237,19 @@ export const deleteFile = async (req: Request, res: Response, table: "solution" 
     const object = await getObjectFromRequest(req, table);
     if (object === null) {
         res.statusCode = 404;
-        res.send({error: 'Submission not found.'});
+        res.send({message: 'Submission not found.'});
         return;
     }
-    try{
+    try {
         await git.remove({fs, dir: object.git_url, filepath: req.params.file});
         await fs.unlink(`${object!.git_url}/${req.params.file}`);
-    }catch (_) { /* empty */ }
+    } catch (_) {
+        /* if the file doesn't exist then continue */
+    }
     const commit = await commitFiles(req, object, table);
     if (commit === null) {
         res.statusCode = 500;
-        res.send({error: 'Failed to commit.'});
+        res.send({message: 'Failed to commit.'});
         return;
     }
     res.send({commit});
@@ -289,19 +312,4 @@ export const fetchAssignmentMiddleware = async (req: Request, res: Response, nex
     req.assignment = serializeAssignment(assignment);
     req.course = assignment.course;
     next();
-};
-
-
-/**
- * returns a user object given a utorid. if it doesnt exist then return null
- *
- * @param utorid the utorid of the user
- * @returns the user object or null
- */
-export const getUser = async (utorid: string) => {
-    return await prisma.user.findUnique({
-        where: {
-            utorid
-        }
-    });
 };

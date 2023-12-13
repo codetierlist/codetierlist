@@ -50,7 +50,12 @@
     ],
     "rules": {
       "@typescript-eslint/no-unused-vars": [
-        "warn"
+        "error",
+        {
+          "argsIgnorePattern": "^_",
+          "varsIgnorePattern": "^_",
+          "caughtErrorsIgnorePattern": "^_"
+        }
       ],
       "indent": [
         "error",

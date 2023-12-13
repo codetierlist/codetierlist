@@ -1,16 +1,17 @@
 import axios, { handleError } from "@/axios";
-import { AssignmentCard, CourseSessionChip, HeaderToolbar, getSession } from '@/components';
+import { AssignmentCard, CourseSessionChip, HeaderToolbar, checkIfCourseAdmin, getSession } from '@/components';
 import { UserContext } from "@/contexts/UserContext";
 import {
     Caption1,
     ToolbarButton
 } from "@fluentui/react-components";
-import { Add24Filled, PersonAdd24Regular } from '@fluentui/react-icons';
+import { Add24Filled, PersonAdd24Regular, PersonDelete24Regular } from '@fluentui/react-icons';
 import { Title2 } from '@fluentui/react-text';
 import { FetchedCourseWithTiers } from "codetierlist-types";
 import { notFound } from "next/navigation";
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from "react";
+import { Container } from "react-grid-system";
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import styles from './page.module.css';
 
@@ -28,6 +29,14 @@ const AdminToolbar = ({ courseID }: { courseID: string, fetchCourse: () => Promi
         >
             <ToolbarButton
                 appearance="subtle"
+                icon={<Add24Filled />}
+                onClick={() => router.push(`/courses/${courseID}/admin/create_assignment`)}
+            >
+                Add assignment
+            </ToolbarButton>
+
+            <ToolbarButton
+                appearance="subtle"
                 icon={<PersonAdd24Regular />}
                 onClick={() => router.push(`/courses/${courseID}/admin/enroll`)}
             >
@@ -36,10 +45,10 @@ const AdminToolbar = ({ courseID }: { courseID: string, fetchCourse: () => Promi
 
             <ToolbarButton
                 appearance="subtle"
-                icon={<Add24Filled />}
-                onClick={() => router.push(`/courses/${courseID}/admin/create_assignment`)}
+                icon={<PersonDelete24Regular />}
+                onClick={() => router.push(`/courses/${courseID}/admin/remove`)}
             >
-                Add assignment
+                Remove Students
             </ToolbarButton>
         </HeaderToolbar>
     );
@@ -56,7 +65,7 @@ export default function Page() {
         await axios.get<FetchedCourseWithTiers>(`/courses/${courseID}`, { skipErrorHandling: true })
             .then((res) => setCourse(res.data))
             .catch(e => {
-                handleError(e.message, showSnackSev);
+                handleError(showSnackSev)(e);
                 notFound();
             });
     };
@@ -64,14 +73,14 @@ export default function Page() {
     useEffect(() => {
         void fetchCourse();
         document.title = `${courseID} - Codetierlist`;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [courseID]);
 
     return (
         <>
             {userInfo.admin ? <AdminToolbar courseID={courseID as string} fetchCourse={fetchCourse} /> : undefined}
 
-            <main>
+            <Container component="main" className="m-t-xxxl">
                 <header className={styles.header}>
                     <Title2 className={styles.courseTitle}>
                         {course &&
@@ -88,20 +97,26 @@ export default function Page() {
                 <div className="flex-wrap">
                     {((course !== null) && course.assignments.length === 0) &&
                         <Caption1>This course has no assignments yet. If your believe that this message you are
-                        receiving is incorrect, please contact your instructor to correct this issue.</Caption1>
+                            receiving is incorrect, please contact your instructor to correct this issue.</Caption1>
                     }
 
-                    {course ? course.assignments.map((assignment) => (
-                        <AssignmentCard key={assignment.title.replaceAll(" ", "_")}
-                            id={assignment.title.replaceAll(" ", "_")}
-                            name={assignment.title}
-                            dueDate={assignment.due_date ? new Date(assignment.due_date) : undefined}
-                            tier={assignment.tier}
-                            courseID={courseID as string}
-                        />
-                    )) : "Loading..."}
+                    {course ? (
+                        course.assignments.map((assignment) => (
+                            <AssignmentCard
+                                key={assignment.title.replaceAll(" ", "_")}
+                                id={assignment.title.replaceAll(" ", "_")}
+                                name={assignment.title}
+                                dueDate={assignment.due_date ? new Date(assignment.due_date) : undefined}
+                                tier={assignment.tier}
+                                courseID={courseID as string}
+                                hasAdminPerms={checkIfCourseAdmin(userInfo, course.id)}
+                            />
+                        ))
+                    ) : (
+                        "Loading..."
+                    )}
                 </div>
-            </main >
+            </Container>
         </>
     );
 }

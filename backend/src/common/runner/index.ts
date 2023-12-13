@@ -1,11 +1,17 @@
-import {Submission, TestCase} from "codetierlist-types";
+import {
+    Assignment,
+    RunnerImage,
+    Submission,
+    TestCase
+} from "codetierlist-types";
 import {spawn, spawnSync} from "child_process";
 import path from "path";
 import {getCommit, getFile} from "../utils";
 
 interface Job {
     submission: Submission,
-    testCase: TestCase
+    testCase: TestCase,
+    assignment: Assignment
 }
 
 type JobFiles = {
@@ -22,6 +28,8 @@ export enum JobStatus {
     PASS = "PASS", // passes all test cases
     FAIL = "FAIL", // fails at least one test case
     ERROR = "ERROR", // code error, server error, or timeout
+    SUBMISSION_EMPTY="SUBMISSION_EMPTY",
+    TESTCASE_EMPTY="TESTCASE_EMPTY"
 }
 
 export type JobResult =
@@ -36,7 +44,7 @@ export type JobResult =
         failed: string[] // list of failed testcase info
     } |
     {
-        status: JobStatus.ERROR
+        status: JobStatus.ERROR | JobStatus.SUBMISSION_EMPTY | JobStatus.TESTCASE_EMPTY
     };
 
 
@@ -58,8 +66,8 @@ export const getFiles = async (submission: Submission | TestCase): Promise<JobFi
 
 
 export const runJob = async (job: Job): Promise<JobResult> => {
-    console.log("Running job" + job.submission.git_url + "             " + job.testCase.git_url);
-    let query = {};
+    console.info("Running job" + job.submission.git_url + "             " + job.testCase.git_url);
+    let query:{solution_files: JobFiles, test_case_files: JobFiles};
 
     try {
         query = {
@@ -68,14 +76,19 @@ export const runJob = async (job: Job): Promise<JobResult> => {
         };
     } catch (e) {
         console.error(e);
-        return await new Promise((resolve) => {
-            resolve({status: JobStatus.ERROR}); // slightly more graceful error handling?
-        });
+        return {status: JobStatus.ERROR};
     }
 
+    if(Object.keys(query.test_case_files).length == 0){
+        return {status: JobStatus.TESTCASE_EMPTY};
+    }
 
-    const img = 'python';
-    const img_ver = '3.10.11';
+    if(Object.keys(query.solution_files).length == 0){
+        return {status: JobStatus.SUBMISSION_EMPTY};
+    }
+
+    const img = job.assignment.runner_image;
+    const img_ver = job.assignment.image_version;
 
     // TODO: figure out how to use reject
     return await new Promise((resolve) => {
@@ -97,13 +110,13 @@ export const runJob = async (job: Job): Promise<JobResult> => {
 
         runner.stdout.on('data', (data) => {
             buffer += data;
-            console.log(`stdout: ${data}`);
+            console.info(`stdout: ${data}`);
             try {
                 const resultJSON: JobResult = JSON.parse(buffer) as JobResult;
                 runner?.stdout?.removeAllListeners();
                 runner?.stderr?.removeAllListeners();
                 runner?.removeAllListeners();
-                console.log(resultJSON);
+                console.info(resultJSON);
 
                 resolve(resultJSON);
             } catch (e) {
@@ -112,7 +125,7 @@ export const runJob = async (job: Job): Promise<JobResult> => {
         });
 
         runner.stderr.on('data', (data) => {
-            console.log(`stderr: ${data}`);
+            console.info(`stderr: ${data}`);
         });
 
         runner.on('exit', (code) => {
@@ -138,10 +151,13 @@ export const queueJob = (job: Job) : Promise<JobResult> => {
     });
 };
 
-const create_images = () => {
-    console.log("creating images");
-    const img = 'python';
-    const img_ver = '3.10.11';
+// Add new images here
+export const images : RunnerImage[] = [
+    {image: 'python', image_version: '3.10.11'},
+    {image: 'python', image_version: '3.12.1'}
+];
+
+const createImage = (img : string, img_ver: string) => {
     const ret = spawnSync("bash",
         ["-c",
             `docker build . -t 127.0.0.1:5000/runner-image-${img}-${img_ver}; ` +
@@ -152,8 +168,13 @@ const create_images = () => {
         }
     );
     if(ret?.stdout)
-        console.log(ret.stdout.toString());
-    console.log("done creating images");
+        console.info(ret.stdout.toString());
+    console.info(`Image ${img}/${img_ver} created`);
+};
+const createImages = () => {
+    console.info("creating images");
+    images.forEach(x=>createImage(x.image,x.image_version));
+    console.info("done creating images");
 };
 
 setInterval(() => {
@@ -175,10 +196,10 @@ setInterval(() => {
     }
 }, 1000);
 
-create_images();
+createImages();
 
 // for (let i = 0; i < 3; i++) {
-//     console.log(`queueing job ${i}`);
+//     console.info(`queueing job ${i}`);
 //     queueJob({
 //         submission: {
 //             id: "c143e734-ed83-428a-aa68-50e182c58eae",
@@ -200,7 +221,7 @@ create_images();
 //             valid: "VALID"
 //         }
 //     }).then(r => {
-//         console.log(`result ${i}`);
-//         console.log(r);
+//         console.info(`result ${i}`);
+//         console.info(r);
 //     });
 // }

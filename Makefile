@@ -1,5 +1,3 @@
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres?schema=public
-
 init:
 	cd ./types && npm ci
 	cd ./types && npx prisma generate
@@ -37,6 +35,6 @@ docker_dev_down:
 
 docker_dev_restart: docker_dev_down docker_dev
 
-docker_init:
-    docker swarm init
-    docker service create --name registry --publish published=5000,target=5000 registry:2
+# docker_init:
+    # docker swarm init
+    # docker service create --name registry --publish published=5000,target=5000 registry:2

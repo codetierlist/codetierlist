@@ -32,12 +32,12 @@ const getUserInitials = (user: User | string) =>
 const getMean = (data: number[]) => data.reduce((a, b) => Number(a) + Number(b)) / data.length;
 
 function getStandardDeviation(array: number[]) {
-    const n = array.length
-    const mean = array.reduce((a, b) => a + b) / n
-    return Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n)
+    const n = array.length;
+    const mean = array.reduce((a, b) => a + b) / n;
+    return Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n);
 }
 
-export function generateList(assignment: Omit<FullFetchedAssignment, "due_date">, user?: string | User): [Tierlist, UserTier] {
+export function generateList(assignment: Omit<FullFetchedAssignment, "due_date">, user?: string | User, anonymize = true): [Tierlist, UserTier] {
     const res: Tierlist = {
         S: [],
         A: [],
@@ -50,13 +50,15 @@ export function generateList(assignment: Omit<FullFetchedAssignment, "due_date">
         return [res, "?" as UserTier];
     }
     const scores = assignment.submissions.map(submission =>
-        ({
+    {
+        const validScores = submission.scores.filter(x=>x.test_case.valid==="VALID");
+        return{
             you: user ? isSelf(user, submission.author.utorid) : false,
-            name: (user ? isSelf(user, submission.author.utorid) : false)
+            name: anonymize ? submission.author.utorid : (user ? isSelf(user, submission.author.utorid) : false)
                 ? getUserInitials(submission.author)
                 : twoLetterHash(submission.author.utorid + (user ? getUtorid(user) : "")),
-            score: submission.scores.length === 0 ? 0.0 : submission.scores.filter(x => x.pass).length / submission.scores.length,
-        })
+            score: validScores.length === 0 ? 0.0 : validScores.filter(x => x.pass).length / validScores.length,
+        };}
     );
     const mean = getMean(scores.map(x => x.score));
     const std = getStandardDeviation(scores.map(x => x.score));
@@ -89,5 +91,5 @@ export function generateList(assignment: Omit<FullFetchedAssignment, "due_date">
     return [res, yourTier];
 }
 
-export const generateTierList = (assignment: Omit<FullFetchedAssignment, "due_date">, user?: string | User): Tierlist => generateList(assignment, user)[0];
+export const generateTierList = (assignment: Omit<FullFetchedAssignment, "due_date">, user?: string | User, anonymize=true): Tierlist => generateList(assignment, user, anonymize)[0];
 export const generateYourTier = (assignment: Omit<FullFetchedAssignment, "due_date">, user?: string | User): UserTier => generateList(assignment, user)[1];

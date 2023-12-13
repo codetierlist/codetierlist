@@ -5,7 +5,8 @@ import {
     convertDate,
     convertTime,
     promptForFileObject,
-    Monaco
+    Monaco,
+    ToolTipIcon
 } from '@/components';
 import { SnackbarContext } from "@/contexts/SnackbarContext";
 import flex from '@/styles/flex-utils.module.css';
@@ -24,13 +25,23 @@ import {
     Tab, TabList,
     Text
 } from '@fluentui/react-components';
-import { Add24Filled, Delete16Filled, Settings24Regular } from '@fluentui/react-icons';
+import {
+    Add24Filled,
+    ArrowCounterclockwiseDashes24Filled, CheckmarkCircle24Regular,
+    Delete16Filled,
+    DismissCircle24Regular, Settings24Regular
+} from '@fluentui/react-icons';
 import { Subtitle2, Title2 } from '@fluentui/react-text';
-import { Commit, FetchedAssignmentWithTier, Tierlist } from "codetierlist-types";
+import {
+    Commit,
+    FetchedAssignmentWithTier,
+    TestCaseStatus,
+    Tierlist
+} from "codetierlist-types";
 import Error from 'next/error';
 import Head from "next/head";
 import { useRouter } from 'next/router';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState} from 'react';
 import { Col, Container } from "react-grid-system";
 import styles from './page.module.css';
 import { UserContext } from "@/contexts/UserContext";
@@ -48,9 +59,7 @@ const ListFiles = ({ commit, route, assignment, assignmentID, update }: { commit
                     return { ...prev, [file]: Buffer.from(res.data).toString("utf-8") };
                 });
             })
-            .catch(e => {
-                handleError(e.message, showSnackSev);
-            });
+            .catch(handleError(showSnackSev));
     };
 
     const deleteFile = async (file: string) => {
@@ -59,9 +68,7 @@ const ListFiles = ({ commit, route, assignment, assignmentID, update }: { commit
                 update && update();
                 showSnackSev("File deleted", "success");
             })
-            .catch(e => {
-                handleError(e.message, showSnackSev);
-            });
+            .catch(handleError(showSnackSev));
     };
 
     useEffect(() => {
@@ -113,6 +120,36 @@ const ListFiles = ({ commit, route, assignment, assignmentID, update }: { commit
     );
 };
 
+/**
+ * return an icon reflecting the status of the testcase
+ * @param status the status of the testcase
+ */
+const TestCaseStatusIcon = ({status}: {status:TestCaseStatus}): JSX.Element=>{
+    switch (status) {
+    case "INVALID":
+        return <DismissCircle24Regular fill={"var(--colorStatusDangerForeground1)"} primaryFill={"var(--colorStatusDangerForeground1)"}/>;
+    case "PENDING":
+        return <ArrowCounterclockwiseDashes24Filled fill={"var(--colorPaletteGoldForeground2)"} primaryFill={"var(--colorPaletteGoldForeground2)"}/>;
+    case "VALID":
+        return <CheckmarkCircle24Regular fill={"var(--colorStatusSuccessForeground1)"} primaryFill={"var(--colorStatusSuccessForeground1)"}/>;
+    default: return <></>;
+    }
+};
+/**
+ * return an icon with tooltip reflecting the status of the testcase
+ * @param status the status of the testcase
+ */
+const TestCaseStatus = ({status}: {status?:TestCaseStatus})=>{
+    if(!status || status === "EMPTY"){
+        return undefined;
+    }
+    const contents : Record<Exclude<TestCaseStatus,"EMPTY">, string> = {
+        "INVALID": "One or more of your uploaded tests are invalid and did not pass the solution",
+        "VALID": "All uploaded testcases are valid and passed the solution",
+        "PENDING": "Your testcases are currently in the queue for validation",
+    };
+    return <ToolTipIcon tooltip={contents[status]} icon={TestCaseStatusIcon({status})}/>;
+};
 const FilesTab = ({ fetchAssignment, assignment, assignmentID, routeName, route }: { fetchAssignment: () => Promise<void>, assignment: FetchedAssignmentWithTier, assignmentID: string, routeName: string, route: "testcases" | "submissions" }) => {
     const [content, setContent] = useState<Commit>({ "files": [], "log": [] } as Commit);
     const { showSnackSev } = useContext(SnackbarContext);
@@ -121,7 +158,7 @@ const FilesTab = ({ fetchAssignment, assignment, assignmentID, routeName, route 
         await axios.get<Commit>(`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}`, { skipErrorHandling: true })
             .then((res) => setContent(res.data))
             .catch(e => {
-                handleError(e.message, showSnackSev);
+                handleError(showSnackSev)(e);
                 setContent({ "files": [], "log": [] } as Commit);
             });
     };
@@ -140,9 +177,7 @@ const FilesTab = ({ fetchAssignment, assignment, assignmentID, routeName, route 
             .then(() => {
                 fetchAssignment();
             })
-            .catch(e => {
-                handleError(e.message, showSnackSev);
-            });
+            .catch(handleError(showSnackSev));
     };
 
     useEffect(() => {
@@ -153,7 +188,7 @@ const FilesTab = ({ fetchAssignment, assignment, assignmentID, routeName, route 
     return (
         <div className={styles.gutter}>
             <div className={`${flex["d-flex"]} ${flex["justify-content-between"]}`}>
-                <Subtitle1 block>Uplodaded {routeName}s</Subtitle1>
+                <Subtitle1 block>Uploaded {routeName}s <TestCaseStatus status={content.valid}/></Subtitle1>
                 <Button
                     icon={<Add24Filled />}
                     appearance="subtle"
@@ -164,9 +199,7 @@ const FilesTab = ({ fetchAssignment, assignment, assignmentID, routeName, route 
                                     submitTest(file);
                                 }
                             })
-                            .catch(e => {
-                                handleError(e.message, showSnackSev);
-                            });
+                            .catch(handleError(showSnackSev));
                     }}
                 >
                     Upload a {routeName}
@@ -226,7 +259,7 @@ export default function Page() {
         await axios.get<FetchedAssignmentWithTier>(`/courses/${courseID}/assignments/${assignmentID}`, { skipErrorHandling: true })
             .then((res) => setAssignment(res.data))
             .catch(e => {
-                handleError(e.message, showSnackSev);
+                handleError(showSnackSev)(e);
                 setStage(-404);
             });
     };
@@ -234,10 +267,29 @@ export default function Page() {
         await axios.get<Tierlist>(`/courses/${courseID}/assignments/${assignmentID}/tierlist`, { skipErrorHandling: true })
             .then((res) => setTierlist(res.data))
             .catch(e => {
-                handleError(e.message, showSnackSev);
+                handleError(showSnackSev)(e);
                 setStage(-404);
             });
     };
+
+    /**
+     * the polling rate for fetching the assignment and tierlist
+     */
+    const POLLING_RATE = 5000;
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (!courseID || !assignmentID) {
+                return;
+            }
+
+            void fetchAssignment();
+            void fetchTierlist();
+        }
+        , POLLING_RATE);
+        return () => clearInterval(interval);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    });
 
     useEffect(() => {
         if (!courseID || !assignmentID) {
@@ -302,7 +354,7 @@ export default function Page() {
             </TabList>
 
 
-            <Container component="main" className={styles.container}>
+            <Container component="main" className="m-t-xxxl">
                 {
                     stage === 0 && (
                         <>
