@@ -39,7 +39,7 @@ export default function Page(): JSX.Element {
 
     const submitAssignment = async () => {
         if (!description) {
-            handleError("Description is required", showSnackSev);
+            showSnackSev("Description is required", "error");
             return;
         }
 
