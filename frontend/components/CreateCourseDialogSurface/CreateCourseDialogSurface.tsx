@@ -56,7 +56,10 @@ export const CreateCourseDialogSurface = ({ closeDialog }: { closeDialog: () => 
                 <DialogBody>
                     <DialogTitle className={styles.dialogTitle}>
                         Create a course
-                        <Caption1 className={styles.dialogSubtitle}>Please fill out the following information to create a course.</Caption1>
+                        <Caption1 className={styles.dialogSubtitle}>
+                            Please fill out the following information to create a course.
+                            A suffix will be added to the course code to make it unique.
+                        </Caption1>
                     </DialogTitle>
 
 
