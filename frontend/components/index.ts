@@ -4,6 +4,7 @@
 export * from './AddAssignmentModal/AddAssignmentModal';
 export * from './AssignmentCard/AssignmentCard';
 export * from './CheckedTodo/CheckedTodo';
+export * from './ControlCard/ControlCard';
 export * from './CourseBlock/CourseBlock';
 export * from './CourseOverviewCard/CourseOverviewCard';
 export * from './HeaderToolbar/HeaderToolbar';
