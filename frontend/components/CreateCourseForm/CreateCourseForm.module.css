@@ -1,0 +1,22 @@
+.dialogContent {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: var(--spacingVerticalL) 0;
+
+}
+
+.input {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacingVerticalS);
+    margin-bottom: var(--spacingVerticalXL);
+}
+
+.dialogTitle {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    gap: var(--spacingVerticalXL);
+    padding-bottom: var(--spacingVerticalL);
+}

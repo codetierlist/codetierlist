@@ -95,6 +95,7 @@ export default function Page(): JSX.Element {
                     <Title2 className={styles.title} block>Create Assignment</Title2>
 
                     <ControlCard
+                        required
                         title="Name"
                         description="The name that will be displayed to the students."
                         icon={<Rename24Regular />}
@@ -105,6 +106,7 @@ export default function Page(): JSX.Element {
                     </ControlCard>
 
                     <ControlCard
+                        required
                         title="Due date"
                         description="The date and time when the assignment is due."
                         icon={<Calendar24Regular />}
@@ -123,6 +125,7 @@ export default function Page(): JSX.Element {
                     </ControlCard>
 
                     <ControlCard
+                        required
                         title="Runner image"
                         description="The runner image is the image that the runners use to run uploaded code. If you think an image is missing please contact the maintainers."
                         icon={<Run24Regular />}
@@ -151,7 +154,7 @@ export default function Page(): JSX.Element {
                             image={
                                 <TextDescription24Regular />
                             }
-                            header={<Label className={styles.semibold} htmlFor="description">Description</Label>}
+                            header={<Label required className={styles.semibold} htmlFor="description">Description</Label>}
                             description={
                                 <Caption1>The description is displayed to the students.</Caption1>
                             }

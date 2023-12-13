@@ -1,5 +1,5 @@
 import axios, { handleError } from "@/axios";
-import { CourseOverviewCard, getSession } from '@/components';
+import { CourseOverviewCard, getSession, ControlCard } from '@/components';
 import { UserContext } from "@/contexts/UserContext";
 import {
     Button,
@@ -17,53 +17,11 @@ import {
 } from "@fluentui/react-components";
 import { Inter } from 'next/font/google';
 import Head from 'next/head';
-import { useContext, useState } from "react";
+import { useContext, useState, createContext } from 'react';
 import { SnackbarContext } from '../contexts/SnackbarContext';
+import { CreateCourseForm } from "@/components/CreateCourseForm/CreateCourseFrom";
 
 const inter = Inter({ subsets: ['latin'] });
-
-function CreateCourseForm({ closeDialog }: { closeDialog: () => void }) {
-    const [courseCode, setCourseCode] = useState("");
-    const [courseName, setCourseName] = useState("");
-    const { fetchUserInfo } = useContext(UserContext);
-    const { showSnackSev } = useContext(SnackbarContext);
-
-    return (
-        <DialogSurface>
-            <DialogBody>
-                <form onSubmit={(e) => {
-                    e.preventDefault();
-                    axios.post("/courses", {
-                        code: courseCode,
-                        name: courseName
-                    })
-                        .then(fetchUserInfo)
-                        .then(closeDialog)
-                        .catch((error) => { handleError(error.message, showSnackSev); });
-                }}>
-                    <DialogTitle>Create Course</DialogTitle>
-                    <DialogContent>
-                        <Label htmlFor="courseCode">Course Code:</Label><br />
-                        <Input type="text" id="courseCode" name="courseCode"
-                            value={courseCode}
-                            onChange={e => setCourseCode(e.target.value)} /><br />
-                        <Label htmlFor="courseName">Course Name:</Label><br />
-                        <Input type="text" id="courseName" name="courseName"
-                            value={courseName}
-                            onChange={e => setCourseName(e.target.value)} /><br /><br />
-                    </DialogContent>
-                    <DialogActions>
-                        <DialogTrigger disableButtonEnhancement>
-                            <Button appearance="secondary">Close</Button>
-                        </DialogTrigger>
-                        <Button type="submit"
-                            appearance="primary">Create</Button>
-                    </DialogActions>
-                </form>
-            </DialogBody>
-        </DialogSurface>
-    );
-}
 
 export default function Home() {
     const { userInfo } = useContext(UserContext);
@@ -103,6 +61,7 @@ export default function Home() {
                                     <Title2>+</Title2>
                                 </Button>
                             </DialogTrigger>
+
                             <CreateCourseForm closeDialog={() => setShowDialog(false)} />
                         </Dialog>
                         : undefined}

@@ -25,6 +25,10 @@ export declare type ControlCardProps = {
      */
     htmlFor?: string;
     /**
+     * Whether the control is required.
+     */
+    required?: boolean;
+    /**
      * The control that should be displayed on the right side of the card.
      */
     children: JSX.Element;
@@ -39,7 +43,7 @@ export const ControlCard = (props: ControlCardProps): JSX.Element => {
         <Card size="large">
             <CardHeader
                 image={props.icon}
-                header={<Label className={styles.semibold} htmlFor={props.htmlFor}>{props.title}</Label>}
+                header={<Label className={styles.semibold} required={props.required} htmlFor={props.htmlFor}>{props.title}</Label>}
                 description={
                     props.description && (
                         <Caption1>
