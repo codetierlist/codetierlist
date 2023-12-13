@@ -28,6 +28,7 @@ import {
     Card
 } from "@fluentui/react-components";
 import Head from "next/head";
+import {isProfForCourse} from "@/components/utils/Permissions/checkPermissions";
 
 /**
  * Toolbar for admin page
@@ -44,9 +45,9 @@ const AdminToolbar = ({ courseID }: { courseID: string, fetchCourse: () => Promi
             <ToolbarButton
                 appearance="subtle"
                 icon={<PersonAdd24Regular />}
-                onClick={() => router.push(`/courses/${courseID}/admin/enroll`)}
+                onClick={() => router.push(`/courses/${courseID}/admin/add`)}
             >
-                Enroll Students
+                Add People
             </ToolbarButton>
 
             <ToolbarButton
@@ -54,7 +55,7 @@ const AdminToolbar = ({ courseID }: { courseID: string, fetchCourse: () => Promi
                 icon={<PersonDelete24Regular />}
                 onClick={() => router.push(`/courses/${courseID}/admin/remove`)}
             >
-                Remove Students
+                Remove People
             </ToolbarButton>
 
             <ToolbarButton
@@ -141,7 +142,7 @@ export default function Page() {
                 <title>{assignment.title} - Codetierlist</title>
             </Head>
 
-            {userInfo.admin ? <AdminToolbar courseID={courseID as string} fetchCourse={fetchCourse} /> : undefined}
+            {userInfo.admin || isProfForCourse(userInfo, courseID as string) ? <AdminToolbar courseID={courseID as string} fetchCourse={fetchCourse} /> : undefined}
 
             <main>
                 <HeaderToolbar>
