@@ -9,11 +9,9 @@ import {
     Title2,
     Tooltip
 } from "@fluentui/react-components";
-import { Inter } from 'next/font/google';
 import Head from 'next/head';
 import { useContext, useState } from 'react';
-
-const inter = Inter({ subsets: ['latin'] });
+import { Container } from 'react-grid-system';
 
 export default function Home() {
     const { userInfo } = useContext(UserContext);
@@ -28,7 +26,7 @@ export default function Home() {
                     content="width=device-width, initial-scale=1" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-            <main className={`${inter.className}`}>
+            <Container component="main" className='m-t-xxxl'>
                 <div className="flex-wrap">
                     {userInfo.roles.map(role => role).map(role => (
                         <CourseOverviewCard
@@ -60,7 +58,7 @@ export default function Home() {
                         </Dialog>
                         : undefined}
                 </div>
-            </main>
+            </Container>
         </>
     );
 }

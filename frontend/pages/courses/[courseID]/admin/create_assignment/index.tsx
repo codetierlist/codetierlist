@@ -85,7 +85,7 @@ export default function Page(): JSX.Element {
                 </ToolbarButton>
             </HeaderToolbar>
 
-            <Container component="main" className={styles.main}>
+            <Container component="main" className="m-t-xxxl">
                 <form
                     className={styles.form}
                     onSubmit={(e) => {

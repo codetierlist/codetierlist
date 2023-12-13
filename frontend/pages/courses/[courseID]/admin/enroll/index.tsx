@@ -8,6 +8,7 @@ import { Title2 } from '@fluentui/react-text';
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useContext, useState } from "react";
+import { Container } from 'react-grid-system';
 
 export default function Page(): JSX.Element {
     const [editorValue, setEditorValue] = useState("");
@@ -30,7 +31,7 @@ export default function Page(): JSX.Element {
                 </ToolbarButton>
             </HeaderToolbar>
 
-            <main>
+            <Container component="main" className="m-t-xxxl">
                 <div className={`${flex["d-flex"]} ${flex["justify-content-between"]}`}>
                     <header>
                         <Title2 block>Enroll Students</Title2>
@@ -71,7 +72,7 @@ export default function Page(): JSX.Element {
                     }}>
                     Enroll
                 </Button>
-            </main>
+            </Container>
         </>
     );
 }

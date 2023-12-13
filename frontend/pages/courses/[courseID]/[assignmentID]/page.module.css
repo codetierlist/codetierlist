@@ -66,12 +66,6 @@
     gap: var(--spacingVerticalXXXL);
 }
 
-main.container {
-    margin-top: var(--spacingVerticalL);
-    background-color: transparent !important;
-    box-shadow: none !important;
-}
-
 .commitId {
     margin: var(--spacingVerticalXL) 0;
 }

@@ -11,6 +11,7 @@ import { FetchedCourseWithTiers } from "codetierlist-types";
 import { notFound } from "next/navigation";
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from "react";
+import { Container } from "react-grid-system";
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import styles from './page.module.css';
 
@@ -79,7 +80,7 @@ export default function Page() {
         <>
             {userInfo.admin ? <AdminToolbar courseID={courseID as string} fetchCourse={fetchCourse} /> : undefined}
 
-            <main>
+            <Container component="main" className="m-t-xxxl">
                 <header className={styles.header}>
                     <Title2 className={styles.courseTitle}>
                         {course &&
@@ -109,7 +110,7 @@ export default function Page() {
                         />
                     )) : "Loading..."}
                 </div>
-            </main >
+            </Container>
         </>
     );
 }
