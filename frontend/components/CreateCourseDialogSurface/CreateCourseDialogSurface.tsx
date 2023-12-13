@@ -90,4 +90,4 @@ export const CreateCourseDialogSurface = ({ closeDialog }: { closeDialog: () => 
             </form>
         </DialogSurface>
     );
-}
+};

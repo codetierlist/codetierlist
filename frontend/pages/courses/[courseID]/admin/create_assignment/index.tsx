@@ -8,7 +8,6 @@ import {
     Label,
     Option,
     OptionGroup,
-    Text,
     Title2, ToolbarButton
 } from "@fluentui/react-components";
 import {
@@ -162,9 +161,8 @@ export default function Page(): JSX.Element {
 
                         <Monaco
                             value={description}
-                            onChange={setDescription}
+                            onChange={(value, _) => setDescription(value || "")}
                             language="markdown"
-                            id="description"
                             height="500px"
                         />
 
