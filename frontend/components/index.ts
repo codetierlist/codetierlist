@@ -12,6 +12,7 @@ export * from './HeaderToolbar/HeaderToolbar';
 export * from './InitialsAvatar/InitialsAvatar';
 export * from './Monaco/Monaco';
 export * from './Navbar/Navbar';
+export * from './NavbarUserPopover/NavbarUserPopover';
 export * from './ReturnHomeButton/ReturnHomeButton';
 export * from './SessionBlock/SessionBlock';
 export * from './TierChip/TierChip';
