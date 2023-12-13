@@ -5,7 +5,7 @@ import {
     ToolbarButton
 } from "@fluentui/react-components";
 import { Add24Filled, PersonAdd24Regular, PersonDelete24Regular } from '@fluentui/react-icons';
-import { Title2, Title3 } from '@fluentui/react-text';
+import { Title2 } from '@fluentui/react-text';
 import {
     FetchedCourseWithTiers,
     FetchedAssignmentWithTier,
@@ -25,6 +25,7 @@ import {
     TableHeader,
     TableHeaderCell
 } from "@fluentui/react-components";
+import Head from "next/head";
 
 /**
  * Toolbar for admin page
@@ -131,6 +132,10 @@ export default function Page() {
 
     return (
         <>
+            <Head>
+                <title>{assignment.title} - Codetierlist</title>
+            </Head>
+            
             {userInfo.admin ? <AdminToolbar courseID={courseID as string} fetchCourse={fetchCourse} /> : undefined}
 
             <main>
@@ -146,7 +151,6 @@ export default function Page() {
                     <Title2>{assignment.title}</Title2>
                 </header>
 
-                {/* <Title3>Student Data</Title3> */}
                 <Table arial-label="Default table">
                     <TableHeader>
                         <TableRow>
