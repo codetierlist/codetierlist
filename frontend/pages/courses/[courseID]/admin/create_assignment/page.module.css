@@ -3,6 +3,8 @@ main.main {
     box-shadow: none !important;
 }
 
-.title {
-    margin-bottom: var(--spacingVerticalXXXL);
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacingVerticalXL);
 }

@@ -1,18 +1,19 @@
 import axios, { handleError } from "@/axios";
-import { ControlCard, HeaderToolbar, ToolTipIcon } from "@/components";
+import { ControlCard, HeaderToolbar } from "@/components";
 import { SnackbarContext } from "@/contexts/SnackbarContext";
 import { UserContext } from "@/contexts/UserContext";
 import {
     Button, Dropdown,
     Input,
-    Label,
     Option,
     OptionGroup,
-    Textarea, Title2, ToolbarButton
+    Title2, ToolbarButton
 } from "@fluentui/react-components";
 import {
-    ArrowLeft24Regular, QuestionCircle16Regular,
-    QuestionCircle24Regular
+    ArrowLeft24Regular,
+    Calendar24Regular,
+    Rename24Regular,
+    Run24Regular
 } from '@fluentui/react-icons';
 import { RunnerImage } from "codetierlist-types";
 import Head from "next/head";
@@ -77,52 +78,55 @@ export default function Page(): JSX.Element {
             </HeaderToolbar>
 
             <Container component="main" className={styles.main}>
-                <form onSubmit={(e) => {
-                    e.preventDefault();
-                    void submitAssignment();
-                }}>
+                <form
+                    className={styles.form}
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        void submitAssignment();
+                    }}>
                     <Title2 className={styles.title} block>Create Assignment</Title2>
 
                     <ControlCard
                         title="Name"
-                        icon={<QuestionCircle24Regular />}
+                        description="The name that will be displayed to the students."
+                        icon={<Rename24Regular />}
                         htmlFor="name">
                         <Input required type="text" id="name" name="courseCode"
                             value={assignmentName}
                             onChange={e => setAssignmentName(e.target.value)} />
                     </ControlCard>
 
-                    <Label htmlFor="description">Description:</Label><br />
-                    <Textarea required id="description" name="courseName"
-                        value={description}
-                        onChange={e => setDescription(e.target.value)} /><br />
+                    <ControlCard
+                        title="Due date"
+                        description="The date and time when the assignment is due."
+                        icon={<Calendar24Regular />}
+                        htmlFor="dueDate">
+                        <Input required type="datetime-local" id="dueDate"
+                            name="dueDate"
+                            value={dueDate.toISOString().slice(0, -8)}
+                            onChange={e => setDueDate(new Date(e.target.value))} /><br />
+                    </ControlCard>
 
-                    <Label htmlFor="dueDate">Due Date:</Label><br />
-                    <Input required type="datetime-local" id="dueDate"
-                        name="dueDate"
-                        value={dueDate.toISOString().slice(0, -8)}
-                        onChange={e => setDueDate(new Date(e.target.value))} /><br />
-                    <Label htmlFor="runner">Runner image
-                        <ToolTipIcon
-                            tooltip={"The runner image is the image that the runners use to run uploaded code. If you think an image is missing please contact the maintainers."}
-                            icon={<QuestionCircle16Regular />} />
-                    </Label>
-                    <br />
-                    <Dropdown id="runner" name="runner"
-                        value={selectedRunner?.image + "/" + selectedRunner?.image_version}
-                        onOptionSelect={(_, data) => setSelectedRunner(JSON.parse(data.optionValue ?? "undefined") as RunnerImage)}
-                    >{Object.keys(runners).map(image => <OptionGroup
-                        label={image} key={image}>
-                        {runners[image].map(version =>
-                            <Option key={`${image}/${version}`}
-                                text={`${image}/${version}`}
-                                value={JSON.stringify({ image, image_version: version })}>
-                                {image}/{version}
-                            </Option>
-                        )}
-                    </OptionGroup>)}
-                    </Dropdown>
-
+                    <ControlCard
+                        title="Runner image"
+                        description="The runner image is the image that the runners use to run uploaded code. If you think an image is missing please contact the maintainers."
+                        icon={<Run24Regular />}
+                        htmlFor="runner">
+                        <Dropdown id="runner" name="runner"
+                            value={selectedRunner?.image + "/" + selectedRunner?.image_version}
+                            onOptionSelect={(_, data) => setSelectedRunner(JSON.parse(data.optionValue ?? "undefined") as RunnerImage)}
+                        >{Object.keys(runners).map(image => <OptionGroup
+                            label={image} key={image}>
+                            {runners[image].map(version =>
+                                <Option key={`${image}/${version}`}
+                                    text={`${image}/${version}`}
+                                    value={JSON.stringify({ image, image_version: version })}>
+                                    {image}/{version}
+                                </Option>
+                            )}
+                        </OptionGroup>)}
+                        </Dropdown>
+                    </ControlCard>
 
                     <Button type="submit"
                         appearance="primary">Create</Button>
