@@ -1,5 +1,5 @@
 import axios, { handleError } from "@/axios";
-import { AssignmentCard, CourseSessionChip, HeaderToolbar, getSession } from '@/components';
+import { AssignmentCard, CourseSessionChip, HeaderToolbar, checkIfCourseAdmin, getSession } from '@/components';
 import { UserContext } from "@/contexts/UserContext";
 import {
     Caption1,
@@ -109,7 +109,7 @@ export default function Page() {
                                 dueDate={assignment.due_date ? new Date(assignment.due_date) : undefined}
                                 tier={assignment.tier}
                                 courseID={courseID as string}
-                                hasAdminPerms={userInfo.admin}
+                                hasAdminPerms={checkIfCourseAdmin(userInfo, course.id)}
                             />
                         ))
                     ) : (
