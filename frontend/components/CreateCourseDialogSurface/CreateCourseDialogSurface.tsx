@@ -36,7 +36,7 @@ const handleSubmit = async (courseCode: string, courseName: string) => {
  * Form for creating a course
  * @param {function} closeDialog function to close the dialog
  */
-export const CreateCourseForm = ({ closeDialog }: { closeDialog: () => void }) => {
+export const CreateCourseDialogSurface = ({ closeDialog }: { closeDialog: () => void }) => {
     const [courseCode, setCourseCode] = useState("");
     const [courseName, setCourseName] = useState("");
     const { fetchUserInfo } = useContext(UserContext);

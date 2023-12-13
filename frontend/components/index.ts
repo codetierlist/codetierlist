@@ -7,6 +7,7 @@ export * from './CheckedTodo/CheckedTodo';
 export * from './ControlCard/ControlCard';
 export * from './CourseBlock/CourseBlock';
 export * from './CourseOverviewCard/CourseOverviewCard';
+export * from './CreateCourseDialogSurface/CreateCourseDialogSurface';
 export * from './HeaderToolbar/HeaderToolbar';
 export * from './InitialsAvatar/InitialsAvatar';
 export * from './Monaco/Monaco';

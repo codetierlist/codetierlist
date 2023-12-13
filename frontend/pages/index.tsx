@@ -1,25 +1,17 @@
-import axios, { handleError } from "@/axios";
-import { CourseOverviewCard, getSession, ControlCard } from '@/components';
+import { CourseOverviewCard, CreateCourseDialogSurface, getSession } from '@/components';
 import { UserContext } from "@/contexts/UserContext";
 import {
     Button,
     Caption1,
     Dialog,
-    DialogActions,
-    DialogBody,
-    DialogContent, DialogOpenChangeData, DialogOpenChangeEvent,
-    DialogSurface,
-    DialogTitle,
+    DialogOpenChangeData, DialogOpenChangeEvent,
     DialogTrigger,
-    Input,
-    Label,
-    Title2
+    Title2,
+    Tooltip
 } from "@fluentui/react-components";
 import { Inter } from 'next/font/google';
 import Head from 'next/head';
-import { useContext, useState, createContext } from 'react';
-import { SnackbarContext } from '../contexts/SnackbarContext';
-import { CreateCourseForm } from "@/components/CreateCourseForm/CreateCourseFrom";
+import { useContext, useState } from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -55,14 +47,16 @@ export default function Home() {
                     {userInfo.admin ?
                         <Dialog open={showDialog} onOpenChange={(e: DialogOpenChangeEvent, data: DialogOpenChangeData) => setShowDialog(data.open)}>
                             <DialogTrigger disableButtonEnhancement>
-                                <Button style={{
-                                    width: 300,
-                                }}>
-                                    <Title2>+</Title2>
-                                </Button>
+                                <Tooltip content="Create a course" relationship="label">
+                                    <Button style={{
+                                        width: 300,
+                                    }}>
+                                        <Title2>+</Title2>
+                                    </Button>
+                                </Tooltip>
                             </DialogTrigger>
 
-                            <CreateCourseForm closeDialog={() => setShowDialog(false)} />
+                            <CreateCourseDialogSurface closeDialog={() => setShowDialog(false)} />
                         </Dialog>
                         : undefined}
                 </div>
