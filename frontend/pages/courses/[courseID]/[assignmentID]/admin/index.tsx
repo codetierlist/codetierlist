@@ -78,6 +78,12 @@ export default function Page() {
     const [studentData, setStudentData] = useState<AssignmentStudentStats>([]);
     const router = useRouter();
 
+    const fetchAssignment = async () => {
+        await axios.get<FetchedAssignmentWithTier>(`/courses/${courseID}/assignments/${assignmentID}`, { skipErrorHandling: true })
+            .then((res) => setAssignment(res.data))
+            .catch(handleError(showSnackSev));
+    };
+
     const fetchAssignmentStats = async () => {
         await axios.get<AssignmentStudentStats>(`/courses/${courseID}/assignments/${assignmentID}/stats`, { skipErrorHandling: true })
             .then((res) => setStudentData(res.data))
@@ -101,12 +107,7 @@ export default function Page() {
     }, [courseID]);
 
     useEffect(() => {
-        const fetchAssignment = async () => {
-            await axios.get<FetchedAssignmentWithTier>(`/courses/${courseID}/${assignmentID}`, { skipErrorHandling: true }).then((res) => setAssignment(res.data)).catch(_ => {
-                _; // to suppress ts error
-                notFound();
-            });
-        };
+
         if (!courseID || !assignmentID) {
             return;
         }
