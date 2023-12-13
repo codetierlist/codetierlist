@@ -1,5 +1,5 @@
 import axios, { handleError } from "@/axios";
-import { ControlCard, HeaderToolbar } from "@/components";
+import { ControlCard, HeaderToolbar, RichTextEditor } from "@/components";
 import { SnackbarContext } from "@/contexts/SnackbarContext";
 import { UserContext } from "@/contexts/UserContext";
 import {
@@ -7,6 +7,7 @@ import {
     Input,
     Option,
     OptionGroup,
+    Subtitle1,
     Title2, ToolbarButton
 } from "@fluentui/react-components";
 import {
@@ -104,7 +105,7 @@ export default function Page(): JSX.Element {
                         <Input required type="datetime-local" id="dueDate"
                             name="dueDate"
                             value={dueDate.toISOString().slice(0, -8)}
-                            onChange={e => setDueDate(new Date(e.target.value))} /><br />
+                            onChange={e => setDueDate(new Date(e.target.value))} />
                     </ControlCard>
 
                     <ControlCard
@@ -115,16 +116,19 @@ export default function Page(): JSX.Element {
                         <Dropdown id="runner" name="runner"
                             value={selectedRunner?.image + "/" + selectedRunner?.image_version}
                             onOptionSelect={(_, data) => setSelectedRunner(JSON.parse(data.optionValue ?? "undefined") as RunnerImage)}
-                        >{Object.keys(runners).map(image => <OptionGroup
-                            label={image} key={image}>
-                            {runners[image].map(version =>
-                                <Option key={`${image}/${version}`}
-                                    text={`${image}/${version}`}
-                                    value={JSON.stringify({ image, image_version: version })}>
-                                    {image}/{version}
-                                </Option>
+                        >
+                            {Object.keys(runners).map(image =>
+                                <OptionGroup
+                                    label={image} key={image}>
+                                    {runners[image].map(version =>
+                                        <Option key={`${image}/${version}`}
+                                            text={`${image}/${version}`}
+                                            value={JSON.stringify({ image, image_version: version })}>
+                                            {image}/{version}
+                                        </Option>
+                                    )}
+                                </OptionGroup>
                             )}
-                        </OptionGroup>)}
                         </Dropdown>
                     </ControlCard>
 
