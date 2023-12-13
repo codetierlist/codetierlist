@@ -11,6 +11,7 @@ import { FetchedCourseWithTiers } from "codetierlist-types";
 import { notFound } from "next/navigation";
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from "react";
+import { Container } from "react-grid-system";
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import styles from './page.module.css';
 
@@ -28,6 +29,14 @@ const AdminToolbar = ({ courseID }: { courseID: string, fetchCourse: () => Promi
         >
             <ToolbarButton
                 appearance="subtle"
+                icon={<Add24Filled />}
+                onClick={() => router.push(`/courses/${courseID}/admin/create_assignment`)}
+            >
+                Add assignment
+            </ToolbarButton>
+
+            <ToolbarButton
+                appearance="subtle"
                 icon={<PersonAdd24Regular />}
                 onClick={() => router.push(`/courses/${courseID}/admin/enroll`)}
             >
@@ -40,14 +49,6 @@ const AdminToolbar = ({ courseID }: { courseID: string, fetchCourse: () => Promi
                 onClick={() => router.push(`/courses/${courseID}/admin/remove`)}
             >
                 Remove Students
-            </ToolbarButton>
-
-            <ToolbarButton
-                appearance="subtle"
-                icon={<Add24Filled />}
-                onClick={() => router.push(`/courses/${courseID}/admin/create_assignment`)}
-            >
-                Add assignment
             </ToolbarButton>
         </HeaderToolbar>
     );
@@ -79,7 +80,7 @@ export default function Page() {
         <>
             {userInfo.admin ? <AdminToolbar courseID={courseID as string} fetchCourse={fetchCourse} /> : undefined}
 
-            <main>
+            <Container component="main" className="m-t-xxxl">
                 <header className={styles.header}>
                     <Title2 className={styles.courseTitle}>
                         {course &&
@@ -109,7 +110,7 @@ export default function Page() {
                         />
                     )) : "Loading..."}
                 </div>
-            </main >
+            </Container>
         </>
     );
 }

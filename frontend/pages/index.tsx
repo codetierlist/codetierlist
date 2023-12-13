@@ -1,69 +1,17 @@
-import axios, { handleError } from "@/axios";
-import { CourseOverviewCard, getSession } from '@/components';
+import { CourseOverviewCard, CreateCourseDialogSurface, getSession } from '@/components';
 import { UserContext } from "@/contexts/UserContext";
 import {
     Button,
     Caption1,
     Dialog,
-    DialogActions,
-    DialogBody,
-    DialogContent, DialogOpenChangeData, DialogOpenChangeEvent,
-    DialogSurface,
-    DialogTitle,
+    DialogOpenChangeData, DialogOpenChangeEvent,
     DialogTrigger,
-    Input,
-    Label,
-    Title2
+    Title2,
+    Tooltip
 } from "@fluentui/react-components";
-import { Inter } from 'next/font/google';
 import Head from 'next/head';
-import { useContext, useState } from "react";
-import { SnackbarContext } from '../contexts/SnackbarContext';
-
-const inter = Inter({ subsets: ['latin'] });
-
-function CreateCourseForm({ closeDialog }: { closeDialog: () => void }) {
-    const [courseCode, setCourseCode] = useState("");
-    const [courseName, setCourseName] = useState("");
-    const { fetchUserInfo } = useContext(UserContext);
-    const { showSnackSev } = useContext(SnackbarContext);
-
-    return (
-        <DialogSurface>
-            <DialogBody>
-                <form onSubmit={(e) => {
-                    e.preventDefault();
-                    axios.post("/courses", {
-                        code: courseCode,
-                        name: courseName
-                    })
-                        .then(fetchUserInfo)
-                        .then(closeDialog)
-                        .catch((error) => { handleError(error.message, showSnackSev); });
-                }}>
-                    <DialogTitle>Create Course</DialogTitle>
-                    <DialogContent>
-                        <Label htmlFor="courseCode">Course Code:</Label><br />
-                        <Input type="text" id="courseCode" name="courseCode"
-                            value={courseCode}
-                            onChange={e => setCourseCode(e.target.value)} /><br />
-                        <Label htmlFor="courseName">Course Name:</Label><br />
-                        <Input type="text" id="courseName" name="courseName"
-                            value={courseName}
-                            onChange={e => setCourseName(e.target.value)} /><br /><br />
-                    </DialogContent>
-                    <DialogActions>
-                        <DialogTrigger disableButtonEnhancement>
-                            <Button appearance="secondary">Close</Button>
-                        </DialogTrigger>
-                        <Button type="submit"
-                            appearance="primary">Create</Button>
-                    </DialogActions>
-                </form>
-            </DialogBody>
-        </DialogSurface>
-    );
-}
+import { useContext, useState } from 'react';
+import { Container } from 'react-grid-system';
 
 export default function Home() {
     const { userInfo } = useContext(UserContext);
@@ -78,7 +26,7 @@ export default function Home() {
                     content="width=device-width, initial-scale=1" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-            <main className={`${inter.className}`}>
+            <Container component="main" className='m-t-xxxl'>
                 <div className="flex-wrap">
                     {userInfo.roles.map(role => role).map(role => (
                         <CourseOverviewCard
@@ -97,17 +45,20 @@ export default function Home() {
                     {userInfo.admin ?
                         <Dialog open={showDialog} onOpenChange={(e: DialogOpenChangeEvent, data: DialogOpenChangeData) => setShowDialog(data.open)}>
                             <DialogTrigger disableButtonEnhancement>
-                                <Button style={{
-                                    width: 300,
-                                }}>
-                                    <Title2>+</Title2>
-                                </Button>
+                                <Tooltip content="Create a course" relationship="label">
+                                    <Button style={{
+                                        width: 300,
+                                    }}>
+                                        <Title2>+</Title2>
+                                    </Button>
+                                </Tooltip>
                             </DialogTrigger>
-                            <CreateCourseForm closeDialog={() => setShowDialog(false)} />
+
+                            <CreateCourseDialogSurface closeDialog={() => setShowDialog(false)} />
                         </Dialog>
                         : undefined}
                 </div>
-            </main>
+            </Container>
         </>
     );
 }
