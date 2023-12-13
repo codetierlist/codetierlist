@@ -27,7 +27,6 @@ import {
     Card
 } from "@fluentui/react-components";
 import Head from "next/head";
-import { Col, Container } from "react-grid-system";
 
 /**
  * Toolbar for admin page
@@ -76,7 +75,7 @@ export default function Page() {
     const [assignment, setAssignment] = useState<FetchedAssignmentWithTier | null>(null);
     const [studentData, setStudentData] = useState<AssignmentStudentStats>([]);
     const router = useRouter();
-    
+
     const fetchAssignment = async () => {
         await axios.get<FetchedAssignmentWithTier>(`/courses/${courseID}/assignments/${assignmentID}`, { skipErrorHandling: true })
             .then((res) => setAssignment(res.data))
@@ -124,7 +123,7 @@ export default function Page() {
     if (!assignment || !courseID || !assignmentID) {
         return <Error statusCode={404} />;
     }
-    
+
     const columns = [
         { columnKey: "utorid", label: "UTORid" },
         { columnKey: "name", label: "Full Name" },
@@ -139,7 +138,7 @@ export default function Page() {
             <Head>
                 <title>{assignment.title} - Codetierlist</title>
             </Head>
-            
+
             {userInfo.admin ? <AdminToolbar courseID={courseID as string} fetchCourse={fetchCourse} /> : undefined}
 
             <main>

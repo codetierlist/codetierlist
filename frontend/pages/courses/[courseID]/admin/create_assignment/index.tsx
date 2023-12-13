@@ -71,6 +71,7 @@ export default function Page(): JSX.Element {
     };
     useEffect(() => {
         void fetchRunners();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
