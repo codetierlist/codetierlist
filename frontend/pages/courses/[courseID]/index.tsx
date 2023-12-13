@@ -109,7 +109,7 @@ export default function Page() {
                                 dueDate={assignment.due_date ? new Date(assignment.due_date) : undefined}
                                 tier={assignment.tier}
                                 courseID={courseID as string}
-                                isAdmin={userInfo.admin}
+                                hasAdminPerms={userInfo.admin}
                             />
                         ))
                     ) : (

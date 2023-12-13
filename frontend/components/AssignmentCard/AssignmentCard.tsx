@@ -11,12 +11,30 @@ import { convertDate } from '../utils/TimeUtils/TimeUtils';
 import Link from 'next/link';
 
 export declare interface AssignmentCardProps {
+    /**
+     * The ID of the assignment
+     */
     id: string
+    /**
+     * The name of the assignment
+     */
     name: string
+    /**
+     * The due date of the assignment
+     */
     dueDate?: Date
+    /**
+     * The tier of the user
+     */
     tier: UserTier | Tier,
+    /**
+     * The ID of the course this assignment belongs to
+     */
     courseID: string
-    isAdmin: boolean
+    /**
+     * Has administrator permissions, i.e., is a global admin or is a prof
+     */
+    hasAdminPerms: boolean
 }
 
 export const AssignmentCard = ({
@@ -25,12 +43,12 @@ export const AssignmentCard = ({
     dueDate,
     tier,
     courseID,
-    isAdmin
+    hasAdminPerms
 }: AssignmentCardProps): JSX.Element => {
     const formattedDueDate = dueDate ? convertDate(dueDate) : null;
 
     return (
-        <Link href={`${courseID}/${id}${isAdmin ? '/admin' : ''}`} className={styles.cardLink}>
+        <Link href={`${courseID}/${id}${hasAdminPerms ? '/admin' : ''}`} className={styles.cardLink}>
             <Card className={styles.card} selected={false}>
                 <CardHeader header={(<TierChip tier={tier as UserTier} />)} />
                 <div className={styles.cardContent}>
