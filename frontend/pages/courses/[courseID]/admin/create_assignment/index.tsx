@@ -39,6 +39,11 @@ export default function Page(): JSX.Element {
     const router = useRouter();
 
     const submitAssignment = async () => {
+        if (!description) {
+            handleError("Description is required", showSnackSev);
+            return;
+        }
+
         axios.post(`/courses/${courseID}/assignments`, {
             name: assignmentName,
             description: description,
