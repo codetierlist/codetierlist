@@ -75,16 +75,12 @@ export default function Page() {
     const fetchAssignment = async () => {
         await axios.get<FetchedAssignmentWithTier>(`/courses/${courseID}/assignments/${assignmentID}`, { skipErrorHandling: true })
             .then((res) => setAssignment(res.data))
-            .catch(e => {
-                handleError(e.message, showSnackSev);
-            });
+            .catch(handleError(showSnackSev));
     };
     const fetchAssignmentStats = async () => {
         await axios.get<AssignmentStudentStats>(`/courses/${courseID}/assignments/${assignmentID}/stats`, { skipErrorHandling: true })
             .then((res) => setStudentData(res.data))
-            .catch(e => {
-                handleError(e.message, showSnackSev);
-            });
+            .catch(handleError(showSnackSev));
     };
 
     const fetchCourse = async () => {
@@ -92,7 +88,7 @@ export default function Page() {
         await axios.get<FetchedCourseWithTiers>(`/courses/${courseID}`, { skipErrorHandling: true })
             .then((res) => setCourse(res.data))
             .catch(e => {
-                handleError(e.message, showSnackSev);
+                handleError(showSnackSev)(e);
                 notFound();
             });
     };

@@ -49,6 +49,7 @@ services:
       - ./frontend/pages:/frontend/pages:ro
       - ./frontend/public:/frontend/public:ro
       - ./frontend/styles:/frontend/styles:ro
+      - ./frontend/axios.ts:/frontend/axios.ts:ro
 
   db:
     image: postgres

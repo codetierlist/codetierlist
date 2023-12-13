@@ -10,13 +10,14 @@ import {
     Title3
 } from '@fluentui/react-components';
 import {useRouter} from 'next/navigation';
-import {useState} from 'react';
+import {useContext, useState} from 'react';
 import styles from './CourseOverviewCard.module.css';
 import {SessionBlock} from '@/components/SessionBlock/SessionBlock';
 import {RoleType, Session} from 'codetierlist-types';
 import {ImageAdd20Regular} from "@fluentui/react-icons";
-import axios from "@/axios";
+import axios, {handleError} from "@/axios";
 import {promptForFileObject} from "@/components";
+import {SnackbarContext} from "@/contexts/SnackbarContext";
 
 export declare interface CourseSessionChipProps {
     /** the session of the course */
@@ -85,6 +86,7 @@ export const CourseOverviewCard = ({
     };
     const [isSelected, setSelected] = useState(false);
     const router = useRouter();
+    const { showSnackSev } = useContext(SnackbarContext);
 
     return (
         <Card
@@ -122,7 +124,7 @@ export const CourseOverviewCard = ({
                                 })
                                 .then(() => {
                                     reset();
-                                });
+                                }).catch(handleError(showSnackSev));
                         }}/>}
                 <img
                     style={{objectFit:"cover", height:200, width:300}}

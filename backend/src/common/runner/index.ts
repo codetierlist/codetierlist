@@ -66,7 +66,7 @@ export const getFiles = async (submission: Submission | TestCase): Promise<JobFi
 
 
 export const runJob = async (job: Job): Promise<JobResult> => {
-    console.log("Running job" + job.submission.git_url + "             " + job.testCase.git_url);
+    console.info("Running job" + job.submission.git_url + "             " + job.testCase.git_url);
     let query:{solution_files: JobFiles, test_case_files: JobFiles};
 
     try {
@@ -79,11 +79,12 @@ export const runJob = async (job: Job): Promise<JobResult> => {
         return {status: JobStatus.ERROR};
     }
 
-    if(Object.keys(query.solution_files).length == 0){
-        return {status: JobStatus.SUBMISSION_EMPTY};
-    }
     if(Object.keys(query.test_case_files).length == 0){
         return {status: JobStatus.TESTCASE_EMPTY};
+    }
+
+    if(Object.keys(query.solution_files).length == 0){
+        return {status: JobStatus.SUBMISSION_EMPTY};
     }
 
     const img = job.assignment.runner_image;
@@ -109,13 +110,13 @@ export const runJob = async (job: Job): Promise<JobResult> => {
 
         runner.stdout.on('data', (data) => {
             buffer += data;
-            console.log(`stdout: ${data}`);
+            console.info(`stdout: ${data}`);
             try {
                 const resultJSON: JobResult = JSON.parse(buffer) as JobResult;
                 runner?.stdout?.removeAllListeners();
                 runner?.stderr?.removeAllListeners();
                 runner?.removeAllListeners();
-                console.log(resultJSON);
+                console.info(resultJSON);
 
                 resolve(resultJSON);
             } catch (e) {
@@ -124,7 +125,7 @@ export const runJob = async (job: Job): Promise<JobResult> => {
         });
 
         runner.stderr.on('data', (data) => {
-            console.log(`stderr: ${data}`);
+            console.info(`stderr: ${data}`);
         });
 
         runner.on('exit', (code) => {
@@ -167,13 +168,13 @@ const createImage = (img : string, img_ver: string) => {
         }
     );
     if(ret?.stdout)
-        console.log(ret.stdout.toString());
-    console.log(`Image ${img}/${img_ver} created`);
+        console.info(ret.stdout.toString());
+    console.info(`Image ${img}/${img_ver} created`);
 };
 const createImages = () => {
-    console.log("creating images");
+    console.info("creating images");
     images.forEach(x=>createImage(x.image,x.image_version));
-    console.log("done creating images");
+    console.info("done creating images");
 };
 
 setInterval(() => {
@@ -198,7 +199,7 @@ setInterval(() => {
 createImages();
 
 // for (let i = 0; i < 3; i++) {
-//     console.log(`queueing job ${i}`);
+//     console.info(`queueing job ${i}`);
 //     queueJob({
 //         submission: {
 //             id: "c143e734-ed83-428a-aa68-50e182c58eae",
@@ -220,7 +221,7 @@ createImages();
 //             valid: "VALID"
 //         }
 //     }).then(r => {
-//         console.log(`result ${i}`);
-//         console.log(r);
+//         console.info(`result ${i}`);
+//         console.info(r);
 //     });
 // }

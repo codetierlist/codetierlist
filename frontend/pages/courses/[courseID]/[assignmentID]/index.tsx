@@ -59,9 +59,7 @@ const ListFiles = ({ commit, route, assignment, assignmentID, update }: { commit
                     return { ...prev, [file]: Buffer.from(res.data).toString("utf-8") };
                 });
             })
-            .catch(e => {
-                handleError(e.message, showSnackSev);
-            });
+            .catch(handleError(showSnackSev));
     };
 
     const deleteFile = async (file: string) => {
@@ -70,9 +68,7 @@ const ListFiles = ({ commit, route, assignment, assignmentID, update }: { commit
                 update && update();
                 showSnackSev("File deleted", "success");
             })
-            .catch(e => {
-                handleError(e.message, showSnackSev);
-            });
+            .catch(handleError(showSnackSev));
     };
 
     useEffect(() => {
@@ -162,7 +158,7 @@ const FilesTab = ({ fetchAssignment, assignment, assignmentID, routeName, route 
         await axios.get<Commit>(`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}`, { skipErrorHandling: true })
             .then((res) => setContent(res.data))
             .catch(e => {
-                handleError(e.message, showSnackSev);
+                handleError(showSnackSev)(e);
                 setContent({ "files": [], "log": [] } as Commit);
             });
     };
@@ -181,9 +177,7 @@ const FilesTab = ({ fetchAssignment, assignment, assignmentID, routeName, route 
             .then(() => {
                 fetchAssignment();
             })
-            .catch(e => {
-                handleError(e.message, showSnackSev);
-            });
+            .catch(handleError(showSnackSev));
     };
 
     useEffect(() => {
@@ -205,9 +199,7 @@ const FilesTab = ({ fetchAssignment, assignment, assignmentID, routeName, route 
                                     submitTest(file);
                                 }
                             })
-                            .catch(e => {
-                                handleError(e.message, showSnackSev);
-                            });
+                            .catch(handleError(showSnackSev));
                     }}
                 >
                     Upload a {routeName}
@@ -267,7 +259,7 @@ export default function Page() {
         await axios.get<FetchedAssignmentWithTier>(`/courses/${courseID}/assignments/${assignmentID}`, { skipErrorHandling: true })
             .then((res) => setAssignment(res.data))
             .catch(e => {
-                handleError(e.message, showSnackSev);
+                handleError(showSnackSev)(e);
                 setStage(-404);
             });
     };
@@ -275,10 +267,29 @@ export default function Page() {
         await axios.get<Tierlist>(`/courses/${courseID}/assignments/${assignmentID}/tierlist`, { skipErrorHandling: true })
             .then((res) => setTierlist(res.data))
             .catch(e => {
-                handleError(e.message, showSnackSev);
+                handleError(showSnackSev)(e);
                 setStage(-404);
             });
     };
+
+    /**
+     * the polling rate for fetching the assignment and tierlist
+     */
+    const POLLING_RATE = 5000;
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (!courseID || !assignmentID) {
+                return;
+            }
+
+            void fetchAssignment();
+            void fetchTierlist();
+        }
+        , POLLING_RATE);
+        return () => clearInterval(interval);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    });
 
     useEffect(() => {
         if (!courseID || !assignmentID) {
@@ -343,7 +354,7 @@ export default function Page() {
             </TabList>
 
 
-            <Container component="main" className={styles.container}>
+            <Container component="main" className="m-t-xxxl">
                 {
                     stage === 0 && (
                         <>
