@@ -35,6 +35,5 @@ export async function modifyEnrollment(courseID: string, csv: string, action: "e
     await axios.post(`/courses/${courseID}/${action}`, {
         utorids: utoridList,
         role: "STUDENT"
-    })
-        .catch((e) => { throw new Error(e.message); });
+    });
 }

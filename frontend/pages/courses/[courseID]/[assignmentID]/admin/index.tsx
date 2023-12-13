@@ -28,8 +28,7 @@ export default function Page() {
     const { courseID, assignmentID } = router.query;
 
     const fetchAssignment = async () => {
-        await axios.get<FetchedAssignmentWithTier>(`/courses/${courseID}/${assignmentID}`, { skipErrorHandling: true }).then((res) => setAssignment(res.data)).catch(e => {
-            // console.log(e);
+        await axios.get<FetchedAssignmentWithTier>(`/courses/${courseID}/${assignmentID}`, { skipErrorHandling: true }).then((res) => setAssignment(res.data)).catch(_ => {
             notFound();
         });
     };

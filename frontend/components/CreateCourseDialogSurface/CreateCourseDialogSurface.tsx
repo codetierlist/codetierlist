@@ -49,9 +49,7 @@ export const CreateCourseDialogSurface = ({ closeDialog }: { closeDialog: () => 
                 handleSubmit(courseCode, courseName)
                     .then(fetchUserInfo)
                     .then(closeDialog)
-                    .catch((error) => {
-                        handleError(error.message, showSnackSev);
-                    });
+                    .catch(handleError(showSnackSev));
             }}>
                 <DialogBody>
                     <DialogTitle className={styles.dialogTitle}>

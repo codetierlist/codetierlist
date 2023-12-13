@@ -70,7 +70,7 @@ export default function Page(): JSX.Element {
                         modifyEnrollment(router.query.courseID as string, editorValue, "remove")
                             .then(() => showSnackSev("Removed students successfully", "success"))
                             .then(() => router.push(`/courses/${router.query.courseID}`))
-                            .catch((e) => handleError(e.message, showSnackSev));
+                            .catch(handleError(showSnackSev));
                     }}>
                     Remove
                 </Button>

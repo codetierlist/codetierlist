@@ -39,7 +39,7 @@ export default function Page(): JSX.Element {
 
     const submitAssignment = async () => {
         if (!description) {
-            handleError("Description is required", showSnackSev);
+            showSnackSev("Description is required", "error");
             return;
         }
 
@@ -51,18 +51,22 @@ export default function Page(): JSX.Element {
         })
             .then(fetchUserInfo)
             .then(() => router.push(`/courses/${courseID}`))
-            .catch((error) => {
-                handleError(error.message, showSnackSev);
-            });
+            .catch(
+                handleError(showSnackSev)
+            );
     };
 
     const fetchRunners = async () => {
-        const res = await axios.get<RunnerImage[]>("/runner/images");
-        setRunners(res.data.reduce((a, x) => {
-            a[x.image] = a[x.image] ?? [];
-            a[x.image].push(x.image_version);
-            return a;
+        const res = await axios.get<RunnerImage[]>("/runner/images").catch(handleError(showSnackSev));
+        if(!res){
+            return;
+        }
+        setRunners(res.data.reduce((acc, runner) => {
+            acc[runner.image] = acc[runner.image] ?? [];
+            acc[runner.image].push(runner.image_version);
+            return acc;
         }, {} as Record<string, string[]>));
+
         setSelectedRunner(res.data[0]);
     };
     useEffect(() => {

@@ -1,5 +1,5 @@
-import { ToastIntent } from "@fluentui/react-components";
-import axios from "axios";
+import {ToastIntent} from "@fluentui/react-components";
+import axios, {AxiosError} from "axios";
 
 declare module "axios" {
     export interface AxiosRequestConfig {
@@ -7,18 +7,33 @@ declare module "axios" {
     }
 }
 
-export const handleError = (message: string, showSnackSev?: (message?: string, severity?: ToastIntent) => void) => {
-    if (showSnackSev) {
-        showSnackSev(message, "error");
+export const handleError = (showSnackSev?: (message?: string, severity?: ToastIntent) => void, message?: string) => (error: AxiosError) => {
+    if (!error.isAxiosError) {
+        throw error;
+    }
+    let res: string;
+    if (message) {
+        res = message;
+    } else if (error.response) {
+        if ((error.response.data as { message: string } | undefined)?.message) {
+            res = (error.response.data as { message: string })?.message;
+        } else {
+            res = error.message;
+        }
     } else {
-        console.error(message);
+        res = "Server was unresponsive, please try again later";
+    }
+    if (showSnackSev) {
+        showSnackSev(res, "error");
+    } else {
+        console.error(res);
     }
 };
 
 /**
  * Axios instance
  */
-export const instance = axios.create({
+const instance = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL || "/api"
 });
 
@@ -67,17 +82,5 @@ instance.interceptors.response.use(
         return Promise.reject(error);
     },
 );
-
-axios.interceptors.response.use((response) => {
-    return response;
-}, error => {
-    if (error.response) {
-        if (error.response.config.skipErrorHandling) {
-            return Promise.reject(error);
-        }
-        handleError(error.response.data.message);
-    }
-    handleError("Server was unresponsive, please try again later");
-});
 
 export default instance;

@@ -23,9 +23,7 @@ export const NavbarUserPopover = (): JSX.Element => {
     const changeTheme = (theme: Theme) => {
         axios.post('/users/theme', {
             theme,
-        }).catch((e) => {
-            handleError(e.message, showSnackSev);
-        }).finally(() => {
+        }).catch(handleError(showSnackSev)).finally(() => {
             fetchUserInfo();
         });
     };

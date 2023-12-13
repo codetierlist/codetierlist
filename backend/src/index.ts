@@ -6,7 +6,7 @@ process.on("uncaughtException", e=>{
     console.error(e);
 });
 prisma.$connect().then(async () => {
-    console.log("Connected to database");
-    console.log("Starting server");
+    console.info("Connected to database");
+    console.info("Starting server");
     await import("./api");
 });
