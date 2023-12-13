@@ -4,7 +4,7 @@ import { UserContext } from "@/contexts/UserContext";
 import {
     ToolbarButton
 } from "@fluentui/react-components";
-import { Add24Filled, PersonAdd24Regular, PersonDelete24Regular } from '@fluentui/react-icons';
+import { Add24Filled, PersonAdd24Regular, PersonDelete24Regular, ArrowLeft24Regular } from '@fluentui/react-icons';
 import { Title2 } from '@fluentui/react-text';
 import {
     FetchedCourseWithTiers,
@@ -75,6 +75,8 @@ export default function Page() {
     const { showSnackSev } = useContext(SnackbarContext);
     const [assignment, setAssignment] = useState<FetchedAssignmentWithTier | null>(null);
     const [studentData, setStudentData] = useState<AssignmentStudentStats>([]);
+    const router = useRouter();
+    
     const fetchAssignment = async () => {
         await axios.get<FetchedAssignmentWithTier>(`/courses/${courseID}/assignments/${assignmentID}`, { skipErrorHandling: true })
             .then((res) => setAssignment(res.data))
@@ -141,6 +143,15 @@ export default function Page() {
             {userInfo.admin ? <AdminToolbar courseID={courseID as string} fetchCourse={fetchCourse} /> : undefined}
 
             <main>
+                <HeaderToolbar>
+                    <ToolbarButton
+                        icon={<ArrowLeft24Regular />}
+                        onClick={() => router.push(`/courses/${router.query.courseID}`)}
+                    >
+                        Back to Course
+                    </ToolbarButton>
+                </HeaderToolbar>
+
                 <Card className={styles.mainCard}>
                     <div className={styles.cardContents}>
                         <header className={styles.header}>
