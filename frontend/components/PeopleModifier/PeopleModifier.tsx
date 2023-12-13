@@ -10,6 +10,8 @@ import {SnackbarContext} from "@/contexts/SnackbarContext";
 import { useRouter } from "next/router";
 import { Container } from 'react-grid-system';
 
+// import styles from './PeopleModifier.module.css';
+
 export declare interface PeopleModifierProps {
     title: string
     description: string
