@@ -104,8 +104,8 @@ export default function Page() {
                     {course ? (
                         course.assignments.map((assignment) => (
                             <AssignmentCard
-                                key={assignment.title.replaceAll(" ", "_")}
-                                id={assignment.title.replaceAll(" ", "_")}
+                                key={assignment.title}
+                                id={assignment.title}
                                 name={assignment.title}
                                 dueDate={assignment.due_date ? new Date(assignment.due_date) : undefined}
                                 tier={assignment.tier}
