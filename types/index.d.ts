@@ -111,5 +111,6 @@ export type RunnerImage = { image: string, image_version: string }
 
 export type AssignmentStudentStats = (Omit<User, "admin" | "theme"> & {
     tier: Tier,
-    testsPassed: number
+    testsPassed: number,
+    totalTests: number,
 })[]

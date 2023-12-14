@@ -128,7 +128,7 @@ export default function Page() {
                                         <TableCell> {item.utorid} </TableCell>
                                         <TableCell> {item.givenName + " " + item.surname} </TableCell>
                                         {/* <TableCell onClick={openRepo(item.gitRepo.label)} style={{ cursor: 'pointer', textDecoration: 'underline' }}> Link </TableCell> */}
-                                        <TableCell> {item.testsPassed} </TableCell>
+                                        <TableCell> {item.testsPassed}/{item.totalTests} </TableCell>
                                         {/*<TableCell> {item.submitSol.label} </TableCell>*/}
                                         {/*<TableCell> {item.submitTest.label} </TableCell>*/}
                                     </TableRow>
