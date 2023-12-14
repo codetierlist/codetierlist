@@ -49,10 +49,11 @@ export const BaseToolbarDeleteButton = ({ deleteFunction, noun }: BaseToolbarDel
                     </DialogContent>
 
                     <DialogActions>
+                        <Button appearance="secondary" onClick={deleteFunction}>Delete</Button>
+
                         <DialogTrigger disableButtonEnhancement>
-                            <Button appearance="secondary">Cancel</Button>
+                            <Button appearance="primary">Cancel</Button>
                         </DialogTrigger>
-                        <Button appearance="primary" onClick={deleteFunction}>Delete</Button>
                     </DialogActions>
                 </DialogBody>
             </DialogSurface>
