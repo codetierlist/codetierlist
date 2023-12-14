@@ -1,5 +1,5 @@
 import axios, { handleError } from "@/axios";
-import { CourseSessionChip, HeaderToolbar, checkIfCourseAdmin, getSession } from '@/components';
+import { CourseSessionChip, getSession } from '@/components';
 import { UserContext } from "@/contexts/UserContext";
 import {
     Card,
@@ -8,10 +8,8 @@ import {
     TableCell,
     TableHeader,
     TableHeaderCell,
-    TableRow,
-    ToolbarButton
+    TableRow
 } from "@fluentui/react-components";
-import { Add24Filled, ArrowLeft24Regular, HatGraduation24Filled, PersonAdd24Regular, PersonDelete24Regular } from '@fluentui/react-icons';
 import { Title2 } from '@fluentui/react-text';
 import {
     AssignmentStudentStats,
@@ -26,61 +24,12 @@ import { useContext, useEffect, useState } from "react";
 import { SnackbarContext } from '../../../../../contexts/SnackbarContext';
 import styles from './page.module.css';
 
-/**
- * Toolbar for admin page
- * @property {string} courseID the course ID of the course
- * @returns {JSX.Element} the toolbar
- */
-const AdminToolbar = ({ courseID }: { courseID: string, fetchCourse: () => Promise<void> }) => {
-    const router = useRouter();
-
-    return (
-        <HeaderToolbar
-            aria-label="Admin Toolbar"
-        >
-            <ToolbarButton
-                appearance="primary"
-                icon={<HatGraduation24Filled />}
-                onClick={() => router.push(`/courses/${courseID}/${router.query.assignmentID}`)}
-            >
-                Student View
-            </ToolbarButton>
-
-            <ToolbarButton
-                appearance="subtle"
-                icon={<PersonAdd24Regular />}
-                onClick={() => router.push(`/courses/${courseID}/admin/add`)}
-            >
-                Add People
-            </ToolbarButton>
-
-            <ToolbarButton
-                appearance="subtle"
-                icon={<PersonDelete24Regular />}
-                onClick={() => router.push(`/courses/${courseID}/admin/remove`)}
-            >
-                Remove People
-            </ToolbarButton>
-
-            <ToolbarButton
-                appearance="subtle"
-                icon={<Add24Filled />}
-                onClick={() => router.push(`/courses/${courseID}/admin/create_assignment`)}
-            >
-                Add assignment
-            </ToolbarButton>
-        </HeaderToolbar>
-    );
-};
-
 export default function Page() {
-    const { userInfo } = useContext(UserContext);
     const [course, setCourse] = useState<FetchedCourseWithTiers | null>(null);
     const { courseID, assignmentID } = useRouter().query;
     const { showSnackSev } = useContext(SnackbarContext);
     const [assignment, setAssignment] = useState<FetchedAssignmentWithTier | null>(null);
     const [studentData, setStudentData] = useState<AssignmentStudentStats>([]);
-    const router = useRouter();
 
     const fetchAssignment = async () => {
         await axios.get<FetchedAssignmentWithTier>(`/courses/${courseID}/assignments/${assignmentID}`, { skipErrorHandling: true })
@@ -147,18 +96,7 @@ export default function Page() {
                 <title>{assignment.title} - Codetierlist</title>
             </Head>
 
-            {checkIfCourseAdmin(userInfo, courseID as string) ? <AdminToolbar courseID={courseID as string} fetchCourse={fetchCourse} /> : undefined}
-
             <main>
-                <HeaderToolbar>
-                    <ToolbarButton
-                        icon={<ArrowLeft24Regular />}
-                        onClick={() => router.push(`/courses/${router.query.courseID}`)}
-                    >
-                        Back to Course
-                    </ToolbarButton>
-                </HeaderToolbar>
-
                 <Card className={styles.mainCard}>
                     <div className={styles.cardContents}>
                         <header className={styles.header}>
@@ -198,26 +136,7 @@ export default function Page() {
                         </Table>
                     </div>
                 </Card>
-
-                {/* Future extension: Upload content from frontend
-                <div className={`${styles.gutter} ${styles.massiveGap}`}>
-                            <FilesTab
-                                routeName="solution"
-                                route="submissions"
-                                fetchAssignment={fetchAssignment}
-                                assignment={assignment}
-                                assignmentID={assignmentID as string}
-                            />
-
-                            <FilesTab
-                                routeName="test"
-                                route="testcases"
-                                fetchAssignment={fetchAssignment}
-                                assignment={assignment}
-                                assignmentID={assignmentID as string}
-                            />
-                        </div> */}
-            </main >
+            </main>
         </>
     );
 }

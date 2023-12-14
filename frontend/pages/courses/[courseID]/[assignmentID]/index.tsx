@@ -46,7 +46,7 @@ import { useContext, useEffect, useState } from 'react';
 import { Col, Container } from "react-grid-system";
 import styles from './page.module.css';
 import { UserContext } from "@/contexts/UserContext";
-import Link from 'next/link';
+import AdminPage from "./admin/index"
 
 const ListFiles = ({ commit, route, assignment, assignmentID, update }: { commit: Commit, route: "testcases" | "submissions", assignment: FetchedAssignmentWithTier, assignmentID: string, update?: () => void }) => {
     const { showSnackSev } = useContext(SnackbarContext);
@@ -339,16 +339,10 @@ export default function Page() {
                 {
                     /* TODO proper permissions check */
 
-                    userInfo.admin && (
-                        <Link href={`/courses/${courseID}/${assignmentID}/admin`} className={styles.adminButton}>
-                            <Button
-                                appearance="subtle"
-                                icon={<Settings24Regular />}
-                                aria-label="Admin page"
-                            >
-                                Admin page
-                            </Button>
-                        </Link>
+                    checkIfCourseAdmin(userInfo, assignment.course_id) && (
+                        <Tab value="tab3" onClick={() => setStage(3)}>
+                            Admin
+                        </Tab>
                     )
                 }
             </TabList>
@@ -433,6 +427,10 @@ export default function Page() {
                         tierlist
                             ? <ViewTierList tierlist={tierlist} />
                             : "No tierlist found"
+                    )
+                }{
+                    (stage === 3 && checkIfCourseAdmin(userInfo, assignment.course_id)) && (
+                        <AdminPage />
                     )
                 }
             </Container>
