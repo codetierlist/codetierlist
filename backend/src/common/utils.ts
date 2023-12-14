@@ -21,7 +21,10 @@ import {
 
 export const errorHandler = (cb: (req: Request, res: Response, next: NextFunction) => Promise<unknown>) => {
     return (req: Request, res: Response, next: NextFunction) => {
-        cb(req, res, next).catch(e => next(e));
+        cb(req, res, next).catch(e => {
+            console.error(e);
+            next(e);
+        });
     };
 };
 
@@ -44,7 +47,11 @@ export function isProf(course: Course & {
 
 const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'datetime' | 'id'>, table: "solution" | "testCase") => {
     const repoPath = path.resolve(`/repos/${object.course_id}/${object.assignment_title}/${object.author_id}_${table}`);
-    if (["unmodified", "unmodified"].includes(await git.status({fs, dir: repoPath, filepath: '.'}))) {
+    if (["unmodified", "unmodified"].includes(await git.status({
+        fs,
+        dir: repoPath,
+        filepath: '.'
+    }))) {
         return null;
     }
     await git.add({fs, dir: repoPath, filepath: '.'});
@@ -190,7 +197,10 @@ export const getCommit = async (submission: Solution | TestCase, commitId?: stri
             ref: commit.oid
         });
         const log = await git.log({fs, dir: submission.git_url});
-        const res: Commit = {files, log: log.map(commitIterator => commitIterator.oid)};
+        const res: Commit = {
+            files,
+            log: log.map(commitIterator => commitIterator.oid)
+        };
         if ((submission as TestCase).valid) {
             res.valid = (submission as TestCase).valid;
         }
