@@ -14,7 +14,6 @@ import { useContext, useEffect, useState } from "react";
 import { Container } from "react-grid-system";
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import styles from './page.module.css';
-import {isProfForCourse} from "@/components/utils/Permissions/checkPermissions";
 
 /**
  * Toolbar for admin page
@@ -79,7 +78,7 @@ export default function Page() {
 
     return (
         <>
-            {userInfo.admin || isProfForCourse(userInfo, courseID as string)? <AdminToolbar courseID={courseID as string} fetchCourse={fetchCourse} /> : undefined}
+            {checkIfCourseAdmin(userInfo, courseID as string)? <AdminToolbar courseID={courseID as string} fetchCourse={fetchCourse} /> : undefined}
 
             <Container component="main" className="m-t-xxxl">
                 <header className={styles.header}>
@@ -110,7 +109,6 @@ export default function Page() {
                                 dueDate={assignment.due_date ? new Date(assignment.due_date) : undefined}
                                 tier={assignment.tier}
                                 courseID={courseID as string}
-                                hasAdminPerms={checkIfCourseAdmin(userInfo, course.id)}
                             />
                         ))
                     ) : (

@@ -25,6 +25,15 @@ import { Container } from "react-grid-system";
 
 import styles from "./page.module.css";
 
+/**
+ * Converts an ISO string to a date object
+ */
+const updateTimezoneOffset = (date: string) => {
+    const d = new Date(date);
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+    return d;
+};
+
 export default function Page(): JSX.Element {
     const { showSnackSev } = useContext(SnackbarContext);
     const [assignmentName, setAssignmentName] = useState("");
@@ -126,7 +135,7 @@ export default function Page(): JSX.Element {
                             onChange={e => {
                                 // check if the date is valid
                                 if (new Date(e.target.value).toString() !== "Invalid Date")
-                                    setDueDate(new Date(e.target.value));
+                                    setDueDate(updateTimezoneOffset(e.target.value));
                             }} />
                     </ControlCard>
 
