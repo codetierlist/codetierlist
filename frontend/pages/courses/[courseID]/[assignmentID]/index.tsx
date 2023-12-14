@@ -51,7 +51,7 @@ const ViewTierList = ({ tierlist }: { tierlist: Tierlist }) => {
  * @param assignment
  * @param tierlist can be null
  */
-const shouldViewTierList = (assignment: FetchedAssignmentWithTier, tierlist: Tierlist | null) => {
+const shouldViewTierList = (assignment: FetchedAssignment, tierlist: Tierlist | null) => {
     if (tierlist === null) {
         return false;
     }
