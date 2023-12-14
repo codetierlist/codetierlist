@@ -67,6 +67,15 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    // change system colour scheme based on current user theme
+    useEffect(() => {
+        if (userInfo.theme === "DARK") {
+            document.documentElement.style.colorScheme = "dark";
+        } else {
+            document.documentElement.style.colorScheme = "light";
+        }
+    }, [userInfo.theme]);
+
     return (
         // 👇 Accepts a renderer from <Document /> or creates a default one
         //    Also triggers rehydration a client
