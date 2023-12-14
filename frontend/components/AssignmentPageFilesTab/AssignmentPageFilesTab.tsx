@@ -22,7 +22,7 @@ import {
 } from '@fluentui/react-icons';
 import {
     Commit,
-    FetchedAssignmentWithTier
+    FetchedAssignment
 } from "codetierlist-types";
 import { useContext, useEffect, useState } from 'react';
 import styles from './AssignmentPageFilesTab.module.css';
@@ -32,13 +32,13 @@ import styles from './AssignmentPageFilesTab.module.css';
  *
  * @param {Commit} commit the commit to display
  * @param {"testcases" | "submissions"} route the route to use
- * @param {FetchedAssignmentWithTier} assignment the assignment to display
+ * @param {FetchedAssignment} assignment the assignment to display
  * @param {string} assignmentID the ID of the assignment
  * @param {() => void} update a function to call when the files are updated
  *
  * @returns {JSX.Element} the list of files
  */
-const ListFiles = ({ commit, route, assignment, assignmentID, update }: { commit: Commit, route: "testcases" | "submissions", assignment: FetchedAssignmentWithTier, assignmentID: string, update?: () => void }) => {
+const ListFiles = ({ commit, route, assignment, assignmentID, update }: { commit: Commit, route: "testcases" | "submissions", assignment: FetchedAssignment, assignmentID: string, update?: () => void }) => {
     const { showSnackSev } = useContext(SnackbarContext);
     const [files, setFiles] = useState<{ [key: string]: string }>({});
 
@@ -115,14 +115,14 @@ const ListFiles = ({ commit, route, assignment, assignmentID, update }: { commit
  * A tab that displays the files for an assignment
  *
  * @param {() => Promise<void>} fetchAssignment a function that fetches the assignment
- * @param {FetchedAssignmentWithTier} assignment the assignment to display
+ * @param {FetchedAssignment} assignment the assignment to display
  * @param {string} assignmentID the ID of the assignment
  * @param {string} routeName the name of the route
  * @param {"testcases" | "submissions"} route the route to use
  *
  * @returns {JSX.Element} the files tab
  */
-export const AssignmentPageFilesTab = ({ fetchAssignment, assignment, assignmentID, routeName, route }: { fetchAssignment: () => Promise<void>, assignment: FetchedAssignmentWithTier, assignmentID: string, routeName: string, route: "testcases" | "submissions" }) => {
+export const AssignmentPageFilesTab = ({ fetchAssignment, assignment, assignmentID, routeName, route }: { fetchAssignment: () => Promise<void>, assignment: FetchedAssignment, assignmentID: string, routeName: string, route: "testcases" | "submissions" }) => {
     const [content, setContent] = useState<Commit>({ "files": [], "log": [] } as Commit);
     const { showSnackSev } = useContext(SnackbarContext);
 
