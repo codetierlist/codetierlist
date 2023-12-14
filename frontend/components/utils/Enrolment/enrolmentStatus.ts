@@ -1,5 +1,6 @@
 import { isUTORid } from 'is-utorid';
 import axios from "@/axios";
+import { RoleType} from "codetierlist-types";
 
 /**
  * given a csv of students, enroll them in or remove them from the course
@@ -10,7 +11,7 @@ import axios from "@/axios";
  *
  * @returns void on success, throws an error on failure
  */
-export async function modifyEnrollment(courseID: string, csv: string, action: "enroll" | "remove") {
+export async function modifyEnrollment(courseID: string, csv: string, action: "add" | "remove", roleType: RoleType) {
     const table = csv.split("\n").map((row) => row.trim().split(","));
 
     if (table.length < 2) {
@@ -34,6 +35,6 @@ export async function modifyEnrollment(courseID: string, csv: string, action: "e
 
     await axios.post(`/courses/${courseID}/${action}`, {
         utorids: utoridList,
-        role: "STUDENT"
-    });
+        role: roleType
+    }).catch((e) => { throw new Error(e.message); });
 }
