@@ -21,8 +21,9 @@ import {
 } from '@fluentui/react-components';
 import { Subtitle2, Title2 } from '@fluentui/react-text';
 import {
-    FetchedAssignmentWithTier,
-    Tierlist
+    FetchedAssignment,
+    Tierlist,
+    UserTier
 } from "codetierlist-types";
 import Error from 'next/error';
 import Head from "next/head";
@@ -50,7 +51,7 @@ const ViewTierList = ({ tierlist }: { tierlist: Tierlist }) => {
  * @param assignment
  * @param tierlist can be null
  */
-const shouldViewTierList = (assignment: FetchedAssignmentWithTier, tierlist: Tierlist | null) => {
+const shouldViewTierList = (assignment: FetchedAssignment, tierlist: Tierlist | null) => {
     if (tierlist === null) {
         return false;
     }
@@ -60,17 +61,37 @@ const shouldViewTierList = (assignment: FetchedAssignmentWithTier, tierlist: Tie
     return (assignment.submissions.length > 0 && assignment.test_cases.length > 0);
 };
 
+/**
+ * Gets the tier of the user
+ *
+ * @param tierlist the tierlist
+ */
+const getMyTier = (tierlist: Tierlist): UserTier => {
+    // iterate through both keys and values in the tierlsit array
+    for (const [tier, entries] of Object.entries(tierlist)) {
+        // iterate through the entries
+        for (const entry of entries) {
+            // if the entry is the user, return the tier
+            if (entry.you) {
+                return tier as UserTier;
+            }
+        }
+    }
+
+    return "?";
+};
+
 export default function Page() {
     const router = useRouter();
     const [stage, setStage] = useState(0);
-    const [assignment, setAssignment] = useState<FetchedAssignmentWithTier | null>(null);
+    const [assignment, setAssignment] = useState<FetchedAssignment | null>(null);
     const [tierlist, setTierlist] = useState<Tierlist | null>(null);
     const { showSnackSev } = useContext(SnackbarContext);
     const { courseID, assignmentID } = router.query;
     const { userInfo } = useContext(UserContext);
 
     const fetchAssignment = async () => {
-        await axios.get<FetchedAssignmentWithTier>(`/courses/${courseID}/assignments/${assignmentID}`, { skipErrorHandling: true })
+        await axios.get<FetchedAssignment>(`/courses/${courseID}/assignments/${assignmentID}`, { skipErrorHandling: true })
             .then((res) => setAssignment(res.data))
             .catch(e => {
                 handleError(showSnackSev)(e);
@@ -166,7 +187,7 @@ export default function Page() {
                             <Card className={styles.header} orientation="horizontal">
                                 <CardHeader
                                     className={styles.assignmentHeaderContent}
-                                    action={<TierChip tier={assignment.tier} />}
+                                    action={<TierChip tier={(tierlist && getMyTier(tierlist)) || "?"} />}
                                     header={
                                         <div className={styles.assignmentHeaderContent}>
                                             <Subtitle2 className={styles.dueDate}>
