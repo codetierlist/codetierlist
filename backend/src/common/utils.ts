@@ -284,7 +284,7 @@ export const getCommitFromRequest = async (req: Request, table: "solution" | "te
 
 export const fetchCourseMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const course = await prisma.course.findUnique({
-        where: {id: req.params.courseId, hidden: false},
+        where: {id: req.params.courseId, hidden: false, roles: req.user.admin ? {} : {some: {user:{utorid:req.user.utorid}}}},
         ...fetchedCourseArgs
     });
     if (course === null) {
@@ -306,12 +306,14 @@ export const fetchAssignmentMiddleware = async (req: Request, res: Response, nex
         where: {
             id: {
                 title: req.params.assignment,
-                course_id: req.params.courseId
+                course_id: req.params.courseId,
+            },
+            course: {
+                roles: req.user.admin ? {} : {some: {user:{utorid:req.user.utorid}}}
             },
             hidden: false
         },
         include: {...fetchedAssignmentArgs.include, course: fetchedCourseArgs}
-
     });
     if (assignment === null) {
         res.statusCode = 404;
