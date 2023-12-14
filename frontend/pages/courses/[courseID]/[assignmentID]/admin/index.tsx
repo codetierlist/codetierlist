@@ -76,6 +76,78 @@ const AdminToolbar = ({ courseID }: { courseID: string, fetchCourse: () => Promi
     );
 };
 
+// Future extension: filestab content
+// const FilesTab = ({ fetchAssignment, assignment, assignmentID, routeName, route }: { fetchAssignment: () => Promise<void>, assignment: FetchedAssignmentWithTier, assignmentID: string, routeName: string, route: "testcases" | "submissions" }) => {
+//     const [content, setContent] = useState<Commit>({ "files": [], "log": [] } as Commit);
+//     const { showSnackSev } = useContext(SnackbarContext);
+
+//     const getTestData = async () => {
+//         await axios.get<Commit>(`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}`, { skipErrorHandling: true })
+//             .then((res) => setContent(res.data))
+//             .catch(e => {
+//                 handleError(showSnackSev)(e);
+//                 setContent({ "files": [], "log": [] } as Commit);
+//             });
+//     };
+
+//     const submitTest = async (files: FileList) => {
+//         const formData = new FormData();
+//         for (let i = 0; i < files!.length; i++) {
+//             formData.append("files", files![i]);
+//         }
+
+//         axios.post(`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}`,
+//             formData,
+//             {
+//                 headers: { "Content-Type": "multipart/form-data" }
+//             })
+//             .then(() => {
+//                 fetchAssignment();
+//             })
+//             .catch(handleError(showSnackSev));
+//     };
+
+//     useEffect(() => {
+//         void getTestData();
+//         // eslint-disable-next-line react-hooks/exhaustive-deps
+//     }, [assignmentID, fetchAssignment, route, routeName, assignment.submissions]);
+
+//     return (
+//         <div className={styles.gutter}>
+//             <div className={`${flex["d-flex"]} ${flex["justify-content-between"]}`}>
+//                 <Subtitle1 block>Uploaded {routeName}s <TestCaseStatus status={content.valid}/></Subtitle1>
+//                 <Button
+//                     icon={<Add24Filled />}
+//                     appearance="subtle"
+//                     onClick={async () => {
+//                         promptForFileObject(".py", true)
+//                             .then(file => {
+//                                 if (file) {
+//                                     submitTest(file);
+//                                 }
+//                             })
+//                             .catch(handleError(showSnackSev));
+//                     }}
+//                 >
+//                     Upload a {routeName}
+//                 </Button>
+//             </div>
+
+//             <Text block className={styles.commitId} font="numeric">{content.log[0]}</Text>
+
+//             <Card>
+//                 <ListFiles
+//                     commit={content}
+//                     route={route}
+//                     assignment={assignment}
+//                     assignmentID={assignmentID}
+//                     update={getTestData}
+//                 />
+//             </Card>
+//         </div>
+//     );
+// };
+
 export default function Page() {
     const { userInfo } = useContext(UserContext);
     const [course, setCourse] = useState<FetchedCourseWithTiers | null>(null);
@@ -162,6 +234,14 @@ export default function Page() {
                     </ToolbarButton>
                 </HeaderToolbar>
 
+                {/* Future extension: create tab system
+                <Tab value="tab0" onClick={() => setStage(0)}>
+                    Assignment details
+                </Tab>
+                <Tab value="tab1" onClick={() => setStage(1)}>
+                    Upload
+                </Tab> */}
+
                 <Card className={styles.mainCard}>
                     <div className={styles.cardContents}>
                         <header className={styles.header}>
@@ -201,6 +281,25 @@ export default function Page() {
                         </Table>
                     </div>
                 </Card>
+
+                {/* Future extension: Upload content from frontend
+                <div className={`${styles.gutter} ${styles.massiveGap}`}>
+                            <FilesTab
+                                routeName="solution"
+                                route="submissions"
+                                fetchAssignment={fetchAssignment}
+                                assignment={assignment}
+                                assignmentID={assignmentID as string}
+                            />
+
+                            <FilesTab
+                                routeName="test"
+                                route="testcases"
+                                fetchAssignment={fetchAssignment}
+                                assignment={assignment}
+                                assignmentID={assignmentID as string}
+                            />
+                        </div> */}
             </main >
         </>
     );
