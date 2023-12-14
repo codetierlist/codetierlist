@@ -32,10 +32,19 @@ const fullFetchedAssignmentArgs = Prisma.validator<Prisma.AssignmentDefaultArgs>
                 scores: {
                     orderBy: [{test_case: {datetime: "desc"}}, {datetime: "desc"}],
                     distinct: "testcase_author_id",
-                    include: {test_case:true}
+                    include: {test_case: true}
                 }
             }
         },
+        course: {
+            include: {
+                roles: {
+                    include: {
+                        user: true
+                    }
+                }
+            }
+        }
     }
 });
 
@@ -48,7 +57,7 @@ export type Submission = Prisma.SolutionGetPayload<{}>;
 export type Score = Prisma.ScoreGetPayload<{}>;
 export type Role = Prisma.RoleGetPayload<{}>;
 export type TestCase = Prisma.TestCaseGetPayload<{}>;
-const test : TestCase;
+const test: TestCase;
 export type TestCaseStatus = typeof test.valid
 
 export type FetchedUser = Prisma.UserGetPayload<typeof fetchedUserArgs>;
@@ -76,12 +85,15 @@ export type Tierlist = Record<Tier, TierlistEntry[]>;
 
 export type Session = "Fall" | "Winter" | "Summer"
 
-const role :Role;
+const role: Role;
 export type RoleType = typeof role.type
 
-const user :User;
+const user: User;
 export type Theme = typeof user.theme;
 
-export type RunnerImage = {image:string, image_version: string}
+export type RunnerImage = { image: string, image_version: string }
 
-export type AssignmentStudentStats = (Omit<User,"admin" | "theme"> & { tier: Tier, testsPassed: number })[]
+export type AssignmentStudentStats = (Omit<User, "admin" | "theme"> & {
+    tier: Tier,
+    testsPassed: number
+})[]
