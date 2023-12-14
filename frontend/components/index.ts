@@ -1,7 +1,6 @@
 /**
  * @fileoverview This file exports all the components in the components folder
  */
-export * from './AddAssignmentModal/AddAssignmentModal';
 export * from './AssignmentCard/AssignmentCard';
 export * from './CheckedTodo/CheckedTodo';
 export * from './ControlCard/ControlCard';
