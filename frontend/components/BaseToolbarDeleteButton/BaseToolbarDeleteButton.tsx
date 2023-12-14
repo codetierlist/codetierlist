@@ -25,7 +25,7 @@ export const BaseToolbarDeleteButton = ({ deleteFunction, noun }: { deleteFuncti
 
             <DialogSurface>
                 <DialogBody>
-                    <DialogTitle>Delete course</DialogTitle>
+                    <DialogTitle>Delete {noun}</DialogTitle>
                     <DialogContent>
                         Are you sure you want to delete this {noun}? This action cannot be undone.
                     </DialogContent>
@@ -40,4 +40,4 @@ export const BaseToolbarDeleteButton = ({ deleteFunction, noun }: { deleteFuncti
         </Dialog>
 
     );
-}
+};
