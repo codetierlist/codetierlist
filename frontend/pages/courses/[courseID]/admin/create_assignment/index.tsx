@@ -60,7 +60,7 @@ export default function Page(): JSX.Element {
 
         const fetchRunners = async () => {
             const res = await axios.get<RunnerImage[]>("/runner/images").catch(handleError(showSnackSev));
-            if(!res){
+            if (!res) {
                 return;
             }
             setRunners(res.data.reduce((acc, runner) => {
@@ -73,7 +73,7 @@ export default function Page(): JSX.Element {
         };
 
         void fetchRunners();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [showSnackSev]);
 
     return (
@@ -91,7 +91,7 @@ export default function Page(): JSX.Element {
                 </ToolbarButton>
             </HeaderToolbar>
 
-            <Container component="main" className="m-t-xxxl">
+            <Container component="main" className="p-y-xxxl">
                 <form
                     className={styles.form}
                     onSubmit={(e) => {
@@ -175,8 +175,10 @@ export default function Page(): JSX.Element {
 
                     </Card>
 
-                    <Button type="submit"
-                        appearance="primary">Create</Button>
+                    <div className={styles.submit}>
+                        <Button type="submit"
+                            appearance="primary">Create</Button>
+                    </div>
                 </form>
             </Container>
         </>

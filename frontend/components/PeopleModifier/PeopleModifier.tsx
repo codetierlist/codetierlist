@@ -10,7 +10,7 @@ import {SnackbarContext} from "@/contexts/SnackbarContext";
 import { useRouter } from "next/router";
 import { Container } from 'react-grid-system';
 
-// import styles from './PeopleModifier.module.css';
+import styles from './PeopleModifier.module.css';
 
 export declare interface PeopleModifierProps {
     title: string
@@ -66,6 +66,7 @@ export const PeopleModifier = ({
             />
             <Button
                 appearance="primary"
+                className={`m-y-xxl ${styles.submitButton}`}
                 onClick={() => {
                     modifyEnrollment(router.query.courseID as string, editorValue, action, roleType)
                         .then(() => showSnackSev(`${modalActionText} ${peopleType} successfully`, "success"))

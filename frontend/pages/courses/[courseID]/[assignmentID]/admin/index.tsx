@@ -4,8 +4,7 @@ import { UserContext } from "@/contexts/UserContext";
 import {
     ToolbarButton
 } from "@fluentui/react-components";
-import { Add24Filled, PersonAdd24Regular, PersonDelete24Regular, ArrowLeft24Regular } from '@fluentui/react-icons';
-// import { type Course, getCourses } from '@/contexts/UserContext';
+import { Add24Filled, PersonAdd24Regular, PersonDelete24Regular, ArrowLeft24Regular, HatGraduation24Filled } from '@fluentui/react-icons';
 import { Title2 } from '@fluentui/react-text';
 import {
     FetchedCourseWithTiers,
@@ -42,6 +41,14 @@ const AdminToolbar = ({ courseID }: { courseID: string, fetchCourse: () => Promi
         <HeaderToolbar
             aria-label="Admin Toolbar"
         >
+            <ToolbarButton
+                appearance="primary"
+                icon={<HatGraduation24Filled />}
+                onClick={() => router.push(`/courses/${courseID}/${router.query.assignmentID}`)}
+            >
+                Student View
+            </ToolbarButton>
+
             <ToolbarButton
                 appearance="subtle"
                 icon={<PersonAdd24Regular />}

@@ -1,3 +1,7 @@
 .modifier {
     margin-top: 50px;
 }
+
+.submitButton {
+    float: right;
+}
