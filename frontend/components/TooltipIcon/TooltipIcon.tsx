@@ -11,7 +11,7 @@ import React, {useState} from "react";
  * @property tooltip the tooltip to show
  * @property icon the icon to show, should be a fluent 9 icon satisfying the IconProps interface
  */
-export const ToolTipIcon = (props: Partial<TooltipProps> & {tooltip: string, icon?: JSX.Element}) => {
+export const ToolTipIcon = (props: Partial<TooltipProps> & {tooltip: string, icon?: JSX.Element, className?: string}) => {
     const contentId = useId("content");
     const [visible, setVisible] = useState(false);
 
@@ -19,7 +19,7 @@ export const ToolTipIcon = (props: Partial<TooltipProps> & {tooltip: string, ico
         return undefined;
     }
     return (
-        <span aria-owns={visible ? contentId : undefined}>
+        <span aria-owns={visible ? contentId : undefined} className={props.className}>
             <Tooltip
                 content={{
                     children: props.tooltip,

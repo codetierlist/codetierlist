@@ -1,3 +1,24 @@
 .semibold {
     font-weight: var(--fontWeightSemibold);
 }
+
+.showOnMobile {
+    display: none;
+}
+
+@media (max-width: 992px) {
+    .showOnMobile {
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+.showOnDesktop {
+    display: block;
+}
+
+@media (max-width: 992px) {
+    .showOnDesktop {
+        display: none;
+    }
+}

@@ -153,8 +153,8 @@ export const queueJob = (job: Job) : Promise<JobResult> => {
 
 // Add new images here
 export const images : RunnerImage[] = [
-    {image: 'python', image_version: '3.10.11'},
-    {image: 'python', image_version: '3.12.1'},
+    {image: 'python', image_version: 'unittest-3.10.11'},
+    {image: 'python', image_version: 'unittest-3.12.1'},
     {image: 'python', image_version: 'pytest-3.10.11'},
 ];
 

@@ -123,7 +123,7 @@ router.get("/:assignment/testcases/:commitId?/:file", fetchAssignmentMiddleware,
 router.get("/:assignment/tierlist", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     const fullFetchedAssignment = await prisma.assignment.findUniqueOrThrow({where: {id: {title: req.assignment!.title, course_id: req.assignment!.course_id}}, ...fullFetchedAssignmentArgs});
     const tierlist = generateList(fullFetchedAssignment, req.user);
-    if (tierlist[1] === "?" as UserTier) {
+    if (!isProf(req.course!, req.user) && tierlist[1] === "?" as UserTier) {
         res.send({S: [], A: [], B: [], C: [], D: [], F: []} satisfies Tierlist);
         return;
     }
@@ -140,7 +140,7 @@ router.get('/:assignment/stats', fetchAssignmentMiddleware, errorHandler(async (
     });
     const tierlist = generateTierList(fullFetchedAssignment, req.user, false);
     const invertedTierlist: Record<string, Tier> = {};
-    (Object.keys(tierlist) as Tier[]).forEach(tier => tierlist[tier].forEach(name => invertedTierlist[name.name] = tier));
+    (Object.keys(tierlist) as Tier[]).forEach(tier => tierlist[tier].forEach(name => invertedTierlist[name.utorid] = tier));
     const students = fullFetchedAssignment.submissions.map(submission => ({
         utorid: submission.author.utorid,
         givenName: submission.author.givenName,

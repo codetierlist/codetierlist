@@ -246,6 +246,7 @@ export const deleteFile = async (req: Request, res: Response, table: "solution" 
     } catch (_) {
         /* if the file doesn't exist then continue */
     }
+
     const commit = await commitFiles(req, object, table);
     if (commit === null) {
         res.statusCode = 500;
@@ -294,7 +295,7 @@ export const fetchAssignmentMiddleware = async (req: Request, res: Response, nex
     const assignment = await prisma.assignment.findUnique({
         where: {
             id: {
-                title: req.params.assignment.replace("_", " "),
+                title: req.params.assignment,
                 course_id: req.params.courseId
             }
         },

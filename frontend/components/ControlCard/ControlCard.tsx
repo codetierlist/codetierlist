@@ -52,9 +52,12 @@ export const ControlCard = (props: ControlCardProps): JSX.Element => {
                     )
                 }
                 action={
-                    props.children
+                    <div className={styles.showOnDesktop}>{props.children}</div>
                 }
             />
+            <div className={styles.showOnMobile}>
+                {props.children}
+            </div>
         </Card>
     );
 };

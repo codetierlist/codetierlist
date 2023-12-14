@@ -1,7 +1,8 @@
 import { FetchedUser } from 'codetierlist-types';
 
 /**
- * Check if a user has administrator privileges in a course
+ * Check if a user has administrator privileges in a course, i.e., is a prof
+ * in a course or is an admin
  *
  * @param user The user to check
  * @param courseId The course to check

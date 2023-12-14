@@ -5,6 +5,7 @@ import {
     Tierlist,
     UserTier
 } from "codetierlist-types";
+import {isProf} from "./utils";
 
 /** @return a two letter hash of the string */
 export const twoLetterHash = (str: string) => {
@@ -23,9 +24,9 @@ const getUtorid = (user: User | string) => typeof user === "string" ? user : use
 const isSelf = (user: User | string, utorid: string) => utorid === getUtorid(user);
 
 /** @return user initials based on email */
-const getUserInitials = (user: User | string) =>
+const getUserInitials = (user: User) =>
     // the idea here is to catch weird names like "c" from erroring out
-    (typeof user === "string") ? (user.substring(0, 2)) : (`${user.givenName.substring(0, 1)}${user.surname.substring(0, 1)}`);
+    `${user.givenName.substring(0, 1)}${user.surname.substring(0, 1)}`;
 
 
 /** @return the mean of the data */
@@ -37,7 +38,7 @@ function getStandardDeviation(array: number[]) {
     return Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n);
 }
 
-export function generateList(assignment: Omit<FullFetchedAssignment, "due_date">, user?: string | User, anonymize = true): [Tierlist, UserTier] {
+export function generateList(assignment: Omit<FullFetchedAssignment, "due_date">, user?: string | User, anonymize = false): [Tierlist, UserTier] {
     const res: Tierlist = {
         S: [],
         A: [],
@@ -49,15 +50,14 @@ export function generateList(assignment: Omit<FullFetchedAssignment, "due_date">
     if (assignment.submissions.length === 0) {
         return [res, "?" as UserTier];
     }
-    const scores = assignment.submissions.map(submission =>
+    const scores = assignment.submissions.filter(submission=>!isProf(assignment.course, submission.author)).map(submission =>
     {
         const validScores = submission.scores.filter(x=>x.test_case.valid==="VALID");
         return{
             you: user ? isSelf(user, submission.author.utorid) : false,
-            name: anonymize ? submission.author.utorid : (user ? isSelf(user, submission.author.utorid) : false)
-                ? getUserInitials(submission.author)
-                : twoLetterHash(submission.author.utorid + (user ? getUtorid(user) : "")),
-            score: validScores.length === 0 ? 0.0 : validScores.filter(x => x.pass).length / validScores.length,
+            name: getUserInitials(submission.author),
+            utorid: anonymize ? '' : submission.author.utorid,
+            score: validScores.length === 0 ? 0.0 : validScores.filter(x => x.pass).length / validScores.length
         };}
     );
     const mean = getMean(scores.map(x => x.score));

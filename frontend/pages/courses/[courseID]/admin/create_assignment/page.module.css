@@ -7,3 +7,7 @@
 .semibold {
     font-weight: var(--fontWeightSemibold);
 }
+
+.submit {
+    align-self: flex-end;
+}
