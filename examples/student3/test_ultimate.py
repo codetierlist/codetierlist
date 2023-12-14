@@ -10,11 +10,11 @@ def test_space_fail():
 
 
 def test_space_fail_2():
-    assert not palindrome(" b y  e ")
+    assert not palindrome(" b y  e    ")
 
 
 def test_space_pass():
-    assert palindrome("ra cec ar")
+    assert palindrome("ra ceca r")
 
 
 def test_space_pass_2():

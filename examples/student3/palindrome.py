@@ -7,4 +7,7 @@ def palindrome(s: str):
             new_s += s[i]
         i += 1
 
+    # add last character
+    new_s += s[i]
+
     return new_s == new_s[::-1]
