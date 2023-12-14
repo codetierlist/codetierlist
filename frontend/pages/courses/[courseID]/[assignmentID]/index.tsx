@@ -126,13 +126,13 @@ const ListFiles = ({ commit, route, assignment, assignmentID, update }: { commit
  */
 const TestCaseStatusIcon = ({ status }: { status: TestCaseStatus }): JSX.Element => {
     switch (status) {
-        case "INVALID":
-            return <DismissCircle24Regular fill={"var(--colorStatusDangerForeground1)"} primaryFill={"var(--colorStatusDangerForeground1)"} />;
-        case "PENDING":
-            return <ArrowCounterclockwiseDashes24Filled fill={"var(--colorPaletteGoldForeground2)"} primaryFill={"var(--colorPaletteGoldForeground2)"} />;
-        case "VALID":
-            return <CheckmarkCircle24Regular fill={"var(--colorStatusSuccessForeground1)"} primaryFill={"var(--colorStatusSuccessForeground1)"} />;
-        default: return <></>;
+    case "INVALID":
+        return <DismissCircle24Regular fill={"var(--colorStatusDangerForeground1)"} primaryFill={"var(--colorStatusDangerForeground1)"} />;
+    case "PENDING":
+        return <ArrowCounterclockwiseDashes24Filled fill={"var(--colorPaletteGoldForeground2)"} primaryFill={"var(--colorPaletteGoldForeground2)"} />;
+    case "VALID":
+        return <CheckmarkCircle24Regular fill={"var(--colorStatusSuccessForeground1)"} primaryFill={"var(--colorStatusSuccessForeground1)"} />;
+    default: return <></>;
     }
 };
 /**
