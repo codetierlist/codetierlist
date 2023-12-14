@@ -1,0 +1,4 @@
+.tabList {
+    margin-left: var(--spacingHorizontalS);
+    overflow-x: auto;
+}
