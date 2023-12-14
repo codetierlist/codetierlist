@@ -1,15 +1,15 @@
-import { HeaderToolbar } from "@/components";
-import { ToolbarButton } from "@fluentui/react-components";
+import { HeaderToolbar, PeopleModifier } from "@/components";
+import { Tab, TabList, ToolbarButton } from "@fluentui/react-components";
 import { ArrowLeft24Regular } from '@fluentui/react-icons';
-
 import Head from "next/head";
 import { useRouter } from "next/router";
-
-import { PeopleModifier } from "@/components";
+import { useState } from "react";
+import styles from "./page.module.css";
 
 export default function Page(): JSX.Element {
 
     const router = useRouter();
+    const [stage, setStage] = useState(0);
 
     return (
         <>
@@ -26,25 +26,40 @@ export default function Page(): JSX.Element {
                 </ToolbarButton>
             </HeaderToolbar>
 
+            <TabList className={styles.tabList} size="large" selectedValue={`tab${stage}`}>
+                <Tab value="tab0" onClick={() => setStage(0)}>
+                    Enroll Students
+                </Tab>
+                <Tab value="tab1" onClick={() => setStage(1)}>
+                    Add TAs
+                </Tab>
+                <Tab value="tab2" onClick={() => setStage(2)}>
+                    Add Instructors
+                </Tab>
+            </TabList>
+
             <main>
-                <PeopleModifier
-                    title={"Enroll Students"}
-                    description={"Update the students enrolled in this course by uploading a CSV of students. The CSV must have a header row with the column \"utorid\"."}
-                    action={"add"}
-                    roleType={"STUDENT"}
-                />
-                <PeopleModifier
-                    title={"Add TAs"}
-                    description={"Update the TAs in this course by uploading a CSV of TAs. The CSV must have a header row with the column \"utorid\"."}
-                    action={"add"}
-                    roleType={"TA"}
-                />
-                <PeopleModifier
-                    title={"Add Instructors"}
-                    description={"Update the instructors in this course by uploading a CSV of instructors. The CSV must have a header row with the column \"utorid\"."}
-                    action={"add"}
-                    roleType={"INSTRUCTOR"}
-                />
+                {stage === 0 &&
+                    <PeopleModifier
+                        title={"Enroll Students"}
+                        description={"Update the students enrolled in this course by uploading a CSV of students. The CSV must have a header row with the column \"utorid\"."}
+                        action={"add"}
+                        roleType={"STUDENT"}
+                    />}
+                {stage === 1 &&
+                    <PeopleModifier
+                        title={"Add TAs"}
+                        description={"Update the TAs in this course by uploading a CSV of TAs. The CSV must have a header row with the column \"utorid\"."}
+                        action={"add"}
+                        roleType={"TA"}
+                    />}
+                {stage === 2 &&
+                    <PeopleModifier
+                        title={"Add Instructors"}
+                        description={"Update the instructors in this course by uploading a CSV of instructors. The CSV must have a header row with the column \"utorid\"."}
+                        action={"add"}
+                        roleType={"INSTRUCTOR"}
+                    />}
             </main>
         </>
     );

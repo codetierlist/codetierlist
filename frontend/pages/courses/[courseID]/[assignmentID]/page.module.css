@@ -51,13 +51,13 @@
 }
 
 .gutter {
-    margin-top: var(--spacingVerticalS) !important;
-    margin-bottom: var(--spacingVerticalXXXL) !important;
+    padding-top: var(--spacingVerticalS) !important;
+    padding-bottom: var(--spacingVerticalXXXL) !important;
 }
 
 .gutterTop {
-    margin-top: var(--spacingVerticalXXXL) !important;
-    margin-bottom: var(--spacingVerticalXXXL) !important;
+    padding-top: var(--spacingVerticalXXXL) !important;
+    padding-bottom: var(--spacingVerticalXXXL) !important;
 }
 
 .massiveGap {
