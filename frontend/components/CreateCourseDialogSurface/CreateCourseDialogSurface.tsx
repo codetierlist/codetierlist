@@ -59,7 +59,7 @@ export const CreateCourseDialogSurface = ({ closeDialog }: { closeDialog: () => 
                         <div className={styles.input}>
                             <Label required htmlFor="courseName">Course Name:</Label>
                             <Input required type="text" id="courseName" name="courseName"
-                                value={code} maxLength={50}
+                                value={name} maxLength={50}
                                 onChange={e => setCourseName(e.target.value)} />
                         </div>
                     </DialogContent>
