@@ -1,33 +1,30 @@
 import axios, { handleError } from "@/axios";
-import { CourseSessionChip, HeaderToolbar, getSession } from '@/components';
+import { CourseSessionChip, HeaderToolbar, checkIfCourseAdmin, getSession } from '@/components';
 import { UserContext } from "@/contexts/UserContext";
 import {
+    Card,
+    Table,
+    TableBody,
+    TableCell,
+    TableHeader,
+    TableHeaderCell,
+    TableRow,
     ToolbarButton
 } from "@fluentui/react-components";
-import { Add24Filled, PersonAdd24Regular, PersonDelete24Regular, ArrowLeft24Regular, HatGraduation24Filled } from '@fluentui/react-icons';
+import { Add24Filled, ArrowLeft24Regular, HatGraduation24Filled, PersonAdd24Regular, PersonDelete24Regular } from '@fluentui/react-icons';
 import { Title2 } from '@fluentui/react-text';
 import {
-    FetchedCourseWithTiers,
+    AssignmentStudentStats,
     FetchedAssignmentWithTier,
-    AssignmentStudentStats
+    FetchedCourseWithTiers
 } from "codetierlist-types";
+import Error from 'next/error';
+import Head from "next/head";
 import { notFound } from "next/navigation";
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from "react";
 import { SnackbarContext } from '../../../../../contexts/SnackbarContext';
 import styles from './page.module.css';
-import Error from 'next/error';
-import {
-    TableBody,
-    TableCell,
-    TableRow,
-    Table,
-    TableHeader,
-    TableHeaderCell,
-    Card
-} from "@fluentui/react-components";
-import Head from "next/head";
-import {isProfForCourse} from "@/components/utils/Permissions/checkPermissions";
 
 /**
  * Toolbar for admin page
@@ -75,78 +72,6 @@ const AdminToolbar = ({ courseID }: { courseID: string, fetchCourse: () => Promi
         </HeaderToolbar>
     );
 };
-
-// Future extension: filestab content
-// const FilesTab = ({ fetchAssignment, assignment, assignmentID, routeName, route }: { fetchAssignment: () => Promise<void>, assignment: FetchedAssignmentWithTier, assignmentID: string, routeName: string, route: "testcases" | "submissions" }) => {
-//     const [content, setContent] = useState<Commit>({ "files": [], "log": [] } as Commit);
-//     const { showSnackSev } = useContext(SnackbarContext);
-
-//     const getTestData = async () => {
-//         await axios.get<Commit>(`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}`, { skipErrorHandling: true })
-//             .then((res) => setContent(res.data))
-//             .catch(e => {
-//                 handleError(showSnackSev)(e);
-//                 setContent({ "files": [], "log": [] } as Commit);
-//             });
-//     };
-
-//     const submitTest = async (files: FileList) => {
-//         const formData = new FormData();
-//         for (let i = 0; i < files!.length; i++) {
-//             formData.append("files", files![i]);
-//         }
-
-//         axios.post(`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}`,
-//             formData,
-//             {
-//                 headers: { "Content-Type": "multipart/form-data" }
-//             })
-//             .then(() => {
-//                 fetchAssignment();
-//             })
-//             .catch(handleError(showSnackSev));
-//     };
-
-//     useEffect(() => {
-//         void getTestData();
-//         // eslint-disable-next-line react-hooks/exhaustive-deps
-//     }, [assignmentID, fetchAssignment, route, routeName, assignment.submissions]);
-
-//     return (
-//         <div className={styles.gutter}>
-//             <div className={`${flex["d-flex"]} ${flex["justify-content-between"]}`}>
-//                 <Subtitle1 block>Uploaded {routeName}s <TestCaseStatus status={content.valid}/></Subtitle1>
-//                 <Button
-//                     icon={<Add24Filled />}
-//                     appearance="subtle"
-//                     onClick={async () => {
-//                         promptForFileObject(".py", true)
-//                             .then(file => {
-//                                 if (file) {
-//                                     submitTest(file);
-//                                 }
-//                             })
-//                             .catch(handleError(showSnackSev));
-//                     }}
-//                 >
-//                     Upload a {routeName}
-//                 </Button>
-//             </div>
-
-//             <Text block className={styles.commitId} font="numeric">{content.log[0]}</Text>
-
-//             <Card>
-//                 <ListFiles
-//                     commit={content}
-//                     route={route}
-//                     assignment={assignment}
-//                     assignmentID={assignmentID}
-//                     update={getTestData}
-//                 />
-//             </Card>
-//         </div>
-//     );
-// };
 
 export default function Page() {
     const { userInfo } = useContext(UserContext);
@@ -222,7 +147,7 @@ export default function Page() {
                 <title>{assignment.title} - Codetierlist</title>
             </Head>
 
-            {userInfo.admin || isProfForCourse(userInfo, courseID as string) ? <AdminToolbar courseID={courseID as string} fetchCourse={fetchCourse} /> : undefined}
+            {checkIfCourseAdmin(userInfo, courseID as string) ? <AdminToolbar courseID={courseID as string} fetchCourse={fetchCourse} /> : undefined}
 
             <main>
                 <HeaderToolbar>
@@ -233,14 +158,6 @@ export default function Page() {
                         Back to Course
                     </ToolbarButton>
                 </HeaderToolbar>
-
-                {/* Future extension: create tab system
-                <Tab value="tab0" onClick={() => setStage(0)}>
-                    Assignment details
-                </Tab>
-                <Tab value="tab1" onClick={() => setStage(1)}>
-                    Upload
-                </Tab> */}
 
                 <Card className={styles.mainCard}>
                     <div className={styles.cardContents}>
