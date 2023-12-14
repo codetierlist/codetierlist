@@ -20,10 +20,7 @@ In each project, students are able to upload their own test cases and code, how
 
 Follow along below to ✨**learn more**✨:
 
-<picture>
-  <img alt="Code Tier List Demo" src="https://i.imgur.com/YmxU3dD.gif" height="">
-</picture>
-
+## [Demo Video](https://www.youtube.com/watch?v=pgzzxjJiDTQ)
 
 ## 🗺️ [Then, try out our project!](https://codetierlist.utm.utoronto.ca/)
 
