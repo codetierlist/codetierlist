@@ -30,9 +30,12 @@ const getUserInitials = (user: User) =>
 
 
 /** @return the mean of the data */
-const getMean = (data: number[]) => data.reduce((a, b) => Number(a) + Number(b)) / data.length;
+const getMean = (data: number[]) => data.length === 0 ? 0 : data.reduce((a, b) => Number(a) + Number(b)) / data.length;
 
 function getStandardDeviation(array: number[]) {
+    if(array.length===0) {
+        return 0;
+    }
     const n = array.length;
     const mean = array.reduce((a, b) => a + b) / n;
     return Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n);
