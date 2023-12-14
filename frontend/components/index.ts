@@ -1,7 +1,11 @@
 /**
  * @fileoverview This file exports all the components in the components folder
  */
+export * from './AdminToolbarDeleteAssignmentButton/AdminToolbarDeleteAssignmentButton';
+export * from './AdminToolbarDeleteCourseButton/AdminToolbarDeleteCourseButton';
 export * from './AssignmentCard/AssignmentCard';
+export * from './AssignmentPageFilesTab/AssignmentPageFilesTab';
+export * from './AssignmentPageTestCaseIcon/AssignmentPageTestCaseIcon';
 export * from './CheckedTodo/CheckedTodo';
 export * from './ControlCard/ControlCard';
 export * from './CourseBlock/CourseBlock';

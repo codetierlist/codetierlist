@@ -1,5 +1,5 @@
 import axios, { handleError } from "@/axios";
-import { AssignmentCard, CourseSessionChip, HeaderToolbar, checkIfCourseAdmin, getSession } from '@/components';
+import { AdminToolbarDeleteCourseButton, AssignmentCard, CourseSessionChip, HeaderToolbar, checkIfCourseAdmin, getSession } from '@/components';
 import { UserContext } from "@/contexts/UserContext";
 import {
     Caption1,
@@ -14,6 +14,7 @@ import { useContext, useEffect, useState } from "react";
 import { Container } from "react-grid-system";
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import styles from './page.module.css';
+
 
 /**
  * Toolbar for admin page
@@ -50,6 +51,8 @@ const AdminToolbar = ({ courseID }: { courseID: string, fetchCourse: () => Promi
             >
                 Remove People
             </ToolbarButton>
+
+            <AdminToolbarDeleteCourseButton courseID={courseID} />
         </HeaderToolbar>
     );
 };

@@ -1,0 +1,26 @@
+.assignmentHeaderContent {
+    gap: var(--spacingHorizontalS);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex-grow: 1;
+}
+
+.commitId {
+    margin: var(--spacingVerticalXL) 0;
+}
+
+.commitId::before {
+    content: "Submission ID: ";
+    font-weight: var(--fontWeightBold);
+}
+
+.accordionHeaderContent {
+    width: 100%;
+}
+
+.testCaseHeader {
+    display: flex !important;
+    align-items: center;
+    gap: var(--spacingHorizontalS);
+}
