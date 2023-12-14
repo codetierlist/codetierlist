@@ -1,4 +1,4 @@
-init: docker_init
+init:
 	cd ./types && npm ci
 	cd ./types && npx prisma generate
 	cd ./backend && npm ci

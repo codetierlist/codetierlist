@@ -1,17 +1,33 @@
 import {Prisma} from "@prisma/client";
 
-const fetchedUserArgs = Prisma.validator<Prisma.UserDefaultArgs>()({
-    include: {roles: {include: {course: true}}}
+export const fetchedUserArgs = Prisma.validator<Prisma.UserDefaultArgs>()({
+    include: {
+        roles: {
+            where: {
+                course:{
+                    hidden: false
+                }
+            },
+            include: {
+                course: true
+            }
+        }
+    }
 });
 
-const fetchedCourseArgs = Prisma.validator<Prisma.CourseDefaultArgs>()({
+
+export const fetchedCourseArgs = Prisma.validator<Prisma.CourseDefaultArgs>()({
     include: {
         roles: {
             include: {
                 user: true
             }
         },
-        assignments: true
+        assignments: {
+            where: {
+                hidden: false
+            }
+        }
     }
 });
 

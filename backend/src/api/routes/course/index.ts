@@ -75,7 +75,7 @@ router.post("/", errorHandler(async (req, res) => {
 router.get("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) => {
     const course = await prisma.course.findUniqueOrThrow({
         where: {id: req.course!.id},
-        include: {roles: isProf(req.course!, req.user) ? true : {where: {user_id: req.user.utorid}}, assignments: fullFetchedAssignmentArgs},
+        include: {roles: isProf(req.course!, req.user) ? true : {where: {user_id: req.user.utorid}}, assignments: {where: {hidden: false}, ...fullFetchedAssignmentArgs}},
     });
 
     const assignments: AssignmentWithTier[] = course!.assignments.map(assignment => ({
@@ -85,6 +85,7 @@ router.get("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) =>
         description: assignment.description,
         image_version: assignment.image_version,
         runner_image: assignment.runner_image,
+        hidden: false,
         tier: generateYourTier(serializeAssignment(assignment), req.user)
     }));
     res.send({...req.course!, assignments} satisfies FetchedCourseWithTiers);
@@ -96,7 +97,8 @@ router.delete("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res)
         res.send({message: 'You are not an admin.'});
         return;
     }
-    await prisma.course.delete({where: {id: req.course!.id}});
+    await prisma.course.update({where: {id: req.course!.id}, data: {hidden: true}});
+    await prisma.assignment.updateMany({where:{course_id: req.course!.id}, data:{hidden:true}});
     res.send({});
 }));
 

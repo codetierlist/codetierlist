@@ -8,6 +8,7 @@ datasource db {
 }
 
 model Assignment {
+  hidden        Boolean    @default(false)
   title         String
   due_date      DateTime?
   description   String
@@ -24,6 +25,7 @@ model Assignment {
 }
 
 model Course {
+  hidden      Boolean      @default(false)
   id          String       @id @default(dbgenerated("gen_random_uuid()"))
   name        String
   code        String
