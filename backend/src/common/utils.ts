@@ -246,6 +246,7 @@ export const deleteFile = async (req: Request, res: Response, table: "solution" 
     } catch (_) {
         /* if the file doesn't exist then continue */
     }
+
     const commit = await commitFiles(req, object, table);
     if (commit === null) {
         res.statusCode = 500;

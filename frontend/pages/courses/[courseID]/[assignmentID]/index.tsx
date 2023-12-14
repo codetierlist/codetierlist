@@ -41,7 +41,7 @@ import {
 import Error from 'next/error';
 import Head from "next/head";
 import { useRouter } from 'next/router';
-import { useContext, useEffect, useState} from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Col, Container } from "react-grid-system";
 import styles from './page.module.css';
 import { UserContext } from "@/contexts/UserContext";
@@ -124,14 +124,14 @@ const ListFiles = ({ commit, route, assignment, assignmentID, update }: { commit
  * return an icon reflecting the status of the testcase
  * @param status the status of the testcase
  */
-const TestCaseStatusIcon = ({status}: {status:TestCaseStatus}): JSX.Element=>{
+const TestCaseStatusIcon = ({ status }: { status: TestCaseStatus }): JSX.Element => {
     switch (status) {
     case "INVALID":
-        return <DismissCircle24Regular fill={"var(--colorStatusDangerForeground1)"} primaryFill={"var(--colorStatusDangerForeground1)"}/>;
+        return <DismissCircle24Regular fill={"var(--colorStatusDangerForeground1)"} primaryFill={"var(--colorStatusDangerForeground1)"} />;
     case "PENDING":
-        return <ArrowCounterclockwiseDashes24Filled fill={"var(--colorPaletteGoldForeground2)"} primaryFill={"var(--colorPaletteGoldForeground2)"}/>;
+        return <ArrowCounterclockwiseDashes24Filled fill={"var(--colorPaletteGoldForeground2)"} primaryFill={"var(--colorPaletteGoldForeground2)"} />;
     case "VALID":
-        return <CheckmarkCircle24Regular fill={"var(--colorStatusSuccessForeground1)"} primaryFill={"var(--colorStatusSuccessForeground1)"}/>;
+        return <CheckmarkCircle24Regular fill={"var(--colorStatusSuccessForeground1)"} primaryFill={"var(--colorStatusSuccessForeground1)"} />;
     default: return <></>;
     }
 };
@@ -139,16 +139,16 @@ const TestCaseStatusIcon = ({status}: {status:TestCaseStatus}): JSX.Element=>{
  * return an icon with tooltip reflecting the status of the testcase
  * @param status the status of the testcase
  */
-const TestCaseStatus = ({status}: {status?:TestCaseStatus})=>{
-    if(!status || status === "EMPTY"){
+const TestCaseStatus = ({ status }: { status?: TestCaseStatus }) => {
+    if (!status || status === "EMPTY") {
         return undefined;
     }
-    const contents : Record<Exclude<TestCaseStatus,"EMPTY">, string> = {
+    const contents: Record<Exclude<TestCaseStatus, "EMPTY">, string> = {
         "INVALID": "One or more of your uploaded tests are invalid and did not pass the solution",
         "VALID": "All uploaded testcases are valid and passed the solution",
         "PENDING": "Your testcases are currently in the queue for validation",
     };
-    return <ToolTipIcon tooltip={contents[status]} icon={TestCaseStatusIcon({status})}/>;
+    return <ToolTipIcon tooltip={contents[status]} icon={TestCaseStatusIcon({ status })} />;
 };
 const FilesTab = ({ fetchAssignment, assignment, assignmentID, routeName, route }: { fetchAssignment: () => Promise<void>, assignment: FetchedAssignmentWithTier, assignmentID: string, routeName: string, route: "testcases" | "submissions" }) => {
     const [content, setContent] = useState<Commit>({ "files": [], "log": [] } as Commit);
@@ -188,7 +188,7 @@ const FilesTab = ({ fetchAssignment, assignment, assignmentID, routeName, route 
     return (
         <div className={styles.gutter}>
             <div className={`${flex["d-flex"]} ${flex["justify-content-between"]}`}>
-                <Subtitle1 block>Uploaded {routeName}s <TestCaseStatus status={content.valid}/></Subtitle1>
+                <Subtitle1 block>Uploaded {routeName}s <TestCaseStatus status={content.valid} /></Subtitle1>
                 <Button
                     icon={<Add24Filled />}
                     appearance="subtle"
@@ -285,8 +285,8 @@ export default function Page() {
 
             void fetchAssignment();
             void fetchTierlist();
-        }
-        , POLLING_RATE);
+        }, POLLING_RATE);
+
         return () => clearInterval(interval);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     });
@@ -338,21 +338,18 @@ export default function Page() {
                     /* TODO proper permissions check */
 
                     userInfo.admin && (
-                        <div className={styles.adminButton}>
-                            <Tooltip content="Admin page" relationship="label">
-                                <Link href={`/courses/${courseID}/${assignmentID}/admin`}>
-                                    <Button
-                                        appearance="subtle"
-                                        icon={<Settings24Regular />}
-                                        aria-label="Admin page"
-                                    />
-                                </Link>
-                            </Tooltip>
-                        </div>
+                        <Link href={`/courses/${courseID}/${assignmentID}/admin`} className={styles.adminButton}>
+                            <Button
+                                appearance="subtle"
+                                icon={<Settings24Regular />}
+                                aria-label="Admin page"
+                            >
+                                Admin page
+                            </Button>
+                        </Link>
                     )
                 }
             </TabList>
-
 
             <Container component="main" className="m-t-xxxl">
                 {

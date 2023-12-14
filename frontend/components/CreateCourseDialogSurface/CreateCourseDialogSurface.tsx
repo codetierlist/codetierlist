@@ -18,27 +18,12 @@ import { useContext, useState } from "react";
 import styles from "./CreateCourseForm.module.css";
 
 /**
- * Create a course
- *
- * !!! NO DATA VALIDATION !!!
- *
- * @param courseCode
- * @param courseName
- */
-const handleSubmit = async (courseCode: string, courseName: string) => {
-    axios.post("/courses", {
-        code: courseCode,
-        name: courseName
-    });
-};
-
-/**
  * Form for creating a course
  * @param {function} closeDialog function to close the dialog
  */
 export const CreateCourseDialogSurface = ({ closeDialog }: { closeDialog: () => void }) => {
-    const [courseCode, setCourseCode] = useState("");
-    const [courseName, setCourseName] = useState("");
+    const [code, setCourseCode] = useState("");
+    const [name, setCourseName] = useState("");
     const { fetchUserInfo } = useContext(UserContext);
     const { showSnackSev } = useContext(SnackbarContext);
 
@@ -46,14 +31,16 @@ export const CreateCourseDialogSurface = ({ closeDialog }: { closeDialog: () => 
         <DialogSurface>
             <form onSubmit={(e) => {
                 e.preventDefault();
-                handleSubmit(courseCode, courseName)
-                    .then(fetchUserInfo)
+
+                axios.post("/courses", { code, name })
                     .then(closeDialog)
-                    .catch(handleError(showSnackSev));
+                    .catch(handleError(showSnackSev))
+                    .finally(fetchUserInfo);
             }}>
                 <DialogBody>
                     <DialogTitle className={styles.dialogTitle}>
                         Create a course
+
                         <Caption1 className={styles.dialogSubtitle}>
                             Please fill out the following information to create a course.
                             A suffix will be added to the course code to make it unique.
@@ -65,14 +52,14 @@ export const CreateCourseDialogSurface = ({ closeDialog }: { closeDialog: () => 
                         <div className={styles.input}>
                             <Label required htmlFor="courseCode">Course Code:</Label>
                             <Input required type="text" id="courseCode" name="courseCode"
-                                value={courseCode}
+                                value={code} maxLength={10}
                                 onChange={e => setCourseCode(e.target.value)} />
                         </div>
 
                         <div className={styles.input}>
                             <Label required htmlFor="courseName">Course Name:</Label>
                             <Input required type="text" id="courseName" name="courseName"
-                                value={courseName}
+                                value={code} maxLength={50}
                                 onChange={e => setCourseName(e.target.value)} />
                         </div>
                     </DialogContent>
@@ -86,6 +73,6 @@ export const CreateCourseDialogSurface = ({ closeDialog }: { closeDialog: () => 
                     </DialogActions>
                 </DialogBody>
             </form>
-        </DialogSurface>
+        </DialogSurface >
     );
 };
