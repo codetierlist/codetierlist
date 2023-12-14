@@ -1,12 +1,10 @@
 import os
 import sys
 import unittest
-from time import sleep
-
-import ciunittest
 import json
 import base64
 from contextlib import contextmanager
+
 
 @contextmanager
 def suppress_output():
@@ -23,7 +21,6 @@ def suppress_output():
 
 
 if __name__ == '__main__':
-    sleep(5)
     run_data = os.getenv("RUN_FILES")
     data = json.loads(run_data)
     sol_files = data['solution_files']

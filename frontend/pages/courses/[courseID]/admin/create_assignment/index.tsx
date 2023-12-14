@@ -56,23 +56,25 @@ export default function Page(): JSX.Element {
             );
     };
 
-    const fetchRunners = async () => {
-        const res = await axios.get<RunnerImage[]>("/runner/images").catch(handleError(showSnackSev));
-        if(!res){
-            return;
-        }
-        setRunners(res.data.reduce((acc, runner) => {
-            acc[runner.image] = acc[runner.image] ?? [];
-            acc[runner.image].push(runner.image_version);
-            return acc;
-        }, {} as Record<string, string[]>));
-
-        setSelectedRunner(res.data[0]);
-    };
     useEffect(() => {
+
+        const fetchRunners = async () => {
+            const res = await axios.get<RunnerImage[]>("/runner/images").catch(handleError(showSnackSev));
+            if(!res){
+                return;
+            }
+            setRunners(res.data.reduce((acc, runner) => {
+                acc[runner.image] = acc[runner.image] ?? [];
+                acc[runner.image].push(runner.image_version);
+                return acc;
+            }, {} as Record<string, string[]>));
+
+            setSelectedRunner(res.data[0]);
+        };
+
         void fetchRunners();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [showSnackSev]);
 
     return (
         <>
@@ -166,7 +168,7 @@ export default function Page(): JSX.Element {
 
                         <Monaco
                             value={description}
-                            onChange={(value, _) => setDescription(value || "")}
+                            onChange={(value) => setDescription(value || "")}
                             language="markdown"
                             height="500px"
                         />

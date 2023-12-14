@@ -100,7 +100,7 @@ router.delete("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res)
     res.send({});
 }));
 
-router.post("/:courseId/enroll", fetchCourseMiddleware, errorHandler(async (req, res) => {
+router.post("/:courseId/add", fetchCourseMiddleware, errorHandler(async (req, res) => {
     const {utorids, role}: { utorids: unknown, role?: string } = req.body;
     if (role !== undefined && !(Object.values(RoleType) as string[]).includes(role)) {
         res.statusCode = 400;
@@ -138,6 +138,7 @@ router.post("/:courseId/remove", fetchCourseMiddleware, errorHandler(async (req,
         res.send({message: 'Invalid role.'});
         return;
     }
+    const newRole = role as RoleType | undefined ?? RoleType.STUDENT;
     if (!utorids || !Array.isArray(utorids) || utorids.some(utorid => typeof utorid !== 'string' || !isUTORid(utorid))) {
         res.statusCode = 400;
         res.send({message: 'utorids must be an array of valid utorids.'});
@@ -148,7 +149,7 @@ router.post("/:courseId/remove", fetchCourseMiddleware, errorHandler(async (req,
             user_id: {
                 in: utorids,
             },
-            type: RoleType.STUDENT,
+            type: newRole,
         }
     });
 

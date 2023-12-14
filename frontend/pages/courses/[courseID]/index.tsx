@@ -14,6 +14,7 @@ import { useContext, useEffect, useState } from "react";
 import { Container } from "react-grid-system";
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import styles from './page.module.css';
+import {isProfForCourse} from "@/components/utils/Permissions/checkPermissions";
 
 /**
  * Toolbar for admin page
@@ -40,7 +41,7 @@ const AdminToolbar = ({ courseID }: { courseID: string, fetchCourse: () => Promi
                 icon={<PersonAdd24Regular />}
                 onClick={() => router.push(`/courses/${courseID}/admin/enroll`)}
             >
-                Enroll Students
+                Add People
             </ToolbarButton>
 
             <ToolbarButton
@@ -48,7 +49,7 @@ const AdminToolbar = ({ courseID }: { courseID: string, fetchCourse: () => Promi
                 icon={<PersonDelete24Regular />}
                 onClick={() => router.push(`/courses/${courseID}/admin/remove`)}
             >
-                Remove Students
+                Remove People
             </ToolbarButton>
         </HeaderToolbar>
     );
@@ -78,7 +79,7 @@ export default function Page() {
 
     return (
         <>
-            {userInfo.admin ? <AdminToolbar courseID={courseID as string} fetchCourse={fetchCourse} /> : undefined}
+            {userInfo.admin || isProfForCourse(userInfo, courseID as string)? <AdminToolbar courseID={courseID as string} fetchCourse={fetchCourse} /> : undefined}
 
             <Container component="main" className="m-t-xxxl">
                 <header className={styles.header}>

@@ -5,6 +5,7 @@ import {
     ToolbarButton
 } from "@fluentui/react-components";
 import { Add24Filled, PersonAdd24Regular, PersonDelete24Regular, ArrowLeft24Regular } from '@fluentui/react-icons';
+// import { type Course, getCourses } from '@/contexts/UserContext';
 import { Title2 } from '@fluentui/react-text';
 import {
     FetchedCourseWithTiers,
@@ -27,6 +28,7 @@ import {
     Card
 } from "@fluentui/react-components";
 import Head from "next/head";
+import {isProfForCourse} from "@/components/utils/Permissions/checkPermissions";
 
 /**
  * Toolbar for admin page
@@ -43,9 +45,9 @@ const AdminToolbar = ({ courseID }: { courseID: string, fetchCourse: () => Promi
             <ToolbarButton
                 appearance="subtle"
                 icon={<PersonAdd24Regular />}
-                onClick={() => router.push(`/courses/${courseID}/admin/enroll`)}
+                onClick={() => router.push(`/courses/${courseID}/admin/add`)}
             >
-                Enroll Students
+                Add People
             </ToolbarButton>
 
             <ToolbarButton
@@ -53,7 +55,7 @@ const AdminToolbar = ({ courseID }: { courseID: string, fetchCourse: () => Promi
                 icon={<PersonDelete24Regular />}
                 onClick={() => router.push(`/courses/${courseID}/admin/remove`)}
             >
-                Remove Students
+                Remove People
             </ToolbarButton>
 
             <ToolbarButton
@@ -81,6 +83,7 @@ export default function Page() {
             .then((res) => setAssignment(res.data))
             .catch(handleError(showSnackSev));
     };
+
     const fetchAssignmentStats = async () => {
         await axios.get<AssignmentStudentStats>(`/courses/${courseID}/assignments/${assignmentID}/stats`, { skipErrorHandling: true })
             .then((res) => setStudentData(res.data))
@@ -104,6 +107,7 @@ export default function Page() {
     }, [courseID]);
 
     useEffect(() => {
+
         if (!courseID || !assignmentID) {
             return;
         }
@@ -139,7 +143,7 @@ export default function Page() {
                 <title>{assignment.title} - Codetierlist</title>
             </Head>
 
-            {userInfo.admin ? <AdminToolbar courseID={courseID as string} fetchCourse={fetchCourse} /> : undefined}
+            {userInfo.admin || isProfForCourse(userInfo, courseID as string) ? <AdminToolbar courseID={courseID as string} fetchCourse={fetchCourse} /> : undefined}
 
             <main>
                 <HeaderToolbar>
