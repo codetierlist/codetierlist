@@ -88,11 +88,11 @@ After running the docker containers, go to http://localhost:3555/ to visit the s
 
 ## 💪 Contributing
 
-Code Tier List is **free and open-source software** licensed under the
+Codetierlist is **free and open-source software** licensed under the
 [LGPL-3.0 License](https://www.gnu.org/licenses/lgpl-3.0.en.html)
 
 You can open issues for bugs you've found or features you think are missing.
 You can also submit pull requests to this repository.
 
 ## ⚖️ License
-LGPL-3.0 License © 2023 Codetierlist
+LGPL-3.0 License © 2023 Codetierlist Contributors
