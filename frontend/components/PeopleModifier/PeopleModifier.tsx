@@ -12,9 +12,21 @@ import { useRouter } from "next/router";
 import styles from './PeopleModifier.module.css';
 
 export declare interface PeopleModifierProps {
+    /**
+     * The title of the component to display
+     */
     title: string
+    /**
+     * The description of the component to display
+     */
     description: string
+    /**
+     * The action of the component, either add or remove
+     */
     action: "add" | "remove"
+    /**
+     * The role type to enroll
+     */
     roleType: RoleType
 }
 export const PeopleModifier = ({
@@ -33,7 +45,7 @@ export const PeopleModifier = ({
     const modalActionText = action == "add" ? "Added" : "Removed";
     return (
         <>
-            <div className={`${flex["d-flex"]} ${flex["justify-content-between"]}`}>
+            <div className={`${flex["d-flex"]} ${flex["justify-content-between"]} m-b-xl`}>
                 <header>
                     <Title2 block>{title}</Title2>
                     <Body2 block>{description}</Body2>
@@ -53,8 +65,6 @@ export const PeopleModifier = ({
                     Load CSV from file
                 </Button>
             </div>
-
-            <br />
 
             <Monaco
                 height="56vh"
