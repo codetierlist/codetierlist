@@ -140,7 +140,7 @@ router.get('/:assignment/stats', fetchAssignmentMiddleware, errorHandler(async (
     });
     const tierlist = generateTierList(fullFetchedAssignment, req.user, false);
     const invertedTierlist: Record<string, Tier> = {};
-    (Object.keys(tierlist) as Tier[]).forEach(tier => tierlist[tier].forEach(name => invertedTierlist[name.name] = tier));
+    (Object.keys(tierlist) as Tier[]).forEach(tier => tierlist[tier].forEach(name => invertedTierlist[name.utorid] = tier));
     const students = fullFetchedAssignment.submissions.map(submission => ({
         utorid: submission.author.utorid,
         givenName: submission.author.givenName,
