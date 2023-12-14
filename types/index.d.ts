@@ -80,7 +80,7 @@ export type Commit = {
 
 export type Tier = "S" | "A" | "B" | "C" | "D" | "F";
 export type UserTier = Tier | "?"
-export type TierlistEntry = { name: string, you: boolean }
+export type TierlistEntry = { name: string, you: boolean, utorid: string }
 export type Tierlist = Record<Tier, TierlistEntry[]>;
 
 export type Session = "Fall" | "Winter" | "Summer"
