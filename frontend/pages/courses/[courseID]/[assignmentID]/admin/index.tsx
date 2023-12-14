@@ -1,5 +1,5 @@
 import axios, { handleError } from "@/axios";
-import { CourseSessionChip, getSession } from '@/components';
+import { CourseSessionChip, getSession, AdminToolbarDeleteAssignmentButton } from '@/components';
 import {
     Card,
     Table,
@@ -96,6 +96,8 @@ export default function Page() {
             </Head>
 
             <main>
+                <AdminToolbarDeleteAssignmentButton assignment={assignment} />
+
                 <Card className={styles.mainCard}>
                     <div className={styles.cardContents}>
                         <header className={styles.header}>
