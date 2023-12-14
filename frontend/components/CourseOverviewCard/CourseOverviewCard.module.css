@@ -28,6 +28,9 @@
 
 .courseTitle {
     font-weight: var(--fontWeightSemibold);
+    display: flex !important;
+    align-items: center;
+    gap: var(--spacingHorizontalS);
 }
 
 .courseHeader {
