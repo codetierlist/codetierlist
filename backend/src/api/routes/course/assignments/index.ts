@@ -46,13 +46,13 @@ router.delete("/:assignment", fetchAssignmentMiddleware, errorHandler(async (req
         res.send({message: 'You are not an instructor.'});
         return;
     }
-    await prisma.assignment.delete({
+    await prisma.assignment.update({
         where: {
             id: {
                 title: req.assignment!.title,
                 course_id: req.assignment!.course_id
             }
-        }
+        }, data: {hidden: true}
     });
     res.send({});
 }));

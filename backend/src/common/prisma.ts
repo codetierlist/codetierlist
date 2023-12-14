@@ -3,7 +3,18 @@ import {Prisma, PrismaClient} from '@prisma/client';
 const client = new PrismaClient();
 
 export const fetchedUserArgs = Prisma.validator<Prisma.UserDefaultArgs>()({
-    include: {roles: {include: {course: true}}}
+    include: {
+        roles: {
+            where: {
+                course:{
+                    hidden: false
+                }
+            },
+            include: {
+                course: true
+            }
+        }
+    }
 });
 
 
@@ -14,7 +25,11 @@ export const fetchedCourseArgs = Prisma.validator<Prisma.CourseDefaultArgs>()({
                 user: true
             }
         },
-        assignments: true
+        assignments: {
+            where: {
+                hidden: false
+            }
+        }
     }
 });
 
@@ -35,7 +50,7 @@ export const fullFetchedAssignmentArgs = Prisma.validator<Prisma.AssignmentDefau
                 scores: {
                     orderBy: [{test_case: {datetime: "desc"}}, {datetime: "desc"}],
                     distinct: "testcase_author_id",
-                    include: {test_case:true}
+                    include: {test_case: true}
                 }
             }
         },

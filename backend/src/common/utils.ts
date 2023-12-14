@@ -284,7 +284,7 @@ export const getCommitFromRequest = async (req: Request, table: "solution" | "te
 
 export const fetchCourseMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const course = await prisma.course.findUnique({
-        where: {id: req.params.courseId},
+        where: {id: req.params.courseId, hidden: false},
         ...fetchedCourseArgs
     });
     if (course === null) {
@@ -307,7 +307,8 @@ export const fetchAssignmentMiddleware = async (req: Request, res: Response, nex
             id: {
                 title: req.params.assignment,
                 course_id: req.params.courseId
-            }
+            },
+            hidden: false
         },
         include: {...fetchedAssignmentArgs.include, course: fetchedCourseArgs}
 
