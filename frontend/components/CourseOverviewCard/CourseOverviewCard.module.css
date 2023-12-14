@@ -17,6 +17,10 @@
 
 }
 
+.coursePreview {
+    max-width: 300px;
+}
+
 .coverButton {
     border-radius: 999em !important;
     position: absolute !important;
@@ -27,6 +31,14 @@
 }
 
 .courseTitle {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
+    margin-bottom: var(--spacingVerticalXS);
+    max-width: calc(300px - var(--spacingHorizontalM) * 2);
+}
+
+.badges {
     font-weight: var(--fontWeightSemibold);
     display: flex !important;
     align-items: center;
@@ -35,4 +47,9 @@
 
 .courseHeader {
     row-gap: var(--spacingVerticalMNudge);
+}
+
+.role {
+    border-radius: var(--spacingVerticalNone) !important;
+    text-transform: uppercase;
 }

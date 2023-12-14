@@ -31,9 +31,9 @@ export default function Home() {
                     {userInfo.roles.map(role => role).map(role => (
                         <CourseOverviewCard
                             key={role.course.id} id={role.course.id}
-                            name={role.course.code} admin={userInfo.admin}
-                            role={role.type} session={getSession(new Date(role.course.createdAt))}
-                            image={process.env.NEXT_PUBLIC_API_URL + "/courses/" + role.course.id + "/cover"}
+                            name={role.course.name} role={role.type}
+                            session={getSession(new Date(role.course.createdAt))}
+                            image={`${process.env.NEXT_PUBLIC_API_URL}/courses/${role.course.id}/cover`}
                         />
                     ))}
 
