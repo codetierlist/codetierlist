@@ -8,14 +8,25 @@ import { Add24Filled } from '@fluentui/react-icons';
 import {useContext, useState} from "react";
 import {SnackbarContext} from "@/contexts/SnackbarContext";
 import { useRouter } from "next/router";
-import { Container } from 'react-grid-system';
 
 import styles from './PeopleModifier.module.css';
 
 export declare interface PeopleModifierProps {
+    /**
+     * The title of the component to display
+     */
     title: string
+    /**
+     * The description of the component to display
+     */
     description: string
+    /**
+     * The action of the component, either add or remove
+     */
     action: "add" | "remove"
+    /**
+     * The role type to enroll
+     */
     roleType: RoleType
 }
 export const PeopleModifier = ({
@@ -33,8 +44,8 @@ export const PeopleModifier = ({
     const peopleType = roleType == "STUDENT" ? "students" : roleType == "TA" ? "TAs" : "instructors";
     const modalActionText = action == "add" ? "Added" : "Removed";
     return (
-        <Container component="main" className="m-t-xxxl">
-            <div className={`${flex["d-flex"]} ${flex["justify-content-between"]}`}>
+        <>
+            <div className={`${flex["d-flex"]} ${flex["justify-content-between"]} m-b-xl`}>
                 <header>
                     <Title2 block>{title}</Title2>
                     <Body2 block>{description}</Body2>
@@ -55,8 +66,6 @@ export const PeopleModifier = ({
                 </Button>
             </div>
 
-            <br />
-
             <Monaco
                 height="56vh"
                 defaultLanguage="csv"
@@ -75,6 +84,6 @@ export const PeopleModifier = ({
                 }}>
                 Submit
             </Button>
-        </Container>
+        </>
     );
 };

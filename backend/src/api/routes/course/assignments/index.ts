@@ -35,9 +35,19 @@ router.get("/:assignment", fetchAssignmentMiddleware, errorHandler(async (req, r
         assignment.submissions = assignment.submissions.filter(submission => submission.author_id === req.user.utorid);
         assignment.test_cases = assignment.test_cases.filter(testCase => testCase.author_id === req.user.utorid);
     }
-    const fullFetchedAssignment: FullFetchedAssignment = await prisma.assignment.findUniqueOrThrow({where: {id: {title: assignment.title, course_id: assignment.course_id}}, ...fullFetchedAssignmentArgs});
+    const fullFetchedAssignment: FullFetchedAssignment = await prisma.assignment.findUniqueOrThrow({
+        where: {
+            id: {
+                title: assignment.title,
+                course_id: assignment.course_id
+            }
+        }, ...fullFetchedAssignmentArgs
+    });
 
-    res.send({...assignment, tier: generateYourTier(fullFetchedAssignment)} satisfies (FetchedAssignmentWithTier | AssignmentWithTier));
+    res.send({
+        ...assignment,
+        tier: generateYourTier(fullFetchedAssignment)
+    } satisfies (FetchedAssignmentWithTier | AssignmentWithTier));
 }));
 
 router.delete("/:assignment", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
@@ -121,7 +131,14 @@ router.get("/:assignment/testcases/:commitId?/:file", fetchAssignmentMiddleware,
 }));
 
 router.get("/:assignment/tierlist", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
-    const fullFetchedAssignment = await prisma.assignment.findUniqueOrThrow({where: {id: {title: req.assignment!.title, course_id: req.assignment!.course_id}}, ...fullFetchedAssignmentArgs});
+    const fullFetchedAssignment = await prisma.assignment.findUniqueOrThrow({
+        where: {
+            id: {
+                title: req.assignment!.title,
+                course_id: req.assignment!.course_id
+            }
+        }, ...fullFetchedAssignmentArgs
+    });
     const tierlist = generateList(fullFetchedAssignment, req.user);
     if (!isProf(req.course!, req.user) && tierlist[1] === "?" as UserTier) {
         res.send({S: [], A: [], B: [], C: [], D: [], F: []} satisfies Tierlist);
@@ -134,22 +151,28 @@ router.get('/:assignment/stats', fetchAssignmentMiddleware, errorHandler(async (
     const fullFetchedAssignment = await prisma.assignment.findUniqueOrThrow({
         where: {
             id:
-                {title: req.assignment!.title, course_id: req.assignment!.course_id}
+                {
+                    title: req.assignment!.title,
+                    course_id: req.assignment!.course_id
+                }
         },
         ...fullFetchedAssignmentArgs,
     });
     const tierlist = generateTierList(fullFetchedAssignment, req.user, false);
     const invertedTierlist: Record<string, Tier> = {};
     (Object.keys(tierlist) as Tier[]).forEach(tier => tierlist[tier].forEach(name => invertedTierlist[name.utorid] = tier));
-    const students = fullFetchedAssignment.submissions.map(submission => ({
-        utorid: submission.author.utorid,
-        givenName: submission.author.givenName,
-        surname: submission.author.surname,
-        email: submission.author.email,
-        tier: invertedTierlist[submission.author.utorid],
-        testsPassed: submission.scores.filter(x => x.test_case.valid === "VALID").length === 0 ? 0
-            : submission.scores.filter(x => x.test_case.valid === "VALID" && x.pass).length / submission.scores.filter(x => x.test_case.valid === "VALID").length
-    }));
+    const students = fullFetchedAssignment.submissions.map(submission => {
+        const validTests = submission.scores.filter(x => x.test_case.valid === "VALID");
+        return {
+            utorid: submission.author.utorid,
+            givenName: submission.author.givenName,
+            surname: submission.author.surname,
+            email: submission.author.email,
+            tier: invertedTierlist[submission.author.utorid],
+            testsPassed: validTests.filter(x=>x.pass).length,
+            totalTests: validTests.length
+        };
+    });
     res.send(students satisfies AssignmentStudentStats);
 }));
 export default router;

@@ -16,8 +16,13 @@ import {SessionBlock} from '@/components/SessionBlock/SessionBlock';
 import {RoleType, Session} from 'codetierlist-types';
 import {ImageAdd20Regular} from "@fluentui/react-icons";
 import axios, {handleError} from "@/axios";
-import {promptForFileObject} from "@/components";
+import {promptForFileObject, checkIfCourseAdmin} from "@/components";
 import {SnackbarContext} from "@/contexts/SnackbarContext";
+import { UserContext } from '@/contexts/UserContext';
+
+const generatePlaceholderCard = (course: string): string =>
+    `data:image/svg+xml,%3Csvg viewBox='0 0 300 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23777' d='M0 0h300v200H0z'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' fill='%23fff' font-family='sans-serif' font-size='50' text-anchor='middle' %3E${course}%3C/text%3E%3C/svg%3E`;
+
 
 export declare interface CourseSessionChipProps {
     /** the session of the course */
@@ -56,8 +61,6 @@ export declare interface CourseOverviewCardProps {
     session: Session,
     /** the role of the user */
     role: RoleType,
-    /** whether the user can change cover image */
-    admin: boolean,
     /** the props of the component */
     props?: React.HTMLAttributes<HTMLDivElement>
 }
@@ -76,8 +79,7 @@ export const CourseOverviewCard = ({
     image,
     session,
     props,
-    role,
-    admin
+    role
 }: CourseOverviewCardProps): JSX.Element => {
     // trigger reset of image
     const [seed, setSeed] = useState(1);
@@ -87,6 +89,7 @@ export const CourseOverviewCard = ({
     const [isSelected, setSelected] = useState(false);
     const router = useRouter();
     const { showSnackSev } = useContext(SnackbarContext);
+    const { userInfo } = useContext(UserContext);
 
     return (
         <Card
@@ -100,10 +103,8 @@ export const CourseOverviewCard = ({
             }}
             {...props}
         >
-            <CardPreview
-                style={{maxHeight: 200, maxWidth: 300}}
-            >
-                {(role === "INSTRUCTOR" || admin) &&
+            <CardPreview className={styles.coursePreview}>
+                {(checkIfCourseAdmin(userInfo, id)) &&
                     <Button
                         appearance="primary"
                         icon={<ImageAdd20Regular/>}
@@ -132,18 +133,18 @@ export const CourseOverviewCard = ({
                     width={300}
                     alt=""
                     height={200}
-                    onError={(event)=>{event.currentTarget.onerror=null; event.currentTarget.src='https://placehold.co/300x200';}}
+                    onError={(event)=>{event.currentTarget.onerror=null; event.currentTarget.src=generatePlaceholderCard(id);}}
                 />
             </CardPreview>
 
             <CardHeader
                 header={
                     <Title3 className={styles.courseTitle}>
-                        {name} <Badge appearance="outline">{`${role.slice(0, 1)}${role.slice(1).toLowerCase()}`}</Badge>
+                        {name}
                     </Title3>
                 }
                 className={styles.courseHeader}
-                description={<SessionBlock session={session}/>}
+                description={<div className={styles.badges}><SessionBlock session={session}/> <Badge className={styles.role} appearance="filled">{role}</Badge></div>}
             />
 
             <CardFooter>
