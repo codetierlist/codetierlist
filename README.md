@@ -45,6 +45,33 @@ While students do provide their test cases and code to rank their progress, thes
 will not be shown to other students. This is done to ensures students work
 independently, and to prevent [Academic Offenses](https://www.utm.utoronto.ca/academic-integrity/students/sanctions).
 
+## 💼 Local Development
+
+### Running Locally
+
+For frontend, you'll need a .env.local file:
+```
+NEXT_PUBLIC_API_URI=http://localhost:3555/api
+```
+
+To install dependencies and generate the prisma schema, run:
+```
+make
+```
+
+To start the run the frontend, backend, and database docker containers, run:
+```
+make docker_up
+```
+
+To tear down the frontend, backend, and database docker containers when finished with development, run:
+```
+make docker_down
+```
+
+After running the docker containers, go to http://localhost:3555/ to visit the site.
+
+
 ## 🚀 Deployment
 
 ### Tech stack:
