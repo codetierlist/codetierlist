@@ -5,8 +5,9 @@ import {
     convertDate,
     convertTime,
     promptForFileObject,
+    ToolTipIcon,
     Monaco,
-    ToolTipIcon
+    checkIfCourseAdmin
 } from '@/components';
 import { SnackbarContext } from "@/contexts/SnackbarContext";
 import flex from '@/styles/flex-utils.module.css';
@@ -126,13 +127,13 @@ const ListFiles = ({ commit, route, assignment, assignmentID, update }: { commit
  */
 const TestCaseStatusIcon = ({ status }: { status: TestCaseStatus }): JSX.Element => {
     switch (status) {
-    case "INVALID":
-        return <DismissCircle24Regular fill={"var(--colorStatusDangerForeground1)"} primaryFill={"var(--colorStatusDangerForeground1)"} />;
-    case "PENDING":
-        return <ArrowCounterclockwiseDashes24Filled fill={"var(--colorPaletteGoldForeground2)"} primaryFill={"var(--colorPaletteGoldForeground2)"} />;
-    case "VALID":
-        return <CheckmarkCircle24Regular fill={"var(--colorStatusSuccessForeground1)"} primaryFill={"var(--colorStatusSuccessForeground1)"} />;
-    default: return <></>;
+        case "INVALID":
+            return <DismissCircle24Regular fill={"var(--colorStatusDangerForeground1)"} primaryFill={"var(--colorStatusDangerForeground1)"} />;
+        case "PENDING":
+            return <ArrowCounterclockwiseDashes24Filled fill={"var(--colorPaletteGoldForeground2)"} primaryFill={"var(--colorPaletteGoldForeground2)"} />;
+        case "VALID":
+            return <CheckmarkCircle24Regular fill={"var(--colorStatusSuccessForeground1)"} primaryFill={"var(--colorStatusSuccessForeground1)"} />;
+        default: return <></>;
     }
 };
 /**
@@ -150,6 +151,7 @@ const TestCaseStatus = ({ status }: { status?: TestCaseStatus }) => {
     };
     return <ToolTipIcon tooltip={contents[status]} icon={TestCaseStatusIcon({ status })} />;
 };
+
 const FilesTab = ({ fetchAssignment, assignment, assignmentID, routeName, route }: { fetchAssignment: () => Promise<void>, assignment: FetchedAssignmentWithTier, assignmentID: string, routeName: string, route: "testcases" | "submissions" }) => {
     const [content, setContent] = useState<Commit>({ "files": [], "log": [] } as Commit);
     const { showSnackSev } = useContext(SnackbarContext);
@@ -330,7 +332,7 @@ export default function Page() {
                 <Tab value="tab1" onClick={() => setStage(1)}>
                     Upload
                 </Tab>
-                <Tab value="tab2" onClick={() => setStage(2)} disabled={!shouldViewTierList(assignment, tierlist)}>
+                <Tab value="tab2" onClick={() => setStage(2)} disabled={!shouldViewTierList(assignment, tierlist) && !checkIfCourseAdmin(userInfo, assignment.course_id)}>
                     View tierlist
                 </Tab>
 
