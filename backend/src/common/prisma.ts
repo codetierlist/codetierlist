@@ -39,6 +39,15 @@ export const fullFetchedAssignmentArgs = Prisma.validator<Prisma.AssignmentDefau
                 }
             }
         },
+        course: {
+            include: {
+                roles: {
+                    include: {
+                        user: true
+                    }
+                }
+            }
+        }
     }
 });
 

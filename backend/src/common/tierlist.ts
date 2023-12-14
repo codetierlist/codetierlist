@@ -5,6 +5,7 @@ import {
     Tierlist,
     UserTier
 } from "codetierlist-types";
+import {isProf} from "./utils";
 
 /** @return a two letter hash of the string */
 export const twoLetterHash = (str: string) => {
@@ -49,7 +50,7 @@ export function generateList(assignment: Omit<FullFetchedAssignment, "due_date">
     if (assignment.submissions.length === 0) {
         return [res, "?" as UserTier];
     }
-    const scores = assignment.submissions.map(submission =>
+    const scores = assignment.submissions.filter(submission=>!isProf(assignment.course, submission.author)).map(submission =>
     {
         const validScores = submission.scores.filter(x=>x.test_case.valid==="VALID");
         return{
@@ -57,7 +58,7 @@ export function generateList(assignment: Omit<FullFetchedAssignment, "due_date">
             name: anonymize ? submission.author.utorid : (user ? isSelf(user, submission.author.utorid) : false)
                 ? getUserInitials(submission.author)
                 : twoLetterHash(submission.author.utorid + (user ? getUtorid(user) : "")),
-            score: validScores.length === 0 ? 0.0 : validScores.filter(x => x.pass).length / validScores.length,
+            score: validScores.length === 0 ? 0.0 : validScores.filter(x => x.pass).length / validScores.length
         };}
     );
     const mean = getMean(scores.map(x => x.score));
