@@ -1,6 +1,5 @@
 import axios, { handleError } from "@/axios";
 import { CourseSessionChip, getSession } from '@/components';
-import { UserContext } from "@/contexts/UserContext";
 import {
     Card,
     Table,

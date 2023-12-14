@@ -1,15 +1,16 @@
 import axios, { handleError } from "@/axios";
 import {
+    Monaco,
     TierChip,
     TierList,
+    ToolTipIcon,
+    checkIfCourseAdmin,
     convertDate,
     convertTime,
-    promptForFileObject,
-    ToolTipIcon,
-    Monaco,
-    checkIfCourseAdmin
+    promptForFileObject
 } from '@/components';
 import { SnackbarContext } from "@/contexts/SnackbarContext";
+import { UserContext } from "@/contexts/UserContext";
 import flex from '@/styles/flex-utils.module.css';
 import {
     Accordion,
@@ -21,16 +22,16 @@ import {
     MessageBarActions,
     MessageBarBody,
     MessageBarTitle,
-    Tooltip,
     Subtitle1,
     Tab, TabList,
-    Text
+    Text,
+    Tooltip
 } from '@fluentui/react-components';
 import {
     Add24Filled,
     ArrowCounterclockwiseDashes24Filled, CheckmarkCircle24Regular,
     Delete16Filled,
-    DismissCircle24Regular, Settings24Regular
+    DismissCircle24Regular
 } from '@fluentui/react-icons';
 import { Subtitle2, Title2 } from '@fluentui/react-text';
 import {
@@ -44,9 +45,8 @@ import Head from "next/head";
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import { Col, Container } from "react-grid-system";
+import AdminPage from "./admin/index";
 import styles from './page.module.css';
-import { UserContext } from "@/contexts/UserContext";
-import AdminPage from "./admin/index"
 
 const ListFiles = ({ commit, route, assignment, assignmentID, update }: { commit: Commit, route: "testcases" | "submissions", assignment: FetchedAssignmentWithTier, assignmentID: string, update?: () => void }) => {
     const { showSnackSev } = useContext(SnackbarContext);
@@ -127,13 +127,13 @@ const ListFiles = ({ commit, route, assignment, assignmentID, update }: { commit
  */
 const TestCaseStatusIcon = ({ status }: { status: TestCaseStatus }): JSX.Element => {
     switch (status) {
-        case "INVALID":
-            return <DismissCircle24Regular fill={"var(--colorStatusDangerForeground1)"} primaryFill={"var(--colorStatusDangerForeground1)"} />;
-        case "PENDING":
-            return <ArrowCounterclockwiseDashes24Filled fill={"var(--colorPaletteGoldForeground2)"} primaryFill={"var(--colorPaletteGoldForeground2)"} />;
-        case "VALID":
-            return <CheckmarkCircle24Regular fill={"var(--colorStatusSuccessForeground1)"} primaryFill={"var(--colorStatusSuccessForeground1)"} />;
-        default: return <></>;
+    case "INVALID":
+        return <DismissCircle24Regular fill={"var(--colorStatusDangerForeground1)"} primaryFill={"var(--colorStatusDangerForeground1)"} />;
+    case "PENDING":
+        return <ArrowCounterclockwiseDashes24Filled fill={"var(--colorPaletteGoldForeground2)"} primaryFill={"var(--colorPaletteGoldForeground2)"} />;
+    case "VALID":
+        return <CheckmarkCircle24Regular fill={"var(--colorStatusSuccessForeground1)"} primaryFill={"var(--colorStatusSuccessForeground1)"} />;
+    default: return <></>;
     }
 };
 /**
