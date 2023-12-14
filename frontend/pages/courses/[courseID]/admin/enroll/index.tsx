@@ -4,6 +4,7 @@ import { ArrowLeft24Regular } from '@fluentui/react-icons';
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { Container } from "react-grid-system";
 import styles from "./page.module.css";
 
 export default function Page(): JSX.Element {
@@ -38,7 +39,7 @@ export default function Page(): JSX.Element {
                 </Tab>
             </TabList>
 
-            <main>
+            <Container component="main" className="m-t-xxxl">
                 {stage === 0 &&
                     <PeopleModifier
                         title={"Enroll Students"}
@@ -60,7 +61,7 @@ export default function Page(): JSX.Element {
                         action={"add"}
                         roleType={"INSTRUCTOR"}
                     />}
-            </main>
+            </Container>
         </>
     );
 }

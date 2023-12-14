@@ -8,7 +8,6 @@ import { Add24Filled } from '@fluentui/react-icons';
 import {useContext, useState} from "react";
 import {SnackbarContext} from "@/contexts/SnackbarContext";
 import { useRouter } from "next/router";
-import { Container } from 'react-grid-system';
 
 import styles from './PeopleModifier.module.css';
 
@@ -33,7 +32,7 @@ export const PeopleModifier = ({
     const peopleType = roleType == "STUDENT" ? "students" : roleType == "TA" ? "TAs" : "instructors";
     const modalActionText = action == "add" ? "Added" : "Removed";
     return (
-        <Container component="main" className="m-t-xxxl">
+        <>
             <div className={`${flex["d-flex"]} ${flex["justify-content-between"]}`}>
                 <header>
                     <Title2 block>{title}</Title2>
@@ -75,6 +74,6 @@ export const PeopleModifier = ({
                 }}>
                 Submit
             </Button>
-        </Container>
+        </>
     );
 };
