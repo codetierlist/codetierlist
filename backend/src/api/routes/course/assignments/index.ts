@@ -148,6 +148,11 @@ router.get("/:assignment/tierlist", fetchAssignmentMiddleware, errorHandler(asyn
 }));
 
 router.get('/:assignment/stats', fetchAssignmentMiddleware, errorHandler(async (req, res) => {
+    if(!isProf(req.course!,req.user)){
+        res.statusCode = 403;
+        res.send({message:"You are not a prof"});
+        return;
+    }
     const fullFetchedAssignment = await prisma.assignment.findUniqueOrThrow({
         where: {
             id:
