@@ -1,4 +1,4 @@
-import { HeaderToolbar, PeopleModifier } from "@/components";
+import { getRoleName, HeaderToolbar, PeopleModifier } from "@/components";
 import { Body2, LargeTitle, ToolbarButton } from "@fluentui/react-components";
 import { ArrowLeft24Regular } from '@fluentui/react-icons';
 import Head from "next/head";
@@ -48,7 +48,7 @@ export default function Page(): JSX.Element {
     return (
         <>
             <Head>
-                <title>{`${add ? "Add" : "Remove"} ${role.toLocaleLowerCase()}s - Codetierlist`}</title>
+                <title>{`${add ? "Add" : "Remove"} ${getRoleName(role)}s - Codetierlist`}</title>
             </Head>
 
             <HeaderToolbar>
@@ -72,8 +72,8 @@ export default function Page(): JSX.Element {
 
                 {role !== "invalid" &&
                     <PeopleModifier
-                        title={`${add ? "Add" : "Remove"} ${role === "TA" ? role : role.toLocaleLowerCase()}s`}
-                        description={`Update the ${role === "TA" ? role : role.toLocaleLowerCase()}s enrolled in this course by uploading a CSV of students. The CSV must have a header row with the column "utorid".`}
+                        title={`${add ? "Add" : "Remove"} ${getRoleName(role)}s`}
+                        description={`Update the ${getRoleName(role)}s enrolled in this course by uploading a list of UTORids, separated by newlines.`}
                         action={add ? "add" : "remove"}
                         roleType={role as RoleType}
                     />
