@@ -1,15 +1,45 @@
-import {modifyEnrollment, Monaco, promptForFileReader} from "@/components";
-import {handleError} from "@/axios";
-import { RoleType } from 'codetierlist-types';
-import { Title2 } from '@fluentui/react-text';
-import { Body2, Button } from "@fluentui/react-components";
+import { handleError } from "@/axios";
+import { Monaco, promptForFileReader } from "@/components";
+import { SnackbarContext } from "@/contexts/SnackbarContext";
 import flex from '@/styles/flex-utils.module.css';
+import { Body2, Button } from "@fluentui/react-components";
 import { Add24Filled } from '@fluentui/react-icons';
-import {useContext, useState} from "react";
-import {SnackbarContext} from "@/contexts/SnackbarContext";
+import { Title2 } from '@fluentui/react-text';
+import { RoleType } from 'codetierlist-types';
 import { useRouter } from "next/router";
+import { useContext, useState } from "react";
 
+import axios from "@/axios";
+import { isUTORid } from 'is-utorid';
 import styles from './PeopleModifier.module.css';
+
+/**
+ * Get the role name from the role type
+ */
+export const getRoleName = (roleName: RoleType | string): string => roleName === "TA" ? roleName : roleName.toLocaleLowerCase();
+
+/**
+ * given a csv of students, enroll them in or remove them from the course
+ *
+ * @param courseID the course to modify
+ * @param csv a list of utorids that are newline separated
+ * @param action the action to perform on the enrolment of students (enrol or remove from course)
+ *
+ * @returns void on success, throws an error on failure
+ */
+async function modifyEnrollment(courseID: string, csv: string, action: "add" | "remove", role: RoleType, showSnackSev: (message: string, severity: "success" | "error") => void): Promise<void> {
+    const utorids = csv.split("\n");
+
+    if (!csv || !utorids.length) {
+        showSnackSev("Please enter some UTORids", "error");
+    } else if (utorids.some((utorid: string) => !isUTORid(utorid))) {
+        showSnackSev("One of the UTORids are invalid", "error");
+    } else {
+        await axios.post(`/courses/${courseID}/${action}`, { utorids, role })
+            .then(() => showSnackSev(`${action == "add" ? "Added" : "Removed"} ${getRoleName(role)} successfully`, "success"))
+            .catch((e) => { showSnackSev(e.message, "error"); throw e; });
+    }
+}
 
 export declare interface PeopleModifierProps {
     /**
@@ -29,20 +59,18 @@ export declare interface PeopleModifierProps {
      */
     roleType: RoleType
 }
+
 export const PeopleModifier = ({
     title,
     description,
     action,
     roleType
 }: PeopleModifierProps): JSX.Element => {
-
     const [editorValue, setEditorValue] = useState("");
     const { showSnackSev } = useContext(SnackbarContext);
 
     const router = useRouter();
 
-    const peopleType = roleType == "STUDENT" ? "students" : roleType == "TA" ? "TAs" : "instructors";
-    const modalActionText = action == "add" ? "Added" : "Removed";
     return (
         <>
             <div className={`${flex["d-flex"]} ${flex["justify-content-between"]} m-b-xl`}>
@@ -69,18 +97,16 @@ export const PeopleModifier = ({
             <Monaco
                 height="56vh"
                 defaultLanguage="csv"
-                defaultValue="utorid"
                 value={editorValue}
                 onChange={(value) => setEditorValue(value || "")}
             />
+
             <Button
                 appearance="primary"
                 className={`m-y-xxl ${styles.submitButton}`}
                 onClick={() => {
-                    modifyEnrollment(router.query.courseID as string, editorValue, action, roleType)
-                        .then(() => showSnackSev(`${modalActionText} ${peopleType} successfully`, "success"))
+                    modifyEnrollment(router.query.courseID as string, editorValue, action, roleType, showSnackSev)
                         .catch((e) => handleError(showSnackSev, e.message));
-
                 }}>
                 Submit
             </Button>

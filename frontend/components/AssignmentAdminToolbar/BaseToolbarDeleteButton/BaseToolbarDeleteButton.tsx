@@ -11,7 +11,7 @@ import {
 } from "@fluentui/react-components";
 import { BinRecycle24Regular } from '@fluentui/react-icons';
 
-export interface BaseToolbarDeleteButtonProps {
+export declare type BaseToolbarDeleteButtonProps = {
     /**
      * The function to call when the delete button is clicked
      * @returns {Promise<void>} a promise that resolves when the delete is complete

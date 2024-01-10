@@ -2,8 +2,8 @@ import axios, { handleError } from "@/axios";
 import { UserContext } from "@/contexts/UserContext";
 import { useRouter } from 'next/router';
 import { useContext } from "react";
-import { SnackbarContext } from '../../contexts/SnackbarContext';
-import { BaseToolbarDeleteButton } from '../BaseToolbarDeleteButton/BaseToolbarDeleteButton';
+import { SnackbarContext } from '@/contexts/SnackbarContext';
+import { BaseToolbarDeleteButton } from '@/components/AssignmentAdminToolbar/BaseToolbarDeleteButton/BaseToolbarDeleteButton';
 import { FetchedAssignment } from "codetierlist-types";
 
 /**
