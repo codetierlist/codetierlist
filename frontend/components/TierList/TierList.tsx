@@ -176,7 +176,7 @@ export const TierList = ({ tierlist = EMPTY_DATA }: { tierlist: Tierlist }): JSX
             {
                 Object.keys(tierlist).map((tier, index) => {
                     return (
-                        <TierRow key={index} tier={tier} tierlist={MOCK_DATA} />
+                        <TierRow key={index} tier={tier} tierlist={tierlist} />
                     );
                 })
             }
