@@ -31,14 +31,6 @@ const generatePeople = (count: number, you: boolean): TierlistEntry[] => {
     });
 };
 
-// const MOCK_DATA: Tierlist = {
-//     "S": generatePeople(Math.floor(Math.random() * 2000), false),
-//     "A": generatePeople(Math.floor(Math.random() * 3000), false),
-//     "B": generatePeople(Math.floor(Math.random() * 4000), true),
-//     "C": generatePeople(Math.floor(Math.random() * 3000), false),
-//     "D": generatePeople(Math.floor(Math.random() * 2000), false),
-//     "F": generatePeople(Math.floor(Math.random() * 1000), false),
-// };
 
 const EMPTY_DATA: Tierlist = {
     "S": [],
@@ -47,6 +39,17 @@ const EMPTY_DATA: Tierlist = {
     "C": [],
     "D": [],
     "F": [],
+};
+
+const _generate_mock_data = (): Tierlist => {
+    return {
+        "S": generatePeople(Math.floor(Math.random() * 2000), false),
+        "A": generatePeople(Math.floor(Math.random() * 3000), false),
+        "B": generatePeople(Math.floor(Math.random() * 4000), true),
+        "C": generatePeople(Math.floor(Math.random() * 3000), false),
+        "D": generatePeople(Math.floor(Math.random() * 2000), false),
+        "F": generatePeople(Math.floor(Math.random() * 1000), false),
+    };
 };
 
 function swap<T>(arr: T[], i: number, j: number): void {
