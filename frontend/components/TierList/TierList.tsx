@@ -1,4 +1,4 @@
-import { AvatarGroup, AvatarGroupItem, AvatarGroupPopover, partitionAvatarGroupItems } from "@fluentui/react-components";
+import { AvatarGroup, AvatarGroupItem, partitionAvatarGroupItems } from "@fluentui/react-components";
 import { Tier, Tierlist, UserTier } from "codetierlist-types";
 import { Col, Row } from "react-grid-system";
 import { TierChip } from "..";
