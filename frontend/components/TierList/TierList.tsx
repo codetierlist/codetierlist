@@ -31,14 +31,14 @@ const generatePeople = (count: number, you: boolean): TierlistEntry[] => {
     });
 };
 
-const MOCK_DATA: Tierlist = {
-    "S": generatePeople(Math.floor(Math.random() * 2000), false),
-    "A": generatePeople(Math.floor(Math.random() * 3000), false),
-    "B": generatePeople(Math.floor(Math.random() * 4000), true),
-    "C": generatePeople(Math.floor(Math.random() * 3000), false),
-    "D": generatePeople(Math.floor(Math.random() * 2000), false),
-    "F": generatePeople(Math.floor(Math.random() * 1000), false),
-};
+// const MOCK_DATA: Tierlist = {
+//     "S": generatePeople(Math.floor(Math.random() * 2000), false),
+//     "A": generatePeople(Math.floor(Math.random() * 3000), false),
+//     "B": generatePeople(Math.floor(Math.random() * 4000), true),
+//     "C": generatePeople(Math.floor(Math.random() * 3000), false),
+//     "D": generatePeople(Math.floor(Math.random() * 2000), false),
+//     "F": generatePeople(Math.floor(Math.random() * 1000), false),
+// };
 
 const EMPTY_DATA: Tierlist = {
     "S": [],
