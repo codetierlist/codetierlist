@@ -128,7 +128,9 @@ const TierRow = ({ tier, tierlist }: { tier: string, tierlist: Tierlist }): JSX.
     const MAX_INLINE_ITEMS = 20;
 
     // current tier, remove any potential undefined or null values
-    const thisTier = tierlist[tier as Tier].filter((person) => person);
+    const thisTier = useMemo(() => {
+        return tierlist[tier as Tier].filter((person) => person);
+    }, [tierlist, tier]);
 
     // get index of you in tier for swapping
     const youIndex = useMemo(() => {
@@ -138,9 +140,7 @@ const TierRow = ({ tier, tierlist }: { tier: string, tierlist: Tierlist }): JSX.
     // to make the data visualization more readable, we want to scale the
     // number of people in each tier so that when all tiers exceed the max inline
     // items, it is still easy to tell who has the most people in their tier
-    const LARGEST_TIER_LENGTH = useMemo(() => {
-        return Math.max(...Object.values(tierlist).map((t) => t.length));
-    }, [tierlist]);
+    const LARGEST_TIER_LENGTH = Math.max(...Object.values(tierlist).map((t) => t.length));
     const SCALED_TIER_PERCENT = thisTier.length / LARGEST_TIER_LENGTH;
     const SCALED_TIER_LENGTH = Math.ceil(SCALED_TIER_PERCENT * MAX_INLINE_ITEMS);
 
