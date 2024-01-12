@@ -17,6 +17,11 @@
     line-height: 2em;
 }
 
+.tierAvatars {
+    background-color: var(--colorNeutralBackground1Hover);
+    border-bottom: 1px solid var(--colorNeutralBackground1Pressed);
+}
+
 .avatarGroup {
     padding: var(--spacingVerticalL) 0;
     flex-wrap: wrap;
