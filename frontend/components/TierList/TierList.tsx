@@ -89,10 +89,7 @@ const TierAvatars = ({ people, maxInlineItems }: { people: { name: string, you: 
 
     return (
         <Col
-            style={{
-                backgroundColor: "var(--colorNeutralBackground1Hover)",
-                borderBottom: "1px solid var(--colorNeutralBackground1Pressed)",
-            }}
+            className={styles.tierAvatars}
             sm={12} lg={10}
         >
             <AvatarGroup className={styles.avatarGroup}>
