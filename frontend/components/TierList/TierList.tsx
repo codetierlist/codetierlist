@@ -142,14 +142,13 @@ const TierRow = ({ tier, tierlist }: { tier: string, tierlist: Tierlist }): JSX.
  * @property {Tierlist} tierlist the tierlist to display
  * @returns {JSX.Element} the tier list
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const TierList = ({ tierlist = Hardcode }: { tierlist: Tierlist }): JSX.Element => {
     return (
         <Row component="section">
             {
-                Object.keys(Hardcode).map((tier, index) => {
+                Object.keys(tierlist).map((tier, index) => {
                     return (
-                        <TierRow key={index} tier={tier} tierlist={Hardcode} />
+                        <TierRow key={index} tier={tier} tierlist={tierlist} />
                     );
                 })
             }
