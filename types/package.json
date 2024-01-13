@@ -16,6 +16,6 @@
     "@types/node": "^20.8.9",
     "prisma": "^5.8.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.2.2"
+    "typescript": "^5.3.3"
   }
 }
