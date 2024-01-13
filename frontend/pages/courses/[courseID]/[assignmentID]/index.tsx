@@ -147,6 +147,7 @@ export default function Page() {
                     <Tab value="tab2" disabled> View tierlist </Tab>
                 </TabList>
                 <Container component="main" className={styles.container}>
+                    <></>
                 </Container>
             </>
         );
