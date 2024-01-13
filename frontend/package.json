@@ -16,7 +16,7 @@
     "@fluentui/react-datepicker-compat": "^0.4.1",
     "@fluentui/react-icons": "^2.0.221",
     "@monaco-editor/react": "^4.6.0",
-    "axios": "^1.6.0",
+    "axios": "^1.6.5",
     "is-utorid": "^1.2.2",
     "monaco-editor": "^0.44.0",
     "next": "latest",
