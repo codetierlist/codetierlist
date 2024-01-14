@@ -14,7 +14,21 @@ export const twoLetterHash = (str: string) => {
         hash = ((hash << 5) - hash) + str.charCodeAt(i);
         hash |= 0;
     }
-    return Math.abs(hash).toString(36).substr(0, 2);
+    let res = '';
+    for(const s of Math.abs(hash).toString(36)) {
+        const code = s.toLowerCase().charCodeAt(0);
+        if(code>=97 && code<=122) {
+            return s;
+        }
+        res += s;
+        if (res.length >= 2) {
+            return res;
+        }
+    }
+    if(res.length<2) {
+        res += 'a'.repeat(2-res.length);
+    }
+    return res;
 };
 
 /** @return utorid of user if string or user object */
@@ -56,9 +70,10 @@ export function generateList(assignment: Omit<FullFetchedAssignment, "due_date">
     const scores = assignment.submissions.filter(submission=>!isProf(assignment.course, submission.author)).map(submission =>
     {
         const validScores = submission.scores.filter(x=>x.test_case.valid==="VALID");
+        const you = user ? isSelf(user, submission.author.utorid) : false;
         return{
-            you: user ? isSelf(user, submission.author.utorid) : false,
-            name: getUserInitials(submission.author),
+            you,
+            name : anonymize && !you ? twoLetterHash(submission.author.givenName + " " + submission.author.surname) : getUserInitials(submission.author),
             utorid: anonymize ? '' : submission.author.utorid,
             score: validScores.length === 0 ? 0.0 : validScores.filter(x => x.pass).length / validScores.length
         };}
@@ -95,4 +110,4 @@ export function generateList(assignment: Omit<FullFetchedAssignment, "due_date">
 }
 
 export const generateTierList = (assignment: Omit<FullFetchedAssignment, "due_date">, user?: string | User, anonymize=true): Tierlist => generateList(assignment, user, anonymize)[0];
-export const generateYourTier = (assignment: Omit<FullFetchedAssignment, "due_date">, user?: string | User): UserTier => generateList(assignment, user)[1];
+export const generateYourTier = (assignment: Omit<FullFetchedAssignment, "due_date">, user?: string | User): UserTier => generateList(assignment, user, true)[1];
