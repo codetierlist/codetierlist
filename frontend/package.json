@@ -18,7 +18,7 @@
     "@monaco-editor/react": "^4.6.0",
     "axios": "^1.6.5",
     "is-utorid": "^1.2.2",
-    "monaco-editor": "^0.44.0",
+    "monaco-editor": "^0.45.0",
     "next": "latest",
     "react": "latest",
     "react-dom": "latest",
