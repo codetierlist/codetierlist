@@ -1,8 +1,10 @@
 /**
  * @fileoverview This file exports all the components in the components folder
  */
-export * from './AdminToolbarDeleteAssignmentButton/AdminToolbarDeleteAssignmentButton';
-export * from './AdminToolbarDeleteCourseButton/AdminToolbarDeleteCourseButton';
+export * from './AssignmentAdminToolbar/AddRemovePeopleMenu/AddRemovePeopleMenu';
+export * from './AssignmentAdminToolbar/AssignmentAdminToolbar';
+export * from './AssignmentAdminToolbar/BaseToolbarDeleteButton/AdminToolbarDeleteAssignmentButton/AdminToolbarDeleteAssignmentButton';
+export * from './AssignmentAdminToolbar/BaseToolbarDeleteButton/AdminToolbarDeleteCourseButton/AdminToolbarDeleteCourseButton';
 export * from './AssignmentCard/AssignmentCard';
 export * from './AssignmentPageFilesTab/AssignmentPageFilesTab';
 export * from './AssignmentPageTestCaseIcon/AssignmentPageTestCaseIcon';
@@ -26,7 +28,6 @@ export * from './UpcomingDeadlines/UpcomingDeadlines';
 
 export * from './utils/checkIfCourseAdmin/checkIfCourseAdmin';
 export * from './utils/ColourHash/ColourHash';
-export * from './utils/Enrolment/enrolmentStatus';
 export * from './utils/FileUploadUtils/FileUploadUtils';
 export * from './utils/Theme/Theme';
 export * from './utils/TimeUtils/TimeUtils';
