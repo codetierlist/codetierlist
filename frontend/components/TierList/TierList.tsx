@@ -4,7 +4,6 @@ import { Col, Row } from "react-grid-system";
 import { TierChip } from "..";
 import { GenerateInitalsAvatarProps } from "../../components/InitialsAvatar/InitialsAvatar";
 import styles from "./TierList.module.css";
-import { useMemo } from "react";
 
 /**
  * Generate mock data for one tier of the tier list.
@@ -128,14 +127,10 @@ const TierRow = ({ tier, tierlist }: { tier: string, tierlist: Tierlist }): JSX.
     const MAX_INLINE_ITEMS = 20;
 
     // current tier, remove any potential undefined or null values
-    const thisTier = useMemo(() => {
-        return tierlist[tier as Tier].filter((person) => person);
-    }, [tierlist, tier]);
+    const thisTier = tierlist[tier as Tier].filter((person) => person);
 
     // get index of you in tier for swapping
-    const youIndex = useMemo(() => {
-        return thisTier.findIndex((person) => person.you);
-    }, [thisTier]);
+    const youIndex = thisTier.findIndex((person) => person.you);
 
     // to make the data visualization more readable, we want to scale the
     // number of people in each tier so that when all tiers exceed the max inline
