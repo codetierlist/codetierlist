@@ -1,6 +1,5 @@
 import { AvatarGroup, AvatarGroupItem, partitionAvatarGroupItems } from "@fluentui/react-components";
 import { Tier, Tierlist, UserTier, TierlistEntry } from "codetierlist-types";
-import { generateMockData } from "./TierList.utils";
 import { Col, Row } from "react-grid-system";
 import { TierChip } from "..";
 import { GenerateInitalsAvatarProps } from "../../components/InitialsAvatar/InitialsAvatar";
