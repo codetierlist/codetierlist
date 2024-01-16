@@ -14,12 +14,6 @@ const EMPTY_DATA: Tierlist = {
     "F": [],
 };
 
-function swap<T>(arr: T[], i: number, j: number): void {
-    const temp = arr[i];
-    arr[i] = arr[j];
-    arr[j] = temp;
-}
-
 /**
  * A tier indicator displays the tier of the tier list.
  * @property {Tier} tier the tier to display
@@ -49,6 +43,17 @@ const TierIndicator = ({ tier }: { tier: Tier }): JSX.Element => {
 const TierAvatars = ({ people, maxInlineItems }: { people: TierlistEntry[], maxInlineItems: number }): JSX.Element => {
     const { inlineItems, overflowItems } = partitionAvatarGroupItems({ items: people, maxInlineItems });
 
+    // get index of you in tier for swapping
+    const youIndex = overflowItems ? overflowItems.findIndex((person) => person.you) : -1;
+
+    // remove any potential undefined or null values
+    const newInlineItems = inlineItems.filter((person) => person);
+
+    // partitionAvatarGroupItems splices the last items for inline .. ?
+    if (youIndex !== -1 && overflowItems) {
+        newInlineItems.push(overflowItems[youIndex]);
+    }
+
     return (
         <Col
             className={styles.tierAvatars}
@@ -56,7 +61,7 @@ const TierAvatars = ({ people, maxInlineItems }: { people: TierlistEntry[], maxI
         >
             <AvatarGroup className={styles.avatarGroup}>
                 {
-                    inlineItems.filter((person) => person).map((person, i) => {
+                    newInlineItems.filter((person) => person).map((person, i) => {
                         return (
                             <AvatarGroupItem
                                 key={i}
@@ -71,7 +76,7 @@ const TierAvatars = ({ people, maxInlineItems }: { people: TierlistEntry[], maxI
                         <AvatarGroupItem
                             overflowLabel={`${overflowItems.length} more`}
                             className={styles.avatar}
-                            initials={`+${overflowItems.length}`}
+                            initials={`+${youIndex !== -1 ? overflowItems.length - 1 : overflowItems.length}`}
                             color={"neutral"}
                         />
                     )
@@ -92,22 +97,12 @@ const TierRow = ({ tier, tierlist }: { tier: string, tierlist: Tierlist }): JSX.
     // current tier, remove any potential undefined or null values
     const thisTier = tierlist[tier as Tier].filter((person) => person);
 
-    // get index of you in tier for swapping
-    const youIndex = thisTier.findIndex((person) => person.you);
-
     // to make the data visualization more readable, we want to scale the
     // number of people in each tier so that when all tiers exceed the max inline
     // items, it is still easy to tell who has the most people in their tier
     const LARGEST_TIER_LENGTH = Math.max(...Object.values(tierlist).map((t) => t.length));
     const SCALED_TIER_PERCENT = thisTier.length / LARGEST_TIER_LENGTH;
     const SCALED_TIER_LENGTH = Math.ceil(SCALED_TIER_PERCENT * MAX_INLINE_ITEMS);
-
-    // partitionAvatarGroupItems splices the last items for inline  .. ?
-    if (youIndex !== -1) {
-        swap(thisTier,
-            youIndex,
-            thisTier.length - SCALED_TIER_LENGTH + 1 + (thisTier[youIndex].name[0].charCodeAt(0) % SCALED_TIER_LENGTH));
-    }
 
     return (
         <>
