@@ -1,35 +1,10 @@
 import { AvatarGroup, AvatarGroupItem, partitionAvatarGroupItems } from "@fluentui/react-components";
-import { Tier, Tierlist, TierlistEntry, UserTier } from "codetierlist-types";
+import { Tier, Tierlist, UserTier, TierlistEntry } from "codetierlist-types";
+import { generateMockData } from "./TierList.utils";
 import { Col, Row } from "react-grid-system";
 import { TierChip } from "..";
 import { GenerateInitalsAvatarProps } from "../../components/InitialsAvatar/InitialsAvatar";
 import styles from "./TierList.module.css";
-
-/**
- * Generate mock data for one tier of the tier list.
- * @param {number} count the number of people to generate
- * @param {boolean} you whether or not to include yourself in the list
- */
-const generatePeople = (count: number, you: boolean): TierlistEntry[] => {
-    const getRandomLetter = (): string => {
-        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-        return `${alphabet[Math.floor(Math.random() * alphabet.length)]}`;
-    };
-
-    const getRandomLetters = (lettersCount: number): string => {
-        return [...Array(lettersCount)].map(() => getRandomLetter()).join("");
-    };
-
-    return [...Array(count)].map((_, i) => {
-        return {
-            name: getRandomLetters(2),
-            you: you && (i == Math.floor(count / 2)),
-            utorid: getRandomLetters(8).toLowerCase()
-        };
-    });
-};
-
 
 const EMPTY_DATA: Tierlist = {
     "S": [],
@@ -38,17 +13,6 @@ const EMPTY_DATA: Tierlist = {
     "C": [],
     "D": [],
     "F": [],
-};
-
-const _generate_mock_data = (): Tierlist => {
-    return {
-        "S": generatePeople(Math.floor(Math.random() * 2000), false),
-        "A": generatePeople(Math.floor(Math.random() * 3000), false),
-        "B": generatePeople(Math.floor(Math.random() * 4000), true),
-        "C": generatePeople(Math.floor(Math.random() * 3000), false),
-        "D": generatePeople(Math.floor(Math.random() * 2000), false),
-        "F": generatePeople(Math.floor(Math.random() * 1000), false),
-    };
 };
 
 function swap<T>(arr: T[], i: number, j: number): void {
@@ -83,7 +47,7 @@ const TierIndicator = ({ tier }: { tier: Tier }): JSX.Element => {
  * @property {string[]} people the people to display
  * @property {number} maxInlineItems the maximum number of people to display before showing a +x
  */
-const TierAvatars = ({ people, maxInlineItems }: { people: { name: string, you: boolean }[], maxInlineItems: number }): JSX.Element => {
+const TierAvatars = ({ people, maxInlineItems }: { people: TierlistEntry[], maxInlineItems: number }): JSX.Element => {
     const { inlineItems, overflowItems } = partitionAvatarGroupItems({ items: people, maxInlineItems });
 
     return (
@@ -93,7 +57,7 @@ const TierAvatars = ({ people, maxInlineItems }: { people: { name: string, you: 
         >
             <AvatarGroup className={styles.avatarGroup}>
                 {
-                    inlineItems.map((person, i) => {
+                    inlineItems.filter((person) => person).map((person, i) => {
                         return (
                             <AvatarGroupItem
                                 key={i}
