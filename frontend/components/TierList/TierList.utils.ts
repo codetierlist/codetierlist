@@ -27,33 +27,11 @@ export const generatePeople = (count: number, you: boolean): TierlistEntry[] => 
 
 export const generateMockData = (): Tierlist => {
     return {
-        "S": [
-            {
-                "you": true,
-                "name": "JL",
-                "utorid": "leehung4"
-            },
-            {
-                "you": false,
-                "name": "IB",
-                "utorid": "benhaimi"
-            }
-        ],
-        "A": [],
-        "B": [],
-        "C": [
-            {
-                "you": false,
-                "name": "YB",
-                "utorid": "bulbuli5"
-            },
-            {
-                "you": false,
-                "name": "BZ",
-                "utorid": "zhan8725"
-            }
-        ],
-        "D": [],
-        "F": []
+        "S": generatePeople(Math.floor(Math.random() * 2000), false),
+        "A": generatePeople(Math.floor(Math.random() * 3000), false),
+        "B": generatePeople(Math.floor(Math.random() * 4000), true),
+        "C": generatePeople(Math.floor(Math.random() * 3000), false),
+        "D": generatePeople(Math.floor(Math.random() * 2000), false),
+        "F": generatePeople(Math.floor(Math.random() * 1000), false),
     };
 };
