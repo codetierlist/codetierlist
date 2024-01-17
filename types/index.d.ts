@@ -113,25 +113,17 @@ export type RoleType = typeof role.type
 const user: User;
 export type Theme = typeof user.theme;
 
-export type RunnerImage = { image: string, image_version: string }
-
-interface Job {
-    submission: Submission,
-    testCase: TestCase,
-    assignment: Assignment
-}
+export type RunnerImage = { image: string, image_version: string };
 
 type JobFiles = {
     [key: string]: string
 }
 
 export type JobData = {
-    query: {
-        solution_files: JobFiles,
-        test_case_files: JobFiles
-    },
+    img_ver: string,
     img: string,
-    img_ver: string
+    testCase: TestCase,
+    submission: Submission,
 }
 
 export enum JobStatus {

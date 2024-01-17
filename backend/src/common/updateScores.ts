@@ -1,9 +1,13 @@
-import {Assignment, Submission, TestCase, TestCaseStatus} from "codetierlist-types";
+import {
+    Assignment,
+    Submission,
+    TestCase
+} from "codetierlist-types";
 import prisma from "./prisma";
-import {queueJob} from "./runner";
+import {JobType, queueJob} from "./runner";
 import {RoleType} from "@prisma/client";
 
-const updateScore = (submission: Submission, testCase: TestCase, pass: boolean) =>
+export const updateScore = (submission: Submission, testCase: TestCase, pass: boolean) =>
     prisma.score.create({
         data: {
             pass,
@@ -27,17 +31,13 @@ export const onNewSubmission = async (submission: Submission, assignment: Assign
         distinct: "author_id",
     });
 
-    void Promise.all(testCases.map(testCase => queueJob({
+    await Promise.all(testCases.map(testCase => queueJob({
         submission: submission,
         testCase,
         assignment
-    }, "onNewSubmission").then(async x => {
-        console.log(`JobID: ${x}`);
-        // const pass = x.status === JobStatus.PASS;
-        // await updateScore(submission, testCase, pass); // a blank pass or fail, but we have more data than that
-    })));
+    }, JobType.testSubmission)));
 };
-export const onNewProfSubmission = async (submission:Submission, assignment: Assignment) =>{
+export const onNewProfSubmission = async (submission: Submission, assignment: Assignment) => {
     const testCases = await prisma.testCase.findMany({
         where: {
             course_id: submission.course_id,
@@ -48,25 +48,52 @@ export const onNewProfSubmission = async (submission:Submission, assignment: Ass
     });
 
     // TODO possible race condition when prof submits twice in a row?
-    void Promise.all(testCases.map(testCase => queueJob({
+    await Promise.all(testCases.map(testCase => queueJob({
         submission: submission,
         testCase,
         assignment
-    }, "onNewProfSubmission").then(async x => {
-        console.log(`JobID: ${x}`);
-        // let status:TestCaseStatus = "VALID";
-        // if([JobStatus.ERROR, JobStatus.FAIL].includes(x.status)){
-        //     status="INVALID";
-        // } else if (x.status == JobStatus.TESTCASE_EMPTY){
-        //     status="EMPTY";
-        // }
-        // await prisma.testCase.update({
-        //     where: {
-        //         id: testCase.id
-        //     }, data: {valid: status}
-        // });
-    })));
+    }, JobType.validateTestCase)));
 };
+
+/**
+ * Run a test case against all student submissions
+ * @param testCase the test case to run
+ * @param assignment the runner config to run the test case against
+ */
+export const runTestcase = async (testCase: TestCase, assignment: Assignment | {
+    runner_image: string,
+    image_version: string
+}) => {
+    // find all student submissions
+    const submissions = await prisma.solution.findMany({
+        where: {
+            course_id: testCase.course_id,
+            assignment_title: testCase.assignment_title,
+            author: {
+                roles: {
+                    some: {
+                        course_id: testCase.course_id,
+                        type: RoleType.STUDENT
+                    }
+                }
+            }
+        },
+        orderBy: {datetime: "desc"},
+        distinct: "author_id",
+    });
+    // for every student submission, run the test case, and update the score
+    await Promise.all(submissions.map(s => queueJob({
+        submission: s,
+        testCase,
+        assignment
+    }, JobType.testSubmission)));
+};
+
+/**
+ * When a new test case is added, test it and run it against all student submissions
+ * @param testCase the test case to test
+ * @param assignment the runner config to run the test case against
+ */
 export const onNewTestCase = async (testCase: TestCase, assignment: Assignment) => {
     // a valid test case should
     // 1. not error or timeout against a valid submission
@@ -88,61 +115,13 @@ export const onNewTestCase = async (testCase: TestCase, assignment: Assignment) 
             }
         }, orderBy: {datetime: "desc"}, take: 1
     });
-    let status: TestCaseStatus="VALID";
     if (profSubmission) {
-        // try {
-        const result = await queueJob({
+        await queueJob({
             submission: profSubmission,
             testCase,
             assignment
-        }, "onNewTestCase-profSubmission");
-        //     if (!result || [JobStatus.FAIL, JobStatus.ERROR].includes(result.status)) {
-        //         status="INVALID";
-        //     }
-        //     if(result.status == JobStatus.TESTCASE_EMPTY){
-        //         status="EMPTY";
-        //     }
-        // } catch (e) {
-        //     status="INVALID";
-        // }
+        }, JobType.validateTestCase);
+    } else {
+        await runTestcase(testCase, assignment);
     }
-
-    // test case has been validated
-
-    await prisma.testCase.update({
-        where: {
-            id: testCase.id
-        }, data: {valid: status}
-    });
-    if(status !="VALID") {
-        return;
-    }
-    // find all student submissions
-    const submissions = await prisma.solution.findMany({
-        where: {
-            course_id: testCase.course_id,
-            assignment_title: testCase.assignment_title,
-            author: {
-                roles: {
-                    some: {
-                        course_id: testCase.course_id,
-                        type: RoleType.STUDENT
-                    }
-                }
-            }
-        },
-        orderBy: {datetime: "desc"},
-        distinct: "author_id",
-    });
-    // for every student submission, run the test case, and update the score
-    void Promise.all(submissions.map(submission => queueJob({
-        submission: submission,
-        testCase,
-        assignment
-    }, "onNewTestCase").then(async x => {
-        console.log(`JobID: ${x}`);
-        // const pass = x.status === JobStatus.PASS;
-        //
-        // await updateScore(submission, testCase, pass); // a blank pass or fail, but we have more data than that
-    })));
 };
