@@ -16,6 +16,7 @@ WORKDIR /runner
 COPY ./runner/package.json ./runner/package-lock.json ./
 RUN npm ci
 
+COPY ../runner_config.json ./runner_config.json
 COPY ./runner ./
 RUN npm run build
 

@@ -7,12 +7,9 @@ import {
     // images
 } from "codetierlist-types";
 import {Job, Worker} from "bullmq";
+import fs from "fs";
 
-export const images : RunnerImage[] = [
-    {image: 'python', image_version: 'unittest-3.10.11'},
-    {image: 'python', image_version: 'unittest-3.12.1'},
-    {image: 'python', image_version: 'pytest-3.10.11'},
-];
+const images: RunnerImage[] = JSON.parse(fs.readFileSync('runner_config.json', 'utf-8'));
 
 if (process.env.MAX_RUNNING_TASKS === undefined) {
     throw new Error("MAX_RUNNING_TASKS is undefined");

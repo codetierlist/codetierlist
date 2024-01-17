@@ -21,8 +21,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "bullmq": "^5.1.3",
-    "codetierlist-types": "file:../types"
+    "bullmq": "^5.1.3"
   },
   "eslintConfig": {
     "extends": [

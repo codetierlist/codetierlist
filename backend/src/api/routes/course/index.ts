@@ -15,21 +15,17 @@ import {
 import {
     AssignmentWithTier,
     FetchedAssignment,
-    FetchedCourseWithTiers,
+    FetchedCourseWithTiers, RunnerImage,
     // images
 } from "codetierlist-types";
-
-export const images = [
-    {image: 'python', image_version: 'unittest-3.10.11'},
-    {image: 'python', image_version: 'unittest-3.12.1'},
-    {image: 'python', image_version: 'pytest-3.10.11'},
-];
-
 import {isUTORid} from "is-utorid";
 import multer from "multer";
 import {randomUUID} from "crypto";
-import {promises as fs} from "fs";
+import {promises as fs, readFileSync} from "fs";
 import path from "path";
+
+const images: RunnerImage[] = JSON.parse(readFileSync('runner_config.json', 'utf-8'));
+
 
 const storage = multer.diskStorage({
     filename: function (req, file, callback) {
