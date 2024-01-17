@@ -1,102 +1,35 @@
-import {
-    Assignment,
-    RunnerImage,
-    Submission,
-    TestCase
-} from "codetierlist-types";
 import {spawn, spawnSync} from "child_process";
 import path from "path";
-import {getCommit, getFile} from "../utils";
+import {
+    JobData,
+    JobResult,
+    JobStatus,
+    images
+} from "codetierlist-types";
+import {Job, Worker} from "bullmq";
 
-type JobFiles = {
-    [key: string]: string
+if (process.env.MAX_RUNNING_TASKS === undefined) {
+    throw new Error("MAX_RUNNING_TASKS is undefined");
 }
 
-const job_queue: {
-    (): void
-}[] = [];
+const mtask = parseInt(process.env.MAX_RUNNING_TASKS);
 
-let running_jobs = 0;
+const workers: Worker<JobData, JobResult>[] = [];
+export const runJob = async (job: JobData): Promise<JobResult> => {
+    const query = job.query;
+    const img = job.img;
 
-export enum JobStatus {
-    PASS = "PASS", // passes all test cases
-    FAIL = "FAIL", // fails at least one test case
-    ERROR = "ERROR", // code error, server error, or timeout
-    SUBMISSION_EMPTY="SUBMISSION_EMPTY",
-    TESTCASE_EMPTY="TESTCASE_EMPTY"
-}
-
-export type JobResult =
-    {
-        status: JobStatus.PASS,
-        amount: number // amount of testcases & amount passed
-    } |
-    {
-        status: JobStatus.FAIL,
-        amount: number // amount of testcases
-        score: number // amount passed
-        failed: string[] // list of failed testcase info
-    } |
-    {
-        status: JobStatus.ERROR | JobStatus.SUBMISSION_EMPTY | JobStatus.TESTCASE_EMPTY
-    };
-
-
-export const getFiles = async (submission: Submission | TestCase): Promise<JobFiles> => {
-    const res: JobFiles = {};
-    const commit = await getCommit(submission);
-    if (!commit) {
-        throw new Error("Commit not found in runner");
-    }
-
-    await Promise.all(commit.files.map(async (x) => {
-        const file = await getFile(x, submission.git_url, submission.git_id);
-        if (!file) return;
-        const decoder = new TextDecoder('utf8');
-        res[x] = btoa(decoder.decode(file.blob));
-    }));
-    return res;
-};
-
-
-export const runJob = async (job: Job): Promise<JobResult> => {
-    let a = Date.now();
-    console.info("Running job" + job.submission.git_url + "             " + job.testCase.git_url);
-    let query:{solution_files: JobFiles, test_case_files: JobFiles};
-
-    try {
-        query = {
-            'solution_files': await getFiles(job.submission),
-            'test_case_files': await getFiles(job.testCase),
-        };
-    } catch (e) {
-        console.error(e);
-        return {status: JobStatus.ERROR};
-    }
-
-    if(Object.keys(query.test_case_files).length == 0){
-        return {status: JobStatus.TESTCASE_EMPTY};
-    }
-
-    if(Object.keys(query.solution_files).length == 0){
-        return {status: JobStatus.SUBMISSION_EMPTY};
-    }
-
-    const img = job.assignment.runner_image;
-    const img_ver = job.assignment.image_version;
-
-    // TODO: figure out how to use reject
+    const img_ver = job.img_ver;
     return await new Promise((resolve) => {
-        // NOTE: change max_seconds to change cpu seconds & absolute timeout
 
         const max_seconds = 10;
         const runner = spawn("bash",
             ["-c", `serviceid=$(docker service create -d --replicas 1 --restart-condition=none --ulimit cpu=${max_seconds} -e RUN_FILES 127.0.0.1:5000/runner-image-${img}-${img_ver}); ` +
-                `timeout ${max_seconds*10} bash -c "while [[ \\$(docker service ps -q --filter "desired-state=Running" $serviceid) ]]; do sleep 1; done; docker service logs --raw $serviceid"; ` +
-                "docker service rm $serviceid > /dev/null"
+            `timeout ${max_seconds*10} bash -c "while [[ \\$(docker service ps -q --filter "desired-state=Running" $serviceid) ]]; do sleep 1; done; docker service logs --raw $serviceid"; ` +
+            "docker service rm $serviceid > /dev/null"
             ],
             {
-                cwd: path.join('/', 'backend', 'src', 'common', 'runner', 'images', img, img_ver),
+                cwd: path.join('/', 'runner', 'images', img, img_ver),
                 env: {"RUN_FILES": JSON.stringify(query)}
             }
         );
@@ -112,7 +45,6 @@ export const runJob = async (job: Job): Promise<JobResult> => {
                 runner?.stderr?.removeAllListeners();
                 runner?.removeAllListeners();
                 console.info(resultJSON);
-                console.log((Date.now() - a) / 1000);
                 resolve(resultJSON);
             } catch (e) {
                 // ignore because incomplete json, keep buffering
@@ -135,63 +67,35 @@ export const runJob = async (job: Job): Promise<JobResult> => {
     });
 };
 
-export const queueJob = (job: Job) : Promise<JobResult> => {
-    return new Promise((resolve) => {
-        for (let i = 0; i < 1000; i++) {
-            job_queue.push(() => {
-                runJob(job).then(r => {
-                    resolve(r);
-                    running_jobs--;
-                });
-            });
-        }
-    });
-};
-
-// Add new images here
-export const images : RunnerImage[] = [
-    {image: 'python', image_version: 'unittest-3.10.11'},
-    {image: 'python', image_version: 'unittest-3.12.1'},
-    {image: 'python', image_version: 'pytest-3.10.11'},
-];
 
 const createImage = (img : string, img_ver: string) => {
     const ret = spawnSync("bash",
         ["-c",
-            `docker build . -t 127.0.0.1:5000/runner-image-${img}-${img_ver}; ` +
-            `docker push 127.0.0.1:5000/runner-image-${img}-${img_ver}`
+            `docker build . -t runner-image-${img}-${img_ver}; ` +
+            `docker push runner-image-${img}-${img_ver}`
         ],
         {
-            cwd: path.join('/', 'backend', 'src', 'common', 'runner', 'images', img, img_ver)
+            cwd: path.join('/', 'runner', 'src', 'images', img, img_ver)
         }
     );
     if(ret?.stdout)
         console.info(ret.stdout.toString());
     console.info(`Image ${img}/${img_ver} created`);
 };
+
+
 const createImages = () => {
     console.info("creating images");
     images.forEach(x=>createImage(x.image,x.image_version));
     console.info("done creating images");
 };
 
-setInterval(() => {
-    if (job_queue.length === 0) {
-        return;
-    }
-
-    if (process.env.MAX_RUNNING_TASKS === undefined) {
-        throw new Error("MAX_RUNNING_TASKS is undefined");
-    }
-
-    while (running_jobs < parseInt(process.env.MAX_RUNNING_TASKS)) {
-        running_jobs++;
-        const job = job_queue.shift();
-        if (job === undefined) {
-            return;
-        }
-        job();
-    }
-}, 1000);
-
 createImages();
+
+// create workers
+for (let i = 0; i < mtask; i++) {
+    workers.push(new Worker<JobData, JobResult>(`${i}`,
+        async (job: Job<JobData,JobResult>) => {
+            return runJob(job.data);
+        }));
+}

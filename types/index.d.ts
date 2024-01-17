@@ -1,5 +1,11 @@
 import {Prisma} from "@prisma/client";
 
+export const images : RunnerImage[] = [
+    {image: 'python', image_version: 'unittest-3.10.11'},
+    {image: 'python', image_version: 'unittest-3.12.1'},
+    {image: 'python', image_version: 'pytest-3.10.11'},
+];
+
 export const fetchedUserArgs = Prisma.validator<Prisma.UserDefaultArgs>()({
     include: {
         roles: {
@@ -115,6 +121,19 @@ interface Job {
     assignment: Assignment
 }
 
+type JobFiles = {
+    [key: string]: string
+}
+
+export type JobData = {
+    query: {
+        solution_files: JobFiles,
+        test_case_files: JobFiles
+    },
+    img: string,
+    img_ver: string
+}
+
 export enum JobStatus {
     PASS = "PASS", // passes all test cases
     FAIL = "FAIL", // fails at least one test case
@@ -137,6 +156,7 @@ export type JobResult =
     {
         status: JobStatus.ERROR | JobStatus.SUBMISSION_EMPTY | JobStatus.TESTCASE_EMPTY
     };
+
 
 
 export type AssignmentStudentStats = (Omit<User, "admin" | "theme"> & {

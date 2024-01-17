@@ -1,6 +1,6 @@
 import {Assignment, Submission, TestCase, TestCaseStatus} from "codetierlist-types";
 import prisma from "./prisma";
-import {JobStatus, queueJob} from "./runner";
+import {queueJob} from "./runner";
 import {RoleType} from "@prisma/client";
 
 const updateScore = (submission: Submission, testCase: TestCase, pass: boolean) =>
@@ -31,9 +31,10 @@ export const onNewSubmission = async (submission: Submission, assignment: Assign
         submission: submission,
         testCase,
         assignment
-    }).then(async x => {
-        const pass = x.status === JobStatus.PASS;
-        await updateScore(submission, testCase, pass); // a blank pass or fail, but we have more data than that
+    }, "onNewSubmission").then(async x => {
+        console.log(`JobID: ${x}`);
+        // const pass = x.status === JobStatus.PASS;
+        // await updateScore(submission, testCase, pass); // a blank pass or fail, but we have more data than that
     })));
 };
 export const onNewProfSubmission = async (submission:Submission, assignment: Assignment) =>{
@@ -51,18 +52,19 @@ export const onNewProfSubmission = async (submission:Submission, assignment: Ass
         submission: submission,
         testCase,
         assignment
-    }).then(async x => {
-        let status:TestCaseStatus = "VALID";
-        if([JobStatus.ERROR, JobStatus.FAIL].includes(x.status)){
-            status="INVALID";
-        } else if (x.status == JobStatus.TESTCASE_EMPTY){
-            status="EMPTY";
-        }
-        await prisma.testCase.update({
-            where: {
-                id: testCase.id
-            }, data: {valid: status}
-        });
+    }, "onNewProfSubmission").then(async x => {
+        console.log(`JobID: ${x}`);
+        // let status:TestCaseStatus = "VALID";
+        // if([JobStatus.ERROR, JobStatus.FAIL].includes(x.status)){
+        //     status="INVALID";
+        // } else if (x.status == JobStatus.TESTCASE_EMPTY){
+        //     status="EMPTY";
+        // }
+        // await prisma.testCase.update({
+        //     where: {
+        //         id: testCase.id
+        //     }, data: {valid: status}
+        // });
     })));
 };
 export const onNewTestCase = async (testCase: TestCase, assignment: Assignment) => {
@@ -88,21 +90,21 @@ export const onNewTestCase = async (testCase: TestCase, assignment: Assignment) 
     });
     let status: TestCaseStatus="VALID";
     if (profSubmission) {
-        try {
-            const result = await queueJob({
-                submission: profSubmission,
-                testCase,
-                assignment
-            });
-            if (!result || [JobStatus.FAIL, JobStatus.ERROR].includes(result.status)) {
-                status="INVALID";
-            }
-            if(result.status == JobStatus.TESTCASE_EMPTY){
-                status="EMPTY";
-            }
-        } catch (e) {
-            status="INVALID";
-        }
+        // try {
+        const result = await queueJob({
+            submission: profSubmission,
+            testCase,
+            assignment
+        }, "onNewTestCase-profSubmission");
+        //     if (!result || [JobStatus.FAIL, JobStatus.ERROR].includes(result.status)) {
+        //         status="INVALID";
+        //     }
+        //     if(result.status == JobStatus.TESTCASE_EMPTY){
+        //         status="EMPTY";
+        //     }
+        // } catch (e) {
+        //     status="INVALID";
+        // }
     }
 
     // test case has been validated
@@ -137,9 +139,10 @@ export const onNewTestCase = async (testCase: TestCase, assignment: Assignment) 
         submission: submission,
         testCase,
         assignment
-    }).then(async x => {
-        const pass = x.status === JobStatus.PASS;
-
-        await updateScore(submission, testCase, pass); // a blank pass or fail, but we have more data than that
+    }, "onNewTestCase").then(async x => {
+        console.log(`JobID: ${x}`);
+        // const pass = x.status === JobStatus.PASS;
+        //
+        // await updateScore(submission, testCase, pass); // a blank pass or fail, but we have more data than that
     })));
 };

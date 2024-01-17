@@ -1,8 +1,7 @@
 import express from "express";
 import courseRoute from "./course";
 import userRoute from "./users";
-import {FetchedUser, RunnerImage} from "codetierlist-types";
-import {images} from "../../common/runner";
+import {FetchedUser, RunnerImage, images} from "codetierlist-types";
 
 const router = express.Router();
 

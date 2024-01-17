@@ -15,14 +15,14 @@ import {
 import {
     AssignmentWithTier,
     FetchedAssignment,
-    FetchedCourseWithTiers
+    FetchedCourseWithTiers,
+    images
 } from "codetierlist-types";
 import {isUTORid} from "is-utorid";
 import multer from "multer";
 import {randomUUID} from "crypto";
 import {promises as fs} from "fs";
 import path from "path";
-import {images} from "../../../common/runner";
 
 const storage = multer.diskStorage({
     filename: function (req, file, callback) {
