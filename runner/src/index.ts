@@ -3,13 +3,27 @@ import path from "path";
 import {
     JobData,
     JobResult,
-    JobStatus,
-    images
+    JobStatus, RunnerImage,
+    // images
 } from "codetierlist-types";
 import {Job, Worker} from "bullmq";
 
+export const images : RunnerImage[] = [
+    {image: 'python', image_version: 'unittest-3.10.11'},
+    {image: 'python', image_version: 'unittest-3.12.1'},
+    {image: 'python', image_version: 'pytest-3.10.11'},
+];
+
 if (process.env.MAX_RUNNING_TASKS === undefined) {
     throw new Error("MAX_RUNNING_TASKS is undefined");
+}
+
+if (process.env.REDIS_HOST === undefined) {
+    throw new Error("REDIS_HOST is undefined");
+}
+
+if (process.env.REDIS_PORT === undefined) {
+    throw new Error("REDIS_PORT is undefined");
 }
 
 const mtask = parseInt(process.env.MAX_RUNNING_TASKS);
@@ -24,12 +38,8 @@ export const runJob = async (job: JobData): Promise<JobResult> => {
 
         const max_seconds = 10;
         const runner = spawn("bash",
-            ["-c", `serviceid=$(docker service create -d --replicas 1 --restart-condition=none --ulimit cpu=${max_seconds} -e RUN_FILES 127.0.0.1:5000/runner-image-${img}-${img_ver}); ` +
-            `timeout ${max_seconds*10} bash -c "while [[ \\$(docker service ps -q --filter "desired-state=Running" $serviceid) ]]; do sleep 1; done; docker service logs --raw $serviceid"; ` +
-            "docker service rm $serviceid > /dev/null"
-            ],
+            ["-c", `docker run --rm --ulimit cpu=${max_seconds} -e RUN_FILES runner-image-${img}-${img_ver}`],
             {
-                cwd: path.join('/', 'runner', 'images', img, img_ver),
                 env: {"RUN_FILES": JSON.stringify(query)}
             }
         );
@@ -53,6 +63,7 @@ export const runJob = async (job: JobData): Promise<JobResult> => {
 
         runner.stderr.on('data', (data) => {
             console.info(`stderr: ${data}`);
+            resolve({status: JobStatus.ERROR});
         });
 
         runner.on('exit', (code) => {
@@ -94,8 +105,10 @@ createImages();
 
 // create workers
 for (let i = 0; i < mtask; i++) {
-    workers.push(new Worker<JobData, JobResult>(`${i}`,
+    workers.push(new Worker<JobData, JobResult>("job_queue",
         async (job: Job<JobData,JobResult>) => {
             return runJob(job.data);
-        }));
+        },
+        { connection: { host: process.env.REDIS_HOST, port: parseInt(process.env.REDIS_PORT) }}
+    ));
 }

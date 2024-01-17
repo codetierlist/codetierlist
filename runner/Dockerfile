@@ -15,8 +15,6 @@ RUN npm run prisma
 WORKDIR /runner
 COPY ./runner/package.json ./runner/package-lock.json ./
 RUN npm ci
-RUN cp -r ../types/prisma .
-RUN npm run prisma
 
 COPY ./runner ./
 RUN npm run build

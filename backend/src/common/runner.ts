@@ -9,7 +9,17 @@ import {
 import {getCommit, getFile} from "./utils";
 import {Queue} from "bullmq";
 
-const job_queue: Queue<JobData, JobResult> = new Queue<JobData, JobResult>("job_queue");
+if (process.env.REDIS_HOST === undefined) {
+    throw new Error("REDIS_HOST is undefined");
+}
+
+if (process.env.REDIS_PORT === undefined) {
+    throw new Error("REDIS_PORT is undefined");
+}
+
+const job_queue: Queue<JobData, JobResult> =
+    new Queue<JobData, JobResult>("job_queue",
+        { connection: { host: process.env.REDIS_HOST, port: parseInt(process.env.REDIS_PORT)}});
 
 
 // TODO: move file fetching to runner
