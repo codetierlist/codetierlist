@@ -9,15 +9,14 @@ import {
     Link,
     Title3
 } from '@fluentui/react-components';
-import {useRouter} from 'next/navigation';
-import {useContext, useState} from 'react';
+import { useRouter } from 'next/navigation';
+import { useContext, useState } from 'react';
 import styles from './CourseOverviewCard.module.css';
-import {SessionBlock} from '@/components/SessionBlock/SessionBlock';
-import {RoleType, Session} from 'codetierlist-types';
-import {ImageAdd20Regular} from "@fluentui/react-icons";
-import axios, {handleError} from "@/axios";
-import {promptForFileObject, checkIfCourseAdmin} from "@/components";
-import {SnackbarContext} from "@/contexts/SnackbarContext";
+import { RoleType, Session } from 'codetierlist-types';
+import { ImageAdd20Regular } from "@fluentui/react-icons";
+import axios, { handleError } from "@/axios";
+import { promptForFileObject, checkIfCourseAdmin, SessionBlock } from "@/components";
+import { SnackbarContext } from "@/contexts/SnackbarContext";
 import { UserContext } from '@/contexts/UserContext';
 
 const generatePlaceholderCard = (course: string): string =>
@@ -95,7 +94,7 @@ export const CourseOverviewCard = ({
         <Card
             className={styles.courseCard}
             selected={isSelected}
-            onSelectionChange={(_, {selected}) => {
+            onSelectionChange={(_, { selected }) => {
                 setSelected(selected);
             }}
             onClick={() => {
@@ -104,10 +103,11 @@ export const CourseOverviewCard = ({
             {...props}
         >
             <CardPreview className={styles.coursePreview}>
-                {(checkIfCourseAdmin(userInfo, id)) &&
+                {
+                    (checkIfCourseAdmin(userInfo, id)) &&
                     <Button
                         appearance="primary"
-                        icon={<ImageAdd20Regular/>}
+                        icon={<ImageAdd20Regular />}
                         className={styles.coverButton}
                         title="Change cover image"
                         onClick={async (event) => {
@@ -126,14 +126,16 @@ export const CourseOverviewCard = ({
                                 .then(() => {
                                     reset();
                                 }).catch(handleError(showSnackSev));
-                        }}/>}
+                        }}
+                    />
+                }
                 <img
-                    style={{objectFit:"cover", height:200, width:300}}
-                    src={image+"?"+seed}
+                    style={{ objectFit: "cover", height: 200, width: 300 }}
+                    src={image + "?" + seed}
                     width={300}
                     alt=""
                     height={200}
-                    onError={(event)=>{event.currentTarget.onerror=null; event.currentTarget.src=generatePlaceholderCard(id);}}
+                    onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = generatePlaceholderCard(id); }}
                 />
             </CardPreview>
 
@@ -144,7 +146,14 @@ export const CourseOverviewCard = ({
                     </Title3>
                 }
                 className={styles.courseHeader}
-                description={<div className={styles.badges}><SessionBlock session={session}/> <Badge className={styles.role} appearance="filled">{role}</Badge></div>}
+                description={
+                    <div className={styles.badges}>
+                        <SessionBlock session={session} />
+                        <Badge className={styles.role} appearance="filled">
+                            {role}
+                        </Badge>
+                    </div>
+                }
             />
 
             <CardFooter>
