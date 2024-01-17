@@ -1,0 +1,4 @@
+.badge {
+    border-radius: var(--spacingVerticalNone) !important;
+    text-transform: uppercase !important;
+}
