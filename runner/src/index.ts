@@ -8,12 +8,6 @@ import {spawn, spawnSync} from "child_process";
 import path from "path";
 import {getCommit, getFile} from "../utils";
 
-interface Job {
-    submission: Submission,
-    testCase: TestCase,
-    assignment: Assignment
-}
-
 type JobFiles = {
     [key: string]: string
 }
@@ -66,6 +60,7 @@ export const getFiles = async (submission: Submission | TestCase): Promise<JobFi
 
 
 export const runJob = async (job: Job): Promise<JobResult> => {
+    let a = Date.now();
     console.info("Running job" + job.submission.git_url + "             " + job.testCase.git_url);
     let query:{solution_files: JobFiles, test_case_files: JobFiles};
 
@@ -117,7 +112,7 @@ export const runJob = async (job: Job): Promise<JobResult> => {
                 runner?.stderr?.removeAllListeners();
                 runner?.removeAllListeners();
                 console.info(resultJSON);
-
+                console.log((Date.now() - a) / 1000);
                 resolve(resultJSON);
             } catch (e) {
                 // ignore because incomplete json, keep buffering
@@ -142,12 +137,14 @@ export const runJob = async (job: Job): Promise<JobResult> => {
 
 export const queueJob = (job: Job) : Promise<JobResult> => {
     return new Promise((resolve) => {
-        job_queue.push(() => {
-            runJob(job).then(r => {
-                resolve(r);
-                running_jobs--;
+        for (let i = 0; i < 1000; i++) {
+            job_queue.push(() => {
+                runJob(job).then(r => {
+                    resolve(r);
+                    running_jobs--;
+                });
             });
-        });
+        }
     });
 };
 
@@ -198,31 +195,3 @@ setInterval(() => {
 }, 1000);
 
 createImages();
-
-// for (let i = 0; i < 3; i++) {
-//     console.info(`queueing job ${i}`);
-//     queueJob({
-//         submission: {
-//             id: "c143e734-ed83-428a-aa68-50e182c58eae",
-//             git_url: "/repos/KITTY101-0/become gamer/malho258_solution",
-//             git_id: "e727a176e41e3ea9e62b136f5ab5fe81782a33c9",
-//             datetime: new Date(),
-//             author_id: "malho258",
-//             course_id: "KITTY101-0",
-//             assignment_title: "become gamer"
-//         },
-//         testCase: {
-//             id: "9f6b74f3-ca76-4119-94f1-82ba4d63740c",
-//             git_url: "/repos/KITTY101-0/become gamer/malho258_testCase",
-//             git_id: "89974c5b8066182629396f375c8af868dbe85cf3",
-//             datetime: new Date(),
-//             author_id: "malho258",
-//             course_id: "KITTY101-0",
-//             assignment_title: "become gamer",
-//             valid: "VALID"
-//         }
-//     }).then(r => {
-//         console.info(`result ${i}`);
-//         console.info(r);
-//     });
-// }

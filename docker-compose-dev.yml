@@ -61,7 +61,18 @@ services:
     ports:
       - "5432:5432"
 
+  redis:
+    restart: always
+    build:
+      context: ./redis
+      dockerfile: Dockerfile
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
 volumes:
   db_data:
   repo_data:
   uploads:
+  redis_data:

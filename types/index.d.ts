@@ -109,6 +109,36 @@ export type Theme = typeof user.theme;
 
 export type RunnerImage = { image: string, image_version: string }
 
+interface Job {
+    submission: Submission,
+    testCase: TestCase,
+    assignment: Assignment
+}
+
+export enum JobStatus {
+    PASS = "PASS", // passes all test cases
+    FAIL = "FAIL", // fails at least one test case
+    ERROR = "ERROR", // code error, server error, or timeout
+    SUBMISSION_EMPTY="SUBMISSION_EMPTY",
+    TESTCASE_EMPTY="TESTCASE_EMPTY",
+}
+
+export type JobResult =
+    {
+        status: JobStatus.PASS,
+        amount: number // amount of testcases & amount passed
+    } |
+    {
+        status: JobStatus.FAIL,
+        amount: number // amount of testcases
+        score: number // amount passed
+        failed: string[] // list of failed testcase info
+    } |
+    {
+        status: JobStatus.ERROR | JobStatus.SUBMISSION_EMPTY | JobStatus.TESTCASE_EMPTY
+    };
+
+
 export type AssignmentStudentStats = (Omit<User, "admin" | "theme"> & {
     tier: Tier,
     testsPassed: number,
