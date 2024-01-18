@@ -1,21 +1,48 @@
-import { Title3 } from '@fluentui/react-components';
+import { Badge } from '@fluentui/react-components';
+import styles from './SessionBlock.module.css';
+import {Session} from 'codetierlist-types';
 
 export declare interface SessionBlockProps {
-    session: string;
+    session: Session;
 }
 
 export const SessionBlock = ({ session }: SessionBlockProps): JSX.Element => {
-    if (session === 'F') {
+    switch (session) {
+    case "Summer":
         return (
-            <div>
-                <Title3 style={{color: 'white', fontSize: 12, backgroundColor: '#012E8A', padding: '1px 5px'}}>FALL</Title3>
-            </div>
+            <Badge
+                appearance="filled"
+                className={styles.badge}
+                style={{
+                    color: 'var(--colorNeutralForegroundInverted)',
+                    backgroundColor: 'var(--colorPaletteGreenForeground2)'
+                }}>
+                Summer
+            </Badge>
         );
-    } else {
+    case "Fall":
         return (
-            <div>
-                <Title3 style={{color: 'white', fontSize: 12, backgroundColor: '#018A27', padding: '1px 5px'}}>WINTER</Title3>
-            </div>
+            <Badge
+                appearance="filled"
+                className={styles.badge}
+                style={{
+                    color: 'var(--colorNeutralForegroundInverted)',
+                    backgroundColor: 'var(--colorPaletteRedForeground2)'
+                }}>
+                Fall
+            </Badge>
+        );
+    case "Winter":
+        return (
+            <Badge
+                appearance="filled"
+                className={styles.badge}
+                style={{
+                    color: 'var(--colorNeutralForegroundInverted)',
+                    backgroundColor: 'var(--colorPaletteBlueForeground2)'
+                }}>
+                Winter
+            </Badge>
         );
     }
 };
