@@ -9,26 +9,13 @@ import {isProf} from "./utils";
 
 /** @return a two letter hash of the string */
 export const twoLetterHash = (str: string) => {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-        hash = ((hash << 5) - hash) + str.charCodeAt(i);
-        hash |= 0;
-    }
-    let res = '';
-    for(const s of Math.abs(hash).toString(36)) {
-        const code = s.toLowerCase().charCodeAt(0);
-        if(code>=97 && code<=122) {
-            return s;
-        }
-        res += s;
-        if (res.length >= 2) {
-            return res;
-        }
-    }
-    if(res.length<2) {
-        res += 'a'.repeat(2-res.length);
-    }
-    return res;
+    // convert string to a number -- https://stackoverflow.com/a/7616484/11571888
+    const hash = Math.abs(str.split("").reduce((acc, curr) => {
+        acc = ((acc << 5) - acc) + curr.charCodeAt(0);
+        return acc & acc;
+    }, 100));
+
+    return String.fromCharCode(65 + hash % 26) + String.fromCharCode(65 + (hash >> 8) % 26);
 };
 
 /** @return utorid of user if string or user object */
