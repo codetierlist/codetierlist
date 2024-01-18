@@ -120,10 +120,10 @@ type JobFiles = {
 }
 
 export type JobData = {
-    img_ver: string,
-    img: string,
+    assignment: Assignment,
     testCase: TestCase,
     submission: Submission,
+    query: { solution_files: JobFiles, test_case_files: JobFiles }
 }
 
 export enum JobStatus {

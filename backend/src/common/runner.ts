@@ -55,36 +55,33 @@ export const getFiles = async (submission: Submission | TestCase): Promise<JobFi
 export const queueJob = async (job: {
     submission: Submission,
     testCase: TestCase,
-    assignment: Assignment | { runner_image: string, image_version: string }
+    assignment: Assignment
 }, name: JobType): Promise<string | undefined> => {
     // TODO get the files in runner
-    // let query: { solution_files: JobFiles, test_case_files: JobFiles };
-    // try {
-    //     query = {
-    //         'solution_files': await getFiles(job.submission),
-    //         'test_case_files': await getFiles(job.testCase),
-    //     };
-    // } catch (e) {
-    //     console.error(e);
-    //     return undefined;
-    // }
-    //
-    // if (Object.keys(query.test_case_files).length == 0) {
-    //     return undefined;
-    // }
-    //
-    // if (Object.keys(query.solution_files).length == 0) {
-    //     return undefined;
-    // }
+    let query: { solution_files: JobFiles, test_case_files: JobFiles };
+    try {
+        query = {
+            'solution_files': await getFiles(job.submission),
+            'test_case_files': await getFiles(job.testCase),
+        };
+    } catch (e) {
+        console.error(e);
+        return undefined;
+    }
 
-    const img = job.assignment.runner_image;
-    const img_ver = job.assignment.image_version;
+    if (Object.keys(query.test_case_files).length == 0) {
+        return undefined;
+    }
+
+    if (Object.keys(query.solution_files).length == 0) {
+        return undefined;
+    }
 
     const jd: JobData = {
-        img,
-        img_ver,
         testCase: job.testCase,
         submission: job.submission,
+        assignment: job.assignment,
+        query
     };
 
     // push to redis queue
@@ -95,16 +92,21 @@ export const queueJob = async (job: {
 job_events.on("completed", async ({jobId}) => {
     const job = await Job.fromId<JobData, JobResult, JobType>(job_queue, jobId);
     if (!job) return;
-    const data = job.data as JobData;
+    const data = job.data;
     const result = job.returnvalue;
     const submission = data.submission;
     const testCase = data.testCase;
+    const assignment = data.assignment;
     const pass = result.status === "PASS";
     if([JobType.validateTestCase, JobType.profSubmission].includes(job.name)) {
         let status:TestCaseStatus = "VALID";
-        if([JobStatus.ERROR, JobStatus.FAIL].includes(result.status)){
+        // console.log(JobStatus.ERROR);
+        // console.log(JobStatus.FAIL);
+        // if([JobStatus.ERROR, JobStatus.FAIL].includes(result.status)){
+        if(["ERROR", "FAIL"].includes(result.status)){
             status="INVALID";
-        } else if (result.status == JobStatus.TESTCASE_EMPTY){
+        // } else if (result.status == JobStatus.TESTCASE_EMPTY){
+        } else if (result.status == "TESTCASE_EMPTY"){
             status="EMPTY";
         }
         await prisma.testCase.update({
@@ -114,7 +116,7 @@ job_events.on("completed", async ({jobId}) => {
         });
         // if the test case is valid, run the test case on all student submissions
         if((job.name=== JobType.validateTestCase || job.data.testCase.valid !== "VALID") && status==="VALID"){
-            await runTestcase(testCase, {runner_image: data.img, image_version: data.img_ver});
+            await runTestcase(testCase, assignment);
         }
         return;
     }

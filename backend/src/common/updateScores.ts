@@ -60,10 +60,7 @@ export const onNewProfSubmission = async (submission: Submission, assignment: As
  * @param testCase the test case to run
  * @param assignment the runner config to run the test case against
  */
-export const runTestcase = async (testCase: TestCase, assignment: Assignment | {
-    runner_image: string,
-    image_version: string
-}) => {
+export const runTestcase = async (testCase: TestCase, assignment: Assignment) => {
     // find all student submissions
     const submissions = await prisma.solution.findMany({
         where: {

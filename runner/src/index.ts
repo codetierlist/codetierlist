@@ -28,14 +28,14 @@ const mtask = parseInt(process.env.MAX_RUNNING_TASKS);
 const workers: Worker<JobData, JobResult>[] = [];
 export const runJob = async (job: JobData): Promise<JobResult> => {
     const query = job.query;
-    const img = job.img;
-
-    const img_ver = job.img_ver;
+    const img = job.assignment.runner_image;
+    const img_ver = job.assignment.image_version;
     return await new Promise((resolve) => {
 
         const max_seconds = 10;
+        // TODO: change to using volumes or stdin for data passing
         const runner = spawn("bash",
-            ["-c", `docker run --rm --ulimit cpu=${max_seconds} -e RUN_FILES runner-image-${img}-${img_ver}`],
+            ["-c", `docker run --rm --ulimit cpu=${max_seconds} -e RUN_FILES --network=none codetl-runner-${img}-${img_ver}`],
             {
                 env: {"RUN_FILES": JSON.stringify(query)}
             }
@@ -79,8 +79,8 @@ export const runJob = async (job: JobData): Promise<JobResult> => {
 const createImage = (img : string, img_ver: string) => {
     const ret = spawnSync("bash",
         ["-c",
-            `docker build . -t runner-image-${img}-${img_ver}; ` +
-            `docker push runner-image-${img}-${img_ver}`
+            `docker build . -t codetl-runner-${img}-${img_ver}; ` +
+            `docker push codetl-runner-${img}-${img_ver}`
         ],
         {
             cwd: path.join('/', 'runner', 'src', 'images', img, img_ver)
@@ -88,7 +88,7 @@ const createImage = (img : string, img_ver: string) => {
     );
     if(ret?.stdout)
         console.info(ret.stdout.toString());
-    console.info(`Image ${img}/${img_ver} created`);
+    console.info(`Image codetl-runner-${img}-${img_ver} created`);
 };
 
 
@@ -103,8 +103,8 @@ createImages();
 // create workers
 for (let i = 0; i < mtask; i++) {
     workers.push(new Worker<JobData, JobResult>("job_queue",
-        async (job: Job<JobData,JobResult>) => {
-            return runJob(job.data);
+        async (job: Job<JobData,JobResult>): Promise<JobResult> => {
+            return (await runJob(job.data));
         },
         { connection: { host: process.env.REDIS_HOST, port: parseInt(process.env.REDIS_PORT) }}
     ));
