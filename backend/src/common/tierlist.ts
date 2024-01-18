@@ -15,6 +15,7 @@ export const twoLetterHash = (str: string) => {
         return acc & acc;
     }, 100));
 
+    // make sure this is hard to reverse later
     return String.fromCharCode(65 + hash % 26) + String.fromCharCode(65 + (hash >> 8) % 26);
 };
 
