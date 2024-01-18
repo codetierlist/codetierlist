@@ -9,12 +9,14 @@ import {isProf} from "./utils";
 
 /** @return a two letter hash of the string */
 export const twoLetterHash = (str: string) => {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-        hash = ((hash << 5) - hash) + str.charCodeAt(i);
-        hash |= 0;
-    }
-    return Math.abs(hash).toString(36).substr(0, 2);
+    // convert string to a number -- https://stackoverflow.com/a/7616484/11571888
+    const hash = Math.abs(str.split("").reduce((acc, curr) => {
+        acc = ((acc << 5) - acc) + curr.charCodeAt(0);
+        return acc & acc;
+    }, 100));
+
+    // make sure this is hard to reverse later
+    return String.fromCharCode(65 + hash % 26) + String.fromCharCode(65 + (hash >> 8) % 26);
 };
 
 /** @return utorid of user if string or user object */
@@ -56,9 +58,10 @@ export function generateList(assignment: Omit<FullFetchedAssignment, "due_date">
     const scores = assignment.submissions.filter(submission=>!isProf(assignment.course, submission.author)).map(submission =>
     {
         const validScores = submission.scores.filter(x=>x.test_case.valid==="VALID");
+        const you = user ? isSelf(user, submission.author.utorid) : false;
         return{
-            you: user ? isSelf(user, submission.author.utorid) : false,
-            name: getUserInitials(submission.author),
+            you,
+            name : anonymize && !you ? twoLetterHash(submission.author.givenName + " " + submission.author.surname) : getUserInitials(submission.author),
             utorid: anonymize ? '' : submission.author.utorid,
             score: validScores.length === 0 ? 0.0 : validScores.filter(x => x.pass).length / validScores.length
         };}
@@ -95,4 +98,4 @@ export function generateList(assignment: Omit<FullFetchedAssignment, "due_date">
 }
 
 export const generateTierList = (assignment: Omit<FullFetchedAssignment, "due_date">, user?: string | User, anonymize=true): Tierlist => generateList(assignment, user, anonymize)[0];
-export const generateYourTier = (assignment: Omit<FullFetchedAssignment, "due_date">, user?: string | User): UserTier => generateList(assignment, user)[1];
+export const generateYourTier = (assignment: Omit<FullFetchedAssignment, "due_date">, user?: string | User): UserTier => generateList(assignment, user, true)[1];
