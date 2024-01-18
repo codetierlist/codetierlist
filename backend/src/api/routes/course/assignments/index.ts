@@ -139,7 +139,7 @@ router.get("/:assignment/tierlist", fetchAssignmentMiddleware, errorHandler(asyn
             }
         }, ...fullFetchedAssignmentArgs
     });
-    const tierlist = generateList(fullFetchedAssignment, req.user);
+    const tierlist = generateList(fullFetchedAssignment, req.user, !isProf(req.course!, req.user));
     if (!isProf(req.course!, req.user) && tierlist[1] === "?" as UserTier) {
         res.send({S: [], A: [], B: [], C: [], D: [], F: []} satisfies Tierlist);
         return;
