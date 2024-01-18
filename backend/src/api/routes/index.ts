@@ -6,12 +6,7 @@ import {
     RunnerImage,
     // images
 } from "codetierlist-types";
-
-export const images : RunnerImage[] = [
-    {image: 'python', image_version: 'unittest-3.10.11'},
-    {image: 'python', image_version: 'unittest-3.12.1'},
-    {image: 'python', image_version: 'pytest-3.10.11'},
-];
+import {images} from "../../common/runner";
 
 const router = express.Router();
 

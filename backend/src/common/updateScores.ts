@@ -1,5 +1,5 @@
 import {
-    Assignment,
+    Assignment, RunnerImage,
     Submission,
     TestCase
 } from "codetierlist-types";
@@ -7,6 +7,12 @@ import prisma from "./prisma";
 import {JobType, queueJob} from "./runner";
 import {RoleType} from "@prisma/client";
 
+/**
+ * Log the score of a submission vs a testcase
+ * @param submission
+ * @param testCase
+ * @param pass
+ */
 export const updateScore = (submission: Submission, testCase: TestCase, pass: boolean) =>
     prisma.score.create({
         data: {
@@ -20,7 +26,7 @@ export const updateScore = (submission: Submission, testCase: TestCase, pass: bo
         }
     });
 
-export const onNewSubmission = async (submission: Submission, assignment: Assignment) => {
+export const onNewSubmission = async (submission: Submission, image: Assignment) => {
     const testCases = await prisma.testCase.findMany({
         where: {
             course_id: submission.course_id,
@@ -34,10 +40,15 @@ export const onNewSubmission = async (submission: Submission, assignment: Assign
     await Promise.all(testCases.map(testCase => queueJob({
         submission: submission,
         testCase,
-        assignment
+        image
     }, JobType.testSubmission)));
 };
-export const onNewProfSubmission = async (submission: Submission, assignment: Assignment) => {
+/**
+ * When the prof submits a new submission, run it against all test cases
+ * @param submission
+ * @param image
+ */
+export const onNewProfSubmission = async (submission: Submission, image: Assignment | RunnerImage) => {
     const testCases = await prisma.testCase.findMany({
         where: {
             course_id: submission.course_id,
@@ -51,16 +62,16 @@ export const onNewProfSubmission = async (submission: Submission, assignment: As
     await Promise.all(testCases.map(testCase => queueJob({
         submission: submission,
         testCase,
-        assignment
+        image
     }, JobType.validateTestCase)));
 };
 
 /**
  * Run a test case against all student submissions
  * @param testCase the test case to run
- * @param assignment the runner config to run the test case against
+ * @param image the runner config to run the test case against
  */
-export const runTestcase = async (testCase: TestCase, assignment: Assignment) => {
+export const runTestcase = async (testCase: TestCase, image: Assignment | RunnerImage) => {
     // find all student submissions
     const submissions = await prisma.solution.findMany({
         where: {
@@ -82,16 +93,16 @@ export const runTestcase = async (testCase: TestCase, assignment: Assignment) =>
     await Promise.all(submissions.map(s => queueJob({
         submission: s,
         testCase,
-        assignment
+        image: image
     }, JobType.testSubmission)));
 };
 
 /**
  * When a new test case is added, test it and run it against all student submissions
  * @param testCase the test case to test
- * @param assignment the runner config to run the test case against
+ * @param image the runner config to run the test case against
  */
-export const onNewTestCase = async (testCase: TestCase, assignment: Assignment) => {
+export const onNewTestCase = async (testCase: TestCase, image: Assignment | RunnerImage) => {
     // a valid test case should
     // 1. not error or timeout against a valid submission
     // 2. pass a valid submission
@@ -116,9 +127,9 @@ export const onNewTestCase = async (testCase: TestCase, assignment: Assignment) 
         await queueJob({
             submission: profSubmission,
             testCase,
-            assignment
+            image
         }, JobType.validateTestCase);
     } else {
-        await runTestcase(testCase, assignment);
+        await runTestcase(testCase, image);
     }
 };

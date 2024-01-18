@@ -3,18 +3,22 @@ import {
     TestCase,
     JobData,
     JobFiles,
-    JobResult, Assignment, JobStatus, TestCaseStatus,
+    JobResult, Assignment, TestCaseStatus, RunnerImage,
 } from "codetierlist-types";
 import {getCommit, getFile} from "./utils";
 import {Queue, QueueEvents, Job} from "bullmq";
 import {runTestcase, updateScore} from "./updateScores";
 import prisma from "./prisma";
+import {readFileSync} from "fs";
+
+export const images: RunnerImage[] = JSON.parse(readFileSync('runner_config.json', 'utf-8'));
 
 export enum JobType {
     validateTestCase = "validateTestCase",
     testSubmission = "testSubmission",
     profSubmission = "profSubmission"
 }
+
 if (process.env.REDIS_HOST === undefined) {
     throw new Error("REDIS_HOST is undefined");
 }
@@ -55,7 +59,7 @@ export const getFiles = async (submission: Submission | TestCase): Promise<JobFi
 export const queueJob = async (job: {
     submission: Submission,
     testCase: TestCase,
-    assignment: Assignment
+    image: Assignment | RunnerImage,
 }, name: JobType): Promise<string | undefined> => {
     // TODO get the files in runner
     let query: { solution_files: JobFiles, test_case_files: JobFiles };
@@ -80,7 +84,7 @@ export const queueJob = async (job: {
     const jd: JobData = {
         testCase: job.testCase,
         submission: job.submission,
-        assignment: job.assignment,
+        image: {image_version: job.image.image_version, runner_image: job.image.runner_image},
         query
     };
 
@@ -96,18 +100,13 @@ job_events.on("completed", async ({jobId}) => {
     const result = job.returnvalue;
     const submission = data.submission;
     const testCase = data.testCase;
-    const assignment = data.assignment;
     const pass = result.status === "PASS";
-    if([JobType.validateTestCase, JobType.profSubmission].includes(job.name)) {
-        let status:TestCaseStatus = "VALID";
-        // console.log(JobStatus.ERROR);
-        // console.log(JobStatus.FAIL);
-        // if([JobStatus.ERROR, JobStatus.FAIL].includes(result.status)){
-        if(["ERROR", "FAIL"].includes(result.status)){
-            status="INVALID";
-        // } else if (result.status == JobStatus.TESTCASE_EMPTY){
-        } else if (result.status == "TESTCASE_EMPTY"){
-            status="EMPTY";
+    if ([JobType.validateTestCase, JobType.profSubmission].includes(job.name)) {
+        let status: TestCaseStatus = "VALID";
+        if (["ERROR", "FAIL"].includes(result.status)) {
+            status = "INVALID";
+        } else if (result.status === "TESTCASE_EMPTY") {
+            status = "EMPTY";
         }
         await prisma.testCase.update({
             where: {
@@ -115,8 +114,8 @@ job_events.on("completed", async ({jobId}) => {
             }, data: {valid: status}
         });
         // if the test case is valid, run the test case on all student submissions
-        if((job.name=== JobType.validateTestCase || job.data.testCase.valid !== "VALID") && status==="VALID"){
-            await runTestcase(testCase, assignment);
+        if ((job.name === JobType.validateTestCase || job.data.testCase.valid !== "VALID") && status === "VALID") {
+            await runTestcase(testCase, data.image);
         }
         return;
     }

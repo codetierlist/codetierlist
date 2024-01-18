@@ -1,16 +1,10 @@
 import {Prisma} from "@prisma/client";
 
-export const images : RunnerImage[] = [
-    {image: 'python', image_version: 'unittest-3.10.11'},
-    {image: 'python', image_version: 'unittest-3.12.1'},
-    {image: 'python', image_version: 'pytest-3.10.11'},
-];
-
-export const fetchedUserArgs = Prisma.validator<Prisma.UserDefaultArgs>()({
+const fetchedUserArgs = Prisma.validator<Prisma.UserDefaultArgs>()({
     include: {
         roles: {
             where: {
-                course:{
+                course: {
                     hidden: false
                 }
             },
@@ -22,7 +16,7 @@ export const fetchedUserArgs = Prisma.validator<Prisma.UserDefaultArgs>()({
 });
 
 
-export const fetchedCourseArgs = Prisma.validator<Prisma.CourseDefaultArgs>()({
+const fetchedCourseArgs = Prisma.validator<Prisma.CourseDefaultArgs>()({
     include: {
         roles: {
             include: {
@@ -80,7 +74,7 @@ export type Score = Prisma.ScoreGetPayload<{}>;
 export type Role = Prisma.RoleGetPayload<{}>;
 export type TestCase = Prisma.TestCaseGetPayload<{}>;
 const test: TestCase;
-export type TestCaseStatus = typeof test.valid
+export type TestCaseStatus = typeof test.valid;
 
 export type FetchedUser = Prisma.UserGetPayload<typeof fetchedUserArgs>;
 export type FetchedCourse = Prisma.CourseGetPayload<typeof fetchedCourseArgs>;
@@ -113,42 +107,45 @@ export type RoleType = typeof role.type
 const user: User;
 export type Theme = typeof user.theme;
 
-export type RunnerImage = { image: string, image_version: string };
+export type RunnerImage = { runner_image: string, image_version: string };
 
 type JobFiles = {
     [key: string]: string
 }
 
 export type JobData = {
-    assignment: Assignment,
+    image: RunnerImage,
     testCase: TestCase,
     submission: Submission,
     query: { solution_files: JobFiles, test_case_files: JobFiles }
 }
 
-export enum JobStatus {
+enum _JobStatus {
     PASS = "PASS", // passes all test cases
     FAIL = "FAIL", // fails at least one test case
     ERROR = "ERROR", // code error, server error, or timeout
-    SUBMISSION_EMPTY="SUBMISSION_EMPTY",
-    TESTCASE_EMPTY="TESTCASE_EMPTY",
+    SUBMISSION_EMPTY = "SUBMISSION_EMPTY",
+    TESTCASE_EMPTY = "TESTCASE_EMPTY",
 }
 
+export type JobStatus = `${_JobStatus}`;
+
 export type JobResult =
-    {
-        status: JobStatus.PASS,
+    ({
+        status: "PASS",
         amount: number // amount of testcases & amount passed
     } |
-    {
-        status: JobStatus.FAIL,
-        amount: number // amount of testcases
-        score: number // amount passed
-        failed: string[] // list of failed testcase info
-    } |
-    {
-        status: JobStatus.ERROR | JobStatus.SUBMISSION_EMPTY | JobStatus.TESTCASE_EMPTY
-    };
-
+        {
+            status: "FAIL",
+            amount: number // amount of testcases
+            score: number // amount passed
+            failed: string[] // list of failed testcase info
+        } |
+        {
+            status: "ERROR" | "SUBMISSION_EMPTY" | "TESTCASE_EMPTY"
+        }) & {
+    status: JobStatus
+}
 
 
 export type AssignmentStudentStats = (Omit<User, "admin" | "theme"> & {

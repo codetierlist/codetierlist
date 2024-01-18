@@ -3,8 +3,7 @@ import path from "path";
 import {
     JobData,
     JobResult,
-    JobStatus, RunnerImage,
-    // images
+    RunnerImage,
 } from "codetierlist-types";
 import {Job, Worker} from "bullmq";
 import fs from "fs";
@@ -28,8 +27,8 @@ const mtask = parseInt(process.env.MAX_RUNNING_TASKS);
 const workers: Worker<JobData, JobResult>[] = [];
 export const runJob = async (job: JobData): Promise<JobResult> => {
     const query = job.query;
-    const img = job.assignment.runner_image;
-    const img_ver = job.assignment.image_version;
+    const img = job.image.runner_image;
+    const img_ver = job.image.image_version;
     return await new Promise((resolve) => {
 
         const max_seconds = 10;
@@ -60,16 +59,16 @@ export const runJob = async (job: JobData): Promise<JobResult> => {
 
         runner.stderr.on('data', (data) => {
             console.info(`stderr: ${data}`);
-            resolve({status: JobStatus.ERROR});
+            resolve({status: "ERROR"});
         });
 
         runner.on('exit', (code) => {
             if (code === 0) {
                 runner.stdout.on('end', () => {
-                    resolve({status: JobStatus.ERROR}); // read all output and still no result
+                    resolve({status: "ERROR"}); // read all output and still no result
                 });
             } else {
-                resolve({status: JobStatus.ERROR}); // fail case
+                resolve({status: "ERROR"}); // fail case
             }
         });
     });
@@ -94,7 +93,7 @@ const createImage = (img : string, img_ver: string) => {
 
 const createImages = () => {
     console.info("creating images");
-    images.forEach(x=>createImage(x.image,x.image_version));
+    images.forEach(x=>createImage(x.runner_image,x.image_version));
     console.info("done creating images");
 };
 
