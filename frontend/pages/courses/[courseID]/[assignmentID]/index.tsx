@@ -110,7 +110,7 @@ export default function Page() {
     /**
      * the polling rate for fetching the assignment and tierlist
      */
-    const POLLING_RATE = 5000;
+    const POLLING_RATE = 60000;
 
     useEffect(() => {
         const interval = setInterval(() => {
