@@ -1,4 +1,4 @@
-import { Toolbar, ToolbarProps } from "@fluentui/react-components";
+import { Card, Toolbar, ToolbarProps } from "@fluentui/react-components";
 import style from "./HeaderToolbar.module.css";
 
 /**
@@ -7,6 +7,8 @@ import style from "./HeaderToolbar.module.css";
  */
 export const HeaderToolbar = (props: ToolbarProps) => {
     return (
-        <Toolbar {...props} className={style.toolbar}> {props.children} </Toolbar>
+        <Card className={style.toolbar}>
+            <Toolbar className={style.toolbarContainer} {...props}> {props.children} </Toolbar>
+        </Card>
     );
 };
