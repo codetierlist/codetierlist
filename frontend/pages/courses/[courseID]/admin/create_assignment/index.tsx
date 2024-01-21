@@ -13,6 +13,7 @@ import {
 import {
     ArrowLeft24Regular,
     Calendar24Regular,
+    ClipboardTextLtr24Regular,
     Rename24Regular,
     Run24Regular,
     TextDescription24Regular
@@ -140,6 +141,20 @@ export default function Page(): JSX.Element {
                 >
                     Back to Course
                 </ToolbarButton>
+                <ToolbarButton
+                    appearance="subtle"
+                    icon={<ClipboardTextLtr24Regular/>}
+                    onClick={
+                        (assignmentName &&
+                            description &&
+                            selectedRunner) ? exportFormData : importFormData
+                    }>
+                    {
+                        (assignmentName &&
+                            description &&
+                            selectedRunner) ? "Export Assignment to Clipboard" : "Import Assignment from Clipboard"
+                    }
+                </ToolbarButton>
             </HeaderToolbar>
 
             <Container component="main" className="p-y-xxxl">
@@ -227,18 +242,6 @@ export default function Page(): JSX.Element {
                     </Card>
 
                     <div className={styles.submit}>
-                        <Button appearance="subtle" onClick={
-                            (assignmentName &&
-                                description &&
-                                selectedRunner) ? exportFormData : importFormData
-                        }>
-                            {
-                                (assignmentName &&
-                                    description &&
-                                    selectedRunner) ? "Export Assignment to Clipboard" : "Import Assignment from Clipboard"
-                            }
-                        </Button>
-
                         <Button type="submit"
                             appearance="primary">Create</Button>
                     </div>

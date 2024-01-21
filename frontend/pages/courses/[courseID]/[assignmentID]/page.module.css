@@ -8,10 +8,6 @@
     font-weight: var(--fontWeightRegular) !important;
 }
 
-.header {
-    margin-bottom: var(--spacingVerticalL);
-}
-
 .assignmentHeaderContent {
     gap: var(--spacingHorizontalS);
     display: flex;

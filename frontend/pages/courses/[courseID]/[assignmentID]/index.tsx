@@ -185,7 +185,7 @@ export default function Page() {
                 {
                     stage === 0 && (
                         <>
-                            <Card className={styles.header} orientation="horizontal">
+                            <Card className="m-b-l" orientation="horizontal">
                                 <CardHeader
                                     className={styles.assignmentHeaderContent}
                                     action={<TierChip tier={(tierlist && getMyTier(tierlist)) || "?"} />}
