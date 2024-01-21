@@ -15,7 +15,7 @@ import {
 import {
     AssignmentWithTier,
     FetchedAssignment,
-    FetchedCourseWithTiers
+    FetchedCourseWithTiers,
 } from "codetierlist-types";
 import {isUTORid} from "is-utorid";
 import multer from "multer";
@@ -26,7 +26,7 @@ import {images} from "../../../common/runner";
 
 const storage = multer.diskStorage({
     filename: function (req, file, callback) {
-        callback(null, randomUUID()+"."+path.extname(file.originalname));
+        callback(null, randomUUID() + "." + path.extname(file.originalname));
     }
 });
 
@@ -98,7 +98,7 @@ router.delete("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res)
         return;
     }
     await prisma.course.update({where: {id: req.course!.id}, data: {hidden: true}});
-    await prisma.assignment.updateMany({where:{course_id: req.course!.id}, data:{hidden:true}});
+    await prisma.assignment.updateMany({where: {course_id: req.course!.id}, data: {hidden: true}});
     res.send({});
 }));
 
@@ -159,24 +159,24 @@ router.post("/:courseId/remove", fetchCourseMiddleware, errorHandler(async (req,
 
 }));
 
-router.post("/:courseId/cover", fetchCourseMiddleware, upload.single("file"), errorHandler(async (req, res)=>{
-    if(!req.file || !isProf(req.course!, req.user)) {
+router.post("/:courseId/cover", fetchCourseMiddleware, upload.single("file"), errorHandler(async (req, res) => {
+    if (!req.file || !isProf(req.course!, req.user)) {
         res.statusCode = 400;
         res.send({message: "Must upload a file."});
         return;
     }
     await fs.copyFile(req.file.path, `/uploads/${req.file.filename}`);
-    await prisma.course.update({where:{id: req.course!.id}, data: {cover:req.file.filename}});
+    await prisma.course.update({where: {id: req.course!.id}, data: {cover: req.file.filename}});
     res.send({});
 }));
 
-router.get("/:courseId/cover", fetchCourseMiddleware, errorHandler(async (req, res) =>{
-    if(!req.course?.cover){
-        res.statusCode=404;
-        res.send({message:"No cover found"});
+router.get("/:courseId/cover", fetchCourseMiddleware, errorHandler(async (req, res) => {
+    if (!req.course?.cover) {
+        res.statusCode = 404;
+        res.send({message: "No cover found"});
         return;
     }
-    res.sendFile("/uploads/"+req.course!.cover);
+    res.sendFile("/uploads/" + req.course!.cover);
 }));
 router.post("/:courseId/assignments", fetchCourseMiddleware, errorHandler(async (req, res) => {
     const {name, dueDate, description} = req.body;
@@ -189,10 +189,10 @@ router.post("/:courseId/assignments", fetchCourseMiddleware, errorHandler(async 
     }
     if (!image && !image_version) {
         const runnerConf = images[0];
-        image = runnerConf.image;
+        image = runnerConf.runner_image;
         image_version = runnerConf.image_version;
     }
-    if (image && !image_version || image_version && !image || !images.some(x => x.image == image && x.image_version == image_version)) {
+    if (image && !image_version || image_version && !image || !images.some(x => x.runner_image == image && x.image_version == image_version)) {
         res.statusCode = 400;
         res.send({message: 'Invalid image.'});
         return;

@@ -116,8 +116,8 @@ export default function Page(): JSX.Element {
                 return;
             }
             setRunners(res.data.reduce((acc, runner) => {
-                acc[runner.image] = acc[runner.image] ?? [];
-                acc[runner.image].push(runner.image_version);
+                acc[runner.runner_image] = acc[runner.runner_image] ?? [];
+                acc[runner.runner_image].push(runner.image_version);
                 return acc;
             }, {} as Record<string, string[]>));
 
@@ -203,7 +203,7 @@ export default function Page(): JSX.Element {
                         icon={<Run24Regular />}
                         htmlFor="runner">
                         <Dropdown id="runner" name="runner"
-                            value={selectedRunner?.image + "/" + selectedRunner?.image_version}
+                            value={selectedRunner?.runner_image + "/" + selectedRunner?.image_version}
                             onOptionSelect={(_, data) => setSelectedRunner(JSON.parse(data.optionValue ?? "undefined") as RunnerImage)}
                         >
                             {Object.keys(runners).map(image =>
