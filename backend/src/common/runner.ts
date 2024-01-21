@@ -49,8 +49,7 @@ export const getFiles = async (submission: Submission | TestCase): Promise<JobFi
     await Promise.all(commit.files.map(async (x) => {
         const file = await getFile(x, submission.git_url, submission.git_id);
         if (!file) return;
-        const decoder = new TextDecoder('utf8');
-        res[x] = btoa(decoder.decode(file.blob));
+        res[x] = Buffer.from(file.blob.buffer).toString();
     }));
     return res;
 };
