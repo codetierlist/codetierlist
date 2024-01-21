@@ -94,6 +94,7 @@ export const queueJob = async (job: {
 
     // push to redis queue
     const redis_job = await job_queue.add(name, jd);
+    console.info(`job ${redis_job.id} added to queue`);
     return redis_job.id;
 };
 
@@ -102,6 +103,7 @@ job_events.on("completed", async ({jobId}) => {
     if (!job) return;
     const data = job.data;
     const result = job.returnvalue;
+    console.info(`job ${job.id} completed with status ${result.status}`);
     const submission = data.submission;
     const testCase = data.testCase;
     const pass = result.status === "PASS";
