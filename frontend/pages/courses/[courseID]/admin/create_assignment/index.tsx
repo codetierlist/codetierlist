@@ -13,6 +13,7 @@ import {
 import {
     ArrowLeft24Regular,
     Calendar24Regular,
+    ClipboardTextLtr24Regular,
     Rename24Regular,
     Run24Regular,
     TextDescription24Regular
@@ -46,6 +47,49 @@ export default function Page(): JSX.Element {
 
     const router = useRouter();
 
+    /**
+     * Exports the assignment to a JSON file and copies it to the clipboard
+     */
+    const exportFormData = async () => {
+        const serialized = JSON.stringify({
+            name: assignmentName,
+            description: description,
+            dueDate: dueDate.toISOString(),
+            ...selectedRunner
+        });
+
+        await navigator.clipboard.writeText(serialized);
+        showSnackSev("Copied to clipboard", "success");
+    };
+
+    /**
+     * Imports the assignment from a JSON file in the clipboard
+     */
+    const importFormData = async () => {
+        const serialized = await navigator.clipboard.readText();
+        let data;
+
+        try {
+            data = JSON.parse(serialized);
+        } catch (e) {
+            showSnackSev("Invalid JSON", "error");
+            return;
+        }
+
+        if (!data.name || !data.description || !data.dueDate || !data.image || !data.image_version) {
+            showSnackSev("Invalid assignment data", "error");
+            return;
+        }
+
+        setAssignmentName(data.name);
+        setDescription(data.description);
+        setDueDate(new Date(data.dueDate));
+        setSelectedRunner(data);
+    };
+
+    /**
+     * Submits the assignment to the backend
+     */
     const submitAssignment = async () => {
         if (!description) {
             showSnackSev("Description is required", "error");
@@ -66,7 +110,6 @@ export default function Page(): JSX.Element {
     };
 
     useEffect(() => {
-
         const fetchRunners = async () => {
             const res = await axios.get<RunnerImage[]>("/runner/images").catch(handleError(showSnackSev));
             if (!res) {
@@ -97,6 +140,20 @@ export default function Page(): JSX.Element {
                     onClick={() => router.push(`/courses/${router.query.courseID}`)}
                 >
                     Back to Course
+                </ToolbarButton>
+                <ToolbarButton
+                    appearance="subtle"
+                    icon={<ClipboardTextLtr24Regular/>}
+                    onClick={
+                        (assignmentName &&
+                            description &&
+                            selectedRunner) ? exportFormData : importFormData
+                    }>
+                    {
+                        (assignmentName &&
+                            description &&
+                            selectedRunner) ? "Export Assignment to Clipboard" : "Import Assignment from Clipboard"
+                    }
                 </ToolbarButton>
             </HeaderToolbar>
 

@@ -1,7 +1,4 @@
-.toolbar {
-    padding: var(--spacingVerticalL) !important;
-    gap: var(--spacingHorizontalL);
-    background-color: color-mix(in srgb, var(--colorNeutralBackground1) 50%, transparent) !important;
-    border-top: 2px solid var(--colorNeutralBackground3);
-    overflow-x: auto;
+.toolbarContainer {
+    flex-grow: 1;
+    overflow: auto;
 }

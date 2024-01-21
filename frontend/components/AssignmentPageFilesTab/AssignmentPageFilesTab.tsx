@@ -5,7 +5,6 @@ import {
     promptForFileObject
 } from '@/components';
 import { SnackbarContext } from "@/contexts/SnackbarContext";
-import flex from '@/styles/flex-utils.module.css';
 import {
     Accordion,
     AccordionHeader,
@@ -82,8 +81,8 @@ const ListFiles = ({ commit, route, assignment, assignmentID, update }: { commit
                 {
                     Object.keys(commit.files).map((key, index) => (
                         <AccordionItem value={index} key={key}>
-                            <AccordionHeader className={`${styles.accordionHeader}`}>
-                                <div className={`${flex["d-flex"]} ${flex["justify-content-between"]} ${flex["align-items-center"]} ${styles.accordionHeaderContent}`}>
+                            <AccordionHeader className={styles.accordionHeader}>
+                                <div className={styles.accordionHeaderContent}>
                                     <span>{commit.files[index]}</span>
 
                                     <Tooltip content="Delete file" relationship="label">
@@ -159,7 +158,7 @@ export const AssignmentPageFilesTab = ({ fetchAssignment, assignment, assignment
 
     return (
         <div className="m-y-xxxl">
-            <div className={`${flex["d-flex"]} ${flex["justify-content-between"]}`}>
+            <div className={styles.uploadHeader}>
                 <Subtitle1 className={styles.testCaseHeader} block>Uploaded {routeName}s <TestCaseStatus status={content.valid} /></Subtitle1>
                 <Button
                     icon={<Add24Filled />}
