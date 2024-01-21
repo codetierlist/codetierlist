@@ -18,6 +18,8 @@ jobs:
 
       - name: compose up
         run: docker compose up -d
+      - name: compose up runners
+        run: docker compose -f docker-compose-runner.yml up -d
 
       - name: cleanup
         run: |
