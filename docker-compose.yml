@@ -29,6 +29,8 @@ services:
       - MAX_RUNNING_TASKS=10
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+    env_file:
+      - ./redis/.env
 
   frontend:
     restart: always
@@ -60,6 +62,8 @@ services:
 #      - "6379:6379"
     volumes:
       - redis_data:/data
+    env_file:
+      - ./redis/.env
 
 volumes:
   db_data:

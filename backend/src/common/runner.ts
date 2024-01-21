@@ -10,6 +10,7 @@ import {Queue, QueueEvents, Job} from "bullmq";
 import {runTestcase, updateScore} from "./updateScores";
 import prisma from "./prisma";
 import {readFileSync} from "fs";
+import {QueueOptions} from "bullmq/dist/esm/interfaces";
 
 export const images: RunnerImage[] = JSON.parse(readFileSync('runner_config.json', 'utf-8'));
 
@@ -27,7 +28,11 @@ if (process.env.REDIS_PORT === undefined) {
     throw new Error("REDIS_PORT is undefined");
 }
 
-const queue_conf = {connection: {host: process.env.REDIS_HOST, port: parseInt(process.env.REDIS_PORT)}};
+if(process.env.REDIS_PASSWORD === undefined) {
+    console.warn("REDIS_PASSWORD is undefined, connection might fail");
+}
+
+const queue_conf : QueueOptions = {connection: {host: process.env.REDIS_HOST, port: parseInt(process.env.REDIS_PORT), password: process.env.REDIS_PASSWORD}};
 const job_queue: Queue<JobData, JobResult, JobType> =
     new Queue<JobData, JobResult, JobType>("job_queue", queue_conf);
 

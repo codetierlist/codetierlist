@@ -16,3 +16,5 @@ services:
       - MAX_RUNNING_TASKS=10
       - DOCKER_HOST=unix:///var/run/docker.sock
     privileged: true
+    env_file:
+      - ./redis/.env

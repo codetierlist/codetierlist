@@ -22,6 +22,10 @@ if (process.env.REDIS_PORT === undefined) {
     throw new Error("REDIS_PORT is undefined");
 }
 
+if(process.env.REDIS_PASSWORD === undefined) {
+    console.warn("REDIS_PASSWORD is undefined, connection might fail");
+}
+
 const mtask = parseInt(process.env.MAX_RUNNING_TASKS);
 
 const workers: Worker<JobData, JobResult>[] = [];
@@ -105,6 +109,6 @@ for (let i = 0; i < mtask; i++) {
         async (job: Job<JobData,JobResult>): Promise<JobResult> => {
             return (await runJob(job.data));
         },
-        { connection: { host: process.env.REDIS_HOST, port: parseInt(process.env.REDIS_PORT) }}
+        { connection: { host: process.env.REDIS_HOST, port: parseInt(process.env.REDIS_PORT), password: process.env.REDIS_PASSWORD }}
     ));
 }
