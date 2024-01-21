@@ -1,10 +1,10 @@
 import {Prisma} from "@prisma/client";
 
-export const fetchedUserArgs = Prisma.validator<Prisma.UserDefaultArgs>()({
+const fetchedUserArgs = Prisma.validator<Prisma.UserDefaultArgs>()({
     include: {
         roles: {
             where: {
-                course:{
+                course: {
                     hidden: false
                 }
             },
@@ -16,7 +16,7 @@ export const fetchedUserArgs = Prisma.validator<Prisma.UserDefaultArgs>()({
 });
 
 
-export const fetchedCourseArgs = Prisma.validator<Prisma.CourseDefaultArgs>()({
+const fetchedCourseArgs = Prisma.validator<Prisma.CourseDefaultArgs>()({
     include: {
         roles: {
             include: {
@@ -74,7 +74,7 @@ export type Score = Prisma.ScoreGetPayload<{}>;
 export type Role = Prisma.RoleGetPayload<{}>;
 export type TestCase = Prisma.TestCaseGetPayload<{}>;
 const test: TestCase;
-export type TestCaseStatus = typeof test.valid
+export type TestCaseStatus = typeof test.valid;
 
 export type FetchedUser = Prisma.UserGetPayload<typeof fetchedUserArgs>;
 export type FetchedCourse = Prisma.CourseGetPayload<typeof fetchedCourseArgs>;
@@ -107,7 +107,46 @@ export type RoleType = typeof role.type
 const user: User;
 export type Theme = typeof user.theme;
 
-export type RunnerImage = { image: string, image_version: string }
+export type RunnerImage = { runner_image: string, image_version: string };
+
+type JobFiles = {
+    [key: string]: string
+}
+
+export type JobData = {
+    image: RunnerImage,
+    testCase: TestCase,
+    submission: Submission,
+    query: { solution_files: JobFiles, test_case_files: JobFiles }
+}
+
+enum _JobStatus {
+    PASS = "PASS", // passes all test cases
+    FAIL = "FAIL", // fails at least one test case
+    ERROR = "ERROR", // code error, server error, or timeout
+    SUBMISSION_EMPTY = "SUBMISSION_EMPTY",
+    TESTCASE_EMPTY = "TESTCASE_EMPTY",
+}
+
+export type JobStatus = `${_JobStatus}`;
+
+export type JobResult =
+    ({
+        status: "PASS",
+        amount: number // amount of testcases & amount passed
+    } |
+        {
+            status: "FAIL",
+            amount: number // amount of testcases
+            score: number // amount passed
+            failed: string[] // list of failed testcase info
+        } |
+        {
+            status: "ERROR" | "SUBMISSION_EMPTY" | "TESTCASE_EMPTY"
+        }) & {
+    status: JobStatus
+}
+
 
 export type AssignmentStudentStats = (Omit<User, "admin" | "theme"> & {
     tier: Tier,

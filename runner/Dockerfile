@@ -1,4 +1,7 @@
-FROM node
+FROM docker:dind
+RUN apk update
+RUN apk add bash
+RUN apk add --update nodejs npm
 RUN npm install -g typescript
 
 # npm install types
@@ -9,14 +12,12 @@ COPY ./types ./
 RUN npm run prisma
 
 # npm install backend
-WORKDIR /backend
-COPY ./backend/package.json ./backend/package-lock.json ./
+WORKDIR /runner
+COPY ./runner/package.json ./runner/package-lock.json ./
 RUN npm ci
-RUN cp -r ../types/prisma .
-RUN npm run prisma
 
 COPY ../runner_config.json ./runner_config.json
-COPY ./backend ./
+COPY ./runner ./
 RUN npm run build
 
 # run

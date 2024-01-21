@@ -1,9 +1,19 @@
-import {Assignment, Submission, TestCase, TestCaseStatus} from "codetierlist-types";
+import {
+    Assignment, RunnerImage,
+    Submission,
+    TestCase
+} from "codetierlist-types";
 import prisma from "./prisma";
-import {JobStatus, queueJob} from "./runner";
+import {JobType, queueJob} from "./runner";
 import {RoleType} from "@prisma/client";
 
-const updateScore = (submission: Submission, testCase: TestCase, pass: boolean) =>
+/**
+ * Log the score of a submission vs a testcase
+ * @param submission
+ * @param testCase
+ * @param pass
+ */
+export const updateScore = (submission: Submission, testCase: TestCase, pass: boolean) =>
     prisma.score.create({
         data: {
             pass,
@@ -16,7 +26,7 @@ const updateScore = (submission: Submission, testCase: TestCase, pass: boolean) 
         }
     });
 
-export const onNewSubmission = async (submission: Submission, assignment: Assignment) => {
+export const onNewSubmission = async (submission: Submission, image: Assignment) => {
     const testCases = await prisma.testCase.findMany({
         where: {
             course_id: submission.course_id,
@@ -27,16 +37,18 @@ export const onNewSubmission = async (submission: Submission, assignment: Assign
         distinct: "author_id",
     });
 
-    void Promise.all(testCases.map(testCase => queueJob({
+    await Promise.all(testCases.map(testCase => queueJob({
         submission: submission,
         testCase,
-        assignment
-    }).then(async x => {
-        const pass = x.status === JobStatus.PASS;
-        await updateScore(submission, testCase, pass); // a blank pass or fail, but we have more data than that
-    })));
+        image
+    }, JobType.testSubmission)));
 };
-export const onNewProfSubmission = async (submission:Submission, assignment: Assignment) =>{
+/**
+ * When the prof submits a new submission, run it against all test cases
+ * @param submission
+ * @param image
+ */
+export const onNewProfSubmission = async (submission: Submission, image: Assignment | RunnerImage) => {
     const testCases = await prisma.testCase.findMany({
         where: {
             course_id: submission.course_id,
@@ -47,25 +59,50 @@ export const onNewProfSubmission = async (submission:Submission, assignment: Ass
     });
 
     // TODO possible race condition when prof submits twice in a row?
-    void Promise.all(testCases.map(testCase => queueJob({
+    await Promise.all(testCases.map(testCase => queueJob({
         submission: submission,
         testCase,
-        assignment
-    }).then(async x => {
-        let status:TestCaseStatus = "VALID";
-        if([JobStatus.ERROR, JobStatus.FAIL].includes(x.status)){
-            status="INVALID";
-        } else if (x.status == JobStatus.TESTCASE_EMPTY){
-            status="EMPTY";
-        }
-        await prisma.testCase.update({
-            where: {
-                id: testCase.id
-            }, data: {valid: status}
-        });
-    })));
+        image
+    }, JobType.validateTestCase)));
 };
-export const onNewTestCase = async (testCase: TestCase, assignment: Assignment) => {
+
+/**
+ * Run a test case against all student submissions
+ * @param testCase the test case to run
+ * @param image the runner config to run the test case against
+ */
+export const runTestcase = async (testCase: TestCase, image: Assignment | RunnerImage) => {
+    // find all student submissions
+    const submissions = await prisma.solution.findMany({
+        where: {
+            course_id: testCase.course_id,
+            assignment_title: testCase.assignment_title,
+            author: {
+                roles: {
+                    some: {
+                        course_id: testCase.course_id,
+                        type: RoleType.STUDENT
+                    }
+                }
+            }
+        },
+        orderBy: {datetime: "desc"},
+        distinct: "author_id",
+    });
+    // for every student submission, run the test case, and update the score
+    await Promise.all(submissions.map(s => queueJob({
+        submission: s,
+        testCase,
+        image: image
+    }, JobType.testSubmission)));
+};
+
+/**
+ * When a new test case is added, test it and run it against all student submissions
+ * @param testCase the test case to test
+ * @param image the runner config to run the test case against
+ */
+export const onNewTestCase = async (testCase: TestCase, image: Assignment | RunnerImage) => {
     // a valid test case should
     // 1. not error or timeout against a valid submission
     // 2. pass a valid submission
@@ -86,60 +123,13 @@ export const onNewTestCase = async (testCase: TestCase, assignment: Assignment) 
             }
         }, orderBy: {datetime: "desc"}, take: 1
     });
-    let status: TestCaseStatus="VALID";
     if (profSubmission) {
-        try {
-            const result = await queueJob({
-                submission: profSubmission,
-                testCase,
-                assignment
-            });
-            if (!result || [JobStatus.FAIL, JobStatus.ERROR].includes(result.status)) {
-                status="INVALID";
-            }
-            if(result.status == JobStatus.TESTCASE_EMPTY){
-                status="EMPTY";
-            }
-        } catch (e) {
-            status="INVALID";
-        }
+        await queueJob({
+            submission: profSubmission,
+            testCase,
+            image
+        }, JobType.validateTestCase);
+    } else {
+        await runTestcase(testCase, image);
     }
-
-    // test case has been validated
-
-    await prisma.testCase.update({
-        where: {
-            id: testCase.id
-        }, data: {valid: status}
-    });
-    if(status !="VALID") {
-        return;
-    }
-    // find all student submissions
-    const submissions = await prisma.solution.findMany({
-        where: {
-            course_id: testCase.course_id,
-            assignment_title: testCase.assignment_title,
-            author: {
-                roles: {
-                    some: {
-                        course_id: testCase.course_id,
-                        type: RoleType.STUDENT
-                    }
-                }
-            }
-        },
-        orderBy: {datetime: "desc"},
-        distinct: "author_id",
-    });
-    // for every student submission, run the test case, and update the score
-    void Promise.all(submissions.map(submission => queueJob({
-        submission: submission,
-        testCase,
-        assignment
-    }).then(async x => {
-        const pass = x.status === JobStatus.PASS;
-
-        await updateScore(submission, testCase, pass); // a blank pass or fail, but we have more data than that
-    })));
 };

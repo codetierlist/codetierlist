@@ -23,13 +23,12 @@ services:
       - repo_data:/repos
       - uploads:/uploads
       - ./backend/src:/backend/src:ro
-      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - DATABASE_URL=postgres://postgres:example@db:5432/postgres
       - NODE_ENV=development
       - MAX_RUNNING_TASKS=10
-      - DOCKER_HOST=unix:///var/run/docker.sock
-    privileged: true
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
 
   frontend:
     restart: always
@@ -61,7 +60,18 @@ services:
     ports:
       - "5432:5432"
 
+  redis:
+    restart: always
+    build:
+      context: ./redis
+      dockerfile: Dockerfile
+#    ports:
+#      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
 volumes:
   db_data:
   repo_data:
   uploads:
+  redis_data:

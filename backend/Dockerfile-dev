@@ -1,7 +1,4 @@
-FROM docker:dind
-RUN apk update
-RUN apk add bash
-RUN apk add --update nodejs npm
+FROM node
 RUN npm install -g typescript nodemon ts-node
 
 # npm install types
@@ -18,6 +15,7 @@ RUN npm ci
 RUN cp -r ../types/prisma .
 RUN npm run prisma
 
+COPY ../runner_config.json ./runner_config.json
 COPY ./backend ./
 
 CMD ["bash", "dev.sh"]
