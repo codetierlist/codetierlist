@@ -27,6 +27,7 @@ services:
       - DATABASE_URL=postgres://postgres:example@db:5432/postgres
       - NODE_ENV=production
       - MAX_RUNNING_TASKS=10
+      - SUBMISSION_DELAY_TIME=3600000
     env_file:
       - ./redis/.env
       - ./runner/.env
