@@ -22,7 +22,7 @@
     "@typescript-eslint/eslint-plugin": "^6.19.0",
     "codetierlist-types": "file:../types",
     "eslint": "^8.52.0",
-    "nodemon": "^3.0.2",
+    "nodemon": "^3.0.3",
     "prisma": "^5.5.2",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
@@ -30,7 +30,7 @@
   "dependencies": {
     "@prisma/client": "^5.5.2",
     "body-parser": "^1.20.2",
-    "bullmq": "^5.1.3",
+    "bullmq": "^5.1.4",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "is-utorid": "1.2.2",
