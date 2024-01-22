@@ -34,13 +34,12 @@ export const runJob = async (job: JobData): Promise<JobResult> => {
         const max_seconds = 10;
         // TODO: change to using volumes or stdin for data passing
         const runner = spawn("bash",
-            ["-c", `docker run --rm --ulimit cpu=${max_seconds} -e RUN_FILES --network=none codetl-runner-${img}-${img_ver}`],
-            {
-                env: {"RUN_FILES": JSON.stringify(query)}
-            }
+            ["-c", `docker run --rm --ulimit cpu=${max_seconds} --network=none codetl-runner-${img}-${img_ver}`],
         );
 
         let buffer = "";
+
+        runner.stdin.write(JSON.stringify(query));
 
         runner.stdout.on('data', (data) => {
             buffer += data;
@@ -75,7 +74,7 @@ export const runJob = async (job: JobData): Promise<JobResult> => {
 };
 
 
-const createImage = (img : string, img_ver: string) => {
+const createImage = (img: string, img_ver: string) => {
     const ret = spawnSync("bash",
         ["-c",
             `docker build . -t codetl-runner-${img}-${img_ver}; ` +
@@ -85,7 +84,7 @@ const createImage = (img : string, img_ver: string) => {
             cwd: path.join('/', 'runner', 'src', 'images', img, img_ver)
         }
     );
-    if(ret?.stdout)
+    if (ret?.stdout)
         console.info(ret.stdout.toString());
     console.info(`Image codetl-runner-${img}-${img_ver} created`);
 };
@@ -93,7 +92,7 @@ const createImage = (img : string, img_ver: string) => {
 
 const createImages = () => {
     console.info("creating images");
-    images.forEach(x=>createImage(x.runner_image,x.image_version));
+    images.forEach(x => createImage(x.runner_image, x.image_version));
     console.info("done creating images");
 };
 
@@ -102,9 +101,12 @@ createImages();
 // create workers
 for (let i = 0; i < mtask; i++) {
     workers.push(new Worker<JobData, JobResult>("job_queue",
-        async (job: Job<JobData,JobResult>): Promise<JobResult> => {
+        async (job: Job<JobData, JobResult>): Promise<JobResult> => {
             return (await runJob(job.data));
         },
-        { connection: { host: process.env.REDIS_HOST, port: parseInt(process.env.REDIS_PORT) }}
+        {
+            connection: {host: process.env.REDIS_HOST, port: parseInt(process.env.REDIS_PORT)},
+            useWorkerThreads: true
+        }
     ));
 }
