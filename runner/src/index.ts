@@ -7,6 +7,7 @@ import {
 } from "codetierlist-types";
 import {Job, Worker} from "bullmq";
 import fs from "fs";
+import {run} from "node:test";
 
 const images: RunnerImage[] = JSON.parse(fs.readFileSync('runner_config.json', 'utf-8'));
 
@@ -37,12 +38,13 @@ export const runJob = async (job: JobData): Promise<JobResult> => {
         const max_seconds = 10;
         // TODO: change to using volumes or stdin for data passing
         const runner = spawn("bash",
-            ["-c", `docker run --rm --ulimit cpu=${max_seconds} --network=none codetl-runner-${img}-${img_ver}`],
+            ["-c", `docker run --rm -i --ulimit cpu=${max_seconds} --network=none codetl-runner-${img}-${img_ver}`],
         );
 
         let buffer = "";
 
         runner.stdin.write(JSON.stringify(query));
+        runner.stdin.end();
 
         runner.stdout.on('data', (data) => {
             buffer += data;
