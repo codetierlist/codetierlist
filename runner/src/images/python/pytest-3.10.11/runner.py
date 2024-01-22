@@ -48,7 +48,7 @@ class PytestPlugin:
 
 
 if __name__ == '__main__':
-    run_data = os.getenv("RUN_FILES")
+    run_data = input()
     data = json.loads(run_data)
     sol_files = data['solution_files']
     test_files = data['test_case_files']
