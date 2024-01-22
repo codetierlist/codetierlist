@@ -49,7 +49,7 @@ export const getFiles = async (submission: Submission | TestCase): Promise<JobFi
     await Promise.all(commit.files.map(async (x) => {
         const file = await getFile(x, submission.git_url, submission.git_id);
         if (!file) return;
-        res[x] = Buffer.from(file.blob.buffer).toString();
+        res[x] = Buffer.from(file.blob.buffer).toString("base64");
     }));
     return res;
 };
