@@ -20,8 +20,9 @@ import {
     Delete16Filled
 } from '@fluentui/react-icons';
 import {
+    Assignment,
     Commit,
-    FetchedAssignment
+    UserFetchedAssignment
 } from "codetierlist-types";
 import { useContext, useEffect, useState } from 'react';
 import styles from './AssignmentPageFilesTab.module.css';
@@ -37,7 +38,7 @@ import styles from './AssignmentPageFilesTab.module.css';
  *
  * @returns {JSX.Element} the list of files
  */
-const ListFiles = ({ commit, route, assignment, assignmentID, update }: { commit: Commit, route: "testcases" | "submissions", assignment: FetchedAssignment, assignmentID: string, update?: () => void }) => {
+const ListFiles = ({ commit, route, assignment, assignmentID, update }: { commit: Commit, route: "testcases" | "submissions", assignment: Assignment, assignmentID: string, update?: () => void }) => {
     const { showSnackSev } = useContext(SnackbarContext);
     const [files, setFiles] = useState<{ [key: string]: string }>({});
 
@@ -121,7 +122,7 @@ const ListFiles = ({ commit, route, assignment, assignmentID, update }: { commit
  *
  * @returns {JSX.Element} the files tab
  */
-export const AssignmentPageFilesTab = ({ fetchAssignment, assignment, assignmentID, routeName, route }: { fetchAssignment: () => Promise<void>, assignment: FetchedAssignment, assignmentID: string, routeName: string, route: "testcases" | "submissions" }) => {
+export const AssignmentPageFilesTab = ({ fetchAssignment, assignment, assignmentID, routeName, route }: { fetchAssignment: () => Promise<void>, assignment: UserFetchedAssignment, assignmentID: string, routeName: string, route: "testcases" | "submissions" }) => {
     const [content, setContent] = useState<Commit>({ "files": [], "log": [] } as Commit);
     const { showSnackSev } = useContext(SnackbarContext);
 

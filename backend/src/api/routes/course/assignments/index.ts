@@ -15,10 +15,13 @@ import {
 } from "../../../../common/tierlist";
 import {
     AssignmentStudentStats,
-    AssignmentWithTier,
-    Commit, FetchedAssignment,
-    FetchedAssignmentWithTier, FullFetchedAssignment, Tier,
-    Tierlist, UserTier
+    Commit,
+    FetchedAssignment,
+    Submission,
+    Tier,
+    Tierlist,
+    UserFetchedAssignment,
+    UserTier
 } from "codetierlist-types";
 
 const storage = multer.diskStorage({
@@ -30,24 +33,40 @@ const upload = multer({storage});
 const router = express.Router({mergeParams: true});
 
 router.get("/:assignment", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
-    const assignment: FetchedAssignment = {...req.assignment!};
-    if (!isProf(req.course!, req.user)) {
-        assignment.submissions = assignment.submissions.filter(submission => submission.author_id === req.user.utorid);
-        assignment.test_cases = assignment.test_cases.filter(testCase => testCase.author_id === req.user.utorid);
-    }
-    const fullFetchedAssignment: FullFetchedAssignment = await prisma.assignment.findUniqueOrThrow({
+    const assignment: FetchedAssignment = req.assignment!;
+    const fullFetchedAssignment = await prisma.assignment.findUniqueOrThrow({
         where: {
             id: {
                 title: assignment.title,
                 course_id: assignment.course_id
             }
-        }, ...fullFetchedAssignmentArgs
+        }, include: {...fullFetchedAssignmentArgs.include, test_cases: {
+            orderBy: {datetime: "desc"},
+            distinct: "author_id",
+            where: isProf(req.course!, req.user) ? undefined : {author_id: req.user.utorid}
+        }}
     });
+    let submissions: Submission[] = fullFetchedAssignment.submissions;
+    if (!isProf(req.course!, req.user)) {
+        submissions = submissions.filter(submission => submission.author_id === req.user.utorid);
+    }
+    submissions = submissions.map(submission =>({
+        datetime: submission.datetime,
+        id: submission.id,
+        course_id: submission.course_id,
+        author_id: submission.author_id,
+        git_url: submission.git_url,
+        git_id: submission.git_id,
+        assignment_title: submission.assignment_title,
+    } satisfies Submission));
 
     res.send({
         ...assignment,
+        due_date: assignment.due_date,
+        test_cases: fullFetchedAssignment.test_cases,
+        submissions,
         tier: generateYourTier(fullFetchedAssignment)
-    } satisfies (FetchedAssignmentWithTier | AssignmentWithTier));
+    } satisfies (UserFetchedAssignment));
 }));
 
 router.delete("/:assignment", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
@@ -78,11 +97,11 @@ const checkFilesMiddleware = (req: Request, res: Response, next: NextFunction) =
 
 router.post("/:assignment/submissions", fetchAssignmentMiddleware, upload.array('files', 100), checkFilesMiddleware,
     errorHandler(async (req, res) =>
-        processSubmission(req, "solution").then((commit) => commit === null ? res.sendStatus(404) : res.send({commit}))));
+        processSubmission(req, res,"solution")));
 
 router.post("/:assignment/testcases", fetchAssignmentMiddleware, upload.array('files', 100), checkFilesMiddleware,
     errorHandler(async (req, res) =>
-        processSubmission(req, "testCase").then((commit) => commit === null ? res.sendStatus(404) : res.send({commit}))));
+        processSubmission(req, res,"testCase")));
 
 router.get("/:assignment/submissions/:commitId?", fetchAssignmentMiddleware,
     errorHandler(async (req, res) => {

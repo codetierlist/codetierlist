@@ -21,8 +21,7 @@ import {
 } from '@fluentui/react-components';
 import { Subtitle2, Title2 } from '@fluentui/react-text';
 import {
-    FetchedAssignment,
-    Tierlist,
+    Tierlist, UserFetchedAssignment,
     UserTier
 } from "codetierlist-types";
 import Error from 'next/error';
@@ -51,7 +50,7 @@ const ViewTierList = ({ tierlist }: { tierlist: Tierlist }) => {
  * @param assignment
  * @param tierlist can be null
  */
-const shouldViewTierList = (assignment: FetchedAssignment, tierlist: Tierlist | null) => {
+const shouldViewTierList = (assignment: UserFetchedAssignment, tierlist: Tierlist | null) => {
     if (tierlist === null) {
         return false;
     }
@@ -84,14 +83,14 @@ const getMyTier = (tierlist: Tierlist): UserTier => {
 export default function Page() {
     const router = useRouter();
     const [stage, setStage] = useState(0);
-    const [assignment, setAssignment] = useState<FetchedAssignment | null>(null);
+    const [assignment, setAssignment] = useState<UserFetchedAssignment | null>(null);
     const [tierlist, setTierlist] = useState<Tierlist | null>(null);
     const { showSnackSev } = useContext(SnackbarContext);
     const { courseID, assignmentID } = router.query;
     const { userInfo } = useContext(UserContext);
 
     const fetchAssignment = async () => {
-        await axios.get<FetchedAssignment>(`/courses/${courseID}/assignments/${assignmentID}`, { skipErrorHandling: true })
+        await axios.get<UserFetchedAssignment>(`/courses/${courseID}/assignments/${assignmentID}`, { skipErrorHandling: true })
             .then((res) => setAssignment(res.data))
             .catch(e => {
                 handleError(showSnackSev)(e);

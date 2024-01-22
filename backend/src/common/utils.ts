@@ -126,14 +126,14 @@ export const exists = async (p: PathLike) => {
     }
 };
 
-export const processSubmission = async (req: Request, table: "solution" | "testCase") => {
+export const processSubmission = async (req: Request, res: Response, table: "solution" | "testCase") => {
     // upload files
     const repoPath = path.resolve(`/repos/${req.course!.id}/${req.assignment!.title}/${req.user.utorid}_${table}`);
 
     // check if git repo exists
     let submission = await getObjectFromRequest(req, table);
 
-    if (submission === null || !(await exists(submission.git_url))) {
+    if (submission === null || submission === undefined || !(await exists(submission.git_url))) {
         if (submission !== null) {
             await prisma.solution.deleteMany({
                 where: {
@@ -144,11 +144,18 @@ export const processSubmission = async (req: Request, table: "solution" | "testC
             });
             submission = null;
         }
-        // // create folder if it doesnt exist
+        // create folder if it doesnt exist
         await fs.mkdir(repoPath, {recursive: true});
         await git.init({fs, dir: repoPath});
     }
-
+    if(submission && !isProf(req.course!, req.user)){
+        const delay = process.env.SUBMISSION_DELAY_TIME !== undefined ? parseInt(process.env.SUBMISSION_DELAY_TIME) : 0;
+        if (Date.now() < submission.datetime.getTime() + delay) {
+            res.statusCode = 429;
+            res.send({message: `Submission too soon, please wait ${Math.ceil(submission.datetime.getTime() + delay - Date.now()) / 60000} minute(s).`});
+            return;
+        }
+    }
     // get files from form data
     for (const file of req.files!) {
         if (file === null) continue;
@@ -156,13 +163,19 @@ export const processSubmission = async (req: Request, table: "solution" | "testC
     }
 
     // commit files
-    return await commitFiles(req, submission ?? {
+    const commit =  await commitFiles(req, submission ?? {
         git_id: "",
         git_url: repoPath,
         course_id: req.course!.id,
         assignment_title: req.assignment!.title,
         author_id: req.user.utorid
     }, table);
+    if (commit === null) {
+        res.statusCode = 500;
+        res.send({message: 'Failed to commit.'});
+        return;
+    }
+    res.send({commit});
 };
 
 /**
@@ -284,7 +297,11 @@ export const getCommitFromRequest = async (req: Request, table: "solution" | "te
 
 export const fetchCourseMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const course = await prisma.course.findUnique({
-        where: {id: req.params.courseId, hidden: false, roles: req.user.admin ? {} : {some: {user:{utorid:req.user.utorid}}}},
+        where: {
+            id: req.params.courseId,
+            hidden: false,
+            roles: req.user.admin ? {} : {some: {user: {utorid: req.user.utorid}}}
+        },
         ...fetchedCourseArgs
     });
     if (course === null) {
@@ -309,7 +326,7 @@ export const fetchAssignmentMiddleware = async (req: Request, res: Response, nex
                 course_id: req.params.courseId,
             },
             course: {
-                roles: req.user.admin ? {} : {some: {user:{utorid:req.user.utorid}}}
+                roles: req.user.admin ? {} : {some: {user: {utorid: req.user.utorid}}}
             },
             hidden: false
         },
