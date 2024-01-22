@@ -22,6 +22,10 @@ if (process.env.REDIS_PORT === undefined) {
     throw new Error("REDIS_PORT is undefined");
 }
 
+if(process.env.REDIS_PASSWORD === undefined) {
+    console.warn("REDIS_PASSWORD is undefined, connection might fail");
+}
+
 const mtask = parseInt(process.env.MAX_RUNNING_TASKS);
 
 const workers: Worker<JobData, JobResult>[] = [];
@@ -30,7 +34,6 @@ export const runJob = async (job: JobData): Promise<JobResult> => {
     const img = job.image.runner_image;
     const img_ver = job.image.image_version;
     return await new Promise((resolve) => {
-
         const max_seconds = 10;
         // TODO: change to using volumes or stdin for data passing
         const runner = spawn("bash",
@@ -102,10 +105,13 @@ createImages();
 for (let i = 0; i < mtask; i++) {
     workers.push(new Worker<JobData, JobResult>("job_queue",
         async (job: Job<JobData, JobResult>): Promise<JobResult> => {
-            return (await runJob(job.data));
+            console.info(`running job ${job.id} with image ${job.data.image.runner_image}:${job.data.image.image_version}`);
+            const res = await runJob(job.data);
+            console.info(`job ${job.id} done`);
+            return res;
         },
         {
-            connection: {host: process.env.REDIS_HOST, port: parseInt(process.env.REDIS_PORT)},
+            connection: {host: process.env.REDIS_HOST, port: parseInt(process.env.REDIS_PORT), password: process.env.REDIS_PASSWORD },
             useWorkerThreads: true
         }
     ));

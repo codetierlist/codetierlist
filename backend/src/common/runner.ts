@@ -10,6 +10,7 @@ import {Queue, QueueEvents, Job} from "bullmq";
 import {runTestcase, updateScore} from "./updateScores";
 import prisma from "./prisma";
 import {readFileSync} from "fs";
+import {QueueOptions} from "bullmq/dist/esm/interfaces";
 
 export const images: RunnerImage[] = JSON.parse(readFileSync('runner_config.json', 'utf-8'));
 
@@ -27,7 +28,11 @@ if (process.env.REDIS_PORT === undefined) {
     throw new Error("REDIS_PORT is undefined");
 }
 
-const queue_conf = {connection: {host: process.env.REDIS_HOST, port: parseInt(process.env.REDIS_PORT)}};
+if(process.env.REDIS_PASSWORD === undefined) {
+    console.warn("REDIS_PASSWORD is undefined, connection might fail");
+}
+
+const queue_conf : QueueOptions = {connection: {host: process.env.REDIS_HOST, port: parseInt(process.env.REDIS_PORT), password: process.env.REDIS_PASSWORD}};
 const job_queue: Queue<JobData, JobResult, JobType> =
     new Queue<JobData, JobResult, JobType>("job_queue", queue_conf);
 
@@ -44,8 +49,7 @@ export const getFiles = async (submission: Submission | TestCase): Promise<JobFi
     await Promise.all(commit.files.map(async (x) => {
         const file = await getFile(x, submission.git_url, submission.git_id);
         if (!file) return;
-        const decoder = new TextDecoder('utf8');
-        res[x] = btoa(decoder.decode(file.blob));
+        res[x] = Buffer.from(file.blob.buffer).toString();
     }));
     return res;
 };
@@ -90,6 +94,7 @@ export const queueJob = async (job: {
 
     // push to redis queue
     const redis_job = await job_queue.add(name, jd);
+    console.info(`job ${redis_job.id} added to queue`);
     return redis_job.id;
 };
 
@@ -98,6 +103,7 @@ job_events.on("completed", async ({jobId}) => {
     if (!job) return;
     const data = job.data;
     const result = job.returnvalue;
+    console.info(`job ${job.id} completed with status ${result.status}`);
     const submission = data.submission;
     const testCase = data.testCase;
     const pass = result.status === "PASS";
