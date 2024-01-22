@@ -7,7 +7,6 @@ import {
 } from "codetierlist-types";
 import {Job, Worker} from "bullmq";
 import fs from "fs";
-import {run} from "node:test";
 
 const images: RunnerImage[] = JSON.parse(fs.readFileSync('runner_config.json', 'utf-8'));
 
@@ -48,13 +47,11 @@ export const runJob = async (job: JobData): Promise<JobResult> => {
 
         runner.stdout.on('data', (data) => {
             buffer += data;
-            console.info(`stdout: ${data}`);
             try {
                 const resultJSON: JobResult = JSON.parse(buffer) as JobResult;
                 runner?.stdout?.removeAllListeners();
                 runner?.stderr?.removeAllListeners();
                 runner?.removeAllListeners();
-                console.info(resultJSON);
                 resolve(resultJSON);
             } catch (e) {
                 // ignore because incomplete json, keep buffering
@@ -62,7 +59,6 @@ export const runJob = async (job: JobData): Promise<JobResult> => {
         });
 
         runner.stderr.on('data', (data) => {
-            console.info(`stderr: ${data}`);
             resolve({status: "ERROR"});
         });
 
@@ -114,7 +110,6 @@ for (let i = 0; i < mtask; i++) {
         },
         {
             connection: {host: process.env.REDIS_HOST, port: parseInt(process.env.REDIS_PORT), password: process.env.REDIS_PASSWORD },
-            useWorkerThreads: true
         }
     ));
 }
