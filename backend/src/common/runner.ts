@@ -137,3 +137,17 @@ job_events.on("completed", async ({jobId}) => {
     // not a validation job, update the score in db
     await updateScore(submission, testCase, pass);
 });
+
+export const removeSubmission = async (utorid: string): Promise<void> => {
+    await Promise.all(await job_queue.getJobs(["waiting", "active"])
+        .then(async (jobs) =>
+            jobs.filter(job => job.data.submission.author_id === utorid)
+                .map(async job => await job.remove())));
+};
+
+export const removeTestcases = async (utorid: string): Promise<void> => {
+    await Promise.all(await job_queue.getJobs(["waiting", "active"])
+        .then(async (jobs) =>
+            jobs.filter(job => job.data.testCase.author_id === utorid)
+                .map(async job => await job.remove())));
+};
