@@ -13,7 +13,7 @@
   "dependencies": {
     "@fluentui/react-components": "^9.45.0",
     "@fluentui/react-date-time": "^8.7.130",
-    "@fluentui/react-datepicker-compat": "^0.4.15",
+    "@fluentui/react-datepicker-compat": "^0.4.19",
     "@fluentui/react-icons": "^2.0.225",
     "@monaco-editor/react": "^4.6.0",
     "axios": "^1.6.5",
