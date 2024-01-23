@@ -10,7 +10,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - NODE_ENV=production
-      - MAX_RUNNING_TASKS=10
+      - MAX_RUNNING_TASKS=16
       - DOCKER_HOST=unix:///var/run/docker.sock
     privileged: true
     env_file:

@@ -58,15 +58,22 @@ export default function Page(): JSX.Element {
             ...selectedRunner
         });
 
-        await navigator.clipboard.writeText(serialized);
-        showSnackSev("Copied to clipboard", "success");
+        await navigator.clipboard.writeText(serialized).catch((e) => {
+            showSnackSev(`Failed to write to clipboard: ${e.message}`, "error");
+        }).then(() => {
+            showSnackSev("Copied to clipboard", "success");
+        });
     };
 
     /**
      * Imports the assignment from a JSON file in the clipboard
      */
     const importFormData = async () => {
-        const serialized = await navigator.clipboard.readText();
+        const serialized = await navigator.clipboard.readText().catch((e) => {
+            showSnackSev(`Failed to read from clipboard: ${e.message}`, "error");
+            return "";
+        });
+
         let data;
 
         try {

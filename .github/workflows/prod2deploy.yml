@@ -1,0 +1,27 @@
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: prod2
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: create env files
+        run: |
+          echo "${{ secrets.REDIS_PASSWORD }}" > ./redis/.env;
+          echo "${{ secrets.REDIS_HOSTPORT }}" > ./runner/.env;
+
+      - name: compose build runners
+        run: docker compose -f docker-compose-runner.yml build
+
+      - name: compose up runners
+        run: docker compose -f docker-compose-runner.yml up -d
+
+      - name: cleanup
+        run: |
+          docker image prune -f
+          docker builder prune -f
+          docker system prune -af

@@ -110,6 +110,7 @@ export const queueJob = async (job: {
 job_events.on("completed", async ({jobId}) => {
     const job = await Job.fromId<JobData, JobResult, JobType>(job_queue, jobId);
     if (!job) return;
+    await job.remove();
     const data = job.data;
     const result = job.returnvalue;
     console.info(`job ${job.id} completed with status ${result.status}`);
