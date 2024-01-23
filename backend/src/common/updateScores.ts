@@ -63,7 +63,7 @@ export const onNewProfSubmission = async (submission: Submission, image: Assignm
         submission: submission,
         testCase,
         image
-    }, JobType.validateTestCase)));
+    }, JobType.validateTestCase, 5)));
 };
 
 /**
@@ -94,7 +94,7 @@ export const runTestcase = async (testCase: TestCase, image: Assignment | Runner
         submission: s,
         testCase,
         image: image
-    }, JobType.testSubmission)));
+    }, JobType.testSubmission, 5)));
 };
 
 /**
@@ -128,7 +128,7 @@ export const onNewTestCase = async (testCase: TestCase, image: Assignment | Runn
             submission: profSubmission,
             testCase,
             image
-        }, JobType.validateTestCase);
+        }, JobType.validateTestCase, 5);
     } else {
         await runTestcase(testCase, image);
     }
