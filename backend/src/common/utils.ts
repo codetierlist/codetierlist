@@ -47,11 +47,8 @@ export function isProf(course: Course & {
 
 const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'datetime' | 'id'>, table: "solution" | "testCase") => {
     const repoPath = path.resolve(`/repos/${object.course_id}/${object.assignment_title}/${object.author_id}_${table}`);
-    if (["unmodified", "unmodified"].includes(await git.status({
-        fs,
-        dir: repoPath,
-        filepath: '.'
-    }))) {
+    const status = await git.statusMatrix({fs, dir:repoPath});
+    if (status.every(x=>x[2]==1)) {
         return null;
     }
     await git.add({fs, dir: repoPath, filepath: '.'});
