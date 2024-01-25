@@ -48,6 +48,8 @@ export function isProf(course: Course & {
 const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'datetime' | 'id'>, table: "solution" | "testCase") => {
     const repoPath = path.resolve(`/repos/${object.course_id}/${object.assignment_title}/${object.author_id}_${table}`);
     const status = await git.statusMatrix({fs, dir:repoPath});
+
+    // no unstaged changes
     if (status.every(x=>x[2]==1)) {
         return null;
     }
