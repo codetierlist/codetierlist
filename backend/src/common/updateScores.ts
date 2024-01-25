@@ -4,7 +4,7 @@ import {
     TestCase
 } from "codetierlist-types";
 import prisma from "./prisma";
-import {JobType, queueJob} from "./runner";
+import {JobType, queueJob, removeSubmission, removeTestcases} from "./runner";
 import {RoleType} from "@prisma/client";
 
 /**
@@ -27,6 +27,8 @@ export const updateScore = (submission: Submission, testCase: TestCase, pass: bo
     });
 
 export const onNewSubmission = async (submission: Submission, image: Assignment) => {
+    await removeSubmission(submission.author_id);
+
     const testCases = await prisma.testCase.findMany({
         where: {
             course_id: submission.course_id,
@@ -49,6 +51,8 @@ export const onNewSubmission = async (submission: Submission, image: Assignment)
  * @param image
  */
 export const onNewProfSubmission = async (submission: Submission, image: Assignment | RunnerImage) => {
+    await removeSubmission(submission.author_id);
+
     const testCases = await prisma.testCase.findMany({
         where: {
             course_id: submission.course_id,
@@ -63,7 +67,7 @@ export const onNewProfSubmission = async (submission: Submission, image: Assignm
         submission: submission,
         testCase,
         image
-    }, JobType.validateTestCase)));
+    }, JobType.validateTestCase, 5)));
 };
 
 /**
@@ -94,7 +98,7 @@ export const runTestcase = async (testCase: TestCase, image: Assignment | Runner
         submission: s,
         testCase,
         image: image
-    }, JobType.testSubmission)));
+    }, JobType.testSubmission, 5)));
 };
 
 /**
@@ -107,6 +111,7 @@ export const onNewTestCase = async (testCase: TestCase, image: Assignment | Runn
     // 1. not error or timeout against a valid submission
     // 2. pass a valid submission
     // 3. fail starter code
+    await removeTestcases(testCase.author_id);
 
     // checks condition 1
     const profSubmission = await prisma.solution.findFirst({
@@ -128,7 +133,7 @@ export const onNewTestCase = async (testCase: TestCase, image: Assignment | Runn
             submission: profSubmission,
             testCase,
             image
-        }, JobType.validateTestCase);
+        }, JobType.validateTestCase, 5);
     } else {
         await runTestcase(testCase, image);
     }

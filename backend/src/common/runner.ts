@@ -28,11 +28,17 @@ if (process.env.REDIS_PORT === undefined) {
     throw new Error("REDIS_PORT is undefined");
 }
 
-if(process.env.REDIS_PASSWORD === undefined) {
+if (process.env.REDIS_PASSWORD === undefined) {
     console.warn("REDIS_PASSWORD is undefined, connection might fail");
 }
 
-const queue_conf : QueueOptions = {connection: {host: process.env.REDIS_HOST, port: parseInt(process.env.REDIS_PORT), password: process.env.REDIS_PASSWORD}};
+const queue_conf: QueueOptions = {
+    connection: {
+        host: process.env.REDIS_HOST,
+        port: parseInt(process.env.REDIS_PORT),
+        password: process.env.REDIS_PASSWORD
+    }
+};
 const job_queue: Queue<JobData, JobResult, JobType> =
     new Queue<JobData, JobResult, JobType>("job_queue", queue_conf);
 
@@ -64,7 +70,7 @@ export const queueJob = async (job: {
     submission: Submission,
     testCase: TestCase,
     image: Assignment | RunnerImage,
-}, name: JobType): Promise<string | undefined> => {
+}, name: JobType, priority: number = 10): Promise<string | undefined> => {
     // TODO get the files in runner
     let query: { solution_files: JobFiles, test_case_files: JobFiles };
     try {
@@ -88,12 +94,15 @@ export const queueJob = async (job: {
     const jd: JobData = {
         testCase: job.testCase,
         submission: job.submission,
-        image: {image_version: job.image.image_version, runner_image: job.image.runner_image},
+        image: {
+            image_version: job.image.image_version,
+            runner_image: job.image.runner_image
+        },
         query
     };
 
     // push to redis queue
-    const redis_job = await job_queue.add(name, jd);
+    const redis_job = await job_queue.add(name, jd, {priority});
     console.info(`job ${redis_job.id} added to queue`);
     return redis_job.id;
 };
@@ -129,3 +138,17 @@ job_events.on("completed", async ({jobId}) => {
     // not a validation job, update the score in db
     await updateScore(submission, testCase, pass);
 });
+
+export const removeSubmission = async (utorid: string): Promise<void> => {
+    await Promise.all(await job_queue.getJobs(["waiting", "active"])
+        .then(async (jobs) =>
+            jobs.filter(job => job.data.submission.author_id === utorid)
+                .map(async job => await job.remove())));
+};
+
+export const removeTestcases = async (utorid: string): Promise<void> => {
+    await Promise.all(await job_queue.getJobs(["waiting", "active"])
+        .then(async (jobs) =>
+            jobs.filter(job => job.data.testCase.author_id === utorid)
+                .map(async job => await job.remove())));
+};

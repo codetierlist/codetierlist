@@ -32,10 +32,7 @@ const fetchedCourseArgs = Prisma.validator<Prisma.CourseDefaultArgs>()({
 });
 
 const fetchedAssignmentArgs = Prisma.validator<Prisma.AssignmentDefaultArgs>()({
-    include: {
-        submissions: true,
-        test_cases: true
-    }
+    include: {}
 });
 
 const fullFetchedAssignmentArgs = Prisma.validator<Prisma.AssignmentDefaultArgs>()({
@@ -82,6 +79,10 @@ export type FetchedAssignment =
     Omit<Prisma.AssignmentGetPayload<typeof fetchedAssignmentArgs>, "due_date">
     & { due_date?: string };
 export type FullFetchedAssignment = Prisma.AssignmentGetPayload<typeof fullFetchedAssignmentArgs>;
+const userFetchedAssignmentArgs = {include: { submissions: true, test_cases: true}}
+export type UserFetchedAssignment = Omit<Prisma.AssignmentGetPayload<typeof userFetchedAssignmentArgs> & { tier: UserTier }, "due_date"> & {
+    due_date?: string
+};
 export type AssignmentWithTier = Assignment & { tier: UserTier };
 export type FetchedAssignmentWithTier = FetchedAssignment & { tier: UserTier };
 export type FetchedCourseWithTiers = Omit<FetchedCourse, "assignments"> & {
