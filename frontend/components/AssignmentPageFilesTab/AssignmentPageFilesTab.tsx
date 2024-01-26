@@ -87,15 +87,20 @@ const ListFiles = ({ commit, route, assignment, assignmentID, update }: ListFile
                 {
                     Object.keys(commit.files).map((key, index) => (
                         <AccordionItem value={index} key={key}>
-                            <AccordionHeader className={styles.accordionHeader}>
-                                <div className={styles.accordionHeaderContent}>
-                                    <span>{commit.files[index]}</span>
+                            <div className={styles.accordionHeaderContainer}>
+                                <AccordionHeader className={styles.accordionHeader}>
+                                    <div className={styles.accordionHeaderContent}>
+                                        <span>{commit.files[index]}</span>
 
-                                    <Tooltip content="Delete file" relationship="label">
-                                        <Button icon={<Delete16Filled />} onClick={() => deleteFile(commit.files[index])} />
-                                    </Tooltip>
-                                </div>
-                            </AccordionHeader>
+
+                                    </div>
+                                </AccordionHeader>
+
+                                <Tooltip content="Delete file" relationship="label">
+                                    <Button icon={<Delete16Filled />} onClick={() => deleteFile(commit.files[index])} />
+                                </Tooltip>
+                            </div>
+
                             <AccordionPanel>
                                 <pre>
                                     <Monaco
