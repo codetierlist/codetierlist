@@ -81,7 +81,7 @@ export type FetchedAssignment =
 export type FullFetchedAssignment = Prisma.AssignmentGetPayload<typeof fullFetchedAssignmentArgs>;
 export type Submission = Omit<_Submission, "group_number">;
 export type TestCase = Omit<_TestCase, "group_number">;
-export type UserFetchedAssignment = Omit<Prisma.AssignmentGetPayload<> & { tier: UserTier }, "due_date"> & {
+export type UserFetchedAssignment = Prisma.AssignmentGetPayload<> & { tier: UserTier } & {
     due_date?: string,
     submissions: Submission[],
     test_cases: TestCase[],
