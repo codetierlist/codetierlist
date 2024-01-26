@@ -14,11 +14,15 @@ const EMPTY_DATA: Tierlist = {
     "F": [],
 };
 
+declare interface TierIndicatorProps {
+    /** The tier to display */
+    tier: Tier;
+}
+
 /**
  * A tier indicator displays the tier of the tier list.
- * @property {Tier} tier the tier to display
  */
-const TierIndicator = ({ tier }: { tier: Tier }): JSX.Element => {
+const TierIndicator = ({ tier }: TierIndicatorProps): JSX.Element => {
     return (
         <Col
             style={{
@@ -35,12 +39,17 @@ const TierIndicator = ({ tier }: { tier: Tier }): JSX.Element => {
     );
 };
 
+declare interface TierAvatarsProps {
+    /** The people to display */
+    people: TierlistEntry[];
+    /** The maximum number of people to display before showing a +x */
+    maxInlineItems: number;
+}
+
 /**
  * A tier avatars displays the avatars of the people in the tier.
- * @property {string[]} people the people to display
- * @property {number} maxInlineItems the maximum number of people to display before showing a +x
  */
-const TierAvatars = ({ people, maxInlineItems }: { people: TierlistEntry[], maxInlineItems: number }): JSX.Element => {
+const TierAvatars = ({ people, maxInlineItems }: TierAvatarsProps): JSX.Element => {
     const { inlineItems, overflowItems } = partitionAvatarGroupItems({ items: people, maxInlineItems });
 
     // get index of you in tier for swapping
@@ -86,12 +95,17 @@ const TierAvatars = ({ people, maxInlineItems }: { people: TierlistEntry[], maxI
     );
 };
 
+declare interface TierRowProps {
+    /** The tier to display */
+    tier: string;
+    /** The tierlist to display */
+    tierlist: Tierlist;
+}
+
 /**
  * A tier displays a tier and the people in the tier.
- * @property {string} tier the tier to display
- * @property {Tierlist} tierlist the tierlist to display
  */
-const TierRow = ({ tier, tierlist }: { tier: string, tierlist: Tierlist }): JSX.Element => {
+const TierRow = ({ tier, tierlist }: TierRowProps): JSX.Element => {
     const MAX_INLINE_ITEMS = 20;
 
     // current tier, remove any potential undefined or null values
@@ -121,12 +135,16 @@ const TierRow = ({ tier, tierlist }: { tier: string, tierlist: Tierlist }): JSX.
     );
 };
 
+export declare interface TierListProps {
+    /** The tierlist to display */
+    tierlist: Tierlist;
+}
+
 /**
  * A tier list displays a list of people in a tier list format.
- * @property {Tierlist} tierlist the tierlist to display
  * @returns {JSX.Element} the tier list
  */
-export const TierList = ({ tierlist = EMPTY_DATA }: { tierlist: Tierlist }): JSX.Element => {
+export const TierList = ({ tierlist = EMPTY_DATA }: TierListProps): JSX.Element => {
     return (
         <Row component="section">
             {

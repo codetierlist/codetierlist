@@ -3,6 +3,7 @@ import styles from './SessionBlock.module.css';
 import {Session} from 'codetierlist-types';
 
 export declare interface SessionBlockProps {
+    /** the session to display */
     session: Session;
 }
 

@@ -8,8 +8,6 @@ import { FetchedAssignment } from "codetierlist-types";
 
 /**
  * A button that deletes an assignment
- *
- * @param {FetchedAssignment} assignment the assignment to delete
  */
 export const AdminToolbarDeleteAssignmentButton = ({ assignment }: { assignment: FetchedAssignment }) => {
     const { showSnackSev } = useContext(SnackbarContext);

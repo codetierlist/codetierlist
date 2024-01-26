@@ -18,10 +18,26 @@ model Assignment {
   submissions   Solution[]
   runner_image  String
   image_version String
+  group_size    Int        @default(0)
+  groups        Group[]
 
   @@id(fields: [course_id, title])
   @@unique([course_id, title], name: "id")
   @@map("Assignments")
+}
+
+model Group {
+  id               String     @id @default(dbgenerated("gen_random_uuid()")) @map("_id")
+  number           Int
+  assignment       Assignment @relation(fields: [course_id, assignment_title], references: [course_id, title])
+  course_id        String
+  assignment_title String
+  solutions        Solution[]
+  testCases        TestCase[]
+  members          User[]
+
+  @@unique([course_id, assignment_title, number], name: "_id")
+  @@map("Groups")
 }
 
 model Course {
@@ -52,6 +68,8 @@ model Solution {
   scores           Score[]
   course_id        String
   assignment_title String
+  group_number     Int?
+  group            Group?     @relation(fields: [group_number, assignment_title, course_id], references: [number, assignment_title, course_id])
 
   @@id(fields: [course_id, assignment_title, author_id, git_id])
   @@unique([course_id, assignment_title, author_id, git_id], name: "_id")
@@ -78,8 +96,9 @@ model TestCase {
   course_id        String
   assignment_title String
   valid            TestCaseStatus @default(PENDING)
+  group_number     Int?
+  group            Group?         @relation(fields: [group_number, assignment_title, course_id], references: [number, assignment_title, course_id])
 
-  @@id(fields: [course_id, assignment_title, author_id, git_id])
   @@unique([course_id, assignment_title, author_id, git_id], name: "_id")
   @@map("Testcases")
 }
@@ -94,6 +113,7 @@ model User {
   surname   String
   givenName String
   theme     Theme      @default(LIGHT)
+  groups    Group[]
 
   @@map("Users")
 }

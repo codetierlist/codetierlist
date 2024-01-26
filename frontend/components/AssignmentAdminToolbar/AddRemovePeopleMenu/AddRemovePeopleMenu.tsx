@@ -26,10 +26,6 @@ declare type AddRemovePeopleButtonProps = {
 
 /**
  * Menu item for adding/removing people
- *
- * @property courseID
- * @property type
- * @property add
  */
 const AddRemovePeopleButton = ({ courseID, type, add }: AddRemovePeopleButtonProps) => {
     const router = useRouter();
@@ -54,8 +50,6 @@ export declare type AddRemovePeopleMenuProps = {
 
 /**
  * Menu for adding/removing people
- * @property courseID
- * @property add
  */
 export const AddRemovePeopleMenu = ({ courseID, add }: AddRemovePeopleMenuProps) => {
     return (

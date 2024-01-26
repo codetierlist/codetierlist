@@ -19,17 +19,18 @@ import { promptForFileObject, checkIfCourseAdmin, SessionBlock } from "@/compone
 import { SnackbarContext } from "@/contexts/SnackbarContext";
 import { UserContext } from '@/contexts/UserContext';
 
+/**
+ * generates a placeholder image for the course
+ * @param course the course id
+ */
 const generatePlaceholderCard = (course: string): string =>
     `data:image/svg+xml,%3Csvg viewBox='0 0 300 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23777' d='M0 0h300v200H0z'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' fill='%23fff' font-family='sans-serif' font-size='50' text-anchor='middle' %3E${course}%3C/text%3E%3C/svg%3E`;
-
 
 export declare interface CourseSessionChipProps {
     /** the session of the course */
     session: Session
-
     /** the children of the component */
     children?: React.ReactNode
-
     /** the props of the component */
     props?: React.HTMLAttributes<HTMLDivElement>
 }
@@ -66,11 +67,6 @@ export declare interface CourseOverviewCardProps {
 
 /**
  * A card shown in the dashboard representing the overview of a course.
- * @property {string} name the name of the course
- * @property {string} image the image of the course
- * @property {Session} session the session of the course
- * @property {role} role the role of the user
- * @returns {JSX.Element} the course overview card
  */
 export const CourseOverviewCard = ({
     id,

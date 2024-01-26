@@ -47,11 +47,10 @@ export function isProf(course: Course & {
 
 const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'datetime' | 'id'>, table: "solution" | "testCase") => {
     const repoPath = path.resolve(`/repos/${object.course_id}/${object.assignment_title}/${object.author_id}_${table}`);
-    if (["unmodified", "unmodified"].includes(await git.status({
-        fs,
-        dir: repoPath,
-        filepath: '.'
-    }))) {
+    const status = await git.statusMatrix({fs, dir:repoPath});
+
+    // no unstaged changes
+    if (status.every(x=>x[2]==1)) {
         return null;
     }
     await git.add({fs, dir: repoPath, filepath: '.'});
@@ -66,12 +65,13 @@ const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'date
             }
         });
 
-        const data = {
+        const data :  Omit<TestCase | Solution, 'datetime' | 'id'> = {
             git_id: commit,
             git_url: repoPath,
             course_id: req.course!.id,
             assignment_title: req.assignment!.title,
-            author_id: req.user.utorid
+            author_id: req.user.utorid,
+            group_number: object.group_number === -1 ? null : object.group_number
         };
         if (table === "solution") {
             const solution = await prisma.solution.create({data});
@@ -92,7 +92,7 @@ const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'date
 
 const getObjectFromRequest = async (req: Request, table: "solution" | "testCase") => {
     let object: Solution | TestCase | null;
-    const query1 = {
+    const query : Prisma.SolutionFindFirstArgs | Prisma.TestCaseFindFirstArgs = {
         where: {
             author_id: req.user.utorid,
             assignment_title: req.assignment!.title,
@@ -100,15 +100,13 @@ const getObjectFromRequest = async (req: Request, table: "solution" | "testCase"
         },
         orderBy: {
             datetime: "desc"
+        },
+        include: {
+            group: true
         }
     };
-    const query: typeof query1 & {
-        where: {
-            git_id?: string
-        }
-    } = query1;
     if (req.params.commitId) {
-        query.where.git_id = req.params.commitId;
+        query.where!.git_id = req.params.commitId;
     }
     if (table === "solution") {
         object = await prisma.solution.findFirst(query as Prisma.SolutionFindFirstArgs);
@@ -126,14 +124,14 @@ export const exists = async (p: PathLike) => {
     }
 };
 
-export const processSubmission = async (req: Request, table: "solution" | "testCase") => {
+export const processSubmission = async (req: Request, res: Response, table: "solution" | "testCase") => {
     // upload files
     const repoPath = path.resolve(`/repos/${req.course!.id}/${req.assignment!.title}/${req.user.utorid}_${table}`);
 
     // check if git repo exists
     let submission = await getObjectFromRequest(req, table);
 
-    if (submission === null || !(await exists(submission.git_url))) {
+    if (submission === null || submission === undefined || !(await exists(submission.git_url))) {
         if (submission !== null) {
             await prisma.solution.deleteMany({
                 where: {
@@ -144,25 +142,94 @@ export const processSubmission = async (req: Request, table: "solution" | "testC
             });
             submission = null;
         }
-        // // create folder if it doesnt exist
+        // create folder if it doesnt exist
         await fs.mkdir(repoPath, {recursive: true});
         await git.init({fs, dir: repoPath});
     }
-
+    if(submission && !isProf(req.course!, req.user)){
+        const delay = process.env.SUBMISSION_DELAY_TIME !== undefined ? parseInt(process.env.SUBMISSION_DELAY_TIME) : 0;
+        if (Date.now() < submission.datetime.getTime() + delay) {
+            res.statusCode = 429;
+            res.send({message: `Submission too soon, please wait ${Math.ceil(submission.datetime.getTime() + delay - Date.now()) / 60000} minute(s).`});
+            return;
+        }
+    }
     // get files from form data
     for (const file of req.files!) {
         if (file === null) continue;
         await fs.copyFile(file.path, `${repoPath}/${file.filename}`);
     }
+    let group : number = -1;
+    if(!isProf(req.course!, req.user))
+    {
+        if (submission && submission.group_number !== null) {
+            group = submission.group_number;
+        } else {
+            const otherSubmissions = await getObjectFromRequest(req, table === "solution" ? "testCase" : "solution");
+            if (otherSubmissions && otherSubmissions.group_number !== null) {
+                group = otherSubmissions.group_number;
+            } else {
+                const latestGroup = await prisma.group.findFirst({
+                    where: {
+                        course_id: req.course!.id,
+                        assignment_title: req.assignment!.title,
+                    }, orderBy: {
+                        number: "desc"
+                    },
+                    include: {
+                        _count: {
+                            select: {
+                                members: true
+                            }
+                        }
+                    }
+                });
 
+                if (latestGroup === null || (latestGroup._count.members === req.assignment!.group_size && req.assignment!.group_size >= 1)) {
+                    group = latestGroup === null ? 0 : latestGroup.number + 1;
+                    await prisma.group.create({
+                        data: {
+                            number: group,
+                            course_id: req.course!.id,
+                            assignment_title: req.assignment!.title,
+                            members: {connect: {utorid: req.user.utorid}
+                            }
+                        }
+                    });
+                } else {
+                    group = latestGroup.number;
+                }
+
+                await prisma.group.update({
+                    where: {
+                        _id:{
+                            number: group,
+                            course_id: req.course!.id,
+                            assignment_title: req.assignment!.title
+                        }
+                    },
+                    data: {
+                        members: {connect: {utorid: req.user.utorid}}
+                    }
+                });
+            }
+        }
+    }
     // commit files
-    return await commitFiles(req, submission ?? {
+    const commit =  await commitFiles(req, submission ?? {
         git_id: "",
         git_url: repoPath,
         course_id: req.course!.id,
         assignment_title: req.assignment!.title,
-        author_id: req.user.utorid
+        author_id: req.user.utorid,
+        group_number: group
     }, table);
+    if (commit === null) {
+        res.statusCode = 500;
+        res.send({message: 'Failed to commit.'});
+        return;
+    }
+    res.send({commit});
 };
 
 /**
@@ -172,7 +239,7 @@ export const processSubmission = async (req: Request, table: "solution" | "testC
  * @param submission
  * @param commitId
  */
-export const getCommit = async (submission: Solution | TestCase, commitId?: string | null) => {
+export const getCommit = async (submission: Omit<Solution | TestCase, "group_number">, commitId?: string | null) => {
     let commit = null;
     try {
         commit = await git.readCommit({
@@ -284,7 +351,11 @@ export const getCommitFromRequest = async (req: Request, table: "solution" | "te
 
 export const fetchCourseMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const course = await prisma.course.findUnique({
-        where: {id: req.params.courseId, hidden: false, roles: req.user.admin ? {} : {some: {user:{utorid:req.user.utorid}}}},
+        where: {
+            id: req.params.courseId,
+            hidden: false,
+            roles: req.user.admin ? undefined : {some: {user: {utorid: req.user.utorid}}}
+        },
         ...fetchedCourseArgs
     });
     if (course === null) {
@@ -309,7 +380,7 @@ export const fetchAssignmentMiddleware = async (req: Request, res: Response, nex
                 course_id: req.params.courseId,
             },
             course: {
-                roles: req.user.admin ? {} : {some: {user:{utorid:req.user.utorid}}}
+                roles: req.user.admin ? {} : {some: {user: {utorid: req.user.utorid}}}
             },
             hidden: false
         },

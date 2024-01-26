@@ -34,10 +34,7 @@ export const fetchedCourseArgs = Prisma.validator<Prisma.CourseDefaultArgs>()({
 });
 
 export const fetchedAssignmentArgs = Prisma.validator<Prisma.AssignmentDefaultArgs>()({
-    include: {
-        submissions: true,
-        test_cases: true
-    }
+    include: {}
 });
 
 export const fullFetchedAssignmentArgs = Prisma.validator<Prisma.AssignmentDefaultArgs>()({
@@ -66,5 +63,23 @@ export const fullFetchedAssignmentArgs = Prisma.validator<Prisma.AssignmentDefau
     }
 });
 
+export const scoreableGroupArgs = Prisma.validator<Prisma.GroupDefaultArgs>()({
+    include: {
+        solutions: {
+            distinct: "author_id",
+            orderBy: {datetime: "desc"},
+            include:{
+                author: true,
+                scores: {
+                    orderBy: [{test_case: {datetime: "desc"}}, {datetime: "desc"}],
+                    distinct: "testcase_author_id",
+                    include: {test_case: true}
+                }
+            }
+        }
+    }
+});
+
+export type ScoreableGroup = Prisma.GroupGetPayload<typeof scoreableGroupArgs>;
 
 export default client;

@@ -2,6 +2,7 @@ import { Title2, Title3 } from '@fluentui/react-components';
 import styles from './CourseBlock.module.css';
 
 export declare interface CourseBlockProps {
+    /** the course ID to display */
     courseID: string;
 }
 

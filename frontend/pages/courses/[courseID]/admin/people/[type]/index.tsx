@@ -1,7 +1,7 @@
 import axios, { handleError } from "@/axios";
 import { HeaderToolbar, Monaco, promptForFileReader } from "@/components";
 import { SnackbarContext } from "@/contexts/SnackbarContext";
-import { Body2, Button, LargeTitle, ToolbarButton } from "@fluentui/react-components";
+import { Body2, Button, Card, LargeTitle, ToolbarButton } from "@fluentui/react-components";
 import { Add24Filled, ArrowLeft24Regular } from '@fluentui/react-icons';
 import { Title2 } from '@fluentui/react-text';
 import { RoleType } from "codetierlist-types";
@@ -124,12 +124,14 @@ export default function Page(): JSX.Element {
                             <Body2 block>{`Update the ${getRoleName(role)}s enrolled in this course by uploading a list of UTORids, separated by newlines.`}</Body2>
                         </header>
 
-                        <Monaco
-                            height="56vh"
-                            defaultLanguage="csv"
-                            value={editorValue}
-                            onChange={(value) => setEditorValue(value || "")}
-                        />
+                        <Card>
+                            <Monaco
+                                height="56vh"
+                                defaultLanguage="csv"
+                                value={editorValue}
+                                onChange={(value) => setEditorValue(value || "")}
+                            />
+                        </Card>
 
                         <Button
                             appearance="primary"

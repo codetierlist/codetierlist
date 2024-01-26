@@ -4,8 +4,15 @@ import styles from './UpcomingDeadlinesCard.module.css';
 import { useEffect } from 'react';
 
 
-export const UpcomingDeadlinesCard = ({ params }: { params: { courseID: string } }): JSX.Element => {
+export declare interface UpcomingDeadlinesCardProps {
+    /** The parameters for the page */
+    params: {
+        /** The course ID */
+        courseID: string;
+    };
+}
 
+export const UpcomingDeadlinesCard = ({ params }: UpcomingDeadlinesCardProps): JSX.Element => {
     useEffect(() => {
         params.courseID;
     }, [params.courseID]);
