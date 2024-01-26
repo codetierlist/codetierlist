@@ -26,7 +26,7 @@ export const getRoleName = (roleName: RoleType | string): string => roleName ===
  * @returns void on success, throws an error on failure
  */
 async function modifyEnrollment(courseID: string, csv: string, action: "add" | "remove", role: RoleType, showSnackSev: (message: string, severity: "success" | "error") => void): Promise<void> {
-    const utorids = csv.split("\n");
+    const utorids = csv.split("\n").map((utorid) => utorid.trim());
 
     if (!csv || !utorids.length) {
         showSnackSev("Please enter some UTORids", "error");
