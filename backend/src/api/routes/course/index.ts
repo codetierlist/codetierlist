@@ -203,9 +203,12 @@ router.get("/:courseId/cover", fetchCourseMiddleware, errorHandler(async (req, r
     res.sendFile("/uploads/" + req.course!.cover);
 }));
 router.post("/:courseId/assignments", fetchCourseMiddleware, errorHandler(async (req, res) => {
-    const {name, dueDate, description, groupSize} = req.body;
-    let {image, image_version} = req.body;
+    const {name, dueDate, description} = req.body;
+    let {image, image_version, groupSize} = req.body;
     const date = new Date(dueDate);
+    if(!groupSize) {
+        groupSize = 0;
+    }
     if (typeof name !== 'string' || isNaN(date.getDate()) || typeof groupSize !== "number" || isNaN(groupSize) || typeof description !== 'string' || name.length === 0 || description.length === 0) {
         res.statusCode = 400;
         res.send({message: 'Invalid request.'});
