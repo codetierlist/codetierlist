@@ -20,7 +20,6 @@ import {
     Delete16Filled
 } from '@fluentui/react-icons';
 import {
-    Assignment,
     Commit,
     UserFetchedAssignment
 } from "codetierlist-types";
