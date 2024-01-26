@@ -22,6 +22,13 @@ export const Monaco = (props: EditorProps): JSX.Element => {
                 minimap: {
                     enabled: false,
                 },
+                inlineSuggest: {
+                    enabled: false,
+                    suppressSuggestions: true,
+                },
+                quickSuggestions: false,
+                screenReaderAnnounceInlineSuggestion: false,
+                snippetSuggestions: "none",
                 suggest: {
                     showStatusBar: false,
                     showIcons: false,
@@ -52,9 +59,20 @@ export const Monaco = (props: EditorProps): JSX.Element => {
                     showIssues: false,
                     showUsers: false,
                     showSnippets: false,
+                    preview: false,
+                    shareSuggestSelections: false
                 },
                 scrollBeyondLastLine: false,
                 ...props.options,
+            }}
+            onMount={(editor, monaco) => {
+                // bind ctrl+space, ctrl+i, ctrl+alt+space (suggestions) to do nothing
+                editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Space, () => {
+                });
+                editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyI, () => {
+                });
+                editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Alt | monaco.KeyCode.Space, () => {
+                });
             }}
         />
     );
