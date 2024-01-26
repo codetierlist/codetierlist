@@ -14,6 +14,7 @@ import {
     ArrowLeft24Regular,
     Calendar24Regular,
     ClipboardTextLtr24Regular,
+    People24Regular,
     Rename24Regular,
     Run24Regular,
     TextDescription24Regular
@@ -231,14 +232,13 @@ export default function Page(): JSX.Element {
 
                     <ControlCard
                         title="Group Size"
-                        description="Students will be grouped into teams of size n, the students in groups will be tested against eachother."
-                        icon={<Rename24Regular />}
+                        description="Students will be grouped into teams of size n, the students in groups will be tested against each other."
+                        icon={<People24Regular />}
                         htmlFor="groupSize">
                         <Input type="number" min={0} id="name" name="courseCode"
                             value={groupSize ? groupSize.toString() : ""}
                             onChange={e => setGroupSize(isNaN(e.target.valueAsNumber) ? null : e.target.valueAsNumber)} />
                     </ControlCard>
-
 
                     <Card size="large">
                         <CardHeader
