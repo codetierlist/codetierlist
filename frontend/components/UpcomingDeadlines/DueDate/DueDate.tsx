@@ -5,7 +5,6 @@ export declare interface DueDateProps {
     daysUntilDue: number;
 }
 
-
 export const DueDate = ({ daysUntilDue }: DueDateProps): JSX.Element => {
     return (
         <div className={styles.container}>

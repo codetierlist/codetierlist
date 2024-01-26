@@ -116,7 +116,7 @@ const ListFiles = ({ commit, route, assignment, assignmentID, update }: ListFile
     );
 };
 
-export interface AssignmentPageFilesTabProps {
+export declare interface AssignmentPageFilesTabProps {
     /** a function that fetches the assignment */
     fetchAssignment: () => Promise<void>;
     /** the assignment to display */
@@ -131,12 +131,6 @@ export interface AssignmentPageFilesTabProps {
 
 /**
  * A tab that displays the files for an assignment
- *
- * @param {() => Promise<void>} fetchAssignment a function that fetches the assignment
- * @param {FetchedAssignment} assignment the assignment to display
- * @param {string} assignmentID the ID of the assignment
- * @param {string} routeName the name of the route
- * @param {"testcases" | "submissions"} route the route to use
  *
  * @returns {JSX.Element} the files tab
  */

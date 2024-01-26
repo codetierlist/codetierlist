@@ -8,29 +8,17 @@ import {
 import styles from "./ControlCard.module.css";
 
 export declare type ControlCardProps = {
-    /**
-     * The title of the card.
-     */
+    /** The title of the card. */
     title: string;
-    /**
-     * The description of the card, or any additional information.
-     */
+    /** The description of the card, or any additional information. */
     description?: string;
-    /**
-     * The icon to display on the left side of the card.
-     */
+    /** The icon to display on the left side of the card. */
     icon: JSX.Element;
-    /**
-     * The id of the control, for labeling purposes.
-     */
+    /** The id of the control, for labeling purposes. */
     htmlFor?: string;
-    /**
-     * Whether the control is required.
-     */
+    /** Whether the control is required. */
     required?: boolean;
-    /**
-     * The control that should be displayed on the right side of the card.
-     */
+    /** The control that should be displayed on the right side of the card. */
     children: JSX.Element;
 };
 
