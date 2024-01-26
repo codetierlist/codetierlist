@@ -36,11 +36,11 @@ import styles from './page.module.css';
  * Displays the tierlist
  * @param tierlist
  */
-const ViewTierList = ({ tierlist }: { tierlist: Tierlist }) => {
+const ViewTierList = (props: { tierlist: Tierlist } & React.HTMLAttributes<HTMLDivElement>) => {
     return (
-        <Col sm={12}>
+        <Col sm={12} {...props}>
             <Subtitle1 className={styles.gutter} block>Tierlist</Subtitle1>
-            <TierList tierlist={tierlist} />
+            <TierList tierlist={props.tierlist} />
         </Col>
     );
 };
@@ -237,7 +237,7 @@ export default function Page() {
                     )
                 }{
                     stage === 1 && (
-                        <div className={`${styles.gutter} ${styles.massiveGap}`}>
+                        <div className={`${styles.massiveGap}`}>
                             <AssignmentPageFilesTab
                                 routeName="solution"
                                 route="submissions"
@@ -258,7 +258,7 @@ export default function Page() {
                 }{
                     stage === 2 && (
                         tierlist
-                            ? <ViewTierList tierlist={tierlist} />
+                            ? <ViewTierList tierlist={tierlist} className="m-t-xxxl" />
                             : "No tierlist found"
                     )
                 }{

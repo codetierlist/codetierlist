@@ -16,6 +16,11 @@
     font-weight: var(--fontWeightBold);
 }
 
+.accordionHeader {
+    width: 100%;
+    flex-grow: 1;
+}
+
 .accordionHeaderContent {
     width: 100%;
 }
@@ -29,4 +34,11 @@
 .uploadHeader {
     display: flex !important;
     justify-content: space-between;
+}
+
+.accordionHeaderContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
 }
