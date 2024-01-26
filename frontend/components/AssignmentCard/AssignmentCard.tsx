@@ -11,25 +11,19 @@ import { convertDate } from '../utils/TimeUtils/TimeUtils';
 import Link from 'next/link';
 
 export declare interface AssignmentCardProps {
-    /**
-     * The ID of the assignment
-     */
+    /** The ID of the assignment */
     id: string
-    /**
-     * The name of the assignment
-     */
+
+    /** The name of the assignment */
     name: string
-    /**
-     * The due date of the assignment
-     */
+
+    /** The due date of the assignment */
     dueDate?: Date
-    /**
-     * The tier of the user
-     */
+
+    /** The tier of the user */
     tier: UserTier | Tier,
-    /**
-     * The ID of the course this assignment belongs to
-     */
+
+    /** The ID of the course this assignment belongs to */
     courseID: string
 }
 

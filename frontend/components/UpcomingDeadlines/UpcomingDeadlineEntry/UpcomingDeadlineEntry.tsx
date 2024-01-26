@@ -8,7 +8,6 @@ export declare interface UpcomingDeadlineEntryProps {
     dueDate: Date;
 }
 
-
 export const UpcomingDeadlineEntry = ({ courseID, assignmentName, dueDate }: UpcomingDeadlineEntryProps): JSX.Element => {
     return (
         <div>

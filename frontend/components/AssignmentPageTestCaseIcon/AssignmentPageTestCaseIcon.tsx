@@ -9,11 +9,15 @@ import {
     TestCaseStatus as TestCaseStatusType
 } from "codetierlist-types";
 
+export declare interface TestCaseStatusIconProps {
+    /** the status of the testcase */
+    status: TestCaseStatusType;
+}
+
 /**
  * return an icon reflecting the status of the testcase
- * @param status the status of the testcase
  */
-export const TestCaseStatusIcon = ({ status }: { status: TestCaseStatusType }): JSX.Element => {
+export const TestCaseStatusIcon = ({ status }: TestCaseStatusIconProps): JSX.Element => {
     switch (status) {
     case "INVALID":
         return <DismissCircle24Regular fill={"var(--colorStatusDangerForeground1)"} primaryFill={"var(--colorStatusDangerForeground1)"} />;
@@ -28,11 +32,16 @@ export const TestCaseStatusIcon = ({ status }: { status: TestCaseStatusType }): 
         return <></>;
     }
 };
+
+export declare interface TestCaseStatusProps {
+    /** the status of the testcase */
+    status?: TestCaseStatusType;
+}
+
 /**
  * return an icon with tooltip reflecting the status of the testcase
- * @param status the status of the testcase
  */
-export const TestCaseStatus = ({ status }: { status?: TestCaseStatusType }) => {
+export const TestCaseStatus = ({ status }: TestCaseStatusProps): JSX.Element | undefined => {
     if (!status || status === "EMPTY") {
         return undefined;
     }

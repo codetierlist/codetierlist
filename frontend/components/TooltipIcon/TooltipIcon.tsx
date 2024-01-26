@@ -5,13 +5,19 @@ import {
 } from "@fluentui/react-components";
 import React, {useState} from "react";
 
+export declare interface ToolTipIconProps {
+    /** The tooltip to show */
+    tooltip: string;
+    /** The icon to show, should be a fluent 9 icon satisfying the IconProps interface */
+    icon: JSX.Element;
+    /** The class name to apply to the tooltip */
+    className?: string;
+}
+
 /**
  * A tooltip with an icon that can be hovered over to show the tooltip.
- * @param props tooltip string, icon
- * @property tooltip the tooltip to show
- * @property icon the icon to show, should be a fluent 9 icon satisfying the IconProps interface
  */
-export const ToolTipIcon = (props: Partial<TooltipProps> & {tooltip: string, icon?: JSX.Element, className?: string}) => {
+export const ToolTipIcon = (props: Partial<TooltipProps> & ToolTipIconProps): JSX.Element | undefined => {
     const contentId = useId("content");
     const [visible, setVisible] = useState(false);
 

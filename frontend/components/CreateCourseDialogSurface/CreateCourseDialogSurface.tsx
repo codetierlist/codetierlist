@@ -17,11 +17,15 @@ import { useContext, useState } from "react";
 
 import styles from "./CreateCourseForm.module.css";
 
+export declare interface CreateCourseFormProps {
+    /** function to close the dialog */
+    closeDialog: () => void;
+}
+
 /**
  * Form for creating a course
- * @param {function} closeDialog function to close the dialog
  */
-export const CreateCourseDialogSurface = ({ closeDialog }: { closeDialog: () => void }) => {
+export const CreateCourseDialogSurface = ({ closeDialog }: CreateCourseFormProps): JSX.Element => {
     const [code, setCourseCode] = useState("");
     const [name, setCourseName] = useState("");
     const { fetchUserInfo } = useContext(UserContext);

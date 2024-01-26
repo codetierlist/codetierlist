@@ -66,10 +66,10 @@ export type Assignment = Omit<Prisma.AssignmentGetPayload<{}>, "due_date"> & {
 };
 export type Course = Prisma.CourseGetPayload<{}>;
 export type User = Prisma.UserGetPayload<{}>;
-export type Submission = Prisma.SolutionGetPayload<{}>;
+export type _Submission = Prisma.SolutionGetPayload<{}>;
 export type Score = Prisma.ScoreGetPayload<{}>;
 export type Role = Prisma.RoleGetPayload<{}>;
-export type TestCase = Prisma.TestCaseGetPayload<{}>;
+export type _TestCase = Prisma.TestCaseGetPayload<{}>;
 const test: TestCase;
 export type TestCaseStatus = typeof test.valid;
 
@@ -79,14 +79,17 @@ export type FetchedAssignment =
     Omit<Prisma.AssignmentGetPayload<typeof fetchedAssignmentArgs>, "due_date">
     & { due_date?: string };
 export type FullFetchedAssignment = Prisma.AssignmentGetPayload<typeof fullFetchedAssignmentArgs>;
-const userFetchedAssignmentArgs = {include: { submissions: true, test_cases: true}}
-export type UserFetchedAssignment = Omit<Prisma.AssignmentGetPayload<typeof userFetchedAssignmentArgs> & { tier: UserTier }, "due_date"> & {
-    due_date?: string
+export type Submission = Omit<_Submission, "group_number">;
+export type TestCase = Omit<_TestCase, "group_number">;
+export type UserFetchedAssignment = Prisma.AssignmentGetPayload<> & { tier: UserTier } & {
+    due_date?: string,
+    submissions: Submission[],
+    test_cases: TestCase[],
 };
 export type AssignmentWithTier = Assignment & { tier: UserTier };
 export type FetchedAssignmentWithTier = FetchedAssignment & { tier: UserTier };
 export type FetchedCourseWithTiers = Omit<FetchedCourse, "assignments"> & {
-    assignments: AssignmentWithTier[]
+    assignments: Omit<AssignmentWithTier, "group_size">[]
 };
 
 export type Commit = {
