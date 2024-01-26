@@ -23,7 +23,6 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { Container } from "react-grid-system";
-
 import styles from "./page.module.css";
 
 /**
@@ -44,6 +43,7 @@ export default function Page(): JSX.Element {
     const [dueDate, setDueDate] = useState(new Date());
     const { courseID } = useRouter().query;
     const { fetchUserInfo } = useContext(UserContext);
+    const [groupSize, setGroupSize] = useState<number|null>(null);
 
     const router = useRouter();
 
@@ -107,6 +107,7 @@ export default function Page(): JSX.Element {
             name: assignmentName,
             description: description,
             dueDate: dueDate.toISOString(),
+            groupSize,
             ...selectedRunner
         })
             .then(fetchUserInfo)
@@ -211,7 +212,7 @@ export default function Page(): JSX.Element {
                         htmlFor="runner">
                         <Dropdown id="runner" name="runner"
                             value={selectedRunner?.runner_image + "/" + selectedRunner?.image_version}
-                            onOptionSelect={(_, data) => setSelectedRunner(JSON.parse(data.optionValue ?? "undefined") as RunnerImage)}
+                            onOptionSelect={(_, data) => setSelectedRunner(data.optionValue ? JSON.parse(data.optionValue) as RunnerImage : selectedRunner)}
                         >
                             {Object.keys(runners).map(image =>
                                 <OptionGroup
@@ -227,6 +228,17 @@ export default function Page(): JSX.Element {
                             )}
                         </Dropdown>
                     </ControlCard>
+
+                    <ControlCard
+                        title="Group Size"
+                        description="Students will be grouped into teams of size n, the students in groups will be tested against eachother."
+                        icon={<Rename24Regular />}
+                        htmlFor="groupSize">
+                        <Input type="number" min={0} id="name" name="courseCode"
+                            value={groupSize ? groupSize.toString() : ""}
+                            onChange={e => setGroupSize(isNaN(e.target.valueAsNumber) ? null : e.target.valueAsNumber)} />
+                    </ControlCard>
+
 
                     <Card size="large">
                         <CardHeader

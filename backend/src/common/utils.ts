@@ -65,12 +65,13 @@ const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'date
             }
         });
 
-        const data = {
+        const data :  Omit<TestCase | Solution, 'datetime' | 'id'> = {
             git_id: commit,
             git_url: repoPath,
             course_id: req.course!.id,
             assignment_title: req.assignment!.title,
-            author_id: req.user.utorid
+            author_id: req.user.utorid,
+            group_number: object.group_number === -1 ? null : object.group_number
         };
         if (table === "solution") {
             const solution = await prisma.solution.create({data});
@@ -91,7 +92,7 @@ const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'date
 
 const getObjectFromRequest = async (req: Request, table: "solution" | "testCase") => {
     let object: Solution | TestCase | null;
-    const query1 = {
+    const query : Prisma.SolutionFindFirstArgs | Prisma.TestCaseFindFirstArgs = {
         where: {
             author_id: req.user.utorid,
             assignment_title: req.assignment!.title,
@@ -99,15 +100,13 @@ const getObjectFromRequest = async (req: Request, table: "solution" | "testCase"
         },
         orderBy: {
             datetime: "desc"
+        },
+        include: {
+            group: true
         }
     };
-    const query: typeof query1 & {
-        where: {
-            git_id?: string
-        }
-    } = query1;
     if (req.params.commitId) {
-        query.where.git_id = req.params.commitId;
+        query.where!.git_id = req.params.commitId;
     }
     if (table === "solution") {
         object = await prisma.solution.findFirst(query as Prisma.SolutionFindFirstArgs);
@@ -160,14 +159,70 @@ export const processSubmission = async (req: Request, res: Response, table: "sol
         if (file === null) continue;
         await fs.copyFile(file.path, `${repoPath}/${file.filename}`);
     }
+    let group : number = -1;
+    if(!isProf(req.course!, req.user))
+    {
+        if (submission && submission.group_number !== null) {
+            group = submission.group_number;
+        } else {
+            const otherSubmissions = await getObjectFromRequest(req, table === "solution" ? "testCase" : "solution");
+            if (otherSubmissions && otherSubmissions.group_number !== null) {
+                group = otherSubmissions.group_number;
+            } else {
+                const latestGroup = await prisma.group.findFirst({
+                    where: {
+                        course_id: req.course!.id,
+                        assignment_title: req.assignment!.title,
+                    }, orderBy: {
+                        number: "desc"
+                    },
+                    include: {
+                        _count: {
+                            select: {
+                                members: true
+                            }
+                        }
+                    }
+                });
 
+                if (latestGroup === null || (latestGroup._count.members === req.assignment!.group_size && req.assignment!.group_size >= 1)) {
+                    group = latestGroup === null ? 0 : latestGroup.number + 1;
+                    await prisma.group.create({
+                        data: {
+                            number: group,
+                            course_id: req.course!.id,
+                            assignment_title: req.assignment!.title,
+                            members: {connect: {utorid: req.user.utorid}
+                            }
+                        }
+                    });
+                } else {
+                    group = latestGroup.number;
+                }
+
+                await prisma.group.update({
+                    where: {
+                        _id:{
+                            number: group,
+                            course_id: req.course!.id,
+                            assignment_title: req.assignment!.title
+                        }
+                    },
+                    data: {
+                        members: {connect: {utorid: req.user.utorid}}
+                    }
+                });
+            }
+        }
+    }
     // commit files
     const commit =  await commitFiles(req, submission ?? {
         git_id: "",
         git_url: repoPath,
         course_id: req.course!.id,
         assignment_title: req.assignment!.title,
-        author_id: req.user.utorid
+        author_id: req.user.utorid,
+        group_number: group
     }, table);
     if (commit === null) {
         res.statusCode = 500;
@@ -184,7 +239,7 @@ export const processSubmission = async (req: Request, res: Response, table: "sol
  * @param submission
  * @param commitId
  */
-export const getCommit = async (submission: Solution | TestCase, commitId?: string | null) => {
+export const getCommit = async (submission: Omit<Solution | TestCase, "group_number">, commitId?: string | null) => {
     let commit = null;
     try {
         commit = await git.readCommit({
@@ -299,7 +354,7 @@ export const fetchCourseMiddleware = async (req: Request, res: Response, next: N
         where: {
             id: req.params.courseId,
             hidden: false,
-            roles: req.user.admin ? {} : {some: {user: {utorid: req.user.utorid}}}
+            roles: req.user.admin ? undefined : {some: {user: {utorid: req.user.utorid}}}
         },
         ...fetchedCourseArgs
     });

@@ -63,5 +63,23 @@ export const fullFetchedAssignmentArgs = Prisma.validator<Prisma.AssignmentDefau
     }
 });
 
+export const scoreableGroupArgs = Prisma.validator<Prisma.GroupDefaultArgs>()({
+    include: {
+        solutions: {
+            distinct: "author_id",
+            orderBy: {datetime: "desc"},
+            include:{
+                author: true,
+                scores: {
+                    orderBy: [{test_case: {datetime: "desc"}}, {datetime: "desc"}],
+                    distinct: "testcase_author_id",
+                    include: {test_case: true}
+                }
+            }
+        }
+    }
+});
+
+export type ScoreableGroup = Prisma.GroupGetPayload<typeof scoreableGroupArgs>;
 
 export default client;

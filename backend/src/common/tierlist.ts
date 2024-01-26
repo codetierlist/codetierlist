@@ -1,11 +1,10 @@
 import {User} from "@prisma/client";
 import {
-    FullFetchedAssignment,
     Tier,
     Tierlist,
     UserTier
 } from "codetierlist-types";
-import {isProf} from "./utils";
+import {ScoreableGroup} from "./prisma";
 
 /** @return a two letter hash of the string */
 export const twoLetterHash = (str: string) => {
@@ -43,7 +42,8 @@ function getStandardDeviation(array: number[]) {
     return Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n);
 }
 
-export function generateList(assignment: Omit<FullFetchedAssignment, "due_date">, user?: string | User, anonymize = false): [Tierlist, UserTier] {
+export function generateList(group : ScoreableGroup, user?: string | User, anonymize = false): [Tierlist, UserTier] {
+    const submissions = group.solutions;
     const res: Tierlist = {
         S: [],
         A: [],
@@ -52,10 +52,10 @@ export function generateList(assignment: Omit<FullFetchedAssignment, "due_date">
         D: [],
         F: [],
     };
-    if (assignment.submissions.length === 0) {
+    if (submissions.length === 0) {
         return [res, "?" as UserTier];
     }
-    const scores = assignment.submissions.filter(submission=>!isProf(assignment.course, submission.author)).map(submission =>
+    const scores = submissions.map(submission =>
     {
         const validScores = submission.scores.filter(x=>x.test_case.valid==="VALID");
         const you = user ? isSelf(user, submission.author.utorid) : false;
@@ -97,5 +97,5 @@ export function generateList(assignment: Omit<FullFetchedAssignment, "due_date">
     return [res, yourTier];
 }
 
-export const generateTierList = (assignment: Omit<FullFetchedAssignment, "due_date">, user?: string | User, anonymize=true): Tierlist => generateList(assignment, user, anonymize)[0];
-export const generateYourTier = (assignment: Omit<FullFetchedAssignment, "due_date">, user?: string | User): UserTier => generateList(assignment, user, true)[1];
+export const generateTierList = (group:ScoreableGroup, user?: string | User, anonymize=true): Tierlist => generateList(group, user, anonymize)[0];
+export const generateYourTier = (group: ScoreableGroup, user?: string | User): UserTier => generateList(group, user, true)[1];

@@ -135,6 +135,11 @@ export const onNewTestCase = async (testCase: TestCase, image: Assignment | Runn
             image
         }, JobType.validateTestCase, 5);
     } else {
+        await prisma.testCase.update({
+            where: {
+                id: testCase.id
+            }, data: {valid: "VALID"}
+        });
         await runTestcase(testCase, image);
     }
 };

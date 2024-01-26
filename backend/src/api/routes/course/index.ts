@@ -1,7 +1,7 @@
 import express from "express";
 import prisma, {
     fetchedAssignmentArgs,
-    fullFetchedAssignmentArgs
+    scoreableGroupArgs
 } from "../../../common/prisma";
 import {RoleType} from "@prisma/client";
 import assignmentsRoute from "./assignments";
@@ -75,10 +75,20 @@ router.post("/", errorHandler(async (req, res) => {
 router.get("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) => {
     const course = await prisma.course.findUniqueOrThrow({
         where: {id: req.course!.id},
-        include: {roles: isProf(req.course!, req.user) ? true : {where: {user_id: req.user.utorid}}, assignments: {where: {hidden: false}, ...fullFetchedAssignmentArgs}},
+        include: {
+            roles: isProf(req.course!, req.user) ? true : {where: {user_id: req.user.utorid}},
+            assignments: {
+                where: {hidden: false}, include: {
+                    groups: {
+                        where: {members: {some: {utorid: req.user.utorid}}},
+                        ...scoreableGroupArgs
+                    }
+                }
+            }
+        },
     });
 
-    const assignments: AssignmentWithTier[] = course!.assignments.map(assignment => ({
+    const assignments: Omit<AssignmentWithTier, "group_size">[] = course!.assignments.map(assignment => ({
         title: assignment.title,
         course_id: assignment.course_id,
         due_date: assignment.due_date?.toISOString(),
@@ -86,7 +96,7 @@ router.get("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) =>
         image_version: assignment.image_version,
         runner_image: assignment.runner_image,
         hidden: false,
-        tier: generateYourTier(serializeAssignment(assignment), req.user)
+        tier: assignment.groups[0] ? generateYourTier(assignment.groups[0], req.user) : "?"
     }));
     res.send({...req.course!, assignments} satisfies FetchedCourseWithTiers);
 }));
@@ -97,8 +107,14 @@ router.delete("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res)
         res.send({message: 'You are not an admin.'});
         return;
     }
-    await prisma.course.update({where: {id: req.course!.id}, data: {hidden: true}});
-    await prisma.assignment.updateMany({where: {course_id: req.course!.id}, data: {hidden: true}});
+    await prisma.course.update({
+        where: {id: req.course!.id},
+        data: {hidden: true}
+    });
+    await prisma.assignment.updateMany({
+        where: {course_id: req.course!.id},
+        data: {hidden: true}
+    });
     res.send({});
 }));
 
@@ -117,7 +133,12 @@ router.post("/:courseId/add", fetchCourseMiddleware, errorHandler(async (req, re
     }
 
     await prisma.user.createMany({
-        data: utorids.map(utorid => ({utorid, email: "", surname: "", givenName: ""})),
+        data: utorids.map(utorid => ({
+            utorid,
+            email: "",
+            surname: "",
+            givenName: ""
+        })),
         skipDuplicates: true
     });
     await prisma.role.createMany({
@@ -166,7 +187,10 @@ router.post("/:courseId/cover", fetchCourseMiddleware, upload.single("file"), er
         return;
     }
     await fs.copyFile(req.file.path, `/uploads/${req.file.filename}`);
-    await prisma.course.update({where: {id: req.course!.id}, data: {cover: req.file.filename}});
+    await prisma.course.update({
+        where: {id: req.course!.id},
+        data: {cover: req.file.filename}
+    });
     res.send({});
 }));
 
@@ -179,10 +203,10 @@ router.get("/:courseId/cover", fetchCourseMiddleware, errorHandler(async (req, r
     res.sendFile("/uploads/" + req.course!.cover);
 }));
 router.post("/:courseId/assignments", fetchCourseMiddleware, errorHandler(async (req, res) => {
-    const {name, dueDate, description} = req.body;
+    const {name, dueDate, description, groupSize} = req.body;
     let {image, image_version} = req.body;
     const date = new Date(dueDate);
-    if (typeof name !== 'string' || isNaN(date.getDate()) || typeof description !== 'string' || name.length === 0 || description.length === 0) {
+    if (typeof name !== 'string' || isNaN(date.getDate()) || typeof groupSize !== "number" || isNaN(groupSize) || typeof description !== 'string' || name.length === 0 || description.length === 0) {
         res.statusCode = 400;
         res.send({message: 'Invalid request.'});
         return;
@@ -210,6 +234,7 @@ router.post("/:courseId/assignments", fetchCourseMiddleware, errorHandler(async 
                 description,
                 image_version,
                 runner_image: image,
+                group_size: groupSize,
                 course: {connect: {id: req.course!.id}}
             }, ...fetchedAssignmentArgs
         });
