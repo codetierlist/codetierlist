@@ -9,10 +9,8 @@ import {getCommit, getFile} from "./utils";
 import {Queue, QueueEvents, Job} from "bullmq";
 import {runTestcase, updateScore} from "./updateScores";
 import prisma from "./prisma";
-import {readFileSync} from "fs";
 import {QueueOptions} from "bullmq/dist/esm/interfaces";
 
-export const images: RunnerImage[] = JSON.parse(readFileSync('runner_config.json', 'utf-8'));
 
 export enum JobType {
     validateTestCase = "validateTestCase",

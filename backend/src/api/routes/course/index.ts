@@ -22,7 +22,7 @@ import multer from "multer";
 import {randomUUID} from "crypto";
 import {promises as fs} from "fs";
 import path from "path";
-import {images} from "../../../common/runner";
+import {images} from "../../../common/config";
 
 const storage = multer.diskStorage({
     filename: function (req, file, callback) {

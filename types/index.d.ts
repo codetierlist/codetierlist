@@ -157,3 +157,19 @@ export type AssignmentStudentStats = (Omit<User, "admin" | "theme"> & {
     testsPassed: number,
     totalTests: number,
 })[]
+
+
+export type AchievementConfig = {
+    id: number,
+    name: string,
+    description: string,
+    icon: string,
+    config: object,
+    type: string,
+    depends_on: number
+}
+
+export type BackendConfig = {
+    achievements: AchievementConfig[],
+    runners: RunnerImage[],
+}

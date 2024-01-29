@@ -1,0 +1,117 @@
+{
+  "achievements": [
+    {
+      "id": 1,
+      "name": "First Blood",
+      "description": "Be the first to upload a testcase for an assignment",
+      "icon": "first_blood.png",
+      "type": "first:testcase"
+    },
+    {
+      "id": 2,
+      "name": "Pioneer",
+      "description": "Be the first to upload a solution an assignments",
+      "icon": "pioneer.png",
+      "type": "first:solution"
+    },
+    {
+      "id": 3,
+      "name": "Night Owl",
+      "description": "Upload between 12am and 6am",
+      "config": {
+        "time": {
+          "start": 0,
+          "end": 6
+        }
+      },
+      "icon": "night_owl.png",
+      "type": "time:testcase"
+    },
+    {
+      "id": 4,
+      "name": "Early Bird",
+      "description": "Upload between 6am and 10am",
+      "config": {
+        "time": {
+          "start": 6,
+          "end": 10
+        }
+      },
+      "icon": "early_bird.png",
+      "type": "time:testcase"
+    },
+    {
+      "id": 5,
+      "name": "Avid tester 1",
+      "description": "Upload more than 10 testcases",
+      "config": {
+        "count": 10
+      },
+      "icon": "avid_tester1.png",
+      "type": "count:testcase"
+    },
+    {
+      "id": 6,
+      "name": "Avid tester 2",
+      "description": "Upload more than 20 testcases",
+      "config": {
+        "count": 20
+      },
+      "icon": "avid_tester2.png",
+      "type": "count:testcase",
+      "depends_on": 5
+    },
+    {
+      "id": 7,
+      "name": "Ultimate tester",
+      "description": "Upload more than 50 testcases",
+      "config": {
+        "count": 50
+      },
+      "icon": "ultimate_tester.png",
+      "type": "count:testcase",
+      "depends_on": 6
+    },
+    {
+      "id": 8,
+      "name": "Make it work",
+      "description": "Upload a solution that passes all testcases",
+      "icon": "make_it_work.png",
+      "type": "solution:passall"
+    },
+    {
+      "id": 9,
+      "name": "Make up your mind!",
+      "description": "Change your solution 5 times",
+      "config": {
+        "count": 5
+      },
+      "icon": "make_up_your_mind.png",
+      "type": "count:solution"
+    },
+    {
+      "id": 10,
+      "name": "Procrastinator",
+      "description": "Upload a solution 10 minutes before the deadline",
+      "config": {
+        "time": 10
+      },
+      "icon": "procrastinator.png",
+      "type": "time:solution"
+    }
+  ],
+  "runners": [
+    {
+      "runner_image": "python",
+      "image_version": "unittest-3.10.11"
+    },
+    {
+      "runner_image": "python",
+      "image_version": "unittest-3.12.1"
+    },
+    {
+      "runner_image": "python",
+      "image_version": "pytest-3.10.11"
+    }
+  ]
+}

@@ -6,7 +6,7 @@ import {
     RunnerImage,
     // images
 } from "codetierlist-types";
-import {images} from "../../common/runner";
+import {images} from "../../common/config";
 
 const router = express.Router();
 
