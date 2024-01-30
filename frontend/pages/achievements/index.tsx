@@ -9,14 +9,16 @@ import { useContext, useEffect, useState } from "react";
 import { Container } from "react-grid-system";
 import { SnackbarContext } from '@/contexts/SnackbarContext';
 import {AchievementCard} from "@/components";
+import {UserContext} from "@/contexts/UserContext";
 
 export default function Page() {
     const [achievements, setAchievements] = useState<AchievementConfig[] | null>(null);
     const { showSnackSev } = useContext(SnackbarContext);
+    const { userInfo,  setUserInfo} = useContext(UserContext);
 
     const fetchAchievements = async () => {
         await axios.get<AchievementConfig[]>(`/users/achievements`, { skipErrorHandling: true })
-            .then((res) => setAchievements(res.data))
+            .then((res) => {setAchievements(res.data); setUserInfo({...userInfo, new_achievements: false});})
             .catch(e => {
                 handleError(showSnackSev)(e);
                 notFound();
