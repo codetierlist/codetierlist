@@ -23,12 +23,12 @@
     "codetierlist-types": "file:../types",
     "eslint": "^8.52.0",
     "nodemon": "^3.0.3",
-    "prisma": "^5.5.2",
+    "prisma": "^5.8.1",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@prisma/client": "^5.5.2",
+    "@prisma/client": "^5.8.1",
     "body-parser": "^1.20.2",
     "bullmq": "^5.1.5",
     "cors": "^2.8.5",
