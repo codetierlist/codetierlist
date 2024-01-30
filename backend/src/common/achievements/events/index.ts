@@ -113,3 +113,16 @@ subscribe("passall:testcase", "testcase:processed", passallHandler);
 subscribe("passall:any", "solution:processed", passallHandler);
 subscribe("passall:any", "testcase:processed", passallHandler);
 
+const percentFailedHandler = async (_: Submission | TestCase, achievements: AchievementConfig[], data: unknown) => {
+    const processed = processedDataValidator(data);
+    if (!processed) return [];
+    return achievements.filter((achievement) => {
+        if (!achievement.config) return false;
+        const config: { percent?: unknown } = achievement.config;
+        if (!config.percent || typeof config.percent !== "number") return false;
+        return processed.passed / processed.total <= config.percent;
+    });
+};
+
+subscribe("percent_failed:solution", "solution:processed", percentFailedHandler);
+subscribe("percent_failed:testcase", "testcase:processed", percentFailedHandler);

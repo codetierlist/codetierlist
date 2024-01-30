@@ -98,6 +98,38 @@
       },
       "icon": "procrastinator.png",
       "type": "time:solution"
+    },
+    {
+      "id": 11,
+      "name": "Code Breaker 1",
+      "description": "Upload a testcase that breaks 20% of all submissions",
+      "config": {
+        "percentage": 0.2
+      },
+      "icon": "code_breaker.png",
+      "type": "percent_failed:testcase"
+    },
+    {
+      "id": 12,
+        "name": "Code Breaker 2",
+        "description": "Upload a testcase that breaks 50% of all submissions",
+        "config": {
+          "percentage": 0.5
+        },
+        "icon": "code_breaker.png",
+        "type": "percent_failed:testcase",
+        "depends_on": 11
+    },
+    {
+      "id": 13,
+        "name": "Ultimate Code Breaker",
+        "description": "Upload a testcase that breaks 80% of all submissions",
+        "config": {
+          "percentage": 0.8
+        },
+        "icon": "code_breaker.png",
+        "type": "percent_failed:testcase",
+        "depends_on": 12
     }
   ],
   "runners": [

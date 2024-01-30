@@ -21,7 +21,9 @@ type HandlerType =
     | "first:testcase"
     | "passall:solution"
     | "passall:testcase"
-    | "passall:any";
+    | "passall:any"
+    | "percent_failed:solution"
+    | "percent_failed:testcase";
 type CallbackType = (submission: Submission | TestCase, achievements: AchievementConfig[], data: unknown) => Promise<AchievementConfig[]>
 const subscribers: Map<EventType, {
     handler: HandlerType,
