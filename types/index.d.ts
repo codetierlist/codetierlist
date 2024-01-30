@@ -123,6 +123,10 @@ export type JobData = {
     submission: Submission,
     query: { solution_files: JobFiles, test_case_files: JobFiles }
 }
+export type ParentJobData = {
+    item: Submission | TestCase,
+    type: "submission" | "testcase"
+}
 
 enum _JobStatus {
     PASS = "PASS", // passes all test cases

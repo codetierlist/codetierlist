@@ -25,7 +25,7 @@
         }
       },
       "icon": "night_owl.png",
-      "type": "time:testcase"
+      "type": "time:any"
     },
     {
       "id": 4,
@@ -38,7 +38,7 @@
         }
       },
       "icon": "early_bird.png",
-      "type": "time:testcase"
+      "type": "time:any"
     },
     {
       "id": 5,
@@ -47,8 +47,8 @@
       "config": {
         "count": 10
       },
-      "icon": "avid_tester1.png",
-      "type": "count:testcase"
+      "icon": "avid_tester.png",
+      "type": "count:individual_testcases"
     },
     {
       "id": 6,
@@ -57,8 +57,8 @@
       "config": {
         "count": 20
       },
-      "icon": "avid_tester2.png",
-      "type": "count:testcase",
+      "icon": "avid_tester.png",
+      "type": "count:individual_testcases",
       "depends_on": 5
     },
     {
@@ -68,8 +68,8 @@
       "config": {
         "count": 50
       },
-      "icon": "ultimate_tester.png",
-      "type": "count:testcase",
+      "icon": "avid_tester.png",
+      "type": "count:individual_testcases",
       "depends_on": 6
     },
     {
