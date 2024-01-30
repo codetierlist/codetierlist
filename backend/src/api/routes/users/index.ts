@@ -1,7 +1,8 @@
 import express from "express";
-import {Theme, FetchedUser} from "codetierlist-types";
+import {Theme, FetchedUser, AchievementConfig} from "codetierlist-types";
 import prisma from "../../../common/prisma";
 import {errorHandler} from "../../../common/utils";
+import {achievementsConfig} from "../../../common/config";
 
 const router = express.Router();
 
@@ -32,6 +33,30 @@ router.post("/theme", errorHandler(async (req, res) => {
 
     res.status(200).send({message:`Set theme to ${req.body.theme}.`});
 
+}));
+
+router.get("/achievements", errorHandler(async (req, res) => {
+    const achievements = await prisma.achievement.findMany({
+        where: {utorid: req.user.utorid}
+    });
+    if(req.user.new_achievements) {
+        await prisma.user.update({
+            where: {utorid: req.user.utorid},
+            data: {new_achievements: false}
+        });
+    }
+    res.status(200).send(achievementsConfig.map((achievement) => {
+        if (achievements.some((userAchievement) => userAchievement.id === achievement.id)) {
+            const {config : _, ...rest} = achievement;
+            return rest;
+        } else {
+            return {id: -1, type: "???", name: "???", description: "???", icon: "unknown.png"};
+        }
+    }).sort((a,b)=>{
+        if(a.id === -1) return 1;
+        if(b.id === -1) return -1;
+        return 0;
+    }) as AchievementConfig[]);
 }));
 
 export default router;

@@ -1,4 +1,5 @@
 import {
+    Slot,
     Tooltip,
     TooltipProps,
     useId
@@ -7,7 +8,7 @@ import React, {useState} from "react";
 
 export declare interface ToolTipIconProps {
     /** The tooltip to show */
-    tooltip: string;
+    tooltip: string | NonNullable<Slot<'div'>>;
     /** The icon to show, should be a fluent 9 icon satisfying the IconProps interface */
     icon: JSX.Element;
     /** The class name to apply to the tooltip */
@@ -27,10 +28,10 @@ export const ToolTipIcon = (props: Partial<TooltipProps> & ToolTipIconProps): JS
     return (
         <span aria-owns={visible ? contentId : undefined} className={props.className}>
             <Tooltip
-                content={{
+                content={typeof props.tooltip === "string" ? {
                     children: props.tooltip,
                     id: contentId,
-                }}
+                } : props.tooltip}
                 withArrow
                 relationship="label"
                 onVisibleChange={(e, data) => setVisible(data.visible)}

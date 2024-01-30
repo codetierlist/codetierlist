@@ -152,7 +152,7 @@ export type JobResult =
 }
 
 
-export type AssignmentStudentStats = (Omit<User, "admin" | "theme"> & {
+export type AssignmentStudentStats = (Omit<User, "admin" | "theme" | "new_achievements"> & {
     tier: Tier,
     testsPassed: number,
     totalTests: number,
@@ -168,6 +168,7 @@ export type AchievementConfig = {
     type: string,
     depends_on: number
 }
+export type Achievement = Prisma.AchievementGetPayload<{}>;
 
 export type BackendConfig = {
     achievements: AchievementConfig[],
