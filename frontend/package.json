@@ -11,7 +11,7 @@
     "lint:fix": "next lint --fix"
   },
   "dependencies": {
-    "@fluentui/react-components": "^9.46.0",
+    "@fluentui/react-components": "^9.46.1",
     "@fluentui/react-date-time": "^8.7.130",
     "@fluentui/react-datepicker-compat": "^0.4.19",
     "@fluentui/react-icons": "^2.0.226",
