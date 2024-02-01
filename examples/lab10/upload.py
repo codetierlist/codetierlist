@@ -7,7 +7,7 @@ base_url = 'http://localhost:3555/api'
 course = 'CSC108' + uuid.uuid4().hex[:6]
 assignment = "lab10" + uuid.uuid4().hex[:6]
 admin_utorid="liutmich"
-admin_headers = {'Content-Type': 'application/json', "utorid": admin_utorid, "http_mail": "ido.benhaim@mail.utoronto.ca", "sn": "Liut", "givenName": "Michael"}
+admin_headers = {"utorid": admin_utorid, "http_mail": "ido.benhaim@mail.utoronto.ca", "sn": "Liut", "givenName": "Michael"}
 
 def create_course(course_name: str, course_code: str) -> str:
     """
@@ -117,10 +117,11 @@ def main():
                   open(f'./lab10.py', 'rb'),
                   "text/plain")
     }
-    response = requests.post(url, files=files, headers=admin_headers)
+    response = requests.post(url, json={},files=files, headers=admin_headers)
     if response.status_code != 200:
         print(response.status_code)
         print(response.json())
+        exit(1)
     for student in students:
         print(f"Uploading for {student}")
         try:
