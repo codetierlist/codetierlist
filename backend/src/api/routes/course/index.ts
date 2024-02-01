@@ -44,9 +44,19 @@ router.post("/", errorHandler(async (req, res) => {
         res.send({message: 'Invalid body.'});
         return;
     }
-    const oldCourse = await prisma.course.findFirst({orderBy: {createdAt: "desc"}});
-    const courseNumber = oldCourse ? parseInt(oldCourse.id.split('-')[1]) + 1 : 0;
-    const id = code + '-' + courseNumber;
+    const oldCourse = await prisma.course.findFirst({
+        where: {
+            id: {startsWith: code}
+        }, orderBy: {createdAt: "desc"}
+    });
+    let id : string;
+    if (!oldCourse) {
+        id = code;
+    } else {
+        console.log(oldCourse.id);
+        const num = parseInt(oldCourse.id.slice(code.length+1));
+        id = code + '-' + (isNaN(num) ? 1 : num + 1).toString();
+    }
 
     await prisma.course.create({
         data: {
@@ -206,7 +216,7 @@ router.post("/:courseId/assignments", fetchCourseMiddleware, errorHandler(async 
     const {name, dueDate, description} = req.body;
     let {image, image_version, groupSize} = req.body;
     const date = new Date(dueDate);
-    if(!groupSize) {
+    if (!groupSize) {
         groupSize = 0;
     }
     if (typeof name !== 'string' || isNaN(date.getDate()) || typeof groupSize !== "number" || isNaN(groupSize) || typeof description !== 'string' || name.length === 0 || description.length === 0) {
@@ -233,7 +243,7 @@ router.post("/:courseId/assignments", fetchCourseMiddleware, errorHandler(async 
         const assignment = await prisma.assignment.create({
             data: {
                 title: name,
-                due_date: dueDate,
+                due_date: date.toISOString(),
                 description,
                 image_version,
                 runner_image: image,
