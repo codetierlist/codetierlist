@@ -1,6 +1,5 @@
 import {
     Submission,
-    TestCase,
     JobData,
     JobFiles,
     JobResult, Assignment, TestCaseStatus, RunnerImage, ParentJobData,
@@ -17,6 +16,7 @@ import {runTestcase, updateScore} from "./updateScores";
 import prisma from "./prisma";
 import {QueueOptions} from "bullmq/dist/esm/interfaces";
 import {publish} from "./achievements/eventHandler";
+import {TestCase} from "@prisma/client";
 
 
 export enum JobType {

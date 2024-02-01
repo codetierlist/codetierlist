@@ -1,7 +1,6 @@
 import {
     Assignment, RunnerImage,
-    Submission,
-    TestCase
+    Submission, TestCase
 } from "codetierlist-types";
 import prisma from "./prisma";
 import {
@@ -41,7 +40,8 @@ export const onNewSubmission = async (submission: Submission, image: Assignment)
         where: {
             course_id: submission.course_id,
             assignment_title: submission.assignment_title,
-            valid: "VALID"
+            valid: "VALID",
+            group_number: submission.group_number
         },
         orderBy: {datetime: "desc"},
         distinct: "author_id",
@@ -90,6 +90,7 @@ export const runTestcase = async (testCase: TestCase, image: Assignment | Runner
         where: {
             course_id: testCase.course_id,
             assignment_title: testCase.assignment_title,
+            group_number: testCase.group_number,
             author: {
                 roles: {
                     some: {
