@@ -10,7 +10,7 @@
     {
       "id": 2,
       "name": "Pioneer",
-      "description": "Be the first to upload a solution an assignments",
+      "description": "Be the first to upload a solution an assignment",
       "icon": "pioneer.png",
       "type": "first:solution"
     },
