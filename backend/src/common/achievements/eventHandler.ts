@@ -33,11 +33,9 @@ export const subscribe = (handler: HandlerType, event: EventType, callback: Call
     if (!subscribers.has(event)) {
         subscribers.set(event, []);
     }
-    console.log(`Subscribing handler ${handler} to event ${event}`);
     subscribers.get(event)!.push({handler, callback});
 };
 export const publish = (event: EventType, submission: Submission | TestCase, data?: unknown) => {
-    console.log(`Publishing event ${event} with data ${JSON.stringify(data)}`);
     prisma.achievement.findMany({
         where: {
             utorid: submission.author_id

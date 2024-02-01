@@ -98,12 +98,9 @@ subscribe("count:individual_testcases", "testcase:processed", async (_: Submissi
 });
 
 const passallHandler = async (_: Submission | TestCase, achievements: AchievementConfig[], data: unknown) => {
-    console.log("passallHandler");
     const processed = processedDataValidator(data);
     if (!processed) return [];
-    return achievements.filter((achievement) => {
-
-        console.log(achievement);
+    return achievements.filter((_achievement) => {
         return processed.total > 1 && processed.passed == processed.total;
     });
 };

@@ -53,7 +53,6 @@ router.post("/", errorHandler(async (req, res) => {
     if (!oldCourse) {
         id = code;
     } else {
-        console.log(oldCourse.id);
         const num = parseInt(oldCourse.id.slice(code.length+1));
         id = code + '-' + (isNaN(num) ? 1 : num + 1).toString();
     }
