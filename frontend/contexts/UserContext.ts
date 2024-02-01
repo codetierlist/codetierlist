@@ -13,6 +13,7 @@ export const defaultUser: FetchedUser = {
     surname: "Hatsune",
     givenName: "Miku",
     theme: "LIGHT",
+    new_achievements: false
 };
 
 /**

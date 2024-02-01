@@ -4,6 +4,9 @@ import { Badge, Button, Persona, Popover, PopoverSurface, PopoverTrigger, Skelet
 import Link from 'next/link';
 import { useContext } from 'react';
 import styles from './Navbar.module.css';
+import {
+    ErrorCircle24Filled
+} from '@fluentui/react-icons';
 
 /**
  * The user avatar is the avatar that appears in the navbar. It contains
@@ -18,6 +21,7 @@ const UserAvatar = (): JSX.Element => {
             avatar={GenerateInitalsAvatarProps(generateInitals(userInfo))}
             primaryText={
                 <span className={styles.subtext}>
+                    {userInfo.new_achievements ? <ErrorCircle24Filled fill="red" color="red"/> : null}
                     {userInfo.admin && <Badge className={styles.adminBadge} appearance="outline">Admin</Badge>}
                     {`${userInfo.givenName} ${userInfo.surname}` == " " ? userInfo.utorid : `${userInfo.givenName} ${userInfo.surname}`}
                 </span>

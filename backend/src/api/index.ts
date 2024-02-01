@@ -67,6 +67,7 @@ app.use(errorHandler(async (req, res, next) => {
 
 app.use(routes);
 app.use(((err, req, res, _) => {
+    console.error(err);
     let message = 'Internal server error.';
     if (process.env.NODE_ENV === 'development') {
         message += `\n${err}`;

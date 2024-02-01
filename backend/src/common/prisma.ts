@@ -6,7 +6,7 @@ export const fetchedUserArgs = Prisma.validator<Prisma.UserDefaultArgs>()({
     include: {
         roles: {
             where: {
-                course:{
+                course: {
                     hidden: false
                 }
             },
@@ -68,17 +68,23 @@ export const scoreableGroupArgs = Prisma.validator<Prisma.GroupDefaultArgs>()({
         solutions: {
             distinct: "author_id",
             orderBy: {datetime: "desc"},
-            include:{
+            include: {
                 author: true,
                 scores: {
                     orderBy: [{test_case: {datetime: "desc"}}, {datetime: "desc"}],
                     distinct: "testcase_author_id",
+                    where: {
+                        test_case: {
+                            valid: "VALID"
+                        }
+                    },
                     include: {test_case: true}
-                }
+                },
             }
         }
     }
 });
+
 
 export type ScoreableGroup = Prisma.GroupGetPayload<typeof scoreableGroupArgs>;
 
