@@ -153,7 +153,7 @@ job_events.on("completed", async ({jobId}) => {
     if (!job) return;
     const data = job.data;
     const result = job.returnvalue;
-    console.info(`job ${job.id} completed with status ${result.status} with parent ${job.parentKey}`);
+    console.info(`job ${job.id} completed with status ${result.status} with data ${JSON.stringify(result)}`);
     const submission = data.submission;
     const testCase = data.testCase;
     const pass = result.status === "PASS";
@@ -211,8 +211,6 @@ new Worker<ParentJobData, undefined, JobType>(parent_job_queue, async (job) => {
     if(type === "testcase") {
         const testCase = item as TestCase;
         const passedOrFailed = children.filter(x => x.status === "PASS" || x.status === "FAIL");
-        console.log(`passedOrFailed: ${passedOrFailed}`);
-        console.log(`reduced: ${passedOrFailed.map(x=>"amount" in x ? x.amount : 0).reduce((a,b)=>a+b, 0)}`);
         publish("testcase:processed", testCase, {
             passed: passed.length,
             total: children.length,
