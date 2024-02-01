@@ -7,6 +7,7 @@ import { Theme } from 'codetierlist-types';
 import Link from 'next/link';
 import { useContext } from 'react';
 import styles from './NavbarUserPopover.module.css';
+import {ErrorCircle24Filled} from "@fluentui/react-icons";
 
 /**
  * The user popover content is the content that appears when
@@ -57,7 +58,14 @@ export const NavbarUserPopover = (): JSX.Element => {
                 }
                 secondaryText={userInfo.email}
                 tertiaryText={userInfo.utorid}
-            />
+            /><br/><hr/>
+            <div className={"m-t-l"}>
+                <Link style={{width: "100%"}} href="/achievements" className={styles.popoverLink}>
+                    <Button style={{width: "100%"}} appearance="subtle" className={styles.popoverButton}>
+                        Achievements {userInfo.new_achievements ? <ErrorCircle24Filled fill="red" color="red"/> : null}
+                    </Button>
+                </Link>
+            </div>
         </div>
     );
 };

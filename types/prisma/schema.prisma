@@ -104,18 +104,31 @@ model TestCase {
 }
 
 model User {
-  utorid    String     @id
-  email     String
-  solutions Solution[]
-  roles     Role[]
-  admin     Boolean    @default(false)
-  TestCase  TestCase[]
-  surname   String
-  givenName String
-  theme     Theme      @default(LIGHT)
-  groups    Group[]
+  utorid           String        @id
+  email            String
+  solutions        Solution[]
+  roles            Role[]
+  admin            Boolean       @default(false)
+  TestCase         TestCase[]
+  surname          String
+  givenName        String
+  theme            Theme         @default(LIGHT)
+  groups           Group[]
+  achievements     Achievement[]
+  new_achievements Boolean       @default(false)
 
   @@map("Users")
+}
+
+model Achievement {
+  id           Int
+  completed_at DateTime @default(now())
+  user         User     @relation(fields: [utorid], references: [utorid], onDelete: Cascade, onUpdate: Cascade)
+  utorid       String
+
+  @@id([id, utorid])
+  @@unique([id, utorid], name: "_id")
+  @@map("Achievements")
 }
 
 enum RoleType {

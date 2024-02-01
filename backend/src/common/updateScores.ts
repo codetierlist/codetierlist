@@ -1,11 +1,17 @@
 import {
     Assignment, RunnerImage,
-    Submission,
-    TestCase
+    Submission, TestCase
 } from "codetierlist-types";
 import prisma from "./prisma";
-import {JobType, queueJob, removeSubmission, removeTestcases} from "./runner";
+import {
+    bulkQueueTestCases,
+    JobType,
+    queueJob,
+    removeSubmission,
+    removeTestcases
+} from "./runner";
 import {RoleType} from "@prisma/client";
+import {publish} from "./achievements/eventHandler";
 
 /**
  * Log the score of a submission vs a testcase
@@ -27,23 +33,26 @@ export const updateScore = (submission: Submission, testCase: TestCase, pass: bo
     });
 
 export const onNewSubmission = async (submission: Submission, image: Assignment) => {
+    publish("solution:submit", submission);
     await removeSubmission(submission.author_id);
 
     const testCases = await prisma.testCase.findMany({
         where: {
             course_id: submission.course_id,
             assignment_title: submission.assignment_title,
-            valid: "VALID"
+            valid: "VALID",
+            group_number: submission.group_number
         },
         orderBy: {datetime: "desc"},
         distinct: "author_id",
     });
 
-    await Promise.all(testCases.map(testCase => queueJob({
-        submission: submission,
-        testCase,
-        image
-    }, JobType.testSubmission)));
+    // await Promise.all(testCases.map(testCase => queueJob({
+    //     submission: submission,
+    //     testCase,
+    //     image
+    // }, JobType.testSubmission)));
+    await bulkQueueTestCases(image, submission, testCases);
 };
 /**
  * When the prof submits a new submission, run it against all test cases
@@ -62,7 +71,6 @@ export const onNewProfSubmission = async (submission: Submission, image: Assignm
         distinct: "author_id",
     });
 
-    // TODO possible race condition when prof submits twice in a row?
     await Promise.all(testCases.map(testCase => queueJob({
         submission: submission,
         testCase,
@@ -76,11 +84,13 @@ export const onNewProfSubmission = async (submission: Submission, image: Assignm
  * @param image the runner config to run the test case against
  */
 export const runTestcase = async (testCase: TestCase, image: Assignment | RunnerImage) => {
+    console.log("Running testcases " + testCase.author_id);
     // find all student submissions
     const submissions = await prisma.solution.findMany({
         where: {
             course_id: testCase.course_id,
             assignment_title: testCase.assignment_title,
+            group_number: testCase.group_number,
             author: {
                 roles: {
                     some: {
@@ -94,11 +104,12 @@ export const runTestcase = async (testCase: TestCase, image: Assignment | Runner
         distinct: "author_id",
     });
     // for every student submission, run the test case, and update the score
-    await Promise.all(submissions.map(s => queueJob({
-        submission: s,
-        testCase,
-        image: image
-    }, JobType.testSubmission, 5)));
+    // await Promise.all(submissions.map(s => queueJob({
+    //     submission: s,
+    //     testCase,
+    //     image: image
+    // }, JobType.testSubmission, 5)));
+    await bulkQueueTestCases(image, testCase, submissions);
 };
 
 /**
@@ -111,6 +122,7 @@ export const onNewTestCase = async (testCase: TestCase, image: Assignment | Runn
     // 1. not error or timeout against a valid submission
     // 2. pass a valid submission
     // 3. fail starter code
+    publish("testcase:submit", testCase);
     await removeTestcases(testCase.author_id);
 
     // checks condition 1

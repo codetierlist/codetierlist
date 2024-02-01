@@ -1,4 +1,5 @@
 import prisma from "./common/prisma";
+import "./common/achievements/events";
 process.on("unhandledRejection", e=>{
     console.error(e);
 });

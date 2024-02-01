@@ -29,3 +29,4 @@ export * from './utils/ColourHash/ColourHash';
 export * from './utils/FileUploadUtils/FileUploadUtils';
 export * from './utils/Theme/Theme';
 export * from './utils/TimeUtils/TimeUtils';
+export * from './AchievementCard/AchievementCard';

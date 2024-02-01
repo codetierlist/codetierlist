@@ -1,14 +1,14 @@
 import {spawn, spawnSync} from "child_process";
 import path from "path";
 import {
+    BackendConfig,
     JobData,
-    JobResult,
-    RunnerImage,
+    JobResult, RunnerImage
 } from "codetierlist-types";
 import {Job, Worker} from "bullmq";
-import fs from "fs";
+import {readFileSync} from "fs";
 
-const images: RunnerImage[] = JSON.parse(fs.readFileSync('runner_config.json', 'utf-8'));
+export const images: RunnerImage[] = (JSON.parse(readFileSync('backend_config.json', 'utf-8')) as BackendConfig).runners;
 
 if (process.env.MAX_RUNNING_TASKS === undefined) {
     throw new Error("MAX_RUNNING_TASKS is undefined");
@@ -22,7 +22,7 @@ if (process.env.REDIS_PORT === undefined) {
     throw new Error("REDIS_PORT is undefined");
 }
 
-if(process.env.REDIS_PASSWORD === undefined) {
+if (process.env.REDIS_PASSWORD === undefined) {
     console.warn("REDIS_PASSWORD is undefined, connection might fail");
 }
 
@@ -109,7 +109,11 @@ for (let i = 0; i < mtask; i++) {
             return res;
         },
         {
-            connection: {host: process.env.REDIS_HOST, port: parseInt(process.env.REDIS_PORT), password: process.env.REDIS_PASSWORD },
+            connection: {
+                host: process.env.REDIS_HOST,
+                port: parseInt(process.env.REDIS_PORT),
+                password: process.env.REDIS_PASSWORD
+            },
         }
     ));
 }

@@ -79,8 +79,10 @@ export type FetchedAssignment =
     Omit<Prisma.AssignmentGetPayload<typeof fetchedAssignmentArgs>, "due_date">
     & { due_date?: string };
 export type FullFetchedAssignment = Prisma.AssignmentGetPayload<typeof fullFetchedAssignmentArgs>;
-export type Submission = Omit<_Submission, "group_number">;
-export type TestCase = Omit<_TestCase, "group_number">;
+export type Submission = _Submission;
+export type TestCase = _TestCase;
+export type FrontendSubmission = Omit<_Submission, "group_number"> & { group_number?: number | null};
+export type FrontendTestCase = Omit<_TestCase, "group_number"> & { group_number?: number | null};
 export type UserFetchedAssignment = Prisma.AssignmentGetPayload<> & { tier: UserTier } & {
     due_date?: string,
     submissions: Submission[],
@@ -123,6 +125,10 @@ export type JobData = {
     submission: Submission,
     query: { solution_files: JobFiles, test_case_files: JobFiles }
 }
+export type ParentJobData = {
+    item: Submission | TestCase,
+    type: "submission" | "testcase"
+}
 
 enum _JobStatus {
     PASS = "PASS", // passes all test cases
@@ -152,8 +158,25 @@ export type JobResult =
 }
 
 
-export type AssignmentStudentStats = (Omit<User, "admin" | "theme"> & {
+export type AssignmentStudentStats = (Omit<User, "admin" | "theme" | "new_achievements"> & {
     tier: Tier,
     testsPassed: number,
     totalTests: number,
 })[]
+
+
+export type AchievementConfig = {
+    id: number,
+    name: string,
+    description: string,
+    icon: string,
+    config: object,
+    type: string,
+    depends_on: number
+}
+export type Achievement = Prisma.AchievementGetPayload<{}>;
+
+export type BackendConfig = {
+    achievements: AchievementConfig[],
+    runners: RunnerImage[],
+}
