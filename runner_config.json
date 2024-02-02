@@ -10,5 +10,9 @@
   {
     "runner_image": "python",
     "image_version": "pytest-3.10.11"
+  },
+  {
+    "runner_image": "python",
+    "image_version": "lab10-3.10.11"
   }
 ]
