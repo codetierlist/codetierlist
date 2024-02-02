@@ -187,20 +187,11 @@ export const processSubmission = async (req: Request, res: Response, table: "sol
 
                 if (latestGroup === null || (latestGroup._count.members === req.assignment!.group_size && req.assignment!.group_size >= 1)) {
                     group = latestGroup === null ? 0 : latestGroup.number + 1;
-                    await prisma.group.create({
-                        data: {
-                            number: group,
-                            course_id: req.course!.id,
-                            assignment_title: req.assignment!.title,
-                            members: {connect: {utorid: req.user.utorid}
-                            }
-                        }
-                    });
                 } else {
                     group = latestGroup.number;
                 }
 
-                await prisma.group.update({
+                await prisma.group.upsert({
                     where: {
                         _id:{
                             number: group,
@@ -208,7 +199,13 @@ export const processSubmission = async (req: Request, res: Response, table: "sol
                             assignment_title: req.assignment!.title
                         }
                     },
-                    data: {
+                    update: {
+                        members: {connect: {utorid: req.user.utorid}}
+                    },
+                    create: {
+                        number: group,
+                        course_id: req.course!.id,
+                        assignment_title: req.assignment!.title,
                         members: {connect: {utorid: req.user.utorid}}
                     }
                 });
