@@ -86,8 +86,8 @@ export const bulkQueueTestCases = async <T extends Submission | TestCase>(image:
         name: JobType.parentJob,
         queueName: parent_job_queue,
         opts: {
-            removeOnFail: true,
-            removeOnComplete: true,
+            removeOnFail: false,
+            removeOnComplete: false,
         },
         data: {
             item: item,
