@@ -56,9 +56,10 @@ const job_queue: Queue<ReadyJobData, JobResult, JobType> =
 const pending_queue: Queue<PendingJobData, undefined, JobType> =
     new Queue<PendingJobData, undefined, JobType>("pending_queue", queue_conf);
 
-const job_events: QueueEvents = new QueueEvents("job_queue", queue_conf);
+const job_events: QueueEvents = new QueueEvents(job_queue.name, queue_conf);
 
 const parent_job_queue = "parent_job";
+const parent_job_events: QueueEvents = new QueueEvents(parent_job_queue, queue_conf);
 
 const flowProducer = new FlowProducer(queue_conf);
 
@@ -240,15 +241,6 @@ new Worker<ParentJobData, undefined, JobType>(parent_job_queue, async (job, toke
             number: passedOrFailed.map(x => "amount" in x ? x.amount : 0).reduce((a, b) => a + b, 0) / passedOrFailed.length
         });
     }
-    console.log("Removing job");
-    try {
-        await job.remove({
-            removeChildren: true
-        });
-    } catch (e){
-        console.error("Failed to remove job");
-        console.error(e);
-    }
     console.info(`Parent job ${job.id} completed with ${passed.length} passed out of ${children.length}. Finished processing at ${Date.now()}`);
     return undefined;
 }, queue_conf);
@@ -286,3 +278,9 @@ const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue
     concurrency: 50
 });
 
+const parent_queue = new Queue<ParentJobData, undefined, JobType>(parent_job_queue, queue_conf);
+parent_job_events.on("completed", async ({jobId}) => {
+    const job = await parent_queue.getJob(jobId);
+    if (!job) return;
+    await job.remove({removeChildren: true});
+});
