@@ -2,10 +2,10 @@ import {spawn, spawnSync} from "child_process";
 import path from "path";
 import {
     BackendConfig,
-    JobData,
+    ReadyJobData,
     JobResult, RunnerImage
 } from "codetierlist-types";
-import {Job, Worker} from "bullmq";
+import {Job, WaitingChildrenError, Worker} from "bullmq";
 import {readFileSync} from "fs";
 
 export const images: RunnerImage[] = (JSON.parse(readFileSync('backend_config.json', 'utf-8')) as BackendConfig).runners;
@@ -28,8 +28,11 @@ if (process.env.REDIS_PASSWORD === undefined) {
 
 const mtask = parseInt(process.env.MAX_RUNNING_TASKS);
 
-const workers: Worker<JobData, JobResult>[] = [];
-export const runJob = async (job: JobData): Promise<JobResult> => {
+const workers: Worker<ReadyJobData, JobResult>[] = [];
+export const runJob = async (job: ReadyJobData): Promise<JobResult> => {
+    if("status" in job) {
+        throw new Error("Job not ready");
+    }
     const query = job.query;
     const img = job.image.runner_image;
     const img_ver = job.image.image_version;
@@ -101,8 +104,13 @@ createImages();
 
 // create workers
 for (let i = 0; i < mtask; i++) {
-    workers.push(new Worker<JobData, JobResult>("job_queue",
-        async (job: Job<JobData, JobResult>): Promise<JobResult> => {
+    workers.push(new Worker<ReadyJobData, JobResult>("job_queue",
+        async (job: Job<ReadyJobData, JobResult>, token): Promise<JobResult> => {
+            if("status" in job.data) {
+                if(token)
+                    await job.moveToWaitingChildren(token);
+                throw new WaitingChildrenError();
+            }
             console.info(`running job ${job.id} with image ${job.data.image.runner_image}:${job.data.image.image_version}`);
             const res = await runJob(job.data);
             console.info(`job ${job.id} done`);
