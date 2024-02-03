@@ -242,7 +242,6 @@ new Worker<ParentJobData, undefined, JobType>(parent_job_queue, async (job, toke
         });
     }
     console.info(`Parent job ${job.id} completed with ${passed.length} passed out of ${children.length}. Finished processing at ${Date.now()}`);
-    return undefined;
 }, queue_conf);
 
 const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue.name, async (job) => {
@@ -281,6 +280,7 @@ const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue
 const parent_queue = new Queue<ParentJobData, undefined, JobType>(parent_job_queue, queue_conf);
 parent_job_events.on("completed", async ({jobId}) => {
     const job = await parent_queue.getJob(jobId);
+    console.log(`Parent job ${jobId} completed, removing`);
     if (!job) return;
     console.log(`Parent job ${job.id} completed, removing`);
     await job.remove({removeChildren: true});
