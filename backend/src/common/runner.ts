@@ -214,10 +214,12 @@ new Worker<ParentJobData, undefined, JobType>(parent_job_queue, async (job) => {
 
 const fetchWorker = new Worker<Omit<JobData, "query">, undefined, JobType>(pending_queue.name, async (job) => {
     const isRateLimited = await pending_queue.count();
+    console.log(`Rate limited: ${isRateLimited}`);
     if (isRateLimited >= max_fetched) {
         await fetchWorker.rateLimit(1000);
         throw Worker.RateLimitError();
     }
+    console.info(`Fetching job files for ${job.id}`);
     if (!job || !job.data || !job.name) return;
     const data = job.data;
     const query = {
@@ -225,7 +227,6 @@ const fetchWorker = new Worker<Omit<JobData, "query">, undefined, JobType>(pendi
         'test_case_files': await getFiles(data.testCase),
     };
     await job_queue.add(job.name, {...data, query});
-    await job.remove();
 }, {
     ...queue_conf,
     limiter: {
