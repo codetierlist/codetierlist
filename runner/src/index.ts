@@ -103,25 +103,24 @@ const createImages = () => {
 createImages();
 
 // create workers
-for (let i = 0; i < mtask; i++) {
-    workers.push(new Worker<ReadyJobData, JobResult>("job_queue",
-        async (job: Job<ReadyJobData, JobResult>, token): Promise<JobResult> => {
-            if("status" in job.data) {
-                if(token)
-                    await job.moveToWaitingChildren(token);
-                throw new WaitingChildrenError();
-            }
-            console.info(`running job ${job.id} with image ${job.data.image.runner_image}:${job.data.image.image_version}`);
-            const res = await runJob(job.data);
-            console.info(`job ${job.id} done`);
-            return res;
-        },
-        {
-            connection: {
-                host: process.env.REDIS_HOST,
-                port: parseInt(process.env.REDIS_PORT),
-                password: process.env.REDIS_PASSWORD
-            },
+workers.push(new Worker<ReadyJobData, JobResult>("job_queue",
+    async (job: Job<ReadyJobData, JobResult>, token): Promise<JobResult> => {
+        if("status" in job.data) {
+            if(token)
+                await job.moveToWaitingChildren(token);
+            throw new WaitingChildrenError();
         }
-    ));
-}
+        console.info(`running job ${job.id} with image ${job.data.image.runner_image}:${job.data.image.image_version}`);
+        const res = await runJob(job.data);
+        console.info(`job ${job.id} done`);
+        return res;
+    },
+    {
+        connection: {
+            host: process.env.REDIS_HOST,
+            port: parseInt(process.env.REDIS_PORT),
+            password: process.env.REDIS_PASSWORD
+        },
+    }
+));
+

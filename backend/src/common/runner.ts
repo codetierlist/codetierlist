@@ -237,36 +237,36 @@ new Worker<ParentJobData, undefined, JobType>(parent_job_queue, async (job, toke
     console.info(`Parent job ${job.id} completed with ${passed.length} passed out of ${children.length}. Finished processing at ${Date.now()}`);
     return undefined;
 }, queue_conf);
-for (let i = 0; i < 10; i++) {
-    const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue.name, async (job) => {
-        const isRateLimited = await job_queue.count();
-        console.log(`Fetched: ${isRateLimited}, Pending: ${await pending_queue.count()}`);
-        if (isRateLimited >= max_fetched) {
-            await fetchWorker.rateLimit(100);
-            throw Worker.RateLimitError();
-        }
-        console.info(`Fetching job files for ${job.id}`);
-        if (!job || !job.data || !job.name) return;
-        const data = job.data;
-        const query = {
-            'solution_files': await getFiles(data.submission),
-            'test_case_files': await getFiles(data.testCase),
-        };
-        if (!job.parent) {
-            await job_queue.add(job.name, {query, ...data});
-            return;
-        }
-        const parent = await job_queue.getJob(job.parent.id);
-        if (!parent) {
-            return;
-        }
-        await parent.updateData({query, ...data});
-    }, {
-        ...queue_conf,
-        limiter: {
-            max: 5000,
-            duration: 10,
-        },
-        concurrency: 10
-    });
-}
+
+const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue.name, async (job) => {
+    const isRateLimited = await job_queue.count();
+    console.log(`Fetched: ${isRateLimited}, Pending: ${await pending_queue.count()}`);
+    if (isRateLimited >= max_fetched) {
+        await fetchWorker.rateLimit(100);
+        throw Worker.RateLimitError();
+    }
+    console.info(`Fetching job files for ${job.id}`);
+    if (!job || !job.data || !job.name) return;
+    const data = job.data;
+    const query = {
+        'solution_files': await getFiles(data.submission),
+        'test_case_files': await getFiles(data.testCase),
+    };
+    if (!job.parent) {
+        await job_queue.add(job.name, {query, ...data});
+        return;
+    }
+    const parent = await job_queue.getJob(job.parent.id);
+    if (!parent) {
+        return;
+    }
+    await parent.updateData({query, ...data});
+}, {
+    ...queue_conf,
+    limiter: {
+        max: 50,
+        duration: 10,
+    },
+    concurrency: 10
+});
+
