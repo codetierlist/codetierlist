@@ -240,6 +240,7 @@ new Worker<ParentJobData, undefined, JobType>(parent_job_queue, async (job, toke
             number: passedOrFailed.map(x => "amount" in x ? x.amount : 0).reduce((a, b) => a + b, 0) / passedOrFailed.length
         });
     }
+    console.log("Removing job");
     await job.remove({
         removeChildren: true
     });
