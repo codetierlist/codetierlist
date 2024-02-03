@@ -211,30 +211,31 @@ new Worker<ParentJobData, undefined, JobType>(parent_job_queue, async (job) => {
     console.info(`Parent job ${job.id} completed with ${passed.length} passed out of ${children.length}. Finished processing at ${Date.now()}`);
     return undefined;
 }, queue_conf);
-
-const fetchWorker = new Worker<Omit<JobData, "query">, undefined, JobType>(pending_queue.name, async (job) => {
-    const isRateLimited = await job_queue.count();
-    console.log(`Fetched: ${isRateLimited}, Pending: ${await pending_queue.count()}`);
-    if (isRateLimited >= max_fetched) {
-        await fetchWorker.rateLimit(100);
-        throw Worker.RateLimitError();
-    }
-    console.info(`Fetching job files for ${job.id}`);
-    if (!job || !job.data || !job.name) return;
-    const data = job.data;
-    const query = {
-        'solution_files': await getFiles(data.submission),
-        'test_case_files': await getFiles(data.testCase),
-    };
-    if (!job.parent) {
+for (let i = 0; i < 10; i++) {
+    const fetchWorker = new Worker<Omit<JobData, "query">, undefined, JobType>(pending_queue.name, async (job) => {
+        const isRateLimited = await job_queue.count();
+        console.log(`Fetched: ${isRateLimited}, Pending: ${await pending_queue.count()}`);
+        if (isRateLimited >= max_fetched) {
+            await fetchWorker.rateLimit(100);
+            throw Worker.RateLimitError();
+        }
+        console.info(`Fetching job files for ${job.id}`);
+        if (!job || !job.data || !job.name) return;
+        const data = job.data;
+        const query = {
+            'solution_files': await getFiles(data.submission),
+            'test_case_files': await getFiles(data.testCase),
+        };
+        if (!job.parent) {
+            await job_queue.add(job.name, {query, ...data});
+            return;
+        }
         await job_queue.add(job.name, {query, ...data});
-        return;
-    }
-    await job_queue.add(job.name, {query, ...data});
-}, {
-    ...queue_conf,
-    limiter: {
-        max: 5000,
-        duration: 10,
-    },
-},);
+    }, {
+        ...queue_conf,
+        limiter: {
+            max: 5000,
+            duration: 10,
+        },
+    });
+}
