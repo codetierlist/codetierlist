@@ -163,9 +163,6 @@ job_events.on("completed", async ({jobId}) => {
     const submission = data.submission;
     const testCase = data.testCase;
     const pass = result.status === "PASS";
-    if (!job.parentKey) {
-        await job.remove();
-    }
     if ([JobType.validateTestCase, JobType.profSubmission].includes(job.name)) {
         let status: TestCaseStatus = "VALID";
         if (["ERROR", "FAIL"].includes(result.status)) {
@@ -182,10 +179,10 @@ job_events.on("completed", async ({jobId}) => {
         if ((job.name === JobType.validateTestCase || data.testCase.valid !== "VALID") && status === "VALID") {
             await runTestcase(testCase, data.image);
         }
-        return;
-    }
+    } else {
     // not a validation job, update the score in db
-    await updateScore(submission, testCase, pass);
+        await updateScore(submission, testCase, pass);
+    }
 });
 
 export const removeSubmission = async (utorid: string): Promise<void> => {
@@ -261,13 +258,13 @@ const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue
     };
     if (!job.parent) {
         await job_queue.add(job.name, {query, ...data}, {priority: 5});
-        return;
+    }else{
+        const parent = await job_queue.getJob(job.parent.id);
+        if (parent) {
+            await parent.updateData({query, ...data});
+        }
     }
-    const parent = await job_queue.getJob(job.parent.id);
-    if (!parent) {
-        return;
-    }
-    await parent.updateData({query, ...data});
+    await job.remove();
 }, {
     ...queue_conf,
     limiter: {
