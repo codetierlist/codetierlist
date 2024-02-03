@@ -57,7 +57,7 @@ const pending_queue: Queue<Omit<JobData, "query">, undefined, JobType> =
 
 const job_events: QueueEvents = new QueueEvents("job_queue", queue_conf);
 
-const parent_job_queue = new Queue("parent_job");
+const parent_job_queue = "parent_job";
 
 const flowProducer = new FlowProducer(queue_conf);
 
@@ -82,7 +82,7 @@ export const bulkQueueTestCases = async <T extends Submission | TestCase>(image:
     console.info(`Bulk queueing ${queue.length} test cases for ${item.author_id} submission/test case`);
     await flowProducer.add({
         name: JobType.parentJob,
-        queueName: parent_job_queue.name,
+        queueName: parent_job_queue,
         opts: {
             removeOnFail: true,
             removeOnComplete: true,
@@ -186,7 +186,7 @@ export const removeTestcases = async (utorid: string): Promise<void> => {
                 .map(async job => await job.remove())));
 };
 
-new Worker<ParentJobData, undefined, JobType>(parent_job_queue.name, async (job) => {
+new Worker<ParentJobData, undefined, JobType>(parent_job_queue, async (job) => {
     if (!job || !job.data) return;
     const children = Object.values(await job.getChildrenValues<JobResult>());
     const item = job.data.item;
@@ -232,9 +232,8 @@ const fetchWorker = new Worker<Omit<JobData, "query">, undefined, JobType>(pendi
     }
     await job_queue.add(job.name, {query, ...data}, {parent: {
         id: job.parent.id,
-        queue: parent_job_queue.name
+        queue: parent_job_queue
     }});
-
 }, {
     ...queue_conf,
     limiter: {
