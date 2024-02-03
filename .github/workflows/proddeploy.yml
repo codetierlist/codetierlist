@@ -20,7 +20,4 @@ jobs:
         run: docker compose up -d
         
       - name: cleanup
-        run: |
-          docker image prune -f
-          docker builder prune -f
-          docker system prune -af
+        run: docker system prune -af
