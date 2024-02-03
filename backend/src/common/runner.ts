@@ -256,11 +256,17 @@ for (let i = 0; i < 10; i++) {
             await job_queue.add(job.name, {query, ...data});
             return;
         }
+        const parent = await job_queue.getJob(job.parent.id);
+        if (!parent) {
+            return;
+        }
+        await parent.updateData({query, ...data});
     }, {
         ...queue_conf,
         limiter: {
             max: 5000,
             duration: 10,
         },
+        concurrency: 10
     });
 }
