@@ -1,20 +1,24 @@
-import asyncio
 import random
 import time
 from os import listdir
 
-import aiofiles
 import httpx
+import aiofiles
 import requests
 import uuid
 
-base_url = 'http://localhost:3555/api'
-course = 'CSC108' + uuid.uuid4().hex[:6]
-assignment = "lab10" + uuid.uuid4().hex[:6]
-admin_utorid="liutmich"
-admin_headers = {"utorid": admin_utorid, "http_mail": "ido.benhaim@mail.utoronto.ca", "sn": "Liut", "givenName": "Michael"}
-n = -1
-group_size = 10
+from multiprocessing import Pool
+
+base_url='http://localhost:3555/api'
+course=''
+assignment = ''
+admin_utorid = "liutmich"
+admin_headers = {"utorid": admin_utorid, "http_mail": "ido.benhaim@mail.utoronto.ca", "sn": "Liut",
+                 "givenName": "Michael"}
+n = 10
+group_size = 50
+
+
 def create_course(course_name: str, course_code: str) -> str:
     """
     Given a course name and a course code, create a course and return the
@@ -34,6 +38,7 @@ def create_course(course_name: str, course_code: str) -> str:
         print(response.status_code)
         print(response.json())
         exit(1)
+
 
 def create_assignment(course: str, assignment: str, due_date: str) -> str:
     """
@@ -60,14 +65,19 @@ def create_assignment(course: str, assignment: str, due_date: str) -> str:
         print(response.json())
         exit(1)
 
-def add_padding(user : str):
+
+def add_padding(user: str):
     return 'u' * (6 - len(user)) + user
 
-async def upload_submission(user : str):
-    async with httpx.AsyncClient() as client:
+
+def upload_submission(user: str):
+    print(course, assignment, user)
+    with open(f'./lab_10_submissions/{user}/lab10.py', mode='rb') as f:
+        contents = f.read()
+    with httpx.Client() as client:
         url = f'{base_url}/courses/{course}/assignments/{assignment}/submissions'
-        response = await client.post(url, files={
-            'files': ("lab10.py", open(f'./lab_10_submissions/{user}/lab10.py', 'rb'), "text/plain"),
+        response = client.post(url, files={
+            'files': ("lab10.py", contents, "text/plain"),
         }, headers={
             "utorid": add_padding(user),
             "http_mail": f"{user}@mail.utoronto.ca",
@@ -78,15 +88,17 @@ async def upload_submission(user : str):
             print(response.status_code)
             print(response.json())
 
-async def upload_tests(user : str):
-    async with aiofiles.open(f'./lab_10_submissions/{user}/lab10_tests.py', mode='rb') as f:
-        contents = await f.read()
-    async with httpx.AsyncClient() as client:
+
+def upload_tests(user: str):
+    print(course, assignment, user)
+    with open(f'./lab_10_submissions/{user}/lab10_tests.py', mode='rb') as f:
+        contents = f.read()
+    with httpx.Client() as client:
         url = f'{base_url}/courses/{course}/assignments/{assignment}/testcases'
         files = {
             'files': ("lab10_tests.py", contents, "text/plain")
         }
-        response = await client.post(url, files=files, headers={
+        response = client.post(url, files=files, headers={
             "utorid": add_padding(user),
             "http_mail": f"{user}@mail.utoronto.ca",
             "sn": "Last name",
@@ -96,10 +108,12 @@ async def upload_tests(user : str):
             print(response.status_code)
             print(response.json())
 
+
 def get_students():
     return list(listdir(f'./lab_10_submissions'))
 
-def enroll_students(students : list[str]):
+
+def enroll_students(students: list[str]):
     url = f'{base_url}/courses/{course}/add'
     print([add_padding(student) for student in students])
     data = {
@@ -111,18 +125,34 @@ def enroll_students(students : list[str]):
         print(response.status_code)
         print(response.json())
         exit(1)
-async def upload_student(student : str):
+
+
+def upload_student(data: tuple[str, str, str]):
+    global base_url
+    global course
+    global assignment
+    student = data[0]
+    course = data[1]
+    assignment = data[2]
     print(f"Uploading for {student}")
     try:
-        await upload_submission(student)
+        upload_submission(student)
         pass
     except Exception as e:
         print(e)
     try:
-        await upload_tests(student)
+        upload_tests(student)
     except Exception as e:
         print(e)
-async def main():
+    return student
+
+def main():
+    global base_url
+    global course
+    global assignment
+    base_url = 'http://localhost:3555/api'
+    course = 'CSC108' + uuid.uuid4().hex[:6]
+    assignment = "lab10" + uuid.uuid4().hex[:6]
     print("Creating course")
     create_course("Introduction to Computer Science", course)
     print("Creating assignment")
@@ -137,20 +167,23 @@ async def main():
                   open(f'./lab10.py', 'rb'),
                   "text/plain")
     }
-    response = requests.post(url, json={},files=files, headers=admin_headers)
+    response = requests.post(url, json={}, files=files, headers=admin_headers)
     if response.status_code != 200:
         print(response.status_code)
         print(response.json())
         exit(1)
     random.shuffle(students)
-    pooling = 20
+    pooling = 50
     print("Uploading", len(students), "students")
     print("Group size: ", group_size)
     print("Starting upload at a time: ", time.time())
-    for i in range(0, n if len(students) > n >= 0 else len(students), pooling):
-        print(f"Uploading students {i} to {i+pooling}")
-        await asyncio.gather(*map(upload_student, students[i:i+pooling]))
+    with Pool(pooling) as p:
+        p.map(upload_student, [(x, course, assignment) for x in students])
+    # for i in range(0, n if len(students) > n >= 0 else len(students), pooling):
+    #     print(f"Uploading students {i} to {i+pooling}")
+    #     await upload_student(students[i])
     print("Done")
 
+
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
