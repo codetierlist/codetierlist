@@ -15,14 +15,9 @@ jobs:
           
       - name: compose build
         run: docker compose build
-      - name: compose build runners
-        run: docker compose -f docker-compose-runner.yml build
-
 
       - name: compose up
         run: docker compose up -d
-      - name: compose up runners
-        run: docker compose -f docker-compose-runner.yml up -d
         
       - name: cleanup
         run: |
