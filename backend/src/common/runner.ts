@@ -97,11 +97,17 @@ export const bulkQueueTestCases = async <T extends Submission | TestCase>(image:
             const submission = "valid" in item ? cur as Submission : item as Submission;
             const testCase = "valid" in item ? item as TestCase : cur as TestCase;
             return {
+                opts:{
+                    priority: 10
+                },
                 children: [{
                     data: {
                         submission,
                         testCase,
                         image
+                    },
+                    opts:{
+                        priority: 10
                     },
                     name: JobType.testSubmission,
                     queueName: pending_queue.name
@@ -253,7 +259,7 @@ const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue
         'test_case_files': await getFiles(data.testCase),
     };
     if (!job.parent) {
-        await job_queue.add(job.name, {query, ...data});
+        await job_queue.add(job.name, {query, ...data}, {priority: 5});
         return;
     }
     const parent = await job_queue.getJob(job.parent.id);
