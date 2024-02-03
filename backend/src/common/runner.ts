@@ -199,6 +199,7 @@ new Worker<ParentJobData, undefined, JobType>(parent_job_queue, async (job, toke
         if(job.data.status === "WAITING_FILES"){
             await job.updateData({...job.data, status: "RUNNING"});
             job.data.status = "RUNNING";
+            return;
         }
     }
 
