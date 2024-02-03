@@ -225,4 +225,10 @@ const fetchWorker = new Worker<Omit<JobData, "query">, undefined, JobType>(pendi
         'test_case_files': await getFiles(data.testCase),
     };
     await job_queue.add(job.name, {...data, query});
-}, queue_conf);
+}, {
+    ...queue_conf,
+    limiter: {
+        max: 100,
+        duration: 500,
+    },
+},);
