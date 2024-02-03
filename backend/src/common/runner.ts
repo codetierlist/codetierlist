@@ -205,6 +205,7 @@ new Worker<ParentJobData, undefined, JobType>(parent_job_queue, async (job, toke
             job.data.status = "READY";
         }
         const shouldWait = await job.moveToWaitingChildren(token!);
+        console.log(`token: ${token}, shouldWait: ${shouldWait}, job.data.status: ${job.data.status}`);
         if (shouldWait) {
             throw new WaitingChildrenError();
         } else {
