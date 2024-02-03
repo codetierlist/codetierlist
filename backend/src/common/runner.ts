@@ -10,7 +10,7 @@ import {
     QueueEvents,
     Job,
     FlowProducer,
-    Worker
+    Worker, WaitingChildrenError
 } from "bullmq";
 import {runTestcase, updateScore} from "./updateScores";
 import prisma from "./prisma";
@@ -89,7 +89,8 @@ export const bulkQueueTestCases = async <T extends Submission | TestCase>(image:
         },
         data: {
             item: item,
-            type: "valid" in item ? "testcase" : "submission"
+            type: "valid" in item ? "testcase" : "submission",
+            status: "WAITING_FILES"
         } satisfies ParentJobData,
         children: queue.map(cur => {
             const submission = "valid" in item ? cur as Submission : item as Submission;
@@ -186,8 +187,15 @@ export const removeTestcases = async (utorid: string): Promise<void> => {
                 .map(async job => await job.remove())));
 };
 
-new Worker<ParentJobData, undefined, JobType>(parent_job_queue, async (job) => {
+new Worker<ParentJobData, undefined, JobType>(parent_job_queue, async (job, token) => {
     if (!job || !job.data) return;
+    if (token) {
+        const shouldWait = await job.moveToWaitingChildren(token);
+        if (shouldWait) {
+            throw new WaitingChildrenError();
+        }
+    }
+
     const children = Object.values(await job.getChildrenValues<JobResult>());
     const item = job.data.item;
     const type = job.data.type;
@@ -230,10 +238,12 @@ for (let i = 0; i < 10; i++) {
             await job_queue.add(job.name, {query, ...data});
             return;
         }
-        await job_queue.add(job.name, {query, ...data}, {parent: {
-            id: job.parent.id,
-            queue: parent_job_queue
-        }});
+        await job_queue.add(job.name, {query, ...data}, {
+            parent: {
+                id: job.parent.id,
+                queue: parent_job_queue
+            }
+        });
     }, {
         ...queue_conf,
         limiter: {
