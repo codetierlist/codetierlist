@@ -282,5 +282,6 @@ const parent_queue = new Queue<ParentJobData, undefined, JobType>(parent_job_que
 parent_job_events.on("completed", async ({jobId}) => {
     const job = await parent_queue.getJob(jobId);
     if (!job) return;
+    console.log(`Parent job ${job.id} completed, removing`);
     await job.remove({removeChildren: true});
 });
