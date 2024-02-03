@@ -153,6 +153,10 @@ job_events.on("completed", async ({jobId}) => {
     if (!job) return;
     const data = job.data;
     const result = job.returnvalue;
+    if(!data || !result) {
+        console.error(`job ${job.id} completed with no data or result`);
+        return;
+    }
     console.info(`job ${job.id} completed with status ${result.status} with data ${JSON.stringify(result)}`);
     const submission = data.submission;
     const testCase = data.testCase;
@@ -185,18 +189,19 @@ job_events.on("completed", async ({jobId}) => {
 export const removeSubmission = async (utorid: string): Promise<void> => {
     await Promise.all(await job_queue.getJobs(["waiting", "active"])
         .then(async (jobs) =>
-            jobs.filter(job => job.data.submission.author_id === utorid)
+            jobs.filter(job => job.data?.submission?.author_id === utorid)
                 .map(async job => await job.remove())));
 };
 
 export const removeTestcases = async (utorid: string): Promise<void> => {
     await Promise.all(await job_queue.getJobs(["waiting", "active"])
         .then(async (jobs) =>
-            jobs.filter(job => job.data.testCase.author_id === utorid)
+            jobs.filter(job => job.data?.testCase?.author_id === utorid)
                 .map(async job => await job.remove())));
 };
 
 new Worker<ParentJobData, undefined, JobType>(parent_job_queue, async (job) => {
+    if(!job || !job.data) return;
     const children = Object.values(await job.getChildrenValues<JobResult>());
     const item = job.data.item;
     const type = job.data.type;
