@@ -13,17 +13,8 @@ jobs:
         run: |
           echo "${{ secrets.REDIS_PASSWORD }}" > ./redis/.env;
 
-      - name: docker down
-        run: docker compose down
-
-      - name: cleanup1
-        run: docker system prune -af
-      
       - name: compose build
-        run: docker compose build
+        run: DOCKER_BUILDKIT=0 docker compose build
 
       - name: compose up
-        run: docker compose up -d
-        
-      - name: cleanup2
-        run: docker system prune -af
+        run: DOCKER_BUILDKIT=0 docker compose up -d
