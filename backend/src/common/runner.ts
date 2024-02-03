@@ -52,9 +52,9 @@ const queue_conf: QueueOptions = {
     }
 };
 const job_queue: Queue<ReadyJobData, JobResult, JobType> =
-    new Queue<ReadyJobData, JobResult, JobType>("job_queue", queue_conf);
+    new Queue<ReadyJobData, JobResult, JobType>("job_queue", {...queue_conf, defaultJobOptions:{removeOnComplete: true}});
 const pending_queue: Queue<PendingJobData, undefined, JobType> =
-    new Queue<PendingJobData, undefined, JobType>("pending_queue", queue_conf);
+    new Queue<PendingJobData, undefined, JobType>("pending_queue", {...queue_conf, defaultJobOptions:{removeOnComplete: true}});
 
 const job_events: QueueEvents = new QueueEvents("job_queue", queue_conf);
 
@@ -85,7 +85,6 @@ export const bulkQueueTestCases = async <T extends Submission | TestCase>(image:
         name: JobType.parentJob,
         queueName: parent_job_queue,
         opts: {
-            removeOnFail: true,
             removeOnComplete: true,
         },
         data: {
