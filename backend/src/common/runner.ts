@@ -205,20 +205,20 @@ export const removeTestcases = async (utorid: string): Promise<void> => {
 new Worker<ParentJobData, undefined, JobType>(parent_job_queue, async (job, token) => {
     if (!job || !job.data) return;
     console.info(`Parent job ${job.id} started processing at ${Date.now()}`);
-    while (job.data.status !== "COMPLETED") {
-        if (job.data.status === "WAITING_FILES") {
-            await job.updateData({...job.data, status: "READY"});
-            job.data.status = "READY";
-        }
-        const shouldWait = await job.moveToWaitingChildren(token!);
-        console.log(`token: ${token}, shouldWait: ${shouldWait}, job.data.status: ${job.data.status}`);
-        if (shouldWait) {
-            throw new WaitingChildrenError();
-        } else {
-            await job.updateData({...job.data, status: "COMPLETED"});
-            job.data.status = "COMPLETED";
-        }
-    }
+    // while (job.data.status !== "COMPLETED") {
+    //     if (job.data.status === "WAITING_FILES") {
+    //         await job.updateData({...job.data, status: "READY"});
+    //         job.data.status = "READY";
+    //     }
+    //     const shouldWait = await job.moveToWaitingChildren(token!);
+    //     console.log(`token: ${token}, shouldWait: ${shouldWait}, job.data.status: ${job.data.status}`);
+    //     if (shouldWait) {
+    //         throw new WaitingChildrenError();
+    //     } else {
+    //         await job.updateData({...job.data, status: "COMPLETED"});
+    //         job.data.status = "COMPLETED";
+    //     }
+    // }
 
     const children = Object.values(await job.getChildrenValues<JobResult>());
     const item = job.data.item;
