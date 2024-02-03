@@ -246,7 +246,7 @@ new Worker<ParentJobData, undefined, JobType>(parent_job_queue, async (job, toke
 
 const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue.name, async (job) => {
     const isRateLimited = await job_queue.count();
-    const waiting = await job_queue.getWaitingCount();
+    const waiting = await job_queue.getWaitingChildrenCount();
     console.log(`Fetched: ${isRateLimited}, Waiting: ${waiting}, Pending: ${await pending_queue.count()}`);
     if (isRateLimited - waiting >= max_fetched) {
         await fetchWorker.rateLimit(1000);
