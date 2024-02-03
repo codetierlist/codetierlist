@@ -1,5 +1,6 @@
 import asyncio
 import random
+import time
 from os import listdir
 
 import aiofiles
@@ -13,6 +14,7 @@ assignment = "lab10" + uuid.uuid4().hex[:6]
 admin_utorid="liutmich"
 admin_headers = {"utorid": admin_utorid, "http_mail": "ido.benhaim@mail.utoronto.ca", "sn": "Liut", "givenName": "Michael"}
 n = -1
+group_size = 10
 def create_course(course_name: str, course_code: str) -> str:
     """
     Given a course name and a course code, create a course and return the
@@ -48,7 +50,7 @@ def create_assignment(course: str, assignment: str, due_date: str) -> str:
         'name': assignment,
         'dueDate': due_date,
         'description': 'This is a lab assignment',
-        'groupSize': 100,
+        'groupSize': group_size,
         "image": "python",
         "image_version": "lab10-3.10.11"
     }
@@ -142,6 +144,9 @@ async def main():
         exit(1)
     random.shuffle(students)
     pooling = 20
+    print("Uploading", len(students), "students")
+    print("Group size: ", group_size)
+    print("Starting upload at a time: ", time.time())
     for i in range(0, n if len(students) > n >= 0 else len(students), pooling):
         print(f"Uploading students {i} to {i+pooling}")
         await asyncio.gather(*map(upload_student, students[i:i+pooling]))
