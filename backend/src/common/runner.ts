@@ -241,9 +241,14 @@ new Worker<ParentJobData, undefined, JobType>(parent_job_queue, async (job, toke
         });
     }
     console.log("Removing job");
-    await job.remove({
-        removeChildren: true
-    });
+    try {
+        await job.remove({
+            removeChildren: true
+        });
+    } catch (e){
+        console.error("Failed to remove job");
+        console.error(e);
+    }
     console.info(`Parent job ${job.id} completed with ${passed.length} passed out of ${children.length}. Finished processing at ${Date.now()}`);
     return undefined;
 }, queue_conf);
