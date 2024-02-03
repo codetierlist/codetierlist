@@ -1,6 +1,7 @@
 import {
     Submission,
-    JobData,
+    ReadyJobData,
+    PendingJobData,
     JobFiles,
     JobResult, Assignment, TestCaseStatus, RunnerImage, ParentJobData,
 } from "codetierlist-types";
@@ -50,10 +51,10 @@ const queue_conf: QueueOptions = {
         password: process.env.REDIS_PASSWORD
     }
 };
-const job_queue: Queue<JobData, JobResult, JobType> =
-    new Queue<JobData, JobResult, JobType>("job_queue", queue_conf);
-const pending_queue: Queue<Omit<JobData, "query">, undefined, JobType> =
-    new Queue<JobData, undefined, JobType>("pending_queue", queue_conf);
+const job_queue: Queue<ReadyJobData, JobResult, JobType> =
+    new Queue<ReadyJobData, JobResult, JobType>("job_queue", queue_conf);
+const pending_queue: Queue<PendingJobData, undefined, JobType> =
+    new Queue<PendingJobData, undefined, JobType>("pending_queue", queue_conf);
 
 const job_events: QueueEvents = new QueueEvents("job_queue", queue_conf);
 
@@ -96,13 +97,21 @@ export const bulkQueueTestCases = async <T extends Submission | TestCase>(image:
             const submission = "valid" in item ? cur as Submission : item as Submission;
             const testCase = "valid" in item ? item as TestCase : cur as TestCase;
             return {
+                children: [{
+                    data: {
+                        submission,
+                        testCase,
+                        image
+                    },
+                    name: JobType.testSubmission,
+                    queueName: pending_queue.name
+                }
+                ],
                 data: {
-                    submission,
-                    testCase,
-                    image
+                    status: "WAITING_FILES",
                 },
                 name: JobType.testSubmission,
-                queueName: pending_queue.name
+                queueName: job_queue.name
             };
         })
     });
@@ -136,11 +145,11 @@ export const queueJob = async (job: {
 };
 
 job_events.on("completed", async ({jobId}) => {
-    const job = await Job.fromId<JobData, JobResult, JobType>(job_queue, jobId);
+    const job = await Job.fromId<ReadyJobData, JobResult, JobType>(job_queue, jobId);
     if (!job) return;
     const data = job.data;
     const result = job.returnvalue;
-    if (!data || !result) {
+    if (!data || "status"  in data || !result) {
         console.error(`job ${job.id} completed with no data or result`);
         return;
     }
@@ -164,7 +173,7 @@ job_events.on("completed", async ({jobId}) => {
             }, data: {valid: status}
         });
         // if the test case is valid, run the test case on all student submissions
-        if ((job.name === JobType.validateTestCase || job.data.testCase.valid !== "VALID") && status === "VALID") {
+        if ((job.name === JobType.validateTestCase || data.testCase.valid !== "VALID") && status === "VALID") {
             await runTestcase(testCase, data.image);
         }
         return;
@@ -174,14 +183,14 @@ job_events.on("completed", async ({jobId}) => {
 });
 
 export const removeSubmission = async (utorid: string): Promise<void> => {
-    await Promise.all(await job_queue.getJobs(["waiting", "active"])
+    await Promise.all(await pending_queue.getJobs(["waiting", "active"])
         .then(async (jobs) =>
             jobs.filter(job => job.data?.submission?.author_id === utorid)
                 .map(async job => await job.remove())));
 };
 
 export const removeTestcases = async (utorid: string): Promise<void> => {
-    await Promise.all(await job_queue.getJobs(["waiting", "active"])
+    await Promise.all(await pending_queue.getJobs(["waiting", "active"])
         .then(async (jobs) =>
             jobs.filter(job => job.data?.testCase?.author_id === utorid)
                 .map(async job => await job.remove())));
@@ -190,16 +199,17 @@ export const removeTestcases = async (utorid: string): Promise<void> => {
 new Worker<ParentJobData, undefined, JobType>(parent_job_queue, async (job, token) => {
     if (!job || !job.data) return;
     console.info(`Parent job ${job.id} started processing at ${Date.now()}`);
-    while(job.data.status !== "COMPLETED"){
-        if (token) {
-            const shouldWait = await job.moveToWaitingChildren(token);
-            if (shouldWait) {
-                throw new WaitingChildrenError();
-            }
+    while (job.data.status !== "COMPLETED") {
+        if (job.data.status === "WAITING_FILES") {
+            await job.updateData({...job.data, status: "READY"});
+            job.data.status = "READY";
         }
-        if(job.data.status === "WAITING_FILES"){
-            await job.updateData({...job.data, status: "RUNNING"});
-            job.data.status = "RUNNING";
+        const shouldWait = await job.moveToWaitingChildren(token!);
+        if (shouldWait) {
+            throw new WaitingChildrenError();
+        } else {
+            await job.updateData({...job.data, status: "COMPLETED"});
+            job.data.status = "COMPLETED";
         }
     }
 
@@ -227,7 +237,7 @@ new Worker<ParentJobData, undefined, JobType>(parent_job_queue, async (job, toke
     return undefined;
 }, queue_conf);
 for (let i = 0; i < 10; i++) {
-    const fetchWorker = new Worker<Omit<JobData, "query">, undefined, JobType>(pending_queue.name, async (job) => {
+    const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue.name, async (job) => {
         const isRateLimited = await job_queue.count();
         console.log(`Fetched: ${isRateLimited}, Pending: ${await pending_queue.count()}`);
         if (isRateLimited >= max_fetched) {
@@ -245,12 +255,6 @@ for (let i = 0; i < 10; i++) {
             await job_queue.add(job.name, {query, ...data});
             return;
         }
-        await job_queue.add(job.name, {query, ...data}, {
-            parent: {
-                id: job.parent.id,
-                queue: parent_job_queue
-            }
-        });
     }, {
         ...queue_conf,
         limiter: {

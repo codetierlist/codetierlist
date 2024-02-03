@@ -119,11 +119,17 @@ type JobFiles = {
     [key: string]: string
 }
 
-export type JobData = {
+export type ReadyJobData = {
     image: RunnerImage,
     testCase: TestCase,
     submission: Submission,
     query: { solution_files: JobFiles, test_case_files: JobFiles }
+} | {status: "WAITING_FILES"}
+
+export type PendingJobData = {
+    image: RunnerImage,
+    testCase: TestCase,
+    submission: Submission,
 }
 export type ParentJobData = {
     item: Submission | TestCase,
@@ -131,7 +137,7 @@ export type ParentJobData = {
     status: ParentJobStatus
 }
 
-export type ParentJobStatus = "WAITING_FILES" | "RUNNING" | "COMPLETED"
+export type ParentJobStatus = "WAITING_FILES" | "READY" | "COMPLETED"
 
 enum _JobStatus {
     PASS = "PASS", // passes all test cases
