@@ -37,6 +37,11 @@ if (process.env.REDIS_PORT === undefined) {
 if (process.env.REDIS_PASSWORD === undefined) {
     console.warn("REDIS_PASSWORD is undefined, connection might fail");
 }
+let max_fetched = parseInt(process.env.MAX_FETCHED_JOBS ?? '5000');
+if (isNaN(max_fetched)) {
+    console.warn("MAX_FETCHED_JOBS is not a number, defaulting to 5000");
+    max_fetched = 5000;
+}
 
 const queue_conf: QueueOptions = {
     connection: {
@@ -47,6 +52,8 @@ const queue_conf: QueueOptions = {
 };
 const job_queue: Queue<JobData, JobResult, JobType> =
     new Queue<JobData, JobResult, JobType>("job_queue", queue_conf);
+const pending_queue: Queue<Omit<JobData, "query">, undefined, JobType> =
+    new Queue<JobData, undefined, JobType>("pending_queue", queue_conf);
 
 const job_events: QueueEvents = new QueueEvents("job_queue", queue_conf);
 
@@ -71,43 +78,39 @@ export const getFiles = async (submission: Submission | TestCase): Promise<JobFi
 };
 
 
-export const bulkQueueTestCases = async <T extends Submission | TestCase>(image : RunnerImage, item: T, queue: (T extends TestCase ? Submission : TestCase)[]) => {
+export const bulkQueueTestCases = async <T extends Submission | TestCase>(image: RunnerImage, item: T, queue: (T extends TestCase ? Submission : TestCase)[]) => {
     console.info(`Bulk queueing ${queue.length} test cases for ${item.author_id} submission/test case`);
-    // await flowProducer.add({
-    //     name: JobType.parentJob,
-    //     queueName: parent_job_queue,
-    //     opts:{
-    //         removeOnFail: true,
-    //         removeOnComplete: true,
-    //     },
-    //     data: {
-    //         item: item,
-    //         type: "valid" in item ? "testcase" : "submission"
-    //     } satisfies ParentJobData,
-    //     children: await Promise.all(queue.map(async cur =>{
-    //         const submission = "valid" in item ? cur as Submission : item as Submission;
-    //         const testCase = "valid" in item ? item as TestCase : cur as TestCase ;
-    //         return ({
-    //             data: {
-    //                 submission,
-    //                 testCase,
-    //                 image,
-    //                 query: {
-    //                     solution_files: await getFiles(submission),
-    //                     test_case_files: await getFiles(testCase),
-    //                 }
-    //             } satisfies JobData,
-    //             name: JobType.testSubmission,
-    //             queueName: job_queue.name
-    //         });
-    //     }))
-    // });
-    await Promise.all(queue.map(async cur =>{
-        const submission = "valid" in item ? cur as Submission : item as Submission;
-        const testCase = "valid" in item ? item as TestCase : cur as TestCase ;
-        // eslint-disable-next-line @typescript-eslint/no-use-before-define
-        return queueJob({submission, testCase, image}, JobType.testSubmission);
-    }));
+    await flowProducer.add({
+        name: JobType.parentJob,
+        queueName: parent_job_queue,
+        opts: {
+            removeOnFail: true,
+            removeOnComplete: true,
+        },
+        data: {
+            item: item,
+            type: "valid" in item ? "testcase" : "submission"
+        } satisfies ParentJobData,
+        children: queue.map(cur => {
+            const submission = "valid" in item ? cur as Submission : item as Submission;
+            const testCase = "valid" in item ? item as TestCase : cur as TestCase;
+            return {
+                data: {
+                    submission,
+                    testCase,
+                    image
+                },
+                name: JobType.testSubmission,
+                queueName: pending_queue.name
+            };
+        })
+    });
+    // await Promise.all(queue.map(async cur =>{
+    //     const submission = "valid" in item ? cur as Submission : item as Submission;
+    //     const testCase = "valid" in item ? item as TestCase : cur as TestCase ;
+    //     // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    //     return queueJob({submission, testCase, image}, JobType.testSubmission);
+    // }));
 };
 
 // TODO: add empty submission and testcase reporting
@@ -121,35 +124,12 @@ export const queueJob = async (job: {
     testCase: TestCase,
     image: Assignment | RunnerImage,
 }, name: JobType, priority: number = 10): Promise<string | undefined> => {
-    // TODO get the files in runner
-    let query: { solution_files: JobFiles, test_case_files: JobFiles };
-    try {
-        query = {
-            'solution_files': await getFiles(job.submission),
-            'test_case_files': await getFiles(job.testCase),
-        };
-    } catch (e) {
-        console.error(e);
-        return undefined;
-    }
-
-    if (Object.keys(query.test_case_files).length == 0) {
-        return undefined;
-    }
-
-    if (Object.keys(query.solution_files).length == 0) {
-        return undefined;
-    }
-
-    const jd: JobData = {
+    // push to redis queue
+    const redis_job = await pending_queue.add(name, {
         testCase: job.testCase,
         submission: job.submission,
         image: job.image,
-        query
-    };
-
-    // push to redis queue
-    const redis_job = await job_queue.add(name, jd, {priority});
+    }, {priority});
     console.info(`job ${redis_job.id} added to queue`);
     return redis_job.id;
 };
@@ -159,7 +139,7 @@ job_events.on("completed", async ({jobId}) => {
     if (!job) return;
     const data = job.data;
     const result = job.returnvalue;
-    if(!data || !result) {
+    if (!data || !result) {
         console.error(`job ${job.id} completed with no data or result`);
         return;
     }
@@ -167,7 +147,7 @@ job_events.on("completed", async ({jobId}) => {
     const submission = data.submission;
     const testCase = data.testCase;
     const pass = result.status === "PASS";
-    if(!job.parentKey) {
+    if (!job.parentKey) {
         await job.remove();
     }
     if ([JobType.validateTestCase, JobType.profSubmission].includes(job.name)) {
@@ -207,27 +187,42 @@ export const removeTestcases = async (utorid: string): Promise<void> => {
 };
 
 new Worker<ParentJobData, undefined, JobType>(parent_job_queue, async (job) => {
-    if(!job || !job.data) return;
+    if (!job || !job.data) return;
     const children = Object.values(await job.getChildrenValues<JobResult>());
     const item = job.data.item;
     const type = job.data.type;
     const passed = children.filter(x => x.status === "PASS");
-    if(type === "submission") {
+    if (type === "submission") {
         const submission = item as Submission;
         publish("solution:processed", submission, {
             passed: passed.length,
             total: children.length
         });
     }
-    if(type === "testcase") {
+    if (type === "testcase") {
         const testCase = item as TestCase;
         const passedOrFailed = children.filter(x => x.status === "PASS" || x.status === "FAIL");
         publish("testcase:processed", testCase, {
             passed: passed.length,
             total: children.length,
-            number: passedOrFailed.map(x=>"amount" in x ? x.amount : 0).reduce((a,b)=>a+b, 0)/passedOrFailed.length
+            number: passedOrFailed.map(x => "amount" in x ? x.amount : 0).reduce((a, b) => a + b, 0) / passedOrFailed.length
         });
     }
     console.info(`Parent job ${job.id} completed with ${passed.length} passed out of ${children.length}. Finished processing at ${Date.now()}`);
     return undefined;
 }, queue_conf);
+
+const fetchWorker = new Worker<Omit<JobData, "query">, undefined, JobType>(pending_queue.name, async (job) => {
+    const isRateLimited = await pending_queue.count();
+    if (isRateLimited >= max_fetched) {
+        await fetchWorker.rateLimit(1000);
+        throw Worker.RateLimitError();
+    }
+    if (!job || !job.data || !job.name) return;
+    const data = job.data;
+    const query = {
+        'solution_files': await getFiles(data.submission),
+        'test_case_files': await getFiles(data.testCase),
+    };
+    await job_queue.add(job.name, {...data, query});
+});
