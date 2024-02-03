@@ -234,7 +234,7 @@ const fetchWorker = new Worker<Omit<JobData, "query">, undefined, JobType>(pendi
 }, {
     ...queue_conf,
     limiter: {
-        max: 1,
-        duration: 1,
+        max: 20,
+        duration: 10,
     },
 },);
