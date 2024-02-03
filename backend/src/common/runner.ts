@@ -10,7 +10,7 @@ import {
     QueueEvents,
     Job,
     FlowProducer,
-    Worker, WaitingChildrenError
+    Worker
 } from "bullmq";
 import {runTestcase, updateScore} from "./updateScores";
 import prisma from "./prisma";
@@ -80,38 +80,37 @@ export const getFiles = async (submission: Submission | TestCase): Promise<JobFi
 
 export const bulkQueueTestCases = async <T extends Submission | TestCase>(image: RunnerImage, item: T, queue: (T extends TestCase ? Submission : TestCase)[]) => {
     console.info(`Bulk queueing ${queue.length} test cases for ${item.author_id} submission/test case`);
-    await flowProducer.add({
-        name: JobType.parentJob,
-        queueName: parent_job_queue,
-        opts: {
-            removeOnFail: true,
-            removeOnComplete: true,
-        },
-        data: {
-            item: item,
-            type: "valid" in item ? "testcase" : "submission",
-            status: "WAITING_FILES"
-        } satisfies ParentJobData,
-        children: queue.map(cur => {
-            const submission = "valid" in item ? cur as Submission : item as Submission;
-            const testCase = "valid" in item ? item as TestCase : cur as TestCase;
-            return {
-                data: {
-                    submission,
-                    testCase,
-                    image
-                },
-                name: JobType.testSubmission,
-                queueName: pending_queue.name
-            };
-        })
-    });
-    // await Promise.all(queue.map(async cur =>{
-    //     const submission = "valid" in item ? cur as Submission : item as Submission;
-    //     const testCase = "valid" in item ? item as TestCase : cur as TestCase ;
-    //     // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    //     return queueJob({submission, testCase, image}, JobType.testSubmission);
-    // }));
+    // await flowProducer.add({
+    //     name: JobType.parentJob,
+    //     queueName: parent_job_queue,
+    //     opts: {
+    //         removeOnFail: true,
+    //         removeOnComplete: true,
+    //     },
+    //     data: {
+    //         item: item,
+    //         type: "valid" in item ? "testcase" : "submission"
+    //     } satisfies ParentJobData,
+    //     children: queue.map(cur => {
+    //         const submission = "valid" in item ? cur as Submission : item as Submission;
+    //         const testCase = "valid" in item ? item as TestCase : cur as TestCase;
+    //         return {
+    //             data: {
+    //                 submission,
+    //                 testCase,
+    //                 image
+    //             },
+    //             name: JobType.testSubmission,
+    //             queueName: pending_queue.name
+    //         };
+    //     })
+    // });
+    await Promise.all(queue.map(async cur =>{
+        const submission = "valid" in item ? cur as Submission : item as Submission;
+        const testCase = "valid" in item ? item as TestCase : cur as TestCase ;
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+        return queueJob({submission, testCase, image}, JobType.testSubmission);
+    }));
 };
 
 // TODO: add empty submission and testcase reporting
@@ -187,15 +186,8 @@ export const removeTestcases = async (utorid: string): Promise<void> => {
                 .map(async job => await job.remove())));
 };
 
-new Worker<ParentJobData, undefined, JobType>(parent_job_queue, async (job, token) => {
+new Worker<ParentJobData, undefined, JobType>(parent_job_queue, async (job) => {
     if (!job || !job.data) return;
-    if (token) {
-        const shouldWait = await job.moveToWaitingChildren(token);
-        if (shouldWait) {
-            throw new WaitingChildrenError();
-        }
-    }
-
     const children = Object.values(await job.getChildrenValues<JobResult>());
     const item = job.data.item;
     const type = job.data.type;
@@ -238,12 +230,7 @@ for (let i = 0; i < 10; i++) {
             await job_queue.add(job.name, {query, ...data});
             return;
         }
-        await job_queue.add(job.name, {query, ...data}, {
-            parent: {
-                id: job.parent.id,
-                queue: parent_job_queue
-            }
-        });
+        await job_queue.add(job.name, {query, ...data});
     }, {
         ...queue_conf,
         limiter: {
