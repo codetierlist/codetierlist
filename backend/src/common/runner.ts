@@ -248,7 +248,7 @@ const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue
     const isRateLimited = await job_queue.count();
     console.log(`Fetched: ${isRateLimited}, Pending: ${await pending_queue.count()}`);
     if (isRateLimited >= max_fetched) {
-        await fetchWorker.rateLimit(100);
+        await fetchWorker.rateLimit(1000);
         throw Worker.RateLimitError();
     }
     console.info(`Fetching job files for ${job.id}`);
@@ -270,9 +270,9 @@ const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue
 }, {
     ...queue_conf,
     limiter: {
-        max: 50,
+        max: 1,
         duration: 10,
     },
-    concurrency: 10
+    concurrency: 50
 });
 
