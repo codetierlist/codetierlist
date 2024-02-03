@@ -185,7 +185,7 @@ export const processSubmission = async (req: Request, res: Response, table: "sol
                     }
                 });
 
-                if (latestGroup === null || (latestGroup._count.members === req.assignment!.group_size && req.assignment!.group_size >= 1)) {
+                if (latestGroup === null || (latestGroup._count.members >= req.assignment!.group_size && req.assignment!.group_size >= 1)) {
                     group = latestGroup === null ? 0 : latestGroup.number + 1;
                 } else {
                     group = latestGroup.number;
