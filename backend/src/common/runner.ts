@@ -189,10 +189,17 @@ export const removeTestcases = async (utorid: string): Promise<void> => {
 
 new Worker<ParentJobData, undefined, JobType>(parent_job_queue, async (job, token) => {
     if (!job || !job.data) return;
-    if (token) {
-        const shouldWait = await job.moveToWaitingChildren(token);
-        if (shouldWait) {
-            throw new WaitingChildrenError();
+    while(job.data.status !== "COMPLETED"){
+        if (token) {
+            const shouldWait = await job.moveToWaitingChildren(token);
+            if (shouldWait) {
+                throw new WaitingChildrenError();
+            }
+        }
+        if(job.data.status === "WAITING_FILES"){
+            await job.updateData({...job.data, status: "RUNNING"});
+            job.data.status = "RUNNING";
+            return;
         }
     }
 
