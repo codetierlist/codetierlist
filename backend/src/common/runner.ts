@@ -57,7 +57,7 @@ const pending_queue: Queue<Omit<JobData, "query">, undefined, JobType> =
 
 const job_events: QueueEvents = new QueueEvents("job_queue", queue_conf);
 
-const parent_job_queue = "parent_job";
+const parent_job_queue = new Queue("parent_job");
 
 const flowProducer = new FlowProducer(queue_conf);
 
@@ -82,7 +82,7 @@ export const bulkQueueTestCases = async <T extends Submission | TestCase>(image:
     console.info(`Bulk queueing ${queue.length} test cases for ${item.author_id} submission/test case`);
     await flowProducer.add({
         name: JobType.parentJob,
-        queueName: parent_job_queue,
+        queueName: parent_job_queue.name,
         opts: {
             removeOnFail: true,
             removeOnComplete: true,
@@ -186,7 +186,7 @@ export const removeTestcases = async (utorid: string): Promise<void> => {
                 .map(async job => await job.remove())));
 };
 
-new Worker<ParentJobData, undefined, JobType>(parent_job_queue, async (job) => {
+new Worker<ParentJobData, undefined, JobType>(parent_job_queue.name, async (job) => {
     if (!job || !job.data) return;
     const children = Object.values(await job.getChildrenValues<JobResult>());
     const item = job.data.item;
@@ -213,7 +213,7 @@ new Worker<ParentJobData, undefined, JobType>(parent_job_queue, async (job) => {
 }, queue_conf);
 
 const fetchWorker = new Worker<Omit<JobData, "query">, undefined, JobType>(pending_queue.name, async (job) => {
-    const isRateLimited = await pending_queue.count();
+    const isRateLimited = await job_queue.count();
     console.log(`Rate limited: ${isRateLimited}`);
     if (isRateLimited >= max_fetched) {
         await fetchWorker.rateLimit(1000);
@@ -226,7 +226,15 @@ const fetchWorker = new Worker<Omit<JobData, "query">, undefined, JobType>(pendi
         'solution_files': await getFiles(data.submission),
         'test_case_files': await getFiles(data.testCase),
     };
-    await job_queue.add(job.name, {...data, query});
+    if (!job.parent) {
+        await job_queue.add(job.name, {query, ...data});
+        return;
+    }
+    await job_queue.add(job.name, {query, ...data}, {parent: {
+        id: job.parent.id,
+        queue: parent_job_queue.name
+    }});
+
 }, {
     ...queue_conf,
     limiter: {
