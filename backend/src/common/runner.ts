@@ -73,35 +73,41 @@ export const getFiles = async (submission: Submission | TestCase): Promise<JobFi
 
 export const bulkQueueTestCases = async <T extends Submission | TestCase>(image : RunnerImage, item: T, queue: (T extends TestCase ? Submission : TestCase)[]) => {
     console.info(`Bulk queueing ${queue.length} test cases for ${item.author_id} submission/test case`);
-    await flowProducer.add({
-        name: JobType.parentJob,
-        queueName: parent_job_queue,
-        opts:{
-            removeOnFail: true,
-            removeOnComplete: true,
-        },
-        data: {
-            item: item,
-            type: "valid" in item ? "testcase" : "submission"
-        } satisfies ParentJobData,
-        children: await Promise.all(queue.map(async cur =>{
-            const submission = "valid" in item ? cur as Submission : item as Submission;
-            const testCase = "valid" in item ? item as TestCase : cur as TestCase ;
-            return ({
-                data: {
-                    submission,
-                    testCase,
-                    image,
-                    query: {
-                        solution_files: await getFiles(submission),
-                        test_case_files: await getFiles(testCase),
-                    }
-                } satisfies JobData,
-                name: JobType.testSubmission,
-                queueName: job_queue.name
-            });
-        }))
-    });
+    // await flowProducer.add({
+    //     name: JobType.parentJob,
+    //     queueName: parent_job_queue,
+    //     opts:{
+    //         removeOnFail: true,
+    //         removeOnComplete: true,
+    //     },
+    //     data: {
+    //         item: item,
+    //         type: "valid" in item ? "testcase" : "submission"
+    //     } satisfies ParentJobData,
+    //     children: await Promise.all(queue.map(async cur =>{
+    //         const submission = "valid" in item ? cur as Submission : item as Submission;
+    //         const testCase = "valid" in item ? item as TestCase : cur as TestCase ;
+    //         return ({
+    //             data: {
+    //                 submission,
+    //                 testCase,
+    //                 image,
+    //                 query: {
+    //                     solution_files: await getFiles(submission),
+    //                     test_case_files: await getFiles(testCase),
+    //                 }
+    //             } satisfies JobData,
+    //             name: JobType.testSubmission,
+    //             queueName: job_queue.name
+    //         });
+    //     }))
+    // });
+    await Promise.all(queue.map(async cur =>{
+        const submission = "valid" in item ? cur as Submission : item as Submission;
+        const testCase = "valid" in item ? item as TestCase : cur as TestCase ;
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+        return queueJob({submission, testCase, image}, JobType.testSubmission);
+    }));
 };
 
 // TODO: add empty submission and testcase reporting
