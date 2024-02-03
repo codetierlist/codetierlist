@@ -127,8 +127,11 @@ export type JobData = {
 }
 export type ParentJobData = {
     item: Submission | TestCase,
-    type: "submission" | "testcase"
+    type: "submission" | "testcase",
+    status: ParentJobStatus
 }
+
+export type ParentJobStatus = "WAITING_FILES" | "RUNNING" | "COMPLETED"
 
 enum _JobStatus {
     PASS = "PASS", // passes all test cases

@@ -14,17 +14,8 @@ jobs:
           echo "${{ secrets.REDIS_PASSWORD }}" > ./redis/.env;
           echo "${{ secrets.REDIS_HOSTPORT }}" > ./runner/.env;
 
-      - name: docker down
-        run: docker compose -f docker-compose-runner.yml down
-
-      - name: cleanup1
-        run: docker system prune -af
-
       - name: compose build runners
-        run: docker compose -f docker-compose-runner.yml build
+        run: DOCKER_BUILDKIT=0 docker compose -f docker-compose-runner.yml build
 
       - name: compose up runners
-        run: docker compose -f docker-compose-runner.yml up -d
-
-      - name: cleanup2
-        run: docker system prune -af
+        run: DOCKER_BUILDKIT=0 docker compose -f docker-compose-runner.yml up -d
