@@ -38,10 +38,10 @@ if (process.env.REDIS_PORT === undefined) {
 if (process.env.REDIS_PASSWORD === undefined) {
     console.warn("REDIS_PASSWORD is undefined, connection might fail");
 }
-let max_fetched = parseInt(process.env.MAX_FETCHED_JOBS ?? '5000');
+let max_fetched = parseInt(process.env.MAX_FETCHED_JOBS ?? '100');
 if (isNaN(max_fetched)) {
-    console.warn("MAX_FETCHED_JOBS is not a number, defaulting to 5000");
-    max_fetched = 5000;
+    console.warn("MAX_FETCHED_JOBS is not a number, defaulting to 100");
+    max_fetched = 100;
 }
 
 const queue_conf: QueueOptions = {
