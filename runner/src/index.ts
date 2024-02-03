@@ -121,6 +121,6 @@ workers.push(new Worker<ReadyJobData, JobResult>("job_queue",
             port: parseInt(process.env.REDIS_PORT),
             password: process.env.REDIS_PASSWORD
         },
-    }
-));
+        concurrency: mtask
+    }));
 
