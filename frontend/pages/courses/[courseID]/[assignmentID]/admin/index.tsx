@@ -1,5 +1,5 @@
 import axios, { handleError } from "@/axios";
-import { CourseSessionChip, getSession, AdminToolbarDeleteAssignmentButton } from '@/components';
+import { AdminToolbarDeleteAssignmentButton, HeaderToolbar } from '@/components';
 import {
     Card,
     Table,
@@ -7,28 +7,34 @@ import {
     TableCell,
     TableHeader,
     TableHeaderCell,
-    TableRow
+    Tooltip,
+    TableRow,
+    Button,
+    Field,
+    Input
 } from "@fluentui/react-components";
-import { Title2 } from '@fluentui/react-text';
 import {
     AssignmentStudentStats,
-    FetchedAssignmentWithTier,
-    FetchedCourseWithTiers
+    FetchedAssignmentWithTier
 } from "codetierlist-types";
 import Error from 'next/error';
 import Head from "next/head";
-import { notFound } from "next/navigation";
+import { Search24Regular, Dismiss24Regular } from "@fluentui/react-icons";
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from "react";
 import { SnackbarContext } from '../../../../../contexts/SnackbarContext';
-import styles from './page.module.css';
 
 export default function Page() {
-    const [course, setCourse] = useState<FetchedCourseWithTiers | null>(null);
     const { courseID, assignmentID } = useRouter().query;
+
+    useEffect(() => {
+        document.title = `${courseID} - Codetierlist`;
+    }, [courseID]);
+
     const { showSnackSev } = useContext(SnackbarContext);
     const [assignment, setAssignment] = useState<FetchedAssignmentWithTier | null>(null);
     const [studentData, setStudentData] = useState<AssignmentStudentStats>([]);
+    const [filterValue, setFilterValue] = useState<string>("");
 
     const fetchAssignment = async () => {
         await axios.get<FetchedAssignmentWithTier>(`/courses/${courseID}/assignments/${assignmentID}`, { skipErrorHandling: true })
@@ -42,35 +48,11 @@ export default function Page() {
             .catch(handleError(showSnackSev));
     };
 
-    const fetchCourse = async () => {
-        if (!courseID) return;
-        await axios.get<FetchedCourseWithTiers>(`/courses/${courseID}`, { skipErrorHandling: true })
-            .then((res) => setCourse(res.data))
-            .catch(e => {
-                handleError(showSnackSev)(e);
-                notFound();
-            });
-    };
-
     useEffect(() => {
-        void fetchCourse();
-        document.title = `${courseID} - Codetierlist`;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [courseID]);
-
-    useEffect(() => {
-
         if (!courseID || !assignmentID) {
             return;
         }
         void fetchAssignment();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [courseID, assignmentID]);
-
-    useEffect(() => {
-        if (!courseID || !assignmentID) {
-            return;
-        }
         void fetchAssignmentStats();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [courseID, assignmentID]);
@@ -96,46 +78,67 @@ export default function Page() {
             </Head>
 
             <main>
-                <AdminToolbarDeleteAssignmentButton assignment={assignment} />
+                <HeaderToolbar>
+                    <AdminToolbarDeleteAssignmentButton assignment={assignment} />
+                </HeaderToolbar>
 
-                <Card className={styles.mainCard}>
-                    <div className={styles.cardContents}>
-                        <header className={styles.header}>
-                            <Title2 className={styles.courseTitle}>
-                                {course &&
-                                    <CourseSessionChip
-                                        session={getSession(new Date(course.createdAt))}>
-                                        {courseID}
-                                    </CourseSessionChip>
+                <Card className="m-x-l m-t-xxl">
+                    <div className="m-y-s m-x-xxxl">
+                        <Field>
+                            <Input
+                                size="large"
+                                placeholder="Search"
+                                contentBefore={<Search24Regular />}
+                                contentAfter={
+                                    <>
+                                        {
+                                            (filterValue !== "") &&
+                                            <Tooltip content="Clear search" relationship="label" showDelay={0} hideDelay={300} >
+                                                <Button
+                                                    icon={<Dismiss24Regular />}
+                                                    appearance="subtle"
+                                                    onClick={() => setFilterValue("")}
+                                                />
+                                            </Tooltip>
+                                        }
+                                    </>
                                 }
-                            </Title2>
-                            <Title2>{assignment.title}</Title2>
-                        </header>
-
-                        <Table arial-label="Default table" className={styles.table}>
-                            <TableHeader>
-                                <TableRow>
-                                    {columns.map((column) => (
-                                        <TableHeaderCell key={column.columnKey}>
-                                            {column.label}
-                                        </TableHeaderCell>
-                                    ))}
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {studentData.map((item) => (
-                                    <TableRow key={item.utorid}>
-                                        <TableCell> {item.utorid} </TableCell>
-                                        <TableCell> {item.givenName + " " + item.surname} </TableCell>
-                                        {/* <TableCell onClick={openRepo(item.gitRepo.label)} style={{ cursor: 'pointer', textDecoration: 'underline' }}> Link </TableCell> */}
-                                        <TableCell> {item.testsPassed}/{item.totalTests} </TableCell>
-                                        {/*<TableCell> {item.submitSol.label} </TableCell>*/}
-                                        {/*<TableCell> {item.submitTest.label} </TableCell>*/}
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
+                                appearance="filled-darker"
+                                value={filterValue}
+                                onChange={(e) => setFilterValue(e.target.value)}
+                            />
+                        </Field>
                     </div>
+                    <Table arial-label="Default table" className="m-xs m-t-s">
+                        <TableHeader>
+                            <TableRow>
+                                {columns.map((column) => (
+                                    <TableHeaderCell key={column.columnKey}>
+                                        {column.label}
+                                    </TableHeaderCell>
+                                ))}
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {studentData.map((item) => (
+                                <TableRow
+                                    key={item.utorid}
+                                    hidden={
+                                        !item.utorid.includes(filterValue) &&
+                                        !item.givenName.includes(filterValue) &&
+                                        !item.surname.includes(filterValue)
+                                    }
+                                >
+                                    <TableCell> {item.utorid} </TableCell>
+                                    <TableCell> {item.givenName + " " + item.surname} </TableCell>
+                                    {/* <TableCell onClick={openRepo(item.gitRepo.label)} style={{ cursor: 'pointer', textDecoration: 'underline' }}> Link </TableCell> */}
+                                    <TableCell> {item.testsPassed}/{item.totalTests} </TableCell>
+                                    {/*<TableCell> {item.submitSol.label} </TableCell>*/}
+                                    {/*<TableCell> {item.submitTest.label} </TableCell>*/}
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
                 </Card>
             </main>
         </>
