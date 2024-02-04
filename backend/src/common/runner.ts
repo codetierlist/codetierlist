@@ -52,7 +52,8 @@ const queue_conf: QueueOptions = {
     }
 };
 const job_queue: Queue<ReadyJobData, JobResult, JobType> =
-    new Queue<ReadyJobData, JobResult, JobType>("job_queue", queue_conf);
+    new Queue<ReadyJobData, JobResult, JobType>("job_queue", {...queue_conf,
+        defaultJobOptions: {backoff: {type: "fixed", delay: 1000}}});
 const pending_queue: Queue<PendingJobData, undefined, JobType> =
     new Queue<PendingJobData, undefined, JobType>("pending_queue", {...queue_conf, defaultJobOptions: {removeOnComplete:true}});
 
@@ -255,8 +256,8 @@ const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue
         + await job_queue.getFailedCount()
         + await job_queue.getCompletedCount()
         + await job_queue.getDelayedCount();
-    console.log(`Fetched: ${isRateLimited}, Waiting: ${waiting}, Pending: ${await pending_queue.count()}`);
     if (isRateLimited - waiting >= max_fetched) {
+        console.log(`Fetched: ${isRateLimited}, Waiting: ${waiting}, Pending: ${await pending_queue.count()}`);
         await fetchWorker.rateLimit(1000);
         throw Worker.RateLimitError();
     }
