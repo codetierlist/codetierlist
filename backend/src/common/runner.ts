@@ -11,7 +11,7 @@ import {
     QueueEvents,
     Job,
     FlowProducer,
-    Worker, WaitingChildrenError, JobData
+    Worker, WaitingChildrenError, JobData, UnrecoverableError
 } from "bullmq";
 import {runTestcase, updateScore} from "./updateScores";
 import prisma from "./prisma";
@@ -102,18 +102,20 @@ export const bulkQueueTestCases = async <T extends Submission | TestCase>(image:
                 opts: {
                     priority: 10,
                     attempts: 3,
-                    backoff: {type: "fixed", delay: 1000}
+                    backoff: {type: "exponential", delay: 1000}
                 },
                 children: [
                     {
                         data: {
-                            submission,
-                            testCase,
+                            submissionId: submission.id,
+                            submissionAuthorId: submission.author_id,
+                            testcaseId: testCase.id,
+                            testcaseAuthorId: testCase.author_id,
                             image: {
                                 runner_image: image.runner_image,
                                 image_version: image.image_version
                             }
-                        },
+                        } satisfies PendingJobData,
                         opts: {
                             priority: 10,
                             attempts: 3,
@@ -285,7 +287,7 @@ const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue
     });
     if(!submission || !testCase) {
         console.error(`Submission or test case not found for job ${job.id}`);
-        throw new Error("Submission or test case not found");
+        throw new UnrecoverableError("Submission or test case not found");
     }
     const query = {
         'solution_files': await getFiles(submission),
@@ -304,7 +306,7 @@ const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue
 }, {
     ...queue_conf,
     limiter: {
-        max: 1,
+        max: 50,
         duration: 10,
     },
     concurrency: 50
