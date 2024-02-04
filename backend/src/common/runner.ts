@@ -82,52 +82,52 @@ export const getFiles = async (submission: Submission | TestCase): Promise<JobFi
 
 export const bulkQueueTestCases = async <T extends Submission | TestCase>(image: RunnerImage, item: T, queue: (T extends TestCase ? Submission : TestCase)[]) => {
     console.info(`Bulk queueing ${queue.length} test cases for ${item.author_id} submission/test case`);
-    await flowProducer.add({
-        name: JobType.parentJob,
-        queueName: parent_job_queue,
-        opts: {
-            removeOnFail: false,
-            removeOnComplete: false,
-        },
-        data: {
-            item: item,
-            type: "valid" in item ? "testcase" : "submission",
-            status: "WAITING_FILES"
-        } satisfies ParentJobData,
-        children: queue.map(cur => {
-            const submission = "valid" in item ? cur as Submission : item as Submission;
-            const testCase = "valid" in item ? item as TestCase : cur as TestCase;
-            return {
-                opts: {
-                    priority: 10
-                },
-                children: [{
-                    data: {
-                        submission,
-                        testCase,
-                        image
-                    },
-                    opts: {
-                        priority: 10
-                    },
-                    name: JobType.testSubmission,
-                    queueName: pending_queue.name
-                }
-                ],
-                data: {
-                    status: "WAITING_FILES",
-                },
-                name: JobType.testSubmission,
-                queueName: job_queue.name
-            };
-        })
-    });
-    // await Promise.all(queue.map(async cur =>{
-    //     const submission = "valid" in item ? cur as Submission : item as Submission;
-    //     const testCase = "valid" in item ? item as TestCase : cur as TestCase ;
-    //     // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    //     return queueJob({submission, testCase, image}, JobType.testSubmission);
-    // }));
+    // await flowProducer.add({
+    //     name: JobType.parentJob,
+    //     queueName: parent_job_queue,
+    //     opts: {
+    //         removeOnFail: false,
+    //         removeOnComplete: false,
+    //     },
+    //     data: {
+    //         item: item,
+    //         type: "valid" in item ? "testcase" : "submission",
+    //         status: "WAITING_FILES"
+    //     } satisfies ParentJobData,
+    //     children: queue.map(cur => {
+    //         const submission = "valid" in item ? cur as Submission : item as Submission;
+    //         const testCase = "valid" in item ? item as TestCase : cur as TestCase;
+    //         return {
+    //             opts: {
+    //                 priority: 10
+    //             },
+    //             children: [{
+    //                 data: {
+    //                     submission,
+    //                     testCase,
+    //                     image
+    //                 },
+    //                 opts: {
+    //                     priority: 10
+    //                 },
+    //                 name: JobType.testSubmission,
+    //                 queueName: pending_queue.name
+    //             }
+    //             ],
+    //             data: {
+    //                 status: "WAITING_FILES",
+    //             },
+    //             name: JobType.testSubmission,
+    //             queueName: job_queue.name
+    //         };
+    //     })
+    // });
+    await Promise.all(queue.map(async cur =>{
+        const submission = "valid" in item ? cur as Submission : item as Submission;
+        const testCase = "valid" in item ? item as TestCase : cur as TestCase ;
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+        return queueJob({submission, testCase, image}, JobType.testSubmission);
+    }));
 };
 
 // TODO: add empty submission and testcase reporting
