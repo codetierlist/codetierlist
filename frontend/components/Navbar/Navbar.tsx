@@ -15,7 +15,7 @@ const UserAvatar = (): JSX.Element => {
     return (
         <Persona
             textPosition="before"
-            avatar={GenerateInitalsAvatarProps(generateInitals(userInfo), { badge: { status: userInfo.new_achievements ? "busy" : undefined } })}
+            avatar={GenerateInitalsAvatarProps(generateInitals(userInfo), { badge: userInfo.new_achievements ? { status: "busy" } : undefined })}
             primaryText={
                 <span className={styles.subtext}>
                     {userInfo.admin && <Badge className={styles.adminBadge} appearance="outline">Admin</Badge>}
