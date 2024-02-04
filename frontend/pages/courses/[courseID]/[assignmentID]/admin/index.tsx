@@ -93,12 +93,12 @@ export default function Page() {
     ];
 
     return (
-        <main>
+        <section className="p-b-xxxl">
             <HeaderToolbar>
                 <AdminToolbarDeleteAssignmentButton assignment={assignment} />
             </HeaderToolbar>
 
-            <Card className="m-x-l m-t-xxl m-b-xxxl">
+            <Card className="m-x-l m-t-xxl">
                 <div className="m-y-s m-x-xxxl">
                     <Field>
                         <Input
@@ -157,6 +157,6 @@ export default function Page() {
                     </TableBody>
                 </Table>
             </Card>
-        </main>
+        </section>
     );
 }
