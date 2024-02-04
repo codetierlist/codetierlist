@@ -127,7 +127,7 @@ export default function Page() {
                         />
                     </Field>
                 </div>
-                <Table arial-label="Default table" className="m-xs m-t-s">
+                <Table arial-label="Default table" className="m-xs m-t-s m-b-xxxl">
                     <TableHeader>
                         <TableRow>
                             {columns.map((column) => (
