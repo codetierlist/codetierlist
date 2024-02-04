@@ -54,7 +54,7 @@ const queue_conf: QueueOptions = {
 const job_queue: Queue<ReadyJobData, JobResult, JobType> =
     new Queue<ReadyJobData, JobResult, JobType>("job_queue", queue_conf);
 const pending_queue: Queue<PendingJobData, undefined, JobType> =
-    new Queue<PendingJobData, undefined, JobType>("pending_queue", queue_conf);
+    new Queue<PendingJobData, undefined, JobType>("pending_queue", {...queue_conf, defaultJobOptions: {removeOnComplete:true}});
 
 const job_events: QueueEvents = new QueueEvents(job_queue.name, queue_conf);
 

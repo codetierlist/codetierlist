@@ -61,17 +61,17 @@ export const runJob = async (job: ReadyJobData): Promise<JobResult> => {
             }
         });
 
-        runner.stderr.on('data', (data) => {
-            resolve({status: "ERROR"});
+        runner.stderr.on('data', () => {
+            resolve({status: "ERROR", error: "stderr"});
         });
 
         runner.on('exit', (code) => {
             if (code === 0) {
                 runner.stdout.on('end', () => {
-                    resolve({status: "ERROR"}); // read all output and still no result
+                    resolve({status: "ERROR", error: "stdout ended"}); // read all output and still no result
                 });
             } else {
-                resolve({status: "ERROR"}); // fail case
+                resolve({status: "ERROR", error: "stdout exited"}); // fail case
             }
         });
     });

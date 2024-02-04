@@ -162,7 +162,10 @@ export type JobResult =
         } |
         {
             status: "ERROR" | "SUBMISSION_EMPTY" | "TESTCASE_EMPTY"
-        }) & {
+        } | {
+        status: "ERROR",
+        error: string
+    }) & {
     status: JobStatus
 }
 
