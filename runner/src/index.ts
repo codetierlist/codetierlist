@@ -36,7 +36,7 @@ export const runJob = async (job: ReadyJobData): Promise<JobResult> => {
     const query = job.query;
     const img = job.image.runner_image;
     const img_ver = job.image.image_version;
-    const max_seconds = 0.5;
+    const max_seconds = 1;
     const promise =  new Promise<JobResult>((resolve) => {
         // TODO: change to using volumes or stdin for data passing
         const runner = spawn("bash",
