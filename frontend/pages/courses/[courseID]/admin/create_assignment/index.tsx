@@ -231,8 +231,8 @@ export default function Page(): JSX.Element {
                     </ControlCard>
 
                     <ControlCard
-                        title="Group Size"
-                        description="Students will be grouped into teams of size n, the students in groups will be tested against each other."
+                        title="Group size"
+                        description="The maximum number of students that can be in a group. Students in groups will be tested against each other. "
                         icon={<People24Regular />}
                         htmlFor="groupSize">
                         <Input type="number" min={0} id="name" name="courseCode"
