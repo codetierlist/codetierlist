@@ -187,7 +187,7 @@ job_events.on("completed", async ({jobId}) => {
     }
     // not a validation job, update the score in db
     await updateScore(submission, testCase, pass);
-    // await job.updateData({status: "COMPLETED"});
+    await job.updateData({status: "COMPLETED"});
 });
 
 export const removeSubmission = async (utorid: string): Promise<void> => {
