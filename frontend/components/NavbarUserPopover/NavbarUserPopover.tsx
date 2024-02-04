@@ -3,11 +3,11 @@ import { GenerateInitalsAvatarProps, generateInitals } from '@/components';
 import { SnackbarContext } from '@/contexts/SnackbarContext';
 import { UserContext } from '@/contexts/UserContext';
 import { Badge, Button, Persona, Switch } from '@fluentui/react-components';
+import { ErrorCircle12Filled, SignOut24Regular, Trophy24Regular } from "@fluentui/react-icons";
 import { Theme } from 'codetierlist-types';
 import Link from 'next/link';
 import { useContext } from 'react';
 import styles from './NavbarUserPopover.module.css';
-import {ErrorCircle24Filled} from "@fluentui/react-icons";
 
 /**
  * The user popover content is the content that appears when
@@ -30,8 +30,23 @@ export const NavbarUserPopover = (): JSX.Element => {
     };
 
     return (
-        <div>
-            <div className={styles.popoverButtonContainer}>
+        <>
+            <div className="m-xl">
+                <Persona
+                    size="huge"
+                    className={styles.popoverPersona}
+                    avatar={GenerateInitalsAvatarProps(generateInitals(userInfo))}
+                    primaryText={
+                        <>
+                            {`${userInfo.givenName} ${userInfo.surname}` == " " ? userInfo.utorid : `${userInfo.givenName} ${userInfo.surname}`}
+                            {userInfo.admin && <Badge className={styles.adminBadge} appearance="outline">Admin</Badge>}
+                        </>
+                    }
+                    secondaryText={userInfo.email}
+                    tertiaryText={userInfo.utorid}
+                />
+            </div>
+            <div className={`${styles.popoverFooter} p-l`}>
                 <Switch
                     className={styles.popoverRight}
                     checked={userInfo.theme === "DARK"}
@@ -39,33 +54,18 @@ export const NavbarUserPopover = (): JSX.Element => {
                     label={userInfo.theme === "DARK" ? "Dark Mode" : "Light Mode"}
                 />
 
+                <Link href="/achievements">
+                    <Button appearance="subtle" className={`${styles.popoverButton} m-x-none p-r-none`} icon={<Trophy24Regular />}>
+                        Achievements {userInfo.new_achievements ? <ErrorCircle12Filled fill="red" color="red" className="m-l-s-nudge" /> : null}
+                    </Button>
+                </Link>
+
                 <Link href="https://codetierlist.utm.utoronto.ca/Shibboleth.sso/Logout">
-                    <Button appearance="subtle" className={styles.popoverLeft}>
+                    <Button appearance="subtle" className={`${styles.popoverButton} m-x-none p-r-none`} icon={<SignOut24Regular />}>
                         Sign out
                     </Button>
                 </Link>
             </div>
-
-            <Persona
-                size="huge"
-                className={styles.popoverPersona}
-                avatar={GenerateInitalsAvatarProps(generateInitals(userInfo))}
-                primaryText={
-                    <>
-                        {`${userInfo.givenName} ${userInfo.surname}` == " " ? userInfo.utorid : `${userInfo.givenName} ${userInfo.surname}`}
-                        {userInfo.admin && <Badge className={styles.adminBadge} appearance="outline">Admin</Badge>}
-                    </>
-                }
-                secondaryText={userInfo.email}
-                tertiaryText={userInfo.utorid}
-            /><br/><hr/>
-            <div className={"m-t-l"}>
-                <Link style={{width: "100%"}} href="/achievements" className={styles.popoverLink}>
-                    <Button style={{width: "100%"}} appearance="subtle" className={styles.popoverButton}>
-                        Achievements {userInfo.new_achievements ? <ErrorCircle24Filled fill="red" color="red"/> : null}
-                    </Button>
-                </Link>
-            </div>
-        </div>
+        </>
     );
 };
