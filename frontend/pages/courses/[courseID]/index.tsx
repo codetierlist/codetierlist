@@ -1,5 +1,8 @@
 import axios, { handleError } from "@/axios";
-import { AssignmentAdminToolbar, AssignmentCard, CourseSessionChip, checkIfCourseAdmin, getSession, generatePlaceholderImage } from '@/components';
+import {
+    AssignmentAdminToolbar, AssignmentCard, CourseSessionChip, checkIfCourseAdmin, getSession
+} from '@/components';
+import { SnackbarContext } from '@/contexts/SnackbarContext';
 import { UserContext } from "@/contexts/UserContext";
 import {
     Caption1
@@ -10,7 +13,6 @@ import { notFound } from "next/navigation";
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from "react";
 import { Container } from "react-grid-system";
-import { SnackbarContext } from '@/contexts/SnackbarContext';
 import styles from './page.module.css';
 
 export default function Page() {
@@ -42,8 +44,7 @@ export default function Page() {
                     style={{
                         backgroundImage: `
                         linear-gradient(color-mix(in srgb, var(--colorNeutralBackground3) 60%, transparent), color-mix(in srgb, var(--colorNeutralBackground3) 80%, transparent)),
-                        url("${process.env.NEXT_PUBLIC_API_URL}/courses/${courseID as string}/cover"),
-                        url("${generatePlaceholderImage(courseID as string)}")`
+                        url("${process.env.NEXT_PUBLIC_API_URL}/courses/${courseID as string}/cover")`
                     }}
                     className={`${styles.banner} m-b-xxxl m-x-l`}
                     aria-hidden="true"
