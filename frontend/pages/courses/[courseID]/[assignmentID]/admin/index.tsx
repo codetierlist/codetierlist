@@ -86,7 +86,6 @@ export default function Page() {
     const columns = [
         { columnKey: "utorid", label: "UTORid" },
         { columnKey: "name", label: "Full Name" },
-        // { columnKey: "gitRepo", label: "GitHub Repository" },
         { columnKey: "testsPassed", label: "Tests Passed" },
         // { columnKey: "submitSol", label: "Submitted Solutions" },
         // { columnKey: "submitTest", label: "Submitted Tests" }
@@ -127,6 +126,7 @@ export default function Page() {
                         />
                     </Field>
                 </div>
+
                 <Table arial-label="Default table" className="m-xs m-t-s">
                     <TableHeader>
                         <TableRow>
@@ -147,8 +147,7 @@ export default function Page() {
                                 }}
                             >
                                 <TableCell> {highlightSubstring(item.utorid, filterValue)} </TableCell>
-                                <TableCell> {highlightSubstring(item.givenName + " " + item.surname, filterValue)} </TableCell>
-                                {/* <TableCell onClick={openRepo(item.gitRepo.label)} style={{ cursor: 'pointer', textDecoration: 'underline' }}> Link </TableCell> */}
+                                <TableCell> {highlightSubstring(`${item.givenName} ${item.surname}`, filterValue)} </TableCell>
                                 <TableCell> {item.testsPassed}/{item.totalTests} </TableCell>
                                 {/*<TableCell> {item.submitSol.label} </TableCell>*/}
                                 {/*<TableCell> {item.submitTest.label} </TableCell>*/}

@@ -169,6 +169,7 @@ export const AssignmentPageFilesTab = ({ fetchAssignment, assignment, assignment
             })
             .catch(handleError(showSnackSev));
     };
+
     const POLLING_RATE = 1000;
     useEffect(() => {
         if (content.valid === "PENDING"){
