@@ -100,17 +100,24 @@ export const bulkQueueTestCases = async <T extends Submission | TestCase>(image:
             const testCase = "valid" in item ? item as TestCase : cur as TestCase;
             return {
                 opts: {
-                    priority: 10
+                    priority: 10,
+                    attempts: 3,
+                    backoff: {type: "fixed", delay: 1000}
                 },
                 children: [
                     {
                         data: {
                             submission,
                             testCase,
-                            image
+                            image: {
+                                runner_image: image.runner_image,
+                                image_version: image.image_version
+                            }
                         },
                         opts: {
-                            priority: 10
+                            priority: 10,
+                            attempts: 3,
+                            backoff: {type: "fixed", delay: 1000}
                         },
                         name: JobType.testSubmission,
                         queueName: pending_queue.name
