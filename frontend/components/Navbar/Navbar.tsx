@@ -42,7 +42,7 @@ export const Navbar = (): JSX.Element => {
     return (
         <header className={styles.navbar}>
             <h1 className={styles.title}>
-                <Link className={styles.brand} href="/">Codetierlist</Link>
+                <Link className={styles.brand} href="/" aria-label="Code tier list">Codetierlist</Link>
             </h1>
 
             {(userInfo.email !== defaultUser.email) && (
