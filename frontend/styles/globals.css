@@ -33,7 +33,10 @@ body {
   radial-gradient(at 98% 47%, hsla(203,69%,78%,1) 0px, transparent 50%),
   radial-gradient(at 49% 86%, hsla(336,69%,66%,1) 0px, transparent 50%),
   radial-gradient(at 95% 18%, hsla(60,68%,64%,1) 0px, transparent 50%),
-  radial-gradient(at 67% 84%, hsla(357,66%,76%,1) 0px, transparent 50%);
+  radial-gradient(at 67% 84%, hsla(357,66%,76%,1) 0px, transparent 50%),
+  radial-gradient(at 11% 10%, rgba(186,247,141,1) 0%, transparent 50%),
+  radial-gradient(at 15% 51%, rgba(131,252,191,1) 0%,  transparent 50%),
+  radial-gradient(at 20% 84%, rgba(153,180,234,1) 0%,  transparent 50%);
 
   & main {
     min-height: calc(100vh - var(--spacingVerticalXXXL) * 2);
