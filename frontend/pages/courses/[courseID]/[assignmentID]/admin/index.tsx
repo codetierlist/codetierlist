@@ -98,7 +98,7 @@ export default function Page() {
                 <AdminToolbarDeleteAssignmentButton assignment={assignment} />
             </HeaderToolbar>
 
-            <Card className="m-x-l m-t-xxl">
+            <Card className="m-x-l m-t-xxl m-b-xxxl">
                 <div className="m-y-s m-x-xxxl">
                     <Field>
                         <Input
@@ -127,7 +127,7 @@ export default function Page() {
                         />
                     </Field>
                 </div>
-                <Table arial-label="Default table" className="m-xs m-t-s m-b-xxxl">
+                <Table arial-label="Default table" className="m-xs m-t-s">
                     <TableHeader>
                         <TableRow>
                             {columns.map((column) => (
