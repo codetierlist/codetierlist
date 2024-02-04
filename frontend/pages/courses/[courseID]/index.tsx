@@ -37,57 +37,57 @@ export default function Page() {
 
     return (
         <>
-            {checkIfCourseAdmin(userInfo, courseID as string) ? <AssignmentAdminToolbar courseID={courseID as string} fetchCourse={fetchCourse} /> : undefined}
-
             <Container component="main" className="m-t-xxxl">
-                <div
+                <header
                     style={{
-                        backgroundImage: `url("${process.env.NEXT_PUBLIC_API_URL}/courses/${courseID as string}/cover"), url("${generatePlaceholderImage(courseID as string)}")`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                        height: 200,
-                        width: "100%",
-                        boxShadow: "var(--shadow8)",
-                        borderRadius: "var(--borderRadiusXLarge)"
+                        backgroundImage: `
+                        linear-gradient(color-mix(in srgb, var(--colorNeutralBackground3) 60%, transparent), color-mix(in srgb, var(--colorNeutralBackground3) 80%, transparent)),
+                        url("${process.env.NEXT_PUBLIC_API_URL}/courses/${courseID as string}/cover"),
+                        url("${generatePlaceholderImage(courseID as string)}")`
                     }}
-                    className="m-b-xxxl"
+                    className={`${styles.banner} m-b-xxxl m-x-l`}
                     aria-hidden="true"
-                />
-
-                <header className={styles.header}>
-                    <Title2 className={styles.courseTitle}>
-                        {course &&
-                            <CourseSessionChip
-                                session={getSession(new Date(course.createdAt))}>
-                                {courseID}
-                            </CourseSessionChip>
-                        }
-                    </Title2>
-                    <Title2>
-                        {course?.name || 'Course not found'}
-                    </Title2>
+                >
+                    <div className={styles.header}>
+                        <Title2 className={styles.courseTitle}>
+                            {course &&
+                                <CourseSessionChip
+                                    session={getSession(new Date(course.createdAt))}>
+                                    {courseID}
+                                </CourseSessionChip>
+                            }
+                        </Title2>
+                        <Title2>
+                            {course?.name || 'Course not found'}
+                        </Title2>
+                    </div>
                 </header>
-                <div className="flex-wrap">
-                    {((course !== null) && course.assignments.length === 0) &&
-                        <Caption1>This course has no assignments yet. If your believe that this message you are
-                            receiving is incorrect, please contact your instructor to correct this issue.</Caption1>
-                    }
 
-                    {course ? (
-                        course.assignments.map((assignment) => (
-                            <AssignmentCard
-                                key={assignment.title}
-                                id={assignment.title}
-                                name={assignment.title}
-                                dueDate={assignment.due_date ? new Date(assignment.due_date) : undefined}
-                                tier={assignment.tier}
-                                courseID={courseID as string}
-                            />
-                        ))
-                    ) : (
-                        "Loading..."
-                    )}
-                </div>
+                {checkIfCourseAdmin(userInfo, courseID as string) ? <AssignmentAdminToolbar courseID={courseID as string} fetchCourse={fetchCourse} /> : undefined}
+
+                <section className="m-y-xxxl m-x-l">
+                    <div className="flex-wrap">
+                        {((course !== null) && course.assignments.length === 0) &&
+                            <Caption1>This course has no assignments yet. If your believe that this message you are
+                                receiving is incorrect, please contact your instructor to correct this issue.</Caption1>
+                        }
+
+                        {course ? (
+                            course.assignments.map((assignment) => (
+                                <AssignmentCard
+                                    key={assignment.title}
+                                    id={assignment.title}
+                                    name={assignment.title}
+                                    dueDate={assignment.due_date ? new Date(assignment.due_date) : undefined}
+                                    tier={assignment.tier}
+                                    courseID={courseID as string}
+                                />
+                            ))
+                        ) : (
+                            "Loading..."
+                        )}
+                    </div>
+                </section>
             </Container>
         </>
     );
