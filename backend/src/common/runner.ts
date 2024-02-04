@@ -11,7 +11,7 @@ import {
     QueueEvents,
     Job,
     FlowProducer,
-    Worker, WaitingChildrenError
+    Worker, WaitingChildrenError, JobData
 } from "bullmq";
 import {runTestcase, updateScore} from "./updateScores";
 import prisma from "./prisma";
@@ -152,8 +152,10 @@ export const queueJob = async (job: {
 }, name: JobType, priority: number = 10): Promise<string | undefined> => {
     // push to redis queue
     const redis_job = await pending_queue.add(name, {
-        testCase: job.testCase,
-        submission: job.submission,
+        testcaseId: job.testCase.id,
+        testcaseAuthorId: job.testCase.author_id,
+        submissionId: job.submission.id,
+        submissionAuthorId: job.submission.author_id,
         image: job.image,
     }, {priority});
     console.info(`job ${redis_job.id} added to queue`);
@@ -204,14 +206,14 @@ job_events.on("completed", async ({jobId}) => {
 export const removeSubmission = async (utorid: string): Promise<void> => {
     await Promise.all(await pending_queue.getJobs(["waiting", "active"])
         .then(async (jobs) =>
-            jobs.filter(job => job.data?.submission?.author_id === utorid)
+            jobs.filter(job => job.data?.submissionAuthorId === utorid)
                 .map(async job => await job.remove())));
 };
 
 export const removeTestcases = async (utorid: string): Promise<void> => {
     await Promise.all(await pending_queue.getJobs(["waiting", "active"])
         .then(async (jobs) =>
-            jobs.filter(job => job.data?.testCase?.author_id === utorid)
+            jobs.filter(job => job.data?.testcaseAuthorId === utorid)
                 .map(async job => await job.remove())));
 };
 
@@ -271,19 +273,34 @@ const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue
     console.info(`Fetching job files for ${job.id}`);
     if (!job || !job.data || !job.name) return;
     const data = job.data;
+    const submission = await prisma.solution.findUnique({
+        where: {
+            id: data.submissionId
+        }
+    });
+    const testCase = await prisma.testCase.findUnique({
+        where: {
+            id: data.testcaseId
+        }
+    });
+    if(!submission || !testCase) {
+        console.error(`Submission or test case not found for job ${job.id}`);
+        throw new Error("Submission or test case not found");
+    }
     const query = {
-        'solution_files': await getFiles(data.submission),
-        'test_case_files': await getFiles(data.testCase),
+        'solution_files': await getFiles(submission),
+        'test_case_files': await getFiles(testCase),
     };
+    const newData : ReadyJobData ={query, submission, testCase, image: data.image};
     if (!job.parent) {
-        await job_queue.add(job.name, {query, ...data}, {priority: 5});
+        await job_queue.add(job.name, newData, {priority: 5});
         return;
     }
     const parent = await job_queue.getJob(job.parent.id);
     if (!parent) {
         return;
     }
-    await parent.updateData({query, ...data});
+    await parent.updateData(newData);
 }, {
     ...queue_conf,
     limiter: {
