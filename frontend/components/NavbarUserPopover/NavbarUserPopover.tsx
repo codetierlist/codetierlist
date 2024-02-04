@@ -7,6 +7,7 @@ import { ErrorCircle12Filled, SignOut24Regular, Trophy24Regular } from "@fluentu
 import { Theme } from 'codetierlist-types';
 import Link from 'next/link';
 import { useContext } from 'react';
+import { useRouter } from 'next/router';
 import styles from './NavbarUserPopover.module.css';
 
 /**
@@ -16,6 +17,7 @@ import styles from './NavbarUserPopover.module.css';
 export const NavbarUserPopover = (): JSX.Element => {
     const { userInfo, fetchUserInfo } = useContext(UserContext);
     const { showSnackSev } = useContext(SnackbarContext);
+    const router = useRouter();
 
     /**
      * Change the user's theme.
@@ -54,17 +56,26 @@ export const NavbarUserPopover = (): JSX.Element => {
                     label={userInfo.theme === "DARK" ? "Dark Mode" : "Light Mode"}
                 />
 
-                <Link href="/achievements">
-                    <Button appearance="subtle" className={`${styles.popoverButton} m-x-none p-r-none`} icon={<Trophy24Regular />}>
-                        Achievements {userInfo.new_achievements ? <ErrorCircle12Filled fill="red" color="red" className="m-l-s-nudge" /> : null}
-                    </Button>
-                </Link>
+                <Button
+                    appearance="subtle"
+                    className={`${styles.popoverButton} m-x-none p-r-none`}
+                    icon={<Trophy24Regular />}
+                    as={"a"}
+                    href="/achievements"
+                    onClick={(e) => { e.preventDefault(); router.push("/achievements"); }}
+                >
+                    Achievements {userInfo.new_achievements ? <ErrorCircle12Filled fill="red" color="red" className="m-l-s-nudge" /> : null}
+                </Button>
 
-                <Link href="https://codetierlist.utm.utoronto.ca/Shibboleth.sso/Logout">
-                    <Button appearance="subtle" className={`${styles.popoverButton} m-x-none p-r-none`} icon={<SignOut24Regular />}>
-                        Sign out
-                    </Button>
-                </Link>
+                <Button
+                    appearance="subtle"
+                    className={`${styles.popoverButton} m-x-none p-r-none`}
+                    icon={<SignOut24Regular />}
+                    as={"a"}
+                    href="https://codetierlist.utm.utoronto.ca/Shibboleth.sso/Logout"
+                >
+                    Sign out
+                </Button>
             </div>
         </>
     );
