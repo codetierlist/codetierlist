@@ -15,7 +15,7 @@ assignment = ''
 admin_utorid = "liutmich"
 admin_headers = {"utorid": admin_utorid, "http_mail": "ido.benhaim@mail.utoronto.ca", "sn": "Liut",
                  "givenName": "Michael"}
-n = 10
+n = 100
 group_size = 50
 
 
@@ -178,7 +178,7 @@ def main():
     print("Group size: ", group_size)
     print("Starting upload at a time: ", time.time())
     with Pool(pooling) as p:
-        p.map(upload_student, [(x, course, assignment) for x in students])
+        p.map(upload_student, [(x, course, assignment) for x in students[:n if len(students) > n >= 0 else len(students)]])
     # for i in range(0, n if len(students) > n >= 0 else len(students), pooling):
     #     print(f"Uploading students {i} to {i+pooling}")
     #     await upload_student(students[i])

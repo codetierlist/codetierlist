@@ -2,10 +2,10 @@ import {spawn, spawnSync} from "child_process";
 import path from "path";
 import {
     BackendConfig,
-    JobData,
+    ReadyJobData,
     JobResult, RunnerImage
 } from "codetierlist-types";
-import {Job, Worker} from "bullmq";
+import {Job, WaitingChildrenError, Worker} from "bullmq";
 import {readFileSync} from "fs";
 
 export const images: RunnerImage[] = (JSON.parse(readFileSync('backend_config.json', 'utf-8')) as BackendConfig).runners;
@@ -28,17 +28,20 @@ if (process.env.REDIS_PASSWORD === undefined) {
 
 const mtask = parseInt(process.env.MAX_RUNNING_TASKS);
 
-const workers: Worker<JobData, JobResult>[] = [];
-export const runJob = async (job: JobData): Promise<JobResult> => {
+const workers: Worker<ReadyJobData, JobResult>[] = [];
+export const runJob = async (job: ReadyJobData): Promise<JobResult> => {
+    if("status" in job) {
+        throw new Error("Job not ready");
+    }
     const query = job.query;
     const img = job.image.runner_image;
     const img_ver = job.image.image_version;
-    return await new Promise((resolve) => {
-        const max_seconds = 10;
+    const max_seconds = 1;
+    const promise =  new Promise<JobResult>((resolve) => {
         // TODO: change to using volumes or stdin for data passing
         const runner = spawn("bash",
             ["-c", `docker run --rm -i --ulimit cpu=${max_seconds} --network=none codetl-runner-${img}-${img_ver}`],
-        );
+            {timeout: (max_seconds+1) * 1000});
 
         let buffer = "";
 
@@ -58,20 +61,26 @@ export const runJob = async (job: JobData): Promise<JobResult> => {
             }
         });
 
-        runner.stderr.on('data', (data) => {
-            resolve({status: "ERROR"});
+        runner.stderr.on('data', () => {
+            resolve({status: "ERROR", error: "stderr"});
         });
 
         runner.on('exit', (code) => {
             if (code === 0) {
                 runner.stdout.on('end', () => {
-                    resolve({status: "ERROR"}); // read all output and still no result
+                    resolve({status: "ERROR", error: "stdout ended"}); // read all output and still no result
                 });
             } else {
-                resolve({status: "ERROR"}); // fail case
+                resolve({status: "ERROR", error: "stdout exited"}); // fail case
             }
         });
     });
+    const timeout = new Promise<JobResult>((_, reject) => {
+        setTimeout(() => {
+            reject(new Error("timeout"));
+        }, 1000 * (max_seconds + 10));
+    });
+    return await Promise.race([promise, timeout]);
 };
 
 
@@ -100,20 +109,31 @@ const createImages = () => {
 createImages();
 
 // create workers
-for (let i = 0; i < mtask; i++) {
-    workers.push(new Worker<JobData, JobResult>("job_queue",
-        async (job: Job<JobData, JobResult>): Promise<JobResult> => {
-            console.info(`running job ${job.id} with image ${job.data.image.runner_image}:${job.data.image.image_version}`);
+workers.push(new Worker<ReadyJobData, JobResult>("job_queue",
+    async (job: Job<ReadyJobData, JobResult>, token): Promise<JobResult> => {
+        if("status" in job.data) {
+            console.error(`job ${job.id} is not ready`);
+            if(token)
+                await job.moveToWaitingChildren(token);
+            throw new WaitingChildrenError();
+        }
+        console.info(`running job ${job.id} with image ${job.data.image.runner_image}:${job.data.image.image_version}`);
+        try{
             const res = await runJob(job.data);
             console.info(`job ${job.id} done`);
             return res;
-        },
-        {
-            connection: {
-                host: process.env.REDIS_HOST,
-                port: parseInt(process.env.REDIS_PORT),
-                password: process.env.REDIS_PASSWORD
-            },
+        } catch (e) {
+            console.error(`job ${job.id} failed with error:`);
+            console.error(e);
+            throw e;
         }
-    ));
-}
+    },
+    {
+        connection: {
+            host: process.env.REDIS_HOST,
+            port: parseInt(process.env.REDIS_PORT),
+            password: process.env.REDIS_PASSWORD
+        },
+        concurrency: mtask
+    }));
+
