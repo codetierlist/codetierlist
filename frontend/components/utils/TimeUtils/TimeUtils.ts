@@ -118,14 +118,14 @@ export const daysUntilDate = (targetDate: Date) => {
 export const getSession = (date: Date): Session => {
     const month = date.getMonth() as number;
 
-    if (0 < month && month < 7) {
-        // Feb - July
+    if (2 <= month && month < 6) {
+        // April - July
         return "Summer";
     } else if (7 <= month && month < 9) {
         // Aug - Sep
         return "Fall";
     } else {
-        // Oct - Jan
+        // Oct - Mar
         return "Winter";
     }
 };
