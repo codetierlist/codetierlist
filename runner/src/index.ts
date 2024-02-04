@@ -36,8 +36,8 @@ export const runJob = async (job: ReadyJobData): Promise<JobResult> => {
     const query = job.query;
     const img = job.image.runner_image;
     const img_ver = job.image.image_version;
-    return await new Promise((resolve) => {
-        const max_seconds = 10;
+    const max_seconds = 10;
+    const promise =  new Promise<JobResult>((resolve) => {
         // TODO: change to using volumes or stdin for data passing
         const runner = spawn("bash",
             ["-c", `docker run --rm -i --ulimit cpu=${max_seconds} --network=none codetl-runner-${img}-${img_ver}`],
@@ -75,6 +75,13 @@ export const runJob = async (job: ReadyJobData): Promise<JobResult> => {
             }
         });
     });
+    const timeout = new Promise<JobResult>((_, reject) => {
+        console.error("timeout");
+        setTimeout(() => {
+            reject(new Error("timeout"));
+        }, 1000 * (max_seconds + 5));
+    });
+    return await Promise.race([promise, timeout]);
 };
 
 
