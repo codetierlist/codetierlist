@@ -75,10 +75,9 @@ export const runJob = async (job: ReadyJobData): Promise<JobResult> => {
             }
         });
     });
-    const timeout = new Promise<JobResult>((resolve) => {
+    const timeout = new Promise<JobResult>((_, reject) => {
         setTimeout(() => {
-            console.error("timeout");
-            resolve({status: "ERROR", error: "timeout"});
+            reject(new Error("timeout"));
         }, 1000 * (max_seconds + 5));
     });
     return await Promise.race([promise, timeout]);
@@ -119,9 +118,15 @@ workers.push(new Worker<ReadyJobData, JobResult>("job_queue",
             throw new WaitingChildrenError();
         }
         console.info(`running job ${job.id} with image ${job.data.image.runner_image}:${job.data.image.image_version}`);
-        const res = await runJob(job.data);
-        console.info(`job ${job.id} done`);
-        return res;
+        try{
+            const res = await runJob(job.data);
+            console.info(`job ${job.id} done`);
+            return res;
+        } catch (e) {
+            console.error(`job ${job.id} failed with error:`);
+            console.error(e);
+            throw e;
+        }
     },
     {
         connection: {
