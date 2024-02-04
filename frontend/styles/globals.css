@@ -22,11 +22,13 @@ body {
 }
 
 .fui-FluentProvider {
+  --background-intensity: 85%;
+
   background-color: var(--colorNeutralBackground3) !important;
   /* fake mica effect */
   background-image:
-  linear-gradient(0deg, color-mix(in srgb, var(--colorNeutralBackground1) 85%, transparent),
-                        color-mix(in srgb, var(--colorNeutralBackground1) 85%, transparent)),
+  linear-gradient(0deg, color-mix(in srgb, var(--colorNeutralBackground1) var(--background-intensity), transparent),
+                        color-mix(in srgb, var(--colorNeutralBackground1) var(--background-intensity), transparent)),
   radial-gradient(at 51% 34%, hsla(126,87%,76%,1) 0px, transparent 50%),
   radial-gradient(at 90% 51%, hsla(214,95%,75%,1) 0px, transparent 50%),
   radial-gradient(at 87% 80%, hsla(239,90%,70%,1) 0px, transparent 50%),
