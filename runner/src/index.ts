@@ -78,7 +78,7 @@ export const runJob = async (job: ReadyJobData): Promise<JobResult> => {
     const timeout = new Promise<JobResult>((_, reject) => {
         setTimeout(() => {
             reject(new Error("timeout"));
-        }, 1000 * (max_seconds + 5));
+        }, 1000 * (max_seconds + 10));
     });
     return await Promise.race([promise, timeout]);
 };
