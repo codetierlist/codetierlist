@@ -41,7 +41,7 @@ export const runJob = async (job: ReadyJobData): Promise<JobResult> => {
         // TODO: change to using volumes or stdin for data passing
         const runner = spawn("bash",
             ["-c", `docker run --rm -i --ulimit cpu=${max_seconds} --network=none codetl-runner-${img}-${img_ver}`],
-        );
+            {timeout: (max_seconds+1) * 1000});
 
         let buffer = "";
 
