@@ -28,7 +28,6 @@ if (process.env.REDIS_PASSWORD === undefined) {
 
 const mtask = parseInt(process.env.MAX_RUNNING_TASKS);
 
-const workers: Worker<ReadyJobData, JobResult>[] = [];
 export const runJob = async (job: ReadyJobData): Promise<JobResult> => {
     if("status" in job) {
         throw new Error("Job not ready");
@@ -109,7 +108,7 @@ const createImages = () => {
 createImages();
 
 // create workers
-workers.push(new Worker<ReadyJobData, JobResult>("job_queue",
+new Worker<ReadyJobData, JobResult>("job_queue",
     async (job: Job<ReadyJobData, JobResult>, token): Promise<JobResult> => {
         if("status" in job.data) {
             console.error(`job ${job.id} is not ready`);
@@ -135,5 +134,5 @@ workers.push(new Worker<ReadyJobData, JobResult>("job_queue",
             password: process.env.REDIS_PASSWORD
         },
         concurrency: mtask
-    }));
+    });
 
