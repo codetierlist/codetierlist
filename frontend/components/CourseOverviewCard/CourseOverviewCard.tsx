@@ -7,7 +7,8 @@ import {
     CardHeader,
     CardPreview,
     Link,
-    Title3
+    Title3,
+    Tooltip
 } from '@fluentui/react-components';
 import { useRouter } from 'next/navigation';
 import { useContext, useState } from 'react';
@@ -81,7 +82,6 @@ export const CourseOverviewCard = ({
     const reset = () => {
         setSeed(Math.random());
     };
-    const [isSelected, setSelected] = useState(false);
     const router = useRouter();
     const { showSnackSev } = useContext(SnackbarContext);
     const { userInfo } = useContext(UserContext);
@@ -89,42 +89,46 @@ export const CourseOverviewCard = ({
     return (
         <Card
             className={styles.courseCard}
-            selected={isSelected}
-            onSelectionChange={(_, { selected }) => {
-                setSelected(selected);
-            }}
-            onClick={() => {
+            onClick={(e) => {
+                e.preventDefault();
                 router.push(`/courses/${id}`);
             }}
+            aria-label={`${name} course in the ${session} session. You are a ${role}.`}
+            floatingAction={
+                <>
+                    {
+                        (checkIfCourseAdmin(userInfo, id)) &&
+                        <Tooltip content="Change cover image" relationship="label">
+                            <Button
+                                appearance="primary"
+                                icon={<ImageAdd20Regular />}
+                                shape="circular"
+                                className="m-t-m m-r-m"
+                                onClick={async (event) => {
+                                    event.stopPropagation();
+                                    const files = await promptForFileObject("image/*");
+                                    if (!files || files.length != 1) { return; }
+
+                                    const formData = new FormData();
+                                    formData.append("file", files[0]);
+
+                                    axios.post(`/courses/${id}/cover`,
+                                        formData,
+                                        {
+                                            headers: { "Content-Type": "multipart/form-data" }
+                                        })
+                                        .then(() => {
+                                            reset();
+                                        }).catch(handleError(showSnackSev));
+                                }}
+                            />
+                        </Tooltip>
+                    }
+                </>
+            }
             {...props}
         >
             <CardPreview className={styles.coursePreview}>
-                {
-                    (checkIfCourseAdmin(userInfo, id)) &&
-                    <Button
-                        appearance="primary"
-                        icon={<ImageAdd20Regular />}
-                        className={styles.coverButton}
-                        title="Change cover image"
-                        onClick={async (event) => {
-                            event.stopPropagation();
-                            const files = await promptForFileObject("image/*");
-                            if (!files || files.length != 1) { return; }
-
-                            const formData = new FormData();
-                            formData.append("file", files[0]);
-
-                            axios.post(`/courses/${id}/cover`,
-                                formData,
-                                {
-                                    headers: { "Content-Type": "multipart/form-data" }
-                                })
-                                .then(() => {
-                                    reset();
-                                }).catch(handleError(showSnackSev));
-                        }}
-                    />
-                }
                 <img
                     style={{ objectFit: "cover", height: 200, width: 300 }}
                     src={image + "?" + seed}
@@ -153,7 +157,7 @@ export const CourseOverviewCard = ({
             />
 
             <CardFooter>
-                <Link appearance="subtle">
+                <Link appearance="subtle" aria-label={`Open ${name}`}>
                     View more
                 </Link>
             </CardFooter>

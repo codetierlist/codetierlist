@@ -17,17 +17,12 @@
 
 }
 
-.coursePreview {
-    max-width: 300px;
+.courseCard {
+    text-decoration: none;
 }
 
-.coverButton {
-    border-radius: 999em !important;
-    position: absolute !important;
-    top: var(--spacingVerticalM) !important;
-    right: var(--spacingHorizontalM) !important;
-    max-width: var(--spacingHorizontalXXXL);
-    max-height: var(--spacingHorizontalXXXL);
+.coursePreview {
+    max-width: 300px;
 }
 
 .courseTitle {
