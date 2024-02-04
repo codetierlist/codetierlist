@@ -106,6 +106,7 @@ createImages();
 workers.push(new Worker<ReadyJobData, JobResult>("job_queue",
     async (job: Job<ReadyJobData, JobResult>, token): Promise<JobResult> => {
         if("status" in job.data) {
+            console.error(`job ${job.id} is not ready`);
             if(token)
                 await job.moveToWaitingChildren(token);
             throw new WaitingChildrenError();
