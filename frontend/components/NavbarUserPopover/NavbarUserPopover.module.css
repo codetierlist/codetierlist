@@ -5,35 +5,18 @@
     bottom: var(--spacingVerticalXXS);
 }
 
-.popoverButtonContainer {
+.popoverFooter {
     display: flex;
-    width: 100%;
-    flex-direction: row;
-    justify-content: space-between;
+    flex-direction: column;
     gap: var(--spacingVerticalS);
-    align-items: center;
-    margin-bottom: var(--spacingVerticalS);
-}
-
-.popoverLink {
-    display: block;
-    margin-bottom: var(--spacingVerticalS);
+    margin-top: var(--spacingVerticalS);
+    background-color: var(--colorNeutralBackground2);
 }
 
 .popoverButton {
-    margin: 0 !important;
-    padding: 0 !important;
-    min-width: 0 !important;
-}
-
-.popoverLeft {
-    position: relative;
-    bottom: var(--spacingVerticalM);
-    left: var(--spacingHorizontalS);
-}
-
-.popoverRight {
-    position: relative;
-    bottom: var(--spacingVerticalM);
-    right: var(--spacingHorizontalS);
+    width: 100%;
+    display: flex;
+    text-align: left;
+    flex-direction: row;
+    justify-content: flex-start !important;
 }
