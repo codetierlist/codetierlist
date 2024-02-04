@@ -11,7 +11,7 @@ export const generateInitals = (user: FetchedUser): string =>
  */
 export const GenerateInitalsAvatarProps = (initials: string, props?: AvatarProps): AvatarProps => {
     return {
-        'aria-label': initials,
+        'aria-hidden': true,
         initials: initials.substring(0, 2).toUpperCase(),
         color: 'colorful',
         idForColor: initials,
