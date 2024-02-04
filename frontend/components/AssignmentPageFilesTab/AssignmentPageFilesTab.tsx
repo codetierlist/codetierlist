@@ -23,7 +23,7 @@ import {
     Commit,
     UserFetchedAssignment
 } from "codetierlist-types";
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, useCallback } from 'react';
 import styles from './AssignmentPageFilesTab.module.css';
 
 interface ListFilesProps {
@@ -143,14 +143,15 @@ export const AssignmentPageFilesTab = ({ fetchAssignment, assignment, assignment
     const [content, setContent] = useState<Commit>({ "files": [], "log": [] } as Commit);
     const { showSnackSev } = useContext(SnackbarContext);
 
-    const getTestData = async () => {
+    const getTestData = useCallback(async () => {
         await axios.get<Commit>(`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}`, { skipErrorHandling: true })
             .then((res) => setContent(res.data))
             .catch(e => {
                 handleError(showSnackSev)(e);
                 setContent({ "files": [], "log": [] } as Commit);
             });
-    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [assignment.course_id, assignmentID, route]);
 
     const submitTest = async (files: FileList) => {
         const formData = new FormData();
@@ -168,6 +169,7 @@ export const AssignmentPageFilesTab = ({ fetchAssignment, assignment, assignment
             })
             .catch(handleError(showSnackSev));
     };
+
     const POLLING_RATE = 1000;
     useEffect(() => {
         if (content.valid === "PENDING"){
