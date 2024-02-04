@@ -2,8 +2,19 @@
     display: flex;
     align-items: baseline;
     margin-bottom: var(--spacingVerticalL);
+    margin-left: 2%;
 }
 
+.banner {
+    align-items: flex-end;
+    background-position: center;
+    background-size: cover;
+    border-radius: var(--borderRadiusXLarge);
+    box-shadow: var(--shadow8);
+    display: flex;
+    height: 200px;
+    justify-content: flex-start;
+}
 
 .info {
     display: flex;
@@ -11,13 +22,12 @@
 
 .assignments {
     margin-left: 2%;
-    margin-right: 2%
+    margin-right: 2%;
 }
 
 .title {
     margin-left: 13px;
 }
-
 
 .upcoming {
     width: 45%;
