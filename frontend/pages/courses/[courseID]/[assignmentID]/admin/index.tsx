@@ -1,36 +1,52 @@
 import axios, { handleError } from "@/axios";
 import { AdminToolbarDeleteAssignmentButton, HeaderToolbar } from '@/components';
 import {
+    Button,
     Card,
+    Field,
+    Input,
     Table,
     TableBody,
     TableCell,
     TableHeader,
     TableHeaderCell,
-    Tooltip,
     TableRow,
-    Button,
-    Field,
-    Input
+    Tooltip
 } from "@fluentui/react-components";
+import { Dismiss24Regular, Search24Regular } from "@fluentui/react-icons";
 import {
     AssignmentStudentStats,
     FetchedAssignmentWithTier
 } from "codetierlist-types";
 import Error from 'next/error';
-import Head from "next/head";
-import { Search24Regular, Dismiss24Regular } from "@fluentui/react-icons";
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from "react";
 import { SnackbarContext } from '../../../../../contexts/SnackbarContext';
 
+/**
+ * Highlights the substring in the string
+ * @param str the string to highlight
+ * @param substr the substring to highlight
+ */
+const highlightSubstring = (str: string, substr: string) => {
+    const index = str.toLowerCase().indexOf(substr.toLowerCase());
+    if (index === -1) {
+        return str;
+    }
+
+    return (
+        <>
+            {str.substring(0, index)}
+            <strong style={{ color: "var(--colorBrandForeground1)" }}>
+                {str.substring(index, index + substr.length)}
+            </strong>
+            {str.substring(index + substr.length)}
+        </>
+    );
+};
+
 export default function Page() {
     const { courseID, assignmentID } = useRouter().query;
-
-    useEffect(() => {
-        document.title = `${courseID} - Codetierlist`;
-    }, [courseID]);
-
     const { showSnackSev } = useContext(SnackbarContext);
     const [assignment, setAssignment] = useState<FetchedAssignmentWithTier | null>(null);
     const [studentData, setStudentData] = useState<AssignmentStudentStats>([]);
@@ -38,7 +54,9 @@ export default function Page() {
 
     const fetchAssignment = async () => {
         await axios.get<FetchedAssignmentWithTier>(`/courses/${courseID}/assignments/${assignmentID}`, { skipErrorHandling: true })
-            .then((res) => setAssignment(res.data))
+            .then((res) => {
+                setAssignment(res.data);
+            })
             .catch(handleError(showSnackSev));
     };
 
@@ -57,6 +75,9 @@ export default function Page() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [courseID, assignmentID]);
 
+    useEffect(() => {
+        document.title = `${assignment?.title || assignmentID} - Codetierlist`;
+    }, [assignment, assignmentID]);
 
     if (!assignment || !courseID || !assignmentID) {
         return <Error statusCode={404} />;
@@ -72,75 +93,70 @@ export default function Page() {
     ];
 
     return (
-        <>
-            <Head>
-                <title>{assignment.title} - Codetierlist</title>
-            </Head>
+        <main>
+            <HeaderToolbar>
+                <AdminToolbarDeleteAssignmentButton assignment={assignment} />
+            </HeaderToolbar>
 
-            <main>
-                <HeaderToolbar>
-                    <AdminToolbarDeleteAssignmentButton assignment={assignment} />
-                </HeaderToolbar>
-
-                <Card className="m-x-l m-t-xxl">
-                    <div className="m-y-s m-x-xxxl">
-                        <Field>
-                            <Input
-                                size="large"
-                                placeholder="Search"
-                                contentBefore={<Search24Regular />}
-                                contentAfter={
-                                    <>
-                                        {
-                                            (filterValue !== "") &&
-                                            <Tooltip content="Clear search" relationship="label" showDelay={0} hideDelay={300} >
-                                                <Button
-                                                    icon={<Dismiss24Regular />}
-                                                    appearance="subtle"
-                                                    onClick={() => setFilterValue("")}
-                                                />
-                                            </Tooltip>
-                                        }
-                                    </>
-                                }
-                                appearance="filled-darker"
-                                value={filterValue}
-                                onChange={(e) => setFilterValue(e.target.value)}
-                            />
-                        </Field>
-                    </div>
-                    <Table arial-label="Default table" className="m-xs m-t-s">
-                        <TableHeader>
-                            <TableRow>
-                                {columns.map((column) => (
-                                    <TableHeaderCell key={column.columnKey}>
-                                        {column.label}
-                                    </TableHeaderCell>
-                                ))}
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {studentData.map((item) => (
-                                <TableRow
-                                    key={item.utorid}
-                                    hidden={
-                                        !item.utorid.includes(filterValue) &&
-                                        !item.givenName.includes(filterValue) &&
-                                        !item.surname.includes(filterValue)
+            <Card className="m-x-l m-t-xxl">
+                <div className="m-y-s m-x-xxxl">
+                    <Field>
+                        <Input
+                            size="large"
+                            placeholder="Search"
+                            contentBefore={<Search24Regular />}
+                            contentAfter={
+                                <>
+                                    {
+                                        (filterValue !== "") &&
+                                        <Tooltip content="Clear search" relationship="label" showDelay={0} hideDelay={300} >
+                                            <Button
+                                                icon={<Dismiss24Regular />}
+                                                appearance="subtle"
+                                                onClick={() => setFilterValue("")}
+                                            />
+                                        </Tooltip>
                                     }
-                                >
-                                    <TableCell> {item.utorid} </TableCell>
-                                    <TableCell> {item.givenName + " " + item.surname} </TableCell>
-                                    {/* <TableCell onClick={openRepo(item.gitRepo.label)} style={{ cursor: 'pointer', textDecoration: 'underline' }}> Link </TableCell> */}
-                                    <TableCell> {item.testsPassed}/{item.totalTests} </TableCell>
-                                    {/*<TableCell> {item.submitSol.label} </TableCell>*/}
-                                    {/*<TableCell> {item.submitTest.label} </TableCell>*/}
-                                </TableRow>
+                                </>
+                            }
+                            appearance="filled-darker"
+                            value={filterValue}
+                            onChange={(e) => {
+                                setFilterValue(e.target.value);
+                            }}
+                        />
+                    </Field>
+                </div>
+                <Table arial-label="Default table" className="m-xs m-t-s">
+                    <TableHeader>
+                        <TableRow>
+                            {columns.map((column) => (
+                                <TableHeaderCell key={column.columnKey}>
+                                    {column.label}
+                                </TableHeaderCell>
                             ))}
-                        </TableBody>
-                    </Table>
-                </Card>
-            </main>
-        </>
+                        </TableRow>
+                    </TableHeader>
+
+                    <TableBody>
+                        {studentData.map((item) => (
+                            <TableRow
+                                key={item.utorid}
+                                style={{
+                                    display: (filterValue === "" || item.utorid.includes(filterValue) || (item.givenName + " " + item.surname).includes(filterValue)) ? undefined : "none"
+                                }}
+                            >
+                                <TableCell> {highlightSubstring(item.utorid, filterValue)} </TableCell>
+                                <TableCell> {highlightSubstring(item.givenName + " " + item.surname, filterValue)} </TableCell>
+                                {/* <TableCell onClick={openRepo(item.gitRepo.label)} style={{ cursor: 'pointer', textDecoration: 'underline' }}> Link </TableCell> */}
+                                <TableCell> {item.testsPassed}/{item.totalTests} </TableCell>
+                                {/*<TableCell> {item.submitSol.label} </TableCell>*/}
+                                {/*<TableCell> {item.submitTest.label} </TableCell>*/}
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </Card>
+        </main>
     );
 }
