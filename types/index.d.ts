@@ -124,7 +124,7 @@ export type ReadyJobData = {
     testCase: TestCase,
     submission: Submission,
     query: { solution_files: JobFiles, test_case_files: JobFiles }
-} | {status: "WAITING_FILES"}
+} | {status: "WAITING_FILES" | "COMPLETED"}
 
 export type PendingJobData = {
     image: RunnerImage,

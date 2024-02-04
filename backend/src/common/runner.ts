@@ -98,7 +98,7 @@ export const bulkQueueTestCases = async <T extends Submission | TestCase>(image:
             const submission = "valid" in item ? cur as Submission : item as Submission;
             const testCase = "valid" in item ? item as TestCase : cur as TestCase;
             return {
-                opts:{
+                opts: {
                     priority: 10
                 },
                 children: [{
@@ -107,7 +107,7 @@ export const bulkQueueTestCases = async <T extends Submission | TestCase>(image:
                         testCase,
                         image
                     },
-                    opts:{
+                    opts: {
                         priority: 10
                     },
                     name: JobType.testSubmission,
@@ -156,7 +156,7 @@ job_events.on("completed", async ({jobId}) => {
     if (!job) return;
     const data = job.data;
     const result = job.returnvalue;
-    if (!data || "status"  in data || !result) {
+    if (!data || "status" in data || !result) {
         console.error(`job ${job.id} completed with no data or result`);
         return;
     }
@@ -187,6 +187,7 @@ job_events.on("completed", async ({jobId}) => {
     }
     // not a validation job, update the score in db
     await updateScore(submission, testCase, pass);
+    await job.updateData({status: "COMPLETED"});
 });
 
 export const removeSubmission = async (utorid: string): Promise<void> => {
@@ -246,7 +247,11 @@ new Worker<ParentJobData, undefined, JobType>(parent_job_queue, async (job, toke
 
 const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue.name, async (job) => {
     const isRateLimited = await job_queue.count();
-    const waiting = await job_queue.getWaitingChildrenCount();
+    const waiting = await job_queue.getWaitingChildrenCount()
+        + await job_queue.getWaitingCount()
+        + await job_queue.getFailedCount()
+        + await job_queue.getCompletedCount()
+        + await job_queue.getDelayedCount();
     console.log(`Fetched: ${isRateLimited}, Waiting: ${waiting}, Pending: ${await pending_queue.count()}`);
     if (isRateLimited - waiting >= max_fetched) {
         await fetchWorker.rateLimit(1000);
