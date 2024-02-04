@@ -1,0 +1,5 @@
+.deleteButton {
+    --colorNeutralForeground2BrandHover: var(--colorStatusDangerForeground2) !important;
+    --colorNeutralForeground2BrandPressed: var(--colorStatusDangerForeground2) !important;
+    --colorNeutralForeground2BrandSelected: var(--colorStatusDangerForeground2) !important;
+}

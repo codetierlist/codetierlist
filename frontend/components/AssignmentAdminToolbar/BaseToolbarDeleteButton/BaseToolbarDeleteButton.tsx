@@ -10,6 +10,7 @@ import {
     ToolbarButton
 } from "@fluentui/react-components";
 import { BinRecycle24Regular } from '@fluentui/react-icons';
+import styles from './BaseToolbarDeleteButton.module.css';
 
 export declare type BaseToolbarDeleteButtonProps = {
     /**
@@ -35,6 +36,7 @@ export const BaseToolbarDeleteButton = ({ deleteFunction, noun }: BaseToolbarDel
                 <ToolbarButton
                     appearance="subtle"
                     icon={<BinRecycle24Regular />}
+                    className={styles.deleteButton}
                 >
                     Delete {noun}
                 </ToolbarButton>
@@ -49,7 +51,7 @@ export const BaseToolbarDeleteButton = ({ deleteFunction, noun }: BaseToolbarDel
                     </DialogContent>
 
                     <DialogActions>
-                        <Button appearance="secondary" onClick={deleteFunction}>Delete</Button>
+                        <Button appearance="secondary" onClick={deleteFunction} className={styles.deleteButton}>Delete</Button>
 
                         <DialogTrigger disableButtonEnhancement>
                             <Button appearance="primary">Cancel</Button>
