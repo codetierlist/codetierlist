@@ -5,7 +5,6 @@ import { UserContext } from '@/contexts/UserContext';
 import { Badge, Button, Persona, Switch } from '@fluentui/react-components';
 import { ErrorCircle12Filled, SignOut24Regular, Trophy24Regular } from "@fluentui/react-icons";
 import { Theme } from 'codetierlist-types';
-import Link from 'next/link';
 import { useContext } from 'react';
 import { useRouter } from 'next/router';
 import styles from './NavbarUserPopover.module.css';
