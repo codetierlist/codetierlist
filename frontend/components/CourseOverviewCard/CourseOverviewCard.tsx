@@ -16,16 +16,9 @@ import styles from './CourseOverviewCard.module.css';
 import { RoleType, Session } from 'codetierlist-types';
 import { ImageAdd20Regular } from "@fluentui/react-icons";
 import axios, { handleError } from "@/axios";
-import { promptForFileObject, checkIfCourseAdmin, SessionBlock } from "@/components";
+import { promptForFileObject, checkIfCourseAdmin, SessionBlock, generatePlaceholderImage } from "@/components";
 import { SnackbarContext } from "@/contexts/SnackbarContext";
 import { UserContext } from '@/contexts/UserContext';
-
-/**
- * generates a placeholder image for the course
- * @param course the course id
- */
-const generatePlaceholderCard = (course: string): string =>
-    `data:image/svg+xml,%3Csvg viewBox='0 0 300 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23777' d='M0 0h300v200H0z'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' fill='%23fff' font-family='sans-serif' font-size='50' text-anchor='middle' %3E${course}%3C/text%3E%3C/svg%3E`;
 
 export declare interface CourseSessionChipProps {
     /** the session of the course */
@@ -135,7 +128,7 @@ export const CourseOverviewCard = ({
                     width={300}
                     alt=""
                     height={200}
-                    onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = generatePlaceholderCard(id); }}
+                    onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = generatePlaceholderImage(id); }}
                 />
             </CardPreview>
 

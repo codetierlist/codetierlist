@@ -38,7 +38,10 @@ export const AssignmentCard = ({
 
     return (
         <Link href={`${courseID}/${id}`} className={styles.cardLink}>
-            <Card className={styles.card} selected={false}>
+            <Card
+                className={styles.card}
+                selected={false}
+            >
                 <CardHeader header={(<TierChip tier={tier as UserTier} />)} />
                 <div className={styles.cardContent}>
                     {dueDate && <Caption1 className={styles.cardText}><strong>Due</strong> {formattedDueDate}</Caption1>}

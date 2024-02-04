@@ -1,6 +1,7 @@
 /**
  * @fileoverview This file exports all the components in the components folder
  */
+export * from './AchievementCard/AchievementCard';
 export * from './AssignmentAdminToolbar/AddRemovePeopleMenu/AddRemovePeopleMenu';
 export * from './AssignmentAdminToolbar/AssignmentAdminToolbar';
 export * from './AssignmentAdminToolbar/BaseToolbarDeleteButton/AdminToolbarDeleteAssignmentButton/AdminToolbarDeleteAssignmentButton';
@@ -29,4 +30,4 @@ export * from './utils/ColourHash/ColourHash';
 export * from './utils/FileUploadUtils/FileUploadUtils';
 export * from './utils/Theme/Theme';
 export * from './utils/TimeUtils/TimeUtils';
-export * from './AchievementCard/AchievementCard';
+export * from './utils/generatePlaceholderImage/generatePlaceholderImage';
