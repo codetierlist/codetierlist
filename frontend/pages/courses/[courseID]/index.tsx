@@ -1,5 +1,5 @@
 import axios, { handleError } from "@/axios";
-import { AssignmentAdminToolbar, AssignmentCard, CourseSessionChip, checkIfCourseAdmin, getSession } from '@/components';
+import { AssignmentAdminToolbar, AssignmentCard, CourseSessionChip, checkIfCourseAdmin, getSession, generatePlaceholderImage } from '@/components';
 import { UserContext } from "@/contexts/UserContext";
 import {
     Caption1
@@ -10,7 +10,7 @@ import { notFound } from "next/navigation";
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from "react";
 import { Container } from "react-grid-system";
-import { SnackbarContext } from '../../../contexts/SnackbarContext';
+import { SnackbarContext } from '@/contexts/SnackbarContext';
 import styles from './page.module.css';
 
 export default function Page() {
@@ -40,6 +40,20 @@ export default function Page() {
             {checkIfCourseAdmin(userInfo, courseID as string) ? <AssignmentAdminToolbar courseID={courseID as string} fetchCourse={fetchCourse} /> : undefined}
 
             <Container component="main" className="m-t-xxxl">
+                <div
+                    style={{
+                        backgroundImage: `url("${process.env.NEXT_PUBLIC_API_URL}/courses/${courseID as string}/cover"), url("${generatePlaceholderImage(courseID as string)}")`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        height: 200,
+                        width: "100%",
+                        boxShadow: "var(--shadow8)",
+                        borderRadius: "var(--borderRadiusXLarge)"
+                    }}
+                    className="m-b-xxxl"
+                    aria-hidden="true"
+                />
+
                 <header className={styles.header}>
                     <Title2 className={styles.courseTitle}>
                         {course &&
