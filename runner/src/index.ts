@@ -66,9 +66,9 @@ export const runJob = async (job: ReadyJobData): Promise<JobResult> => {
 
         runner.on('exit', (code) => {
             if (code === 0) {
-                runner.stdout.on('end', () => {
-                    resolve({status: "ERROR", error: "stdout ended"}); // read all output and still no result
-                });
+                // runner.stdout.on('end', () => {
+                resolve({status: "ERROR", error: "stdout ended"}); // read all output and still no result
+                // });
             } else {
                 resolve({status: "ERROR", error: "stdout exited"}); // fail case
             }
