@@ -5,22 +5,22 @@ import type { BrandVariants, Theme } from '@fluentui/react-components';
 import { Space_Grotesk, Inter, Space_Mono } from 'next/font/google';
 
 const greenTheme: BrandVariants = {
-    10: '#020402',
-    20: '#141B11',
-    30: '#1E2D1B',
-    40: '#253A21',
-    50: '#2D4828',
-    60: '#34562E',
-    70: '#3C6535',
-    80: '#44733C',
-    90: '#4B8343',
-    100: '#53924A',
-    110: '#5BA251',
-    120: '#64B258',
-    130: '#6CC35F',
-    140: '#74D367',
-    150: '#7DE46E',
-    160: '#85F575'
+    10: `hsl(var(--accent-hue), 33.33%, 1.18%)`,
+    20: `hsl(var(--accent-hue), 22.73%, 8.63%)`,
+    30: `hsl(var(--accent-hue), 25%, 14.12%)`,
+    40: `hsl(var(--accent-hue), 27.47%, 17.84%)`,
+    50: `hsl(var(--accent-hue), 28.57%, 21.96%)`,
+    60: `hsl(var(--accent-hue), 30.3%, 25.88%)`,
+    70: `hsl(var(--accent-hue), 31.17%, 30.2%)`,
+    80: `hsl(var(--accent-hue), 31.43%, 34.31%)`,
+    90: `hsl(var(--accent-hue), 32.32%, 38.82%)`,
+    100: `hsl(var(--accent-hue), 32.73%, 43.14%)`,
+    110: `hsl(var(--accent-hue), 33.33%, 47.65%)`,
+    120: `hsl(var(--accent-hue), 36.89%, 52.16%)`,
+    130: `hsl(var(--accent-hue), 45.45%, 56.86%)`,
+    140: `hsl(var(--accent-hue), 55.1%, 61.57%)`,
+    150: `hsl(var(--accent-hue), 68.6%, 66.27%)`,
+    160: `hsl(var(--accent-hue), 86.49%, 70.98%)`
 };
 
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--spaceGrotesk' });
