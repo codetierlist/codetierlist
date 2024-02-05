@@ -49,7 +49,10 @@ const ListFiles = ({ commit, route, assignment, assignmentID, update }: ListFile
     const [files, setFiles] = useState<{ [key: string]: string }>({});
 
     const getFileContents = async (file: string) => {
-        await axios.get<string>(`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/${commit.log[0]}/${file}`, { skipErrorHandling: true })
+        await axios.get<string>(`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/${commit.log[0]}/${file}`, {
+            skipErrorHandling: true,
+            transformResponse: (res) => res
+        })
             .then((res) => {
                 // read the file contents from buffer
                 setFiles((prev) => {
