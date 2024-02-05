@@ -20,7 +20,7 @@ import {
 } from "codetierlist-types";
 import Error from 'next/error';
 import {useRouter} from 'next/router';
-import {useCallback, useContext, useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import { SnackbarContext } from '../../../../../contexts/SnackbarContext';
 import {usePathname, useSearchParams} from "next/navigation";
 
