@@ -60,8 +60,8 @@ export const runJob = async (job: ReadyJobData): Promise<JobResult> => {
             }
         });
 
-        runner.stderr.on('data', () => {
-            resolve({status: "ERROR", error: "stderr"});
+        runner.stderr.on('data', (data) => {
+            resolve({status: "ERROR", error: "stderr:\n" + data});
         });
 
         runner.on('exit', (code) => {
