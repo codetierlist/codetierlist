@@ -25,7 +25,7 @@ const getUtorid = (user: User | string) => typeof user === "string" ? user : use
 const isSelf = (user: User | string, utorid: string) => utorid === getUtorid(user);
 
 /** @return user initials based on email */
-const getUserInitials = (user: User) =>
+const getUserInitials = (user: {surname: string, givenName: string}) =>
     // the idea here is to catch weird names like "c" from erroring out
     `${user.givenName.substring(0, 1)}${user.surname.substring(0, 1)}`;
 
