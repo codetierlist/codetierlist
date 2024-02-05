@@ -1,5 +1,5 @@
-import axios, { handleError } from "@/axios";
-import { AdminToolbarDeleteAssignmentButton, HeaderToolbar } from '@/components';
+import axios, {handleError} from "@/axios";
+import {AdminToolbarDeleteAssignmentButton, HeaderToolbar} from '@/components';
 import {
     Button,
     Card,
@@ -13,7 +13,7 @@ import {
     TableRow,
     Tooltip
 } from "@fluentui/react-components";
-import { Dismiss24Regular, Search24Regular } from "@fluentui/react-icons";
+import {Dismiss24Regular, Search24Regular} from "@fluentui/react-icons";
 import {
     AssignmentStudentStats,
     FetchedAssignmentWithTier
@@ -21,7 +21,7 @@ import {
 import Error from 'next/error';
 import {useRouter} from 'next/router';
 import {useContext, useEffect, useState} from "react";
-import { SnackbarContext } from '../../../../../contexts/SnackbarContext';
+import {SnackbarContext} from '../../../../../contexts/SnackbarContext';
 import {usePathname, useSearchParams} from "next/navigation";
 
 /**
@@ -38,7 +38,7 @@ const highlightSubstring = (str: string, substr: string) => {
     return (
         <>
             {str.substring(0, index)}
-            <strong style={{ color: "var(--colorBrandForeground1)" }}>
+            <strong style={{color: "var(--colorBrandForeground1)"}}>
                 {str.substring(index, index + substr.length)}
             </strong>
             {str.substring(index + substr.length)}
@@ -46,9 +46,11 @@ const highlightSubstring = (str: string, substr: string) => {
     );
 };
 
-export default function Page() {
-    const { courseID, assignmentID } = useRouter().query;
-    const { showSnackSev } = useContext(SnackbarContext);
+export default function Page({setStage}: {
+    setStage: (stage: number) => void
+}) {
+    const {courseID, assignmentID} = useRouter().query;
+    const {showSnackSev} = useContext(SnackbarContext);
     const [assignment, setAssignment] = useState<FetchedAssignmentWithTier | null>(null);
     const [studentData, setStudentData] = useState<AssignmentStudentStats>([]);
     const [filterValue, setFilterValue] = useState<string>("");
@@ -59,12 +61,11 @@ export default function Page() {
     const loadSubmission = (utorid: string) => {
         const params = new URLSearchParams(searchParams.toString());
         params.set("utorid", utorid);
-        params.set("stage", "1");
-        void router.push(`${pathname}?${params.toString()}`);
+        router.push(`${pathname}?${params.toString()}`).then(() => setStage(1));
     };
 
     const fetchAssignment = async () => {
-        await axios.get<FetchedAssignmentWithTier>(`/courses/${courseID}/assignments/${assignmentID}`, { skipErrorHandling: true })
+        await axios.get<FetchedAssignmentWithTier>(`/courses/${courseID}/assignments/${assignmentID}`, {skipErrorHandling: true})
             .then((res) => {
                 setAssignment(res.data);
             })
@@ -72,7 +73,7 @@ export default function Page() {
     };
 
     const fetchAssignmentStats = async () => {
-        await axios.get<AssignmentStudentStats>(`/courses/${courseID}/assignments/${assignmentID}/stats`, { skipErrorHandling: true })
+        await axios.get<AssignmentStudentStats>(`/courses/${courseID}/assignments/${assignmentID}/stats`, {skipErrorHandling: true})
             .then((res) => setStudentData(res.data))
             .catch(handleError(showSnackSev));
     };
@@ -91,13 +92,13 @@ export default function Page() {
     }, [assignment, assignmentID]);
 
     if (!assignment || !courseID || !assignmentID) {
-        return <Error statusCode={404} />;
+        return <Error statusCode={404}/>;
     }
 
     const columns = [
-        { columnKey: "utorid", label: "UTORid" },
-        { columnKey: "name", label: "Full Name" },
-        { columnKey: "testsPassed", label: "Tests Passed" },
+        {columnKey: "utorid", label: "UTORid"},
+        {columnKey: "name", label: "Full Name"},
+        {columnKey: "testsPassed", label: "Tests Passed"},
         // { columnKey: "submitSol", label: "Submitted Solutions" },
         // { columnKey: "submitTest", label: "Submitted Tests" }
     ];
@@ -105,7 +106,7 @@ export default function Page() {
     return (
         <section className="p-b-xxxl">
             <HeaderToolbar>
-                <AdminToolbarDeleteAssignmentButton assignment={assignment} />
+                <AdminToolbarDeleteAssignmentButton assignment={assignment}/>
             </HeaderToolbar>
 
             <Card className="m-x-l m-t-xxl">
@@ -114,14 +115,16 @@ export default function Page() {
                         <Input
                             size="large"
                             placeholder="Search"
-                            contentBefore={<Search24Regular />}
+                            contentBefore={<Search24Regular/>}
                             contentAfter={
                                 <>
                                     {
                                         (filterValue !== "") &&
-                                        <Tooltip content="Clear search" relationship="label" showDelay={0} hideDelay={300} >
+                                        <Tooltip content="Clear search"
+                                            relationship="label"
+                                            showDelay={0} hideDelay={300}>
                                             <Button
-                                                icon={<Dismiss24Regular />}
+                                                icon={<Dismiss24Regular/>}
                                                 appearance="subtle"
                                                 onClick={() => setFilterValue("")}
                                             />
@@ -160,7 +163,9 @@ export default function Page() {
                                 <TableCell> {highlightSubstring(item.utorid, filterValue)} </TableCell>
                                 <TableCell> {highlightSubstring(`${item.givenName} ${item.surname}`, filterValue)} </TableCell>
                                 <TableCell> {item.testsPassed}/{item.totalTests} </TableCell>
-                                <TableCell> <Link appearance="subtle" onClick={()=>loadSubmission(item.utorid)}>View Submission</Link> </TableCell>
+                                <TableCell> <Link appearance="subtle"
+                                    onClick={() => loadSubmission(item.utorid)}>View
+                                    Submission</Link> </TableCell>
                                 {/*<TableCell> {item.submitTest.label} </TableCell>*/}
                             </TableRow>
                         ))}
