@@ -126,6 +126,7 @@ router.get("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) =>
         image_version: assignment.image_version,
         runner_image: assignment.runner_image,
         hidden: false,
+        strict_deadline: assignment.strict_deadline,
         tier: assignment.groups[0] ? generateYourTier(assignment.groups[0], req.user) : "?"
     }));
     res.send({...req.course!, assignments} satisfies FetchedCourseWithTiers);
@@ -234,10 +235,13 @@ router.get("/:courseId/cover", fetchCourseMiddleware, errorHandler(async (req, r
 }));
 router.post("/:courseId/assignments", fetchCourseMiddleware, errorHandler(async (req, res) => {
     const {name, dueDate, description} = req.body;
-    let {image, image_version, groupSize} = req.body;
+    let {runner_image: image, image_version, groupSize, strictDeadlines} = req.body;
     const date = new Date(dueDate);
     if (!groupSize) {
         groupSize = 0;
+    }
+    if (typeof strictDeadlines !== 'boolean') {
+        strictDeadlines = false;
     }
     if (typeof name !== 'string' || isNaN(date.getDate()) || typeof groupSize !== "number" || isNaN(groupSize) || typeof description !== 'string' || name.length === 0 || description.length === 0) {
         res.statusCode = 400;
@@ -268,7 +272,8 @@ router.post("/:courseId/assignments", fetchCourseMiddleware, errorHandler(async 
                 image_version,
                 runner_image: image,
                 group_size: groupSize,
-                course: {connect: {id: req.course!.id}}
+                course: {connect: {id: req.course!.id}},
+                strict_deadline: strictDeadlines
             }, ...fetchedAssignmentArgs
         });
         res.statusCode = 201;

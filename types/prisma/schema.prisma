@@ -8,18 +8,19 @@ datasource db {
 }
 
 model Assignment {
-  hidden        Boolean    @default(false)
-  title         String
-  due_date      DateTime?
-  description   String
-  course_id     String
-  course        Course     @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  test_cases    TestCase[]
-  submissions   Solution[]
-  runner_image  String
-  image_version String
-  group_size    Int        @default(0)
-  groups        Group[]
+  hidden          Boolean    @default(false)
+  title           String
+  due_date        DateTime?
+  description     String
+  course_id       String
+  course          Course     @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  test_cases      TestCase[]
+  submissions     Solution[]
+  runner_image    String
+  image_version   String
+  group_size      Int        @default(0)
+  groups          Group[]
+  strict_deadline Boolean    @default(false)
 
   @@id(fields: [course_id, title])
   @@unique([course_id, title], name: "id")

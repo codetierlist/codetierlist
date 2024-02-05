@@ -8,7 +8,7 @@ import {
     Label,
     Option,
     OptionGroup,
-    Title2, ToolbarButton
+    Title2, ToolbarButton, Switch
 } from "@fluentui/react-components";
 import {
     ArrowLeft24Regular,
@@ -45,6 +45,7 @@ export default function Page(): JSX.Element {
     const { courseID } = useRouter().query;
     const { fetchUserInfo } = useContext(UserContext);
     const [groupSize, setGroupSize] = useState<number|null>(null);
+    const [strictDeadlines, setStrictDeadlines] = useState(false);
 
     const router = useRouter();
 
@@ -56,6 +57,8 @@ export default function Page(): JSX.Element {
             name: assignmentName,
             description: description,
             dueDate: dueDate.toISOString(),
+            groupSize,
+            strictDeadlines,
             ...selectedRunner
         });
 
@@ -91,7 +94,9 @@ export default function Page(): JSX.Element {
 
         setAssignmentName(data.name);
         setDescription(data.description);
+        setStrictDeadlines(data.strictDeadlines);
         setDueDate(new Date(data.dueDate));
+        setGroupSize(data.groupSize);
         setSelectedRunner(data);
     };
 
@@ -109,6 +114,7 @@ export default function Page(): JSX.Element {
             description: description,
             dueDate: dueDate.toISOString(),
             groupSize,
+            strictDeadlines,
             ...selectedRunner
         })
             .then(fetchUserInfo)
@@ -204,7 +210,16 @@ export default function Page(): JSX.Element {
                                     setDueDate(updateTimezoneOffset(e.target.value));
                             }} />
                     </ControlCard>
-
+                    <ControlCard
+                        title="Strict deadlines"
+                        description="If strict deadlines are enabled, students will not be able to submit after the due date."
+                        icon={<Calendar24Regular />}
+                        htmlFor="strictDeadlines">
+                        <Switch
+                            id="strictDeadlines"
+                            checked={strictDeadlines}
+                            onChange={(_, data) => setStrictDeadlines(data.checked ?? false)} />
+                    </ControlCard>
                     <ControlCard
                         required
                         title="Runner image"
@@ -221,7 +236,7 @@ export default function Page(): JSX.Element {
                                     {runners[image].map(version =>
                                         <Option key={`${image}/${version}`}
                                             text={`${image}/${version}`}
-                                            value={JSON.stringify({ image, image_version: version })}>
+                                            value={JSON.stringify({ runner_image: image, image_version: version })}>
                                             {image}/{version}
                                         </Option>
                                     )}
