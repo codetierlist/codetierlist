@@ -1,9 +1,10 @@
 """
-UTM: CSC108, Fall 2023
+UTM: CSC108, Fall 2021
 
 Practical Lab 10
 
-Instructors: Michael Liut, Marc De Benedetti, Rutwa Engineer, Akshay Arun Bapat
+Instructors: Michael Liut, Andrew Petersen, Andi Bergen,
+             Tingting Zhu, Pooja Vashisth, and Sonya Allin
 
 This code is provided solely for the personal and private use of
 students taking the CSC108 course at the University of Toronto.
@@ -12,11 +13,10 @@ All forms of distribution of this code, whether as given or with
 any changes, are expressly prohibited.
 
 All of the files in this directory and all subdirectories are:
-Copyright (c) 2023 Michael Liut, Haocheng Hu
+Copyright (c) 2021 Michael Liut, Haocheng Hu
 
 LAB RESTRICTIONS, PLEASE READ:
 Do not add any imports, the ones that you need will be given to you.
-Do not remove our imports (you'll need them).
 Do not use try-except statements, you should be able to anticipate
 or prevent any errors from happening at all!
 """
@@ -39,7 +39,7 @@ def find_email(s: str) -> str:
 
             name: the name is an alphanumeric string that is less than or
                   equal to 12 characters. Additional characters allowed are
-                  dash (-), period (.) and underscore (_). But the name
+                  dash (-), period (.) and underscore (_). But the email
                   cannot start or end with these additional characters.
                   The name must also be at least 1 character long.
                   Example names:
@@ -59,12 +59,23 @@ def find_email(s: str) -> str:
 
     Note: you must not use any loops (for, while) here.
           We want you to just use the re library for this function.
-    """
 
-    reg = r'([a-zA-Z0-9](?:[\w.-]{0,10}[a-zA-Z0-9])?)@([0-9]*[05])\.(com|ca)'
-    match = re.search(reg, s)
+    >>> find_email('12345a_test_email@165265365.com!')
+    'a_test_email@165265365.com'
+    """
+    # to avoid PyTA yelling, we are splitting the regex into two parts
+    x = r'[a-zA-Z\d]([\w.-]{1,10})?(?(1)'
+    y = r'[a-zA-Z\d]|[a-zA-Z\d]?)@\d*[05]\.c(om|a)'
+    p = re.compile(x + y)
+
+    match = re.search(p, s)
 
     if match:
         return match.group(0)
-    else:
-        return ''
+    return ''
+
+
+if __name__ == '__main__':
+    import doctest
+
+    doctest.testmod()
