@@ -18,7 +18,7 @@ export const AllCoursesList = () => {
 
     const fetchAllCourses = async () => {
         await axios.get<FetchedCourse[]>(`/courses`, { skipErrorHandling: true })
-            .then((res) => setAllCourses(res.data))
+            .then((res) => setAllCourses(res.data.filter(course=> !userInfo.roles.some(role => role.course_id === course.id))))
             .catch(e => {
                 handleError(showSnackSev)(e);
                 notFound();

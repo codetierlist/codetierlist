@@ -18,6 +18,7 @@ import {
     onNewSubmission,
     onNewTestCase
 } from "./updateScores";
+import {isUTORid} from "is-utorid";
 
 export const errorHandler = (cb: (req: Request, res: Response, next: NextFunction) => Promise<unknown>) => {
     return (req: Request, res: Response, next: NextFunction) => {
@@ -91,10 +92,17 @@ const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'date
 };
 
 const getObjectFromRequest = async (req: Request, table: "solution" | "testCase") => {
+    let utorid = req.user.utorid;
+    if(req.query.utorid && req.query.utorid !== req.user.utorid){
+        if(!isProf(req.course!, req.user) || typeof req.query.utorid !== "string" || !isUTORid(req.query.utorid)){
+            return null;
+        }
+        utorid = req.query.utorid;
+    }
     let object: Solution | TestCase | null;
     const query : Prisma.SolutionFindFirstArgs | Prisma.TestCaseFindFirstArgs = {
         where: {
-            author_id: req.user.utorid,
+            author_id: utorid,
             assignment_title: req.assignment!.title,
             course_id: req.course!.id,
         },

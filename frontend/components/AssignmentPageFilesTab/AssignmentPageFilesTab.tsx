@@ -1,10 +1,10 @@
-import axios, { handleError } from "@/axios";
+import axios, {handleError} from "@/axios";
 import {
     Monaco,
     TestCaseStatus,
     promptForFileObject
 } from '@/components';
-import { SnackbarContext } from "@/contexts/SnackbarContext";
+import {SnackbarContext} from "@/contexts/SnackbarContext";
 import {
     Accordion,
     AccordionHeader,
@@ -23,8 +23,9 @@ import {
     Commit,
     UserFetchedAssignment
 } from "codetierlist-types";
-import { useContext, useEffect, useState, useCallback } from 'react';
+import {useContext, useEffect, useState, useCallback} from 'react';
 import styles from './AssignmentPageFilesTab.module.css';
+import {useSearchParams} from "next/navigation";
 
 interface ListFilesProps {
     /** the commit to display */
@@ -44,26 +45,38 @@ interface ListFilesProps {
  *
  * @returns {JSX.Element} the list of files
  */
-const ListFiles = ({ commit, route, assignment, assignmentID, update }: ListFilesProps) => {
-    const { showSnackSev } = useContext(SnackbarContext);
+const ListFiles = ({
+    commit,
+    route,
+    assignment,
+    assignmentID,
+    update
+}: ListFilesProps) => {
+    const {showSnackSev} = useContext(SnackbarContext);
     const [files, setFiles] = useState<{ [key: string]: string }>({});
+    const searchParams = useSearchParams();
 
     const getFileContents = async (file: string) => {
         await axios.get<string>(`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/${commit.log[0]}/${file}`, {
             skipErrorHandling: true,
-            transformResponse: (res) => res
+            params: {
+                utorid: searchParams.get("utorid") ?? undefined
+            }
         })
             .then((res) => {
                 // read the file contents from buffer
                 setFiles((prev) => {
-                    return { ...prev, [file]: Buffer.from(res.data).toString("utf-8") };
+                    return {
+                        ...prev,
+                        [file]: Buffer.from(res.data).toString("utf-8")
+                    };
                 });
             })
             .catch(handleError(showSnackSev));
     };
 
     const deleteFile = async (file: string) => {
-        await axios.delete(`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/${file}`, { skipErrorHandling: true })
+        await axios.delete(`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/${file}`, {skipErrorHandling: true})
             .then(() => {
                 update && update();
                 showSnackSev("File deleted", "success");
@@ -91,16 +104,20 @@ const ListFiles = ({ commit, route, assignment, assignmentID, update }: ListFile
                     Object.keys(commit.files).map((key, index) => (
                         <AccordionItem value={index} key={key}>
                             <div className={styles.accordionHeaderContainer}>
-                                <AccordionHeader className={styles.accordionHeader}>
-                                    <div className={styles.accordionHeaderContent}>
+                                <AccordionHeader
+                                    className={styles.accordionHeader}>
+                                    <div
+                                        className={styles.accordionHeaderContent}>
                                         <span>{commit.files[index]}</span>
 
 
                                     </div>
                                 </AccordionHeader>
 
-                                <Tooltip content="Delete file" relationship="label">
-                                    <Button icon={<Delete16Filled />} onClick={() => deleteFile(commit.files[index])} />
+                                <Tooltip content="Delete file"
+                                    relationship="label">
+                                    <Button icon={<Delete16Filled/>}
+                                        onClick={() => deleteFile(commit.files[index])}/>
                                 </Tooltip>
                             </div>
 
@@ -142,18 +159,33 @@ export declare interface AssignmentPageFilesTabProps {
  *
  * @returns {JSX.Element} the files tab
  */
-export const AssignmentPageFilesTab = ({ fetchAssignment, assignment, assignmentID, routeName, route }: AssignmentPageFilesTabProps): JSX.Element => {
-    const [content, setContent] = useState<Commit>({ "files": [], "log": [] } as Commit);
-    const { showSnackSev } = useContext(SnackbarContext);
+export const AssignmentPageFilesTab = ({
+    fetchAssignment,
+    assignment,
+    assignmentID,
+    routeName,
+    route
+}: AssignmentPageFilesTabProps): JSX.Element => {
+    const [content, setContent] = useState<Commit>({
+        "files": [],
+        "log": []
+    } as Commit);
+    const {showSnackSev} = useContext(SnackbarContext);
+    const searchParams = useSearchParams();
 
     const getTestData = useCallback(async () => {
-        await axios.get<Commit>(`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}`, { skipErrorHandling: true })
+        await axios.get<Commit>(`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}`, {
+            skipErrorHandling: true,
+            params: {
+                utorid: searchParams.get("utorid") ?? undefined
+            }
+        })
             .then((res) => setContent(res.data))
             .catch(e => {
                 handleError(showSnackSev)(e);
-                setContent({ "files": [], "log": [] } as Commit);
+                setContent({"files": [], "log": []} as Commit);
             });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [assignment.course_id, assignmentID, route]);
 
     const submitTest = async (files: FileList) => {
@@ -165,7 +197,7 @@ export const AssignmentPageFilesTab = ({ fetchAssignment, assignment, assignment
         axios.post(`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}`,
             formData,
             {
-                headers: { "Content-Type": "multipart/form-data" }
+                headers: {"Content-Type": "multipart/form-data"}
             })
             .then(() => {
                 fetchAssignment();
@@ -175,7 +207,7 @@ export const AssignmentPageFilesTab = ({ fetchAssignment, assignment, assignment
 
     const POLLING_RATE = 1000;
     useEffect(() => {
-        if (content.valid === "PENDING"){
+        if (content.valid === "PENDING") {
             const interval = setInterval(() => {
                 void getTestData();
             }, POLLING_RATE);
@@ -191,9 +223,11 @@ export const AssignmentPageFilesTab = ({ fetchAssignment, assignment, assignment
     return (
         <div className="m-y-xxxl">
             <div className={styles.uploadHeader}>
-                <Subtitle1 className={styles.testCaseHeader} block>Uploaded {routeName}s <TestCaseStatus status={content.valid} /></Subtitle1>
-                <Button
-                    icon={<Add24Filled />}
+                <Subtitle1 className={styles.testCaseHeader}
+                    block>Uploaded {routeName}s <TestCaseStatus
+                        status={content.valid}/></Subtitle1>
+                {!searchParams.has("utorid") && <Button
+                    icon={<Add24Filled/>}
                     appearance="subtle"
                     onClick={async () => {
                         promptForFileObject(".py", true)
@@ -206,10 +240,11 @@ export const AssignmentPageFilesTab = ({ fetchAssignment, assignment, assignment
                     }}
                 >
                     Upload a {routeName}
-                </Button>
+                </Button>}
             </div>
 
-            <Text block className={styles.commitId} font="numeric">{content.log[0]}</Text>
+            <Text block className={styles.commitId}
+                font="numeric">{content.log[0]}</Text>
 
             <Card>
                 <ListFiles

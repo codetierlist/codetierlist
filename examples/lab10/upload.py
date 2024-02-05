@@ -56,7 +56,7 @@ def create_assignment(course: str, assignment: str, due_date: str) -> str:
         'dueDate': due_date,
         'description': 'This is a lab assignment',
         'groupSize': group_size,
-        "image": "python",
+        "runner_image": "python",
         "image_version": "lab10-3.10.11"
     }
     response = requests.post(url, json=data, headers=admin_headers)
