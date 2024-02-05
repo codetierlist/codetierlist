@@ -27,12 +27,7 @@ export const AllCoursesList = () => {
 
     useEffect(() => {
         if (!userInfo.admin) { return; }
-        void fetchAllCourses().then(() => {
-            // exclude courses that the user is enrolled in
-            if (allCourses) {
-                setAllCourses(allCourses.filter(course => !course.roles.some(role => role.user_id === userInfo.utorid)));
-            }
-        });
+        void fetchAllCourses();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
