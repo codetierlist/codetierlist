@@ -221,14 +221,12 @@ export const removeTestcases = async (utorid: string): Promise<void> => {
 
 new Worker<ParentJobData, undefined, JobType>(parent_job_queue, async (job, token) => {
     if (!job || !job.data) return;
-    console.info(`Parent job ${job.id} started processing at ${Date.now()}`);
     while (job.data.status !== "COMPLETED") {
         if (job.data.status === "WAITING_FILES") {
             await job.updateData({...job.data, status: "READY"});
             job.data.status = "READY";
         }
         const shouldWait = await job.moveToWaitingChildren(token!);
-        console.log(`token: ${token}, shouldWait: ${shouldWait}, job.data.status: ${job.data.status}`);
         if (shouldWait) {
             throw new WaitingChildrenError();
         } else {
@@ -268,11 +266,9 @@ const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue
         + await job_queue.getCompletedCount()
         + await job_queue.getDelayedCount();
     if (isRateLimited - waiting >= max_fetched) {
-        console.log(`Fetched: ${isRateLimited}, Waiting: ${waiting}, Pending: ${await pending_queue.count()}`);
         await fetchWorker.rateLimit(1000);
         throw Worker.RateLimitError();
     }
-    console.info(`Fetching job files for ${job.id}`);
     if (!job || !job.data || !job.name) return;
     const data = job.data;
     const submission = await prisma.solution.findUnique({
@@ -315,8 +311,6 @@ const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue
 const parent_queue = new Queue<ParentJobData, undefined, JobType>(parent_job_queue, queue_conf);
 parent_job_events.on("completed", async ({jobId}) => {
     const job = await parent_queue.getJob(jobId);
-    console.log(`Parent job ${jobId} completed, removing`);
     if (!job) return;
-    console.log(`Parent job ${job.id} completed, removing`);
     await job.remove({removeChildren: true});
 });
