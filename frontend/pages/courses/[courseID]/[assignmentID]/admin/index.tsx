@@ -55,14 +55,6 @@ export default function Page() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const pathname = usePathname();
-    const createQueryString = useCallback(
-        (name: string, value: string) => {
-            const params = new URLSearchParams(searchParams.toString());
-            params.set(name, value);
-
-            return params.toString();
-        },
-        [searchParams]);
 
     const loadSubmission = (utorid: string) => {
         const params = new URLSearchParams(searchParams.toString());
