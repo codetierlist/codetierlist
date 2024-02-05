@@ -11,7 +11,7 @@ import {
     QueueEvents,
     Job,
     FlowProducer,
-    Worker, WaitingChildrenError, JobData, UnrecoverableError
+    Worker, WaitingChildrenError, UnrecoverableError
 } from "bullmq";
 import {runTestcase, updateScore} from "./updateScores";
 import prisma from "./prisma";
