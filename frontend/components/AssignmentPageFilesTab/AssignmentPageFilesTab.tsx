@@ -57,9 +57,11 @@ const ListFiles = ({
     const searchParams = useSearchParams();
 
     const getFileContents = async (file: string) => {
-        await axios.get<string>(`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/${commit.log[0]}/${file}${searchParams.has("utorid") ? "?utorid="+searchParams.get("utorid") : ""}`, {
+        await axios.get<string>(`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/${commit.log[0]}/${file}}`, {
             skipErrorHandling: true,
-            transformResponse: (res) => res
+            params: {
+                utorid: searchParams.get("utorid") ?? undefined
+            }
         })
             .then((res) => {
                 // read the file contents from buffer
@@ -172,7 +174,12 @@ export const AssignmentPageFilesTab = ({
     const searchParams = useSearchParams();
 
     const getTestData = useCallback(async () => {
-        await axios.get<Commit>(`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}${searchParams.has("utorid") ? "?utorid=" + searchParams.get("utorid") : ""}`, {skipErrorHandling: true})
+        await axios.get<Commit>(`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}`, {
+            skipErrorHandling: true,
+            params: {
+                utorid: searchParams.get("utorid") ?? undefined
+            }
+        })
             .then((res) => setContent(res.data))
             .catch(e => {
                 handleError(showSnackSev)(e);
