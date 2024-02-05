@@ -125,6 +125,16 @@ export const exists = async (p: PathLike) => {
 };
 
 export const processSubmission = async (req: Request, res: Response, table: "solution" | "testCase") => {
+    if(!req.user.roles.some(role => role.course_id === req.course!.id)){
+        res.statusCode = 403;
+        res.send({message: 'You are not enrolled in this course.'});
+        return;
+    }
+    if(req.assignment!.strict_deadline && req.assignment!.due_date && Date.now() > new Date(req.assignment!.due_date).getTime()){
+        res.statusCode = 403;
+        res.send({message: 'The deadline has passed.'});
+        return;
+    }
     // upload files
     const repoPath = path.resolve(`/repos/${req.course!.id}/${req.assignment!.title}/${req.user.utorid}_${table}`);
 
