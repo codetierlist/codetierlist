@@ -2,6 +2,7 @@
  * @fileoverview This file exports all the components in the components folder
  */
 export * from './AchievementCard/AchievementCard';
+export * from './AllCoursesList/AllCoursesList';
 export * from './AssignmentAdminToolbar/AddRemovePeopleMenu/AddRemovePeopleMenu';
 export * from './AssignmentAdminToolbar/AssignmentAdminToolbar';
 export * from './AssignmentAdminToolbar/BaseToolbarDeleteButton/AdminToolbarDeleteAssignmentButton/AdminToolbarDeleteAssignmentButton';

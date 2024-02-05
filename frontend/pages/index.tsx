@@ -1,4 +1,4 @@
-import { CourseOverviewCard, CreateCourseDialogSurface, getSession } from '@/components';
+import { AllCoursesList, CourseOverviewCard, CreateCourseDialogSurface, getSession } from '@/components';
 import { UserContext } from "@/contexts/UserContext";
 import {
     Button,
@@ -16,6 +16,7 @@ import { Container } from 'react-grid-system';
 export default function Home() {
     const { userInfo } = useContext(UserContext);
     const [showDialog, setShowDialog] = useState(false);
+
     return (
         <>
             <Head>
@@ -59,6 +60,10 @@ export default function Home() {
                         </Dialog>
                         : undefined}
                 </div>
+
+                { userInfo.admin &&
+                    <AllCoursesList />
+                }
             </Container>
         </>
     );

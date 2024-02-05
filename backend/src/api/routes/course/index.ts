@@ -80,6 +80,27 @@ router.post("/", errorHandler(async (req, res) => {
     res.send(course);
 }));
 
+/**
+ * get all courses if admin
+ */
+router.get("/", errorHandler(async (req, res) => {
+    // must be admin
+    if (!req.user.admin) {
+        res.statusCode = 403;
+        res.send({message: 'You are not an admin.'});
+        return;
+    }
+
+    const courses = await prisma.course.findMany({
+        include: {
+            roles: true
+        },
+        where: {
+            hidden: false
+        }
+    });
+    res.send(courses);
+}));
 
 router.get("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) => {
     const course = await prisma.course.findUniqueOrThrow({
