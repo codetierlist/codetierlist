@@ -57,7 +57,7 @@ const ListFiles = ({
     const searchParams = useSearchParams();
 
     const getFileContents = async (file: string) => {
-        await axios.get<string>(`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/${commit.log[0]}/${file}}`, {
+        await axios.get<string>(`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/${commit.log[0]}/${file}`, {
             skipErrorHandling: true,
             params: {
                 utorid: searchParams.get("utorid") ?? undefined
