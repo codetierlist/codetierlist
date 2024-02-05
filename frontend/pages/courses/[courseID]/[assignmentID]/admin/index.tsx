@@ -4,7 +4,7 @@ import {
     Button,
     Card,
     Field,
-    Input,
+    Input, Link,
     Table,
     TableBody,
     TableCell,
@@ -19,9 +19,10 @@ import {
     FetchedAssignmentWithTier
 } from "codetierlist-types";
 import Error from 'next/error';
-import { useRouter } from 'next/router';
-import { useContext, useEffect, useState } from "react";
+import {useRouter} from 'next/router';
+import {useCallback, useContext, useEffect, useState} from "react";
 import { SnackbarContext } from '../../../../../contexts/SnackbarContext';
+import {usePathname, useSearchParams} from "next/navigation";
 
 /**
  * Highlights the substring in the string
@@ -51,6 +52,24 @@ export default function Page() {
     const [assignment, setAssignment] = useState<FetchedAssignmentWithTier | null>(null);
     const [studentData, setStudentData] = useState<AssignmentStudentStats>([]);
     const [filterValue, setFilterValue] = useState<string>("");
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const pathname = usePathname();
+    const createQueryString = useCallback(
+        (name: string, value: string) => {
+            const params = new URLSearchParams(searchParams.toString());
+            params.set(name, value);
+
+            return params.toString();
+        },
+        [searchParams]);
+
+    const loadSubmission = (utorid: string) => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set("utorid", utorid);
+        params.set("stage", "1");
+        void router.push(`${pathname}?${params.toString()}`);
+    };
 
     const fetchAssignment = async () => {
         await axios.get<FetchedAssignmentWithTier>(`/courses/${courseID}/assignments/${assignmentID}`, { skipErrorHandling: true })
@@ -149,7 +168,7 @@ export default function Page() {
                                 <TableCell> {highlightSubstring(item.utorid, filterValue)} </TableCell>
                                 <TableCell> {highlightSubstring(`${item.givenName} ${item.surname}`, filterValue)} </TableCell>
                                 <TableCell> {item.testsPassed}/{item.totalTests} </TableCell>
-                                {/*<TableCell> {item.submitSol.label} </TableCell>*/}
+                                <TableCell> <Link appearance="subtle" onClick={()=>loadSubmission(item.utorid)}>View Submission</Link> </TableCell>
                                 {/*<TableCell> {item.submitTest.label} </TableCell>*/}
                             </TableRow>
                         ))}

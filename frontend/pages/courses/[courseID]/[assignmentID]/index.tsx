@@ -27,10 +27,11 @@ import {
 import Error from 'next/error';
 import Head from "next/head";
 import { useRouter } from 'next/router';
-import { useContext, useEffect, useState } from 'react';
+import {useCallback, useContext, useEffect, useState} from 'react';
 import { Col, Container } from "react-grid-system";
 import AdminPage from "./admin/index";
 import styles from './page.module.css';
+import {usePathname, useSearchParams } from "next/navigation";
 
 /**
  * Displays the tierlist
@@ -82,7 +83,30 @@ const getMyTier = (tierlist: Tierlist): UserTier => {
 
 export default function Page() {
     const router = useRouter();
-    const [stage, setStage] = useState(0);
+    const searchParams = useSearchParams();
+    const pathname = usePathname();
+    let defaultStage = parseInt(searchParams.get("stage") || "0");
+    if (isNaN(defaultStage)) {
+        defaultStage = 0;
+    }
+
+    const [stage, setStageState] = useState(defaultStage);
+    const createQueryString = useCallback(
+        (name: string, value: string) => {
+            const params = new URLSearchParams(searchParams.toString());
+            params.delete("utorid");
+            params.set(name, value);
+
+            return params.toString();
+        },
+        [searchParams]);
+    const setStage = (newStage: number) => {
+        setStageState(newStage);
+        router.replace(pathname + "?" + createQueryString("stage", newStage.toString()));
+    };
+    useEffect(() => {
+        setStageState(defaultStage);
+    }, [defaultStage, searchParams]);
     const [assignment, setAssignment] = useState<UserFetchedAssignment | null>(null);
     const [tierlist, setTierlist] = useState<Tierlist | null>(null);
     const { showSnackSev } = useContext(SnackbarContext);
@@ -170,8 +194,6 @@ export default function Page() {
                 </Tab>
 
                 {
-                    /* TODO proper permissions check */
-
                     checkIfCourseAdmin(userInfo, assignment.course_id) && (
                         <Tab value="tab3" onClick={() => setStage(3)}>
                             Admin
