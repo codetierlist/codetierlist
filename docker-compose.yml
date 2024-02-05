@@ -21,8 +21,8 @@ services:
       context: .
       dockerfile: ./backend/Dockerfile
     volumes:
-      - repo_data:/repos
-      - uploads:/uploads
+      - ./volumes/repo_data:/repos
+      - ./volumes/uploads:/uploads
     environment:
       - DATABASE_URL=postgres://postgres:example@db:5432/postgres
       - NODE_ENV=production
@@ -48,7 +48,7 @@ services:
     environment:
       POSTGRES_PASSWORD: example
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - ./volumes/db_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 
@@ -60,12 +60,6 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - redis_data:/data
+      - ./volumes/redis_data:/data
     env_file:
       - ./redis/.env
-
-volumes:
-  db_data:
-  repo_data:
-  uploads:
-  redis_data:

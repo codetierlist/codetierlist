@@ -48,7 +48,7 @@ export const Navbar = (): JSX.Element => {
             {(userInfo.email !== defaultUser.email) && (
                 <Popover size="small">
                     <PopoverTrigger>
-                        <Button appearance="subtle" size="small" className={styles.userButton}>
+                        <Button appearance="subtle" size="small" className={styles.userButton} aria-label={`Account manager for ${userInfo.givenName} ${userInfo.surname}`}>
                             <UserAvatar />
                         </Button>
                     </PopoverTrigger>
