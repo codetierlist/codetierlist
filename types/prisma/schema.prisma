@@ -74,6 +74,10 @@ model Solution {
 
   @@id(fields: [course_id, assignment_title, author_id, git_id])
   @@unique([course_id, assignment_title, author_id, git_id], name: "_id")
+  @@index([course_id, assignment_title, author_id], name: "solution_index")
+  @@index([datetime(sort: Desc)], name: "datetime_index")
+  @@index([author_id], name: "author_index")
+  @@index([author_id, datetime(sort: Desc)], name: "author_datetime_index")
   @@map("Solutions")
 }
 
@@ -101,6 +105,10 @@ model TestCase {
   group            Group?         @relation(fields: [group_number, assignment_title, course_id], references: [number, assignment_title, course_id])
 
   @@unique([course_id, assignment_title, author_id, git_id], name: "_id")
+  @@index([course_id, assignment_title, author_id], name: "testcase_index")
+  @@index([datetime(sort: Desc)], name: "testcase_datetime_index")
+  @@index([author_id], name: "testcase_author_index")
+  @@index([author_id, datetime(sort: Desc)], name: "testcase_author_datetime_index")
   @@map("Testcases")
 }
 
