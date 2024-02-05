@@ -208,14 +208,14 @@ job_events.on("completed", async ({jobId}) => {
 export const removeSubmission = async (utorid: string): Promise<void> => {
     await Promise.all(await pending_queue.getJobs(["waiting", "active"])
         .then(async (jobs) =>
-            jobs.filter(job => job.data?.submissionAuthorId === utorid)
+            jobs.filter(job => job?.data?.submissionAuthorId === utorid)
                 .map(async job => await job.remove())));
 };
 
 export const removeTestcases = async (utorid: string): Promise<void> => {
     await Promise.all(await pending_queue.getJobs(["waiting", "active"])
         .then(async (jobs) =>
-            jobs.filter(job => job.data?.testcaseAuthorId === utorid)
+            jobs.filter(job => job?.data?.testcaseAuthorId === utorid)
                 .map(async job => await job.remove())));
 };
 
