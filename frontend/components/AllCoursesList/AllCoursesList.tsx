@@ -56,4 +56,4 @@ export const AllCoursesList = () => {
             </div>
         </section>
     );
-}
+};
