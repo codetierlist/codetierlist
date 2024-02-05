@@ -68,8 +68,16 @@ export const scoreableGroupArgs = Prisma.validator<Prisma.GroupDefaultArgs>()({
         solutions: {
             distinct: "author_id",
             orderBy: {datetime: "desc"},
-            include: {
-                author: true,
+            select: {
+                author_id: true,
+                author: {
+                    select: {
+                        utorid: true,
+                        givenName: true,
+                        surname: true,
+                        email: true
+                    }
+                },
                 scores: {
                     orderBy: [{test_case: {datetime: "desc"}}, {datetime: "desc"}],
                     distinct: "testcase_author_id",
@@ -78,7 +86,12 @@ export const scoreableGroupArgs = Prisma.validator<Prisma.GroupDefaultArgs>()({
                             valid: "VALID"
                         }
                     },
-                    include: {test_case: true}
+                    select: {
+                        pass: true,
+                        test_case: {select: {
+                            id: true,
+                            valid: true,
+                        }}}
                 },
             }
         }

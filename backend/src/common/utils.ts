@@ -87,6 +87,7 @@ const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'date
         }
         return commit;
     } catch (e) {
+        console.error(e);
         return null;
     }
 };
