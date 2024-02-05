@@ -176,6 +176,7 @@ router.get("/:assignment/tierlist", fetchAssignmentMiddleware, errorHandler(asyn
             }
         }
     });
+
     if (!fullFetchedAssignment.groups[0]) {
         res.send({
             S: [],
@@ -197,6 +198,7 @@ router.get('/:assignment/stats', fetchAssignmentMiddleware, errorHandler(async (
         res.send({message: "You are not a prof"});
         return;
     }
+    console.time('statsFetch');
     const fullFetchedAssignment = await prisma.assignment.findUniqueOrThrow({
         where: {
             id:
@@ -211,7 +213,11 @@ router.get('/:assignment/stats', fetchAssignmentMiddleware, errorHandler(async (
             }
         }
     });
+    console.timeEnd('statsFetch');
+    console.time('tierlistGen');
     const tierlists = fullFetchedAssignment.groups.map(group => generateTierList(group));
+    console.timeEnd('tierlistGen');
+    console.time('otherGen');
     const invertedTierlist: Record<string, Tier> = {};
     tierlists.forEach(tierlist => (Object.keys(tierlist) as Tier[]).forEach(tier => tierlist[tier].forEach(name => invertedTierlist[name.utorid] = tier)));
     const students = fullFetchedAssignment.groups.map(x=>x.solutions).flat().map(submission => {
@@ -227,5 +233,7 @@ router.get('/:assignment/stats', fetchAssignmentMiddleware, errorHandler(async (
         };
     });
     res.send(students satisfies AssignmentStudentStats);
+    console.timeEnd('otherGen');
 }));
+
 export default router;
