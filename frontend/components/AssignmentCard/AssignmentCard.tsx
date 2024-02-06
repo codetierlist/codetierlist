@@ -37,7 +37,11 @@ export const AssignmentCard = ({
     const formattedDueDate = dueDate ? convertDate(dueDate) : null;
 
     return (
-        <Link href={`${courseID}/${id}`} className={styles.cardLink}>
+        <Link
+            href={`${courseID}/${id}`}
+            className={styles.cardLink}
+            aria-label={`View assignment ${name}, due ${formattedDueDate}. ${tier == "?" ? "Tier not set." : `You are in ${tier} tier.`}`}
+        >
             <Card
                 className={styles.card}
                 selected={false}
