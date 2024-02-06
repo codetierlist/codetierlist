@@ -142,10 +142,6 @@ export default function Page({setStage}: {
                     </Field>
                 </div>
 
-                {
-                    !studentData && <Spinner labelPosition="below" label="Fetching the latest data for you&hellip;" />
-                }
-
                 <Table arial-label="Default table" className="m-xs m-t-s">
                     <TableHeader>
                         <TableRow>
@@ -176,6 +172,11 @@ export default function Page({setStage}: {
                         ))}
                     </TableBody>
                 </Table>
+
+                {
+                    !studentData && <Spinner labelPosition="below" label="Fetching the latest data for you&hellip;" />
+                }
+
             </Card>
         </section>
     );
