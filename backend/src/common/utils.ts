@@ -1,24 +1,23 @@
-import prisma, {fetchedAssignmentArgs, fetchedCourseArgs} from "./prisma";
 import {
+    Course,
     Prisma,
     Assignment as PrismaAssignment,
-    Course,
     RoleType,
     Solution,
-    TestCase,
-    User
+    TestCase
 } from "@prisma/client";
-import {NextFunction, Request, Response} from "express";
+import { Commit, FetchedUser } from "codetierlist-types";
+import { NextFunction, Request, Response } from "express";
+import { PathLike, promises as fs } from "fs";
+import { isUTORid } from "is-utorid";
+import git, { ReadBlobResult } from "isomorphic-git";
 import path from "path";
-import {PathLike, promises as fs} from "fs";
-import git, {ReadBlobResult} from "isomorphic-git";
-import {Commit, FetchedUser} from "codetierlist-types";
+import prisma, { fetchedAssignmentArgs, fetchedCourseArgs } from "./prisma";
 import {
     onNewProfSubmission,
     onNewSubmission,
     onNewTestCase
 } from "./updateScores";
-import {isUTORid} from "is-utorid";
 
 export const errorHandler = (cb: (req: Request, res: Response, next: NextFunction) => Promise<unknown>) => {
     return (req: Request, res: Response, next: NextFunction) => {
@@ -116,6 +115,7 @@ const getObjectFromRequest = async (req: Request, table: "solution" | "testCase"
     }
     return object;
 };
+
 export const exists = async (p: PathLike) => {
     try {
         await fs.access(p);
@@ -340,6 +340,7 @@ export const deleteFile = async (req: Request, res: Response, table: "solution" 
     }
     res.send({commit});
 };
+
 /**
  * Gets a commit from a submission.
  *
@@ -377,9 +378,11 @@ export const fetchCourseMiddleware = async (req: Request, res: Response, next: N
     req.course = course;
     next();
 };
+
 export const serializeAssignment = <T extends PrismaAssignment>(assignment: T): Omit<T, "due_date"> & {
     due_date?: string
 } => ({...assignment, due_date: assignment.due_date?.toISOString()});
+
 export const fetchAssignmentMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const assignment = await prisma.assignment.findUnique({
         where: {

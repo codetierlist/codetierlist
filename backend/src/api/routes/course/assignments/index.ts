@@ -1,4 +1,16 @@
-import express, {NextFunction, Request, Response} from "express";
+import {
+    Commit,
+    Submission, TestCase,
+    Tierlist,
+    UserFetchedAssignment
+} from "codetierlist-types";
+import express, { NextFunction, Request, Response } from "express";
+import multer from 'multer';
+import prisma from "../../../../common/prisma";
+import {
+    generateList,
+    generateYourTier
+} from "../../../../common/tierlist";
 import {
     deleteFile, errorHandler,
     fetchAssignmentMiddleware,
@@ -7,18 +19,6 @@ import {
     isProf,
     processSubmission
 } from "../../../../common/utils";
-import multer from 'multer';
-import {
-    generateList,
-    generateYourTier
-} from "../../../../common/tierlist";
-import {
-    Commit,
-    Submission, TestCase,
-    Tierlist,
-    UserFetchedAssignment
-} from "codetierlist-types";
-import prisma from "../../../../common/prisma";
 
 const storage = multer.diskStorage({
     filename: function (req, file, callback) {

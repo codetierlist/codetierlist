@@ -1,4 +1,4 @@
-import {Group, User} from "@prisma/client";
+import { Group, User } from "@prisma/client";
 import {
     Tier,
     Tierlist,

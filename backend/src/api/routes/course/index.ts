@@ -1,27 +1,27 @@
-import express from "express";
-import prisma, {
-    fetchedAssignmentArgs
-} from "../../../common/prisma";
-import {RoleType} from "@prisma/client";
-import assignmentsRoute from "./assignments";
-import {PrismaClientKnownRequestError} from "@prisma/client/runtime/library";
-import {generateYourTier} from "../../../common/tierlist";
-import {
-    errorHandler,
-    fetchCourseMiddleware, isProf,
-    serializeAssignment
-} from "../../../common/utils";
+import { RoleType } from "@prisma/client";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import {
     AssignmentWithTier,
     FetchedAssignment,
     FetchedCourseWithTiers,
 } from "codetierlist-types";
-import {isUTORid} from "is-utorid";
+import { randomUUID } from "crypto";
+import express from "express";
+import { promises as fs } from "fs";
+import { isUTORid } from "is-utorid";
 import multer from "multer";
-import {randomUUID} from "crypto";
-import {promises as fs} from "fs";
 import path from "path";
-import {images} from "../../../common/config";
+import { images } from "../../../common/config";
+import prisma, {
+    fetchedAssignmentArgs
+} from "../../../common/prisma";
+import { generateYourTier } from "../../../common/tierlist";
+import {
+    errorHandler,
+    fetchCourseMiddleware, isProf,
+    serializeAssignment
+} from "../../../common/utils";
+import assignmentsRoute from "./assignments";
 
 const storage = multer.diskStorage({
     filename: function (req, file, callback) {

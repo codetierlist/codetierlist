@@ -1,7 +1,7 @@
-import {subscribe} from "../eventHandler";
-import {AchievementConfig, Submission} from "codetierlist-types";
-import {Prisma, TestCase} from "@prisma/client";
+import { Prisma, TestCase } from "@prisma/client";
+import { AchievementConfig, Submission } from "codetierlist-types";
 import prisma from "../../prisma";
+import { subscribe } from "../eventHandler";
 
 const mod = (n: number, m: number) => {
     return ((n % m) + m) % m;

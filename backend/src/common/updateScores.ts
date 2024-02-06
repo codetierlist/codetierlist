@@ -1,17 +1,17 @@
+import { RoleType } from "@prisma/client";
 import {
     Assignment, RunnerImage,
     Submission, TestCase
 } from "codetierlist-types";
+import { publish } from "./achievements/eventHandler";
 import prisma from "./prisma";
 import {
-    bulkQueueTestCases,
     JobType,
+    bulkQueueTestCases,
     queueJob,
     removeSubmission,
     removeTestcases
 } from "./runner";
-import {RoleType} from "@prisma/client";
-import {publish} from "./achievements/eventHandler";
 
 /**
  * Log the score of a submission vs a testcase
@@ -54,6 +54,7 @@ export const onNewSubmission = async (submission: Submission, image: Assignment)
     // }, JobType.testSubmission)));
     await bulkQueueTestCases(image, submission, testCases);
 };
+
 /**
  * When the prof submits a new submission, run it against all test cases
  * @param submission

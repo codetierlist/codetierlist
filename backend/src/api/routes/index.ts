@@ -1,12 +1,11 @@
-import express from "express";
-import courseRoute from "./course";
-import userRoute from "./users";
 import {
     FetchedUser,
     RunnerImage,
-    // images
 } from "codetierlist-types";
-import {images} from "../../common/config";
+import express from "express";
+import { images } from "../../common/config";
+import courseRoute from "./course";
+import userRoute from "./users";
 
 const router = express.Router();
 

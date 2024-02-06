@@ -1,24 +1,29 @@
+import { TestCase } from "@prisma/client";
 import {
-    Submission,
-    ReadyJobData,
-    PendingJobData,
-    JobFiles,
-    JobResult, Assignment, TestCaseStatus, RunnerImage, ParentJobData,
-} from "codetierlist-types";
-import {getCommit, getFile} from "./utils";
-import {
+    FlowProducer,
+    Job,
     Queue,
     QueueEvents,
-    Job,
-    FlowProducer,
-    Worker, WaitingChildrenError, UnrecoverableError
+    UnrecoverableError,
+    WaitingChildrenError,
+    Worker
 } from "bullmq";
-import {runTestcase, updateScore} from "./updateScores";
+import { QueueOptions } from "bullmq/dist/esm/interfaces";
+import {
+    Assignment,
+    JobFiles,
+    JobResult,
+    ParentJobData,
+    PendingJobData,
+    ReadyJobData,
+    RunnerImage,
+    Submission,
+    TestCaseStatus,
+} from "codetierlist-types";
+import { publish } from "./achievements/eventHandler";
 import prisma from "./prisma";
-import {QueueOptions} from "bullmq/dist/esm/interfaces";
-import {publish} from "./achievements/eventHandler";
-import {TestCase} from "@prisma/client";
-
+import { runTestcase, updateScore } from "./updateScores";
+import { getCommit, getFile } from "./utils";
 
 export enum JobType {
     validateTestCase = "validateTestCase",
@@ -38,6 +43,7 @@ if (process.env.REDIS_PORT === undefined) {
 if (process.env.REDIS_PASSWORD === undefined) {
     console.warn("REDIS_PASSWORD is undefined, connection might fail");
 }
+
 let max_fetched = parseInt(process.env.MAX_FETCHED_JOBS ?? '1000');
 if (isNaN(max_fetched)) {
     console.warn("MAX_FETCHED_JOBS is not a number, defaulting to 1000");
@@ -54,6 +60,7 @@ const queue_conf: QueueOptions = {
 const job_queue: Queue<ReadyJobData, JobResult, JobType> =
     new Queue<ReadyJobData, JobResult, JobType>("job_queue", {...queue_conf,
         defaultJobOptions: {backoff: {type: "fixed", delay: 1000}}});
+
 const pending_queue: Queue<PendingJobData, undefined, JobType> =
     new Queue<PendingJobData, undefined, JobType>("pending_queue", {...queue_conf, defaultJobOptions: {removeOnComplete:true}});
 
