@@ -31,7 +31,10 @@ const AddRemovePeopleButton = ({ courseID, type, add }: AddRemovePeopleButtonPro
     const router = useRouter();
 
     return (
-        <MenuItem onClick={() => router.push(`/courses/${courseID}/admin/people/${add ? 'add' : 'remove'}-${type}`)}>
+        <MenuItem
+            onClick={() => router.push(`/courses/${courseID}/admin/people/${add ? 'add' : 'remove'}-${type}`)}
+            aria-label={`${add ? 'Add' : 'Remove'} ${type === 'tas' ? 'Teaching Assistants' : type} ${add ? 'to' : 'from'} course`}
+        >
             {add ? 'Add' : 'Remove'} {type === 'tas' ? 'TAs' : type.charAt(0).toUpperCase() + type.slice(1)}
         </MenuItem>
     );

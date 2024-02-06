@@ -17,6 +17,11 @@ import { Container } from "react-grid-system";
 export const getRoleName = (roleName: RoleType | string): string => roleName === "TA" ? roleName : roleName.toLocaleLowerCase();
 
 /**
+ * Like getRoleName, but returns teaching assistant instead of ta
+ */
+export const getLongRoleName = (roleName: RoleType | string): string => roleName === "TA" ? "Teaching Assistant" : getRoleName(roleName);
+
+/**
  * given a csv of students, enroll them in or remove them from the course
  *
  * @param courseID the course to modify
@@ -82,7 +87,7 @@ export default function Page(): JSX.Element {
     return (
         <>
             <Head>
-                <title>{`${add ? "Add" : "Remove"} ${getRoleName(role)}s - Codetierlist`}</title>
+                <title>{`${add ? "Add" : "Remove"} ${getLongRoleName(role)}s - Codetierlist`}</title>
             </Head>
 
             <HeaderToolbar>
@@ -120,8 +125,8 @@ export default function Page(): JSX.Element {
                 {role !== "invalid" &&
                     <>
                         <header className={`m-b-xl`}>
-                            <Title2 block>{`${add ? "Add" : "Remove"} ${getRoleName(role)}s`} </Title2>
-                            <Body2 block>{`Update the ${getRoleName(role)}s enrolled in this course by uploading a list of UTORids, separated by newlines.`}</Body2>
+                            <Title2 block aria-label={`Add or remove ${getLongRoleName(role)}s`}>{`${add ? "Add" : "Remove"} ${getRoleName(role)}s`} </Title2>
+                            <Body2 block>{`Update the ${getLongRoleName(role)}s enrolled in this course by uploading a list of UTORids, separated by newlines.`}</Body2>
                         </header>
 
                         <Card>
