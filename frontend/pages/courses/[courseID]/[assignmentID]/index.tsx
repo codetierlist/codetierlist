@@ -95,12 +95,16 @@ export default function Page() {
             params.delete("utorid");
             return params.toString();
         },
-        [searchParams]);
+        [searchParams]
+    );
+
     useEffect(() => {
         if (stage != 1 && searchParams.has("utorid")) {
             void router.replace(pathname + "?" + createQueryString());
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [stage, pathname]);
+
     const [assignment, setAssignment] = useState<UserFetchedAssignment | null>(null);
     const [tierlist, setTierlist] = useState<Tierlist | null>(null);
     const {showSnackSev} = useContext(SnackbarContext);
