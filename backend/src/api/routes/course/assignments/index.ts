@@ -18,7 +18,7 @@ import {
 import {
     AssignmentStudentStats,
     Commit,
-    Submission,
+    Submission, TestCase,
     Tier,
     Tierlist,
     UserFetchedAssignment
@@ -40,6 +40,16 @@ router.get("/:assignment", fetchAssignmentMiddleware, errorHandler(async (req, r
                 title: req.assignment!.title
             }
         }, include: {
+            submissions: {
+                where: {author_id: req.user.utorid},
+                orderBy: {datetime: "desc"},
+                take: 1
+            },
+            test_cases: {
+                where: {author_id: req.user.utorid},
+                orderBy: {datetime: "desc"},
+                take: 1
+            },
             groups: {
                 where: {members: {some: {utorid: req.user.utorid}}},
                 include: {
@@ -53,11 +63,8 @@ router.get("/:assignment", fetchAssignmentMiddleware, errorHandler(async (req, r
             }
         }
     });
-    let submissions: Omit<Submission, "group_number">[] = assignment.groups[0] ? assignment.groups[0].solutions : [];
-    if (!isProf(req.course!, req.user)) {
-        submissions = submissions.filter(submission => submission.author_id === req.user.utorid);
-    }
-    submissions = submissions.map(submission => ({
+
+    const submissions = assignment.submissions.map(submission => ({
         datetime: submission.datetime,
         id: submission.id,
         course_id: submission.course_id,
@@ -69,9 +76,18 @@ router.get("/:assignment", fetchAssignmentMiddleware, errorHandler(async (req, r
 
     res.send({
         ...req.assignment!,
-        test_cases: assignment.groups[0]?.testCases ?? [],
+        test_cases: assignment.test_cases.map(testCase => ({
+            datetime: testCase.datetime,
+            id: testCase.id,
+            course_id: testCase.course_id,
+            author_id: testCase.author_id,
+            git_url: testCase.git_url,
+            git_id: testCase.git_id,
+            assignment_title: testCase.assignment_title,
+            valid: testCase.valid
+        } satisfies Omit<TestCase, "group_number">)),
         submissions,
-        tier: assignment.groups[0] ? generateYourTier(assignment.groups[0]) : "?"
+        tier: assignment.groups.length > 0 ? generateYourTier(assignment.groups[0]) : "?",
     } satisfies (UserFetchedAssignment));
 }));
 
