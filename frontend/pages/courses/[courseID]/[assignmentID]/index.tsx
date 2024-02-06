@@ -1,4 +1,4 @@
-import axios, {handleError} from "@/axios";
+import axios, { handleError } from "@/axios";
 import {
     AssignmentPageFilesTab,
     TierChip,
@@ -7,8 +7,8 @@ import {
     convertDate,
     convertTime
 } from '@/components';
-import {SnackbarContext} from "@/contexts/SnackbarContext";
-import {UserContext} from "@/contexts/UserContext";
+import { SnackbarContext } from "@/contexts/SnackbarContext";
+import { UserContext } from "@/contexts/UserContext";
 import {
     Button,
     Card, CardHeader,
@@ -17,21 +17,22 @@ import {
     MessageBarBody,
     MessageBarTitle,
     Subtitle1,
-    Tab, TabList
+    Tab, TabList,
+    Text
 } from '@fluentui/react-components';
-import {Subtitle2, Title2} from '@fluentui/react-text';
+import { Subtitle2, Title2 } from '@fluentui/react-text';
 import {
     Tierlist, UserFetchedAssignment,
     UserTier
 } from "codetierlist-types";
 import Error from 'next/error';
-import Head from "next/head";
-import {useRouter} from 'next/router';
-import {useCallback, useContext, useEffect, useState} from 'react';
-import {Col, Container} from "react-grid-system";
+import Head from 'next/head';
+import { usePathname, useSearchParams } from "next/navigation";
+import { useRouter } from 'next/router';
+import { useCallback, useContext, useEffect, useState } from 'react';
+import { Col, Container } from "react-grid-system";
 import AdminPage from "./admin/index";
 import styles from './page.module.css';
-import {usePathname, useSearchParams} from "next/navigation";
 
 /**
  * Displays the tierlist
@@ -43,7 +44,7 @@ const ViewTierList = (props: {
     return (
         <Col sm={12} {...props}>
             <Subtitle1 className={styles.gutter} block>Tierlist</Subtitle1>
-            <TierList tierlist={props.tierlist}/>
+            <TierList tierlist={props.tierlist} />
         </Col>
     );
 };
@@ -95,20 +96,24 @@ export default function Page() {
             params.delete("utorid");
             return params.toString();
         },
-        [searchParams]);
+        [searchParams]
+    );
+
     useEffect(() => {
         if (stage != 1 && searchParams.has("utorid")) {
             void router.replace(pathname + "?" + createQueryString());
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [stage, pathname]);
+
     const [assignment, setAssignment] = useState<UserFetchedAssignment | null>(null);
     const [tierlist, setTierlist] = useState<Tierlist | null>(null);
-    const {showSnackSev} = useContext(SnackbarContext);
-    const {courseID, assignmentID} = router.query;
-    const {userInfo} = useContext(UserContext);
+    const { showSnackSev } = useContext(SnackbarContext);
+    const { courseID, assignmentID } = router.query;
+    const { userInfo } = useContext(UserContext);
 
     const fetchAssignment = async () => {
-        await axios.get<UserFetchedAssignment>(`/courses/${courseID}/assignments/${assignmentID}`, {skipErrorHandling: true})
+        await axios.get<UserFetchedAssignment>(`/courses/${courseID}/assignments/${assignmentID}`, { skipErrorHandling: true })
             .then((res) => setAssignment(res.data))
             .catch(e => {
                 handleError(showSnackSev)(e);
@@ -116,7 +121,7 @@ export default function Page() {
             });
     };
     const fetchTierlist = async () => {
-        await axios.get<Tierlist>(`/courses/${courseID}/assignments/${assignmentID}/tierlist`, {skipErrorHandling: true})
+        await axios.get<Tierlist>(`/courses/${courseID}/assignments/${assignmentID}/tierlist`, { skipErrorHandling: true })
             .then((res) => setTierlist(res.data))
             .catch(e => {
                 handleError(showSnackSev)(e);
@@ -153,7 +158,7 @@ export default function Page() {
     }, [courseID, assignmentID]);
 
     if (stage === -404) {
-        return <Error statusCode={404}/>;
+        return <Error statusCode={404} />;
     } else if (!assignment || !courseID || !assignmentID) {
         return (
             <>
@@ -203,17 +208,16 @@ export default function Page() {
                 {
                     stage === 0 && (
                         <>
-                            <Card className="m-b-l" orientation="horizontal">
+                            <Card className={`m-b-l ${styles.assignmentHeader}`} orientation="horizontal">
                                 <CardHeader
                                     className={styles.assignmentHeaderContent}
-                                    action={<TierChip
-                                        tier={(tierlist && getMyTier(tierlist)) || "?"}/>}
+                                    action={<TierChip tier={(tierlist && getMyTier(tierlist)) || "?"} />}
                                     header={
-                                        <div
-                                            className={styles.assignmentHeaderContent}>
+                                        <div className={styles.assignmentHeaderContent}>
                                             <Subtitle2 className={styles.dueDate}>
                                                 <strong>Due</strong> {convertDate(assignment.due_date)} at {convertTime(assignment.due_date)}
                                             </Subtitle2>
+
                                             <Title2>
                                                 {assignment.title}
                                             </Title2>
@@ -226,12 +230,9 @@ export default function Page() {
                                 <MessageBar intent={"warning"}
                                     className={styles.messageBar}>
                                     <MessageBarBody>
-                                        <MessageBarTitle>You have not submitted a
-                                            solution yet.</MessageBarTitle>
-                                        You can submit a solution by clicking on
-                                        the &ldquo;Upload&rdquo; tab.
-                                        You will not be able to see the tierlist
-                                        until you submit a solution.
+                                        <MessageBarTitle>You have not submitted a solution yet.</MessageBarTitle>
+                                        You can submit a solution by clicking on  the &ldquo;Upload&rdquo; tab.
+                                        You will not be able to see the tierlist until you submit a solution.
                                     </MessageBarBody>
                                     <MessageBarActions>
                                         <Button onClick={() => setStage(1)}>Upload a
@@ -244,26 +245,21 @@ export default function Page() {
                                 <MessageBar intent={"warning"}
                                     className={styles.messageBar}>
                                     <MessageBarBody>
-                                        <MessageBarTitle>You have not submitted a
-                                            test yet.</MessageBarTitle>
-                                        You can submit a test by clicking
-                                        on &ldquo;Upload&rdquo; tab.
-                                        You will not be able to see the tierlist
-                                        until you submit a test.
+                                        <MessageBarTitle>You have not submitted a test yet.</MessageBarTitle>
+                                        You can submit a test by clicking on &ldquo;Upload&rdquo; tab.
+                                        You will not be able to see the tierlist until you submit a test.
                                     </MessageBarBody>
                                     <MessageBarActions>
-                                        <Button onClick={() => setStage(1)}>Submit a
-                                            test</Button>
+                                        <Button onClick={() => setStage(1)}>Submit a test</Button>
                                     </MessageBarActions>
                                 </MessageBar>
                             )}
 
-                            <Subtitle1 block className={styles.gutterTop}>Assignment
-                                Description</Subtitle1>
+                            <Subtitle1 block className={styles.gutterTop}>Assignment Description</Subtitle1>
                             <Card className={styles.gutter}>
-                                <p>
+                                <Text as="p">
                                     {assignment.description}
-                                </p>
+                                </Text>
                             </Card>
                         </>
                     )
@@ -290,12 +286,12 @@ export default function Page() {
                 }{
                     stage === 2 && (
                         tierlist
-                            ? <ViewTierList tierlist={tierlist} className="m-t-xxxl"/>
+                            ? <ViewTierList tierlist={tierlist} className="m-t-xxxl" />
                             : "No tierlist found"
                     )
                 }{
                     (stage === 3 && checkIfCourseAdmin(userInfo, assignment.course_id)) && (
-                        <AdminPage setStage={setStage}/>
+                        <AdminPage setStage={setStage} />
                     )
                 }
             </Container>

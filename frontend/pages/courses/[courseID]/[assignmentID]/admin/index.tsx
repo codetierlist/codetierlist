@@ -11,7 +11,8 @@ import {
     TableHeader,
     TableHeaderCell,
     TableRow,
-    Tooltip
+    Tooltip,
+    Spinner
 } from "@fluentui/react-components";
 import {Dismiss24Regular, Search24Regular} from "@fluentui/react-icons";
 import {
@@ -52,7 +53,7 @@ export default function Page({setStage}: {
     const {courseID, assignmentID} = useRouter().query;
     const {showSnackSev} = useContext(SnackbarContext);
     const [assignment, setAssignment] = useState<FetchedAssignmentWithTier | null>(null);
-    const [studentData, setStudentData] = useState<AssignmentStudentStats>([]);
+    const [studentData, setStudentData] = useState<AssignmentStudentStats | null>(null);
     const [filterValue, setFilterValue] = useState<string>("");
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -141,6 +142,10 @@ export default function Page({setStage}: {
                     </Field>
                 </div>
 
+                {
+                    !studentData && <Spinner labelPosition="below" label="Fetching the latest data for you&hellip;" />
+                }
+
                 <Table arial-label="Default table" className="m-xs m-t-s">
                     <TableHeader>
                         <TableRow>
@@ -153,7 +158,7 @@ export default function Page({setStage}: {
                     </TableHeader>
 
                     <TableBody>
-                        {studentData.map((item) => (
+                        {studentData && studentData.map((item) => (
                             <TableRow
                                 key={item.utorid}
                                 style={{

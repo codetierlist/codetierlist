@@ -250,7 +250,7 @@ export default function Page(): JSX.Element {
                         description="The maximum number of students that can be in a group. Students in groups will be tested against each other. "
                         icon={<People24Regular />}
                         htmlFor="groupSize">
-                        <Input type="number" min={0} id="name" name="courseCode"
+                        <Input type="number" min={0} id="groupSize" name="groupSize"
                             value={groupSize ? groupSize.toString() : ""}
                             onChange={e => setGroupSize(isNaN(e.target.valueAsNumber) ? null : e.target.valueAsNumber)} />
                     </ControlCard>
