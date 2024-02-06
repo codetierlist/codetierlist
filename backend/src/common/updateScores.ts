@@ -19,9 +19,9 @@ import {publish} from "./achievements/eventHandler";
  * @param testCase
  * @param pass
  */
-export const updateScore = (submission: Submission, testCase: TestCase, pass: boolean) =>
-    prisma.score.create({
-        data: {
+export const updateScore = async (submission: Submission, testCase: TestCase, pass: boolean) => {
+    const score = {
+        create: {
             pass,
             course_id: submission.course_id,
             assignment_title: submission.assignment_title,
@@ -30,7 +30,31 @@ export const updateScore = (submission: Submission, testCase: TestCase, pass: bo
             solution_id: submission.id,
             testcase_id: testCase.id,
         }
+    };
+    await prisma.scoreCache.upsert({
+        where: {
+            _id: {
+                course_id: submission.course_id,
+                assignment_title: submission.assignment_title,
+                solution_author_id: submission.author_id,
+                testcase_author_id: testCase.author_id
+            }
+        },
+        create: {
+            course_id: submission.course_id,
+            assignment_title: submission.assignment_title,
+            solution_author_id: submission.author_id,
+            testcase_author_id: testCase.author_id,
+            pass: pass,
+            score
+        },
+        update: {
+            score: score,
+            datetime: new Date(),
+            pass
+        }
     });
+};
 
 export const onNewSubmission = async (submission: Submission, image: Assignment) => {
     publish("solution:submit", submission);

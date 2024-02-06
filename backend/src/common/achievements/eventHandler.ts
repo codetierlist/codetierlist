@@ -3,7 +3,7 @@ import {
     Submission,
     TestCase
 } from "codetierlist-types";
-import {achievementsConfig} from "../config";
+import { achievementsConfig } from "../config";
 import prisma from "../prisma";
 
 type EventType = "testcase:submit" |

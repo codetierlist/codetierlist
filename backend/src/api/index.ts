@@ -1,11 +1,11 @@
-import express, {ErrorRequestHandler} from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import prisma, {fetchedUserArgs} from "../common/prisma";
-import {isUofTEmail, isUTORid} from "is-utorid";
-import routes from "./routes";
+import express, { ErrorRequestHandler } from 'express';
 import * as http from "http";
-import {errorHandler} from "../common/utils";
+import { isUofTEmail, isUTORid } from "is-utorid";
+import prisma, { fetchedUserArgs } from "../common/prisma";
+import { errorHandler } from "../common/utils";
+import routes from "./routes";
 
 const port = process.env.PORT || 3000;
 const app = express();

@@ -1,4 +1,4 @@
-import {Prisma, PrismaClient} from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 
 const client = new PrismaClient();
 
@@ -16,7 +16,6 @@ export const fetchedUserArgs = Prisma.validator<Prisma.UserDefaultArgs>()({
         }
     }
 });
-
 
 export const fetchedCourseArgs = Prisma.validator<Prisma.CourseDefaultArgs>()({
     include: {
@@ -84,7 +83,6 @@ export const fetchedAssignmentArgs = Prisma.validator<Prisma.AssignmentDefaultAr
 //         }
 //     }
 // });
-
 
 // export type ScoreableGroup = Prisma.GroupGetPayload<typeof scoreableGroupArgs>;
 
