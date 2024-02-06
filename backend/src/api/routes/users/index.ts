@@ -1,8 +1,8 @@
+import { AchievementConfig, FetchedUser, Theme } from "codetierlist-types";
 import express from "express";
-import {Theme, FetchedUser, AchievementConfig} from "codetierlist-types";
+import { achievementsConfig } from "../../../common/config";
 import prisma from "../../../common/prisma";
-import {errorHandler} from "../../../common/utils";
-import {achievementsConfig} from "../../../common/config";
+import { errorHandler } from "../../../common/utils";
 
 const router = express.Router();
 

@@ -29,12 +29,14 @@ const subscribers: Map<EventType, {
     handler: HandlerType,
     callback: CallbackType
 }[]> = new Map();
+
 export const subscribe = (handler: HandlerType, event: EventType, callback: CallbackType) => {
     if (!subscribers.has(event)) {
         subscribers.set(event, []);
     }
     subscribers.get(event)!.push({handler, callback});
 };
+
 export const publish = (event: EventType, submission: Submission | TestCase, data?: unknown) => {
     prisma.achievement.findMany({
         where: {
