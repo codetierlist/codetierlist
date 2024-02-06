@@ -1,17 +1,17 @@
-import { RoleType } from "@prisma/client";
 import {
     Assignment, RunnerImage,
     Submission, TestCase
 } from "codetierlist-types";
-import { publish } from "./achievements/eventHandler";
 import prisma from "./prisma";
 import {
-    JobType,
     bulkQueueTestCases,
+    JobType,
     queueJob,
     removeSubmission,
     removeTestcases
 } from "./runner";
+import {RoleType} from "@prisma/client";
+import {publish} from "./achievements/eventHandler";
 
 /**
  * Log the score of a submission vs a testcase
@@ -19,9 +19,9 @@ import {
  * @param testCase
  * @param pass
  */
-export const updateScore = (submission: Submission, testCase: TestCase, pass: boolean) =>
-    prisma.score.create({
-        data: {
+export const updateScore = async (submission: Submission, testCase: TestCase, pass: boolean) => {
+    const score = {
+        create: {
             pass,
             course_id: submission.course_id,
             assignment_title: submission.assignment_title,
@@ -30,7 +30,31 @@ export const updateScore = (submission: Submission, testCase: TestCase, pass: bo
             solution_id: submission.id,
             testcase_id: testCase.id,
         }
+    };
+    await prisma.scoreCache.upsert({
+        where: {
+            _id: {
+                course_id: submission.course_id,
+                assignment_title: submission.assignment_title,
+                solution_author_id: submission.author_id,
+                testcase_author_id: testCase.author_id
+            }
+        },
+        create: {
+            course_id: submission.course_id,
+            assignment_title: submission.assignment_title,
+            solution_author_id: submission.author_id,
+            testcase_author_id: testCase.author_id,
+            pass: pass,
+            score
+        },
+        update: {
+            score: score,
+            datetime: new Date(),
+            pass
+        }
     });
+};
 
 export const onNewSubmission = async (submission: Submission, image: Assignment) => {
     publish("solution:submit", submission);
@@ -54,7 +78,6 @@ export const onNewSubmission = async (submission: Submission, image: Assignment)
     // }, JobType.testSubmission)));
     await bulkQueueTestCases(image, submission, testCases);
 };
-
 /**
  * When the prof submits a new submission, run it against all test cases
  * @param submission

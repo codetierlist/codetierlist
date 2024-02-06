@@ -163,17 +163,33 @@ model Role {
 }
 
 model Score {
+  datetime           DateTime     @default(now())
+  id                 String       @id @default(dbgenerated("gen_random_uuid()"))
+  pass               Boolean
+  course_id          String
+  assignment_title   String
+  solution           Solution     @relation(fields: [solution_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  solution_id        String
+  testcase           TestCase     @relation(fields: [testcase_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  testcase_id        String
+  testcase_author_id String
+  solution_author_id String
+  ScoreCache         ScoreCache[]
+
+  @@map("_Scores")
+}
+
+model ScoreCache {
   datetime           DateTime @default(now())
   id                 String   @id @default(dbgenerated("gen_random_uuid()"))
   pass               Boolean
   course_id          String
   assignment_title   String
-  solution           Solution @relation(fields: [solution_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  solution_id        String
-  testcase           TestCase @relation(fields: [testcase_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  testcase_id        String
   testcase_author_id String
   solution_author_id String
+  score              Score    @relation(fields: [score_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  score_id           String
 
-  @@map("_Scores")
+  @@unique([course_id, assignment_title, testcase_author_id, solution_author_id], name: "_id")
+  @@map("_ScoreCache")
 }
