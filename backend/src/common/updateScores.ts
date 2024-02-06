@@ -27,8 +27,8 @@ export const updateScore = (submission: Submission, testCase: TestCase, pass: bo
             assignment_title: submission.assignment_title,
             solution_author_id: submission.author_id,
             testcase_author_id: testCase.author_id,
-            solution_commit_id: submission.git_id,
-            testcase_commit_id: testCase.git_id
+            solution_id: submission.id,
+            testcase_id: testCase.id,
         }
     });
 

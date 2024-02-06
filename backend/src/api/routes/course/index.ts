@@ -1,7 +1,6 @@
 import express from "express";
 import prisma, {
-    fetchedAssignmentArgs,
-    scoreableGroupArgs
+    fetchedAssignmentArgs
 } from "../../../common/prisma";
 import {RoleType} from "@prisma/client";
 import assignmentsRoute from "./assignments";
@@ -110,8 +109,7 @@ router.get("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) =>
             assignments: {
                 where: {hidden: false}, include: {
                     groups: {
-                        where: {members: {some: {utorid: req.user.utorid}}},
-                        ...scoreableGroupArgs
+                        where: {members: {some: {utorid: req.user.utorid}}}
                     }
                 }
             }

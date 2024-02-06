@@ -1,7 +1,4 @@
 import express, {NextFunction, Request, Response} from "express";
-import prisma, {
-    scoreableGroupArgs
-} from "../../../../common/prisma";
 import {
     deleteFile, errorHandler,
     fetchAssignmentMiddleware,
@@ -12,17 +9,16 @@ import {
 } from "../../../../common/utils";
 import multer from 'multer';
 import {
-    generateList, generateTierList,
+    generateList,
     generateYourTier
 } from "../../../../common/tierlist";
 import {
-    AssignmentStudentStats,
     Commit,
     Submission, TestCase,
-    Tier,
     Tierlist,
     UserFetchedAssignment
 } from "codetierlist-types";
+import prisma from "../../../../common/prisma";
 
 const storage = multer.diskStorage({
     filename: function (req, file, callback) {
@@ -52,14 +48,6 @@ router.get("/:assignment", fetchAssignmentMiddleware, errorHandler(async (req, r
             },
             groups: {
                 where: {members: {some: {utorid: req.user.utorid}}},
-                include: {
-                    ...scoreableGroupArgs.include,
-                    testCases: {
-                        orderBy: {datetime: "desc"},
-                        distinct: "author_id",
-                        where: isProf(req.course!, req.user) ? undefined : {author_id: req.user.utorid}
-                    }
-                }
             }
         }
     });
@@ -188,7 +176,6 @@ router.get("/:assignment/tierlist", fetchAssignmentMiddleware, errorHandler(asyn
                         }
                     }
                 },
-                ...scoreableGroupArgs
             }
         }
     });
@@ -207,49 +194,54 @@ router.get("/:assignment/tierlist", fetchAssignmentMiddleware, errorHandler(asyn
     const tierlist = generateList(fullFetchedAssignment.groups[0], req.user, !isProf(req.course!, req.user));
     res.send(tierlist[0] satisfies Tierlist);
 }));
-
-router.get('/:assignment/stats', fetchAssignmentMiddleware, errorHandler(async (req, res) => {
-    if (!isProf(req.course!, req.user)) {
-        res.statusCode = 403;
-        res.send({message: "You are not a prof"});
-        return;
-    }
-    console.time('statsFetch');
-    const fullFetchedAssignment = await prisma.assignment.findUniqueOrThrow({
-        where: {
-            id:
-                {
-                    title: req.assignment!.title,
-                    course_id: req.assignment!.course_id
-                }
-        },
-        include: {
-            groups: {
-                ...scoreableGroupArgs
-            }
-        }
-    });
-    console.timeEnd('statsFetch');
-    console.time('tierlistGen');
-    const tierlists = fullFetchedAssignment.groups.map(group => generateTierList(group));
-    console.timeEnd('tierlistGen');
-    console.time('otherGen');
-    const invertedTierlist: Record<string, Tier> = {};
-    tierlists.forEach(tierlist => (Object.keys(tierlist) as Tier[]).forEach(tier => tierlist[tier].forEach(name => invertedTierlist[name.utorid] = tier)));
-    const students = fullFetchedAssignment.groups.map(x=>x.solutions).flat().map(submission => {
-        const validTests = submission.scores.filter(x => x.test_case.valid === "VALID");
-        return {
-            utorid: submission.author.utorid,
-            givenName: submission.author.givenName,
-            surname: submission.author.surname,
-            email: submission.author.email,
-            tier: invertedTierlist[submission.author.utorid],
-            testsPassed: validTests.filter(x => x.pass).length,
-            totalTests: validTests.length
-        };
-    });
-    res.send(students satisfies AssignmentStudentStats);
-    console.timeEnd('otherGen');
-}));
+//
+// router.get('/:assignment/stats', fetchAssignmentMiddleware, errorHandler(async (req, res) => {
+//     if (!isProf(req.course!, req.user)) {
+//         res.statusCode = 403;
+//         res.send({message: "You are not a prof"});
+//         return;
+//     }
+//     console.time('statsFetch');
+//     const fullFetchedAssignment = await prisma.assignment.findUniqueOrThrow({
+//         where: {
+//             id:
+//                 {
+//                     title: req.assignment!.title,
+//                     course_id: req.assignment!.course_id
+//                 }
+//         },
+//         include: {
+//             groups: true,
+//             submissions: {
+//                 where:{
+//                     author_id: req.user.utorid
+//                 }
+//             }
+//         }
+//     });
+//     console.timeEnd('statsFetch');
+//     console.time('tierlistGen');
+//     const tierlists = fullFetchedAssignment.groups.map(group => generateTierList(group));
+//     console.timeEnd('tierlistGen');
+//     console.time('otherGen');
+//     const invertedTierlist: Record<string, Tier> = {};
+//     tierlists.forEach(tierlist => (Object.keys(tierlist) as Tier[]).forEach(tier => tierlist[tier].forEach(name => invertedTierlist[name.utorid] = tier)));
+//     const students = fullFetchedAssignment.groups.map(x=>x).flat().map(submission => {
+//         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//         const validTests = submission.scores.filter((x:any) => x.test_case.valid === "VALID");
+//         return {
+//             utorid: submission.author.utorid,
+//             givenName: submission.author.givenName,
+//             surname: submission.author.surname,
+//             email: submission.author.email,
+//             tier: invertedTierlist[submission.author.utorid],
+//             // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//             testsPassed: validTests.filter((x : any) => x.pass).length,
+//             totalTests: validTests.length
+//         };
+//     });
+//     res.send(students satisfies AssignmentStudentStats);
+//     console.timeEnd('otherGen');
+// }));
 
 export default router;

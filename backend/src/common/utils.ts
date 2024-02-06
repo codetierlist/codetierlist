@@ -12,7 +12,7 @@ import {NextFunction, Request, Response} from "express";
 import path from "path";
 import {PathLike, promises as fs} from "fs";
 import git, {ReadBlobResult} from "isomorphic-git";
-import {Commit} from "codetierlist-types";
+import {Commit, FetchedUser} from "codetierlist-types";
 import {
     onNewProfSubmission,
     onNewSubmission,
@@ -34,16 +34,8 @@ export const errorHandler = (cb: (req: Request, res: Response, next: NextFunctio
  * @param course
  * @param user
  */
-export function isProf(course: Course & {
-    roles: Array<{
-        user: User
-        type: RoleType
-    }>
-}, user: {
-    utorid: string,
-    admin?: boolean
-}) {
-    return user.admin === true || course.roles.some(role => role.user.utorid === user.utorid && ([RoleType.INSTRUCTOR, RoleType.TA] as RoleType[]).includes(role.type));
+export function isProf(course: Course, user: FetchedUser) {
+    return user.admin || user.roles.some(role => course.id===role.course_id && ([RoleType.INSTRUCTOR, RoleType.TA] as RoleType[]).includes(role.type));
 }
 
 const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'datetime' | 'id'>, table: "solution" | "testCase") => {

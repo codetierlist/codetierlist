@@ -58,7 +58,7 @@ model Course {
 }
 
 model Solution {
-  id               String     @unique @default(dbgenerated("gen_random_uuid()")) @map("_id")
+  id               String     @id @default(dbgenerated("gen_random_uuid()"))
   git_url          String
   git_id           String
   datetime         DateTime   @default(now())
@@ -72,7 +72,6 @@ model Solution {
   group_number     Int?
   group            Group?     @relation(fields: [group_number, assignment_title, course_id], references: [number, assignment_title, course_id])
 
-  @@id(fields: [course_id, assignment_title, author_id, git_id])
   @@unique([course_id, assignment_title, author_id, git_id], name: "_id")
   @@index([course_id, assignment_title, author_id], name: "solution_index")
   @@index([datetime(sort: Desc)], name: "datetime_index")
@@ -89,7 +88,7 @@ enum TestCaseStatus {
 }
 
 model TestCase {
-  id               String         @unique @default(dbgenerated("gen_random_uuid()")) @map("_id")
+  id               String         @id @default(dbgenerated("gen_random_uuid()"))
   git_url          String
   git_id           String
   datetime         DateTime       @default(now())
@@ -118,7 +117,7 @@ model User {
   solutions        Solution[]
   roles            Role[]
   admin            Boolean       @default(false)
-  TestCase         TestCase[]
+  testcases        TestCase[]
   surname          String
   givenName        String
   theme            Theme         @default(LIGHT)
@@ -167,14 +166,14 @@ model Score {
   datetime           DateTime @default(now())
   id                 String   @id @default(dbgenerated("gen_random_uuid()"))
   pass               Boolean
-  solution           Solution @relation(references: [course_id, assignment_title, author_id, git_id], onDelete: Cascade, onUpdate: Cascade, fields: [course_id, assignment_title, solution_author_id, solution_commit_id])
-  test_case          TestCase @relation(references: [course_id, assignment_title, author_id, git_id], onDelete: Cascade, onUpdate: Cascade, fields: [course_id, assignment_title, testcase_author_id, testcase_commit_id])
   course_id          String
   assignment_title   String
-  solution_author_id String
-  solution_commit_id String
+  solution           Solution @relation(fields: [solution_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  solution_id        String
+  testcase           TestCase @relation(fields: [testcase_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  testcase_id        String
   testcase_author_id String
-  testcase_commit_id String
+  solution_author_id String
 
   @@map("_Scores")
 }

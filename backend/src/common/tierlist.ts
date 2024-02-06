@@ -1,10 +1,9 @@
-import {User} from "@prisma/client";
+import {Group, User} from "@prisma/client";
 import {
     Tier,
     Tierlist,
     UserTier
 } from "codetierlist-types";
-import {ScoreableGroup} from "./prisma";
 
 /** @return a two letter hash of the string */
 export const twoLetterHash = (str: string) => {
@@ -42,8 +41,9 @@ function getStandardDeviation(array: number[]) {
     return Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n);
 }
 
-export function generateList(group : ScoreableGroup, user?: string | User, anonymize = false): [Tierlist, UserTier] {
-    const submissions = group.solutions;
+export function generateList(group : Group, user?: string | User, anonymize = false): [Tierlist, UserTier] {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const submissions : any = JSON.stringify("{}");
     const res: Tierlist = {
         S: [],
         A: [],
@@ -55,19 +55,24 @@ export function generateList(group : ScoreableGroup, user?: string | User, anony
     if (submissions.length === 0) {
         return [res, "?" as UserTier];
     }
-    const scores = submissions.map(submission =>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const scores = submissions.map((submission : any) =>
     {
-        const validScores = submission.scores.filter(x=>x.test_case.valid==="VALID");
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const validScores = submission.scores.filter((x : any)=>x.test_case.valid==="VALID");
         const you = user ? isSelf(user, submission.author.utorid) : false;
         return{
             you,
             name : anonymize && !you ? twoLetterHash(submission.author.givenName + " " + submission.author.surname) : getUserInitials(submission.author),
             utorid: anonymize ? '' : submission.author.utorid,
-            score: validScores.length === 0 ? 0.0 : validScores.filter(x => x.pass).length / validScores.length
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            score: validScores.length === 0 ? 0.0 : validScores.filter((x : any) => x.pass).length / validScores.length
         };}
     );
-    const mean = getMean(scores.map(x => x.score));
-    const std = getStandardDeviation(scores.map(x => x.score));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const mean = getMean(scores.map((x: any) => x.score));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const std = getStandardDeviation(scores.map((x: any) => x.score));
     let yourTier: UserTier | undefined = undefined;
     for (const score of scores) {
         let tier: Tier;
@@ -97,5 +102,7 @@ export function generateList(group : ScoreableGroup, user?: string | User, anony
     return [res, yourTier];
 }
 
-export const generateTierList = (group:ScoreableGroup, user?: string | User, anonymize=true): Tierlist => generateList(group, user, anonymize)[0];
-export const generateYourTier = (group: ScoreableGroup, user?: string | User): UserTier => generateList(group, user, true)[1];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const generateTierList = (group:any, user?: string | User, anonymize=true): Tierlist => generateList(group, user, anonymize)[0];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const generateYourTier = (group: any, user?: string | User): UserTier => generateList(group, user, true)[1];

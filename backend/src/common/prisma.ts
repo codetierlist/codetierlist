@@ -20,11 +20,6 @@ export const fetchedUserArgs = Prisma.validator<Prisma.UserDefaultArgs>()({
 
 export const fetchedCourseArgs = Prisma.validator<Prisma.CourseDefaultArgs>()({
     include: {
-        roles: {
-            include: {
-                user: true
-            }
-        },
         assignments: {
             where: {
                 hidden: false
@@ -37,68 +32,60 @@ export const fetchedAssignmentArgs = Prisma.validator<Prisma.AssignmentDefaultAr
     include: {}
 });
 
-export const fullFetchedAssignmentArgs = Prisma.validator<Prisma.AssignmentDefaultArgs>()({
-    include: {
-        submissions: {
-            distinct: "author_id",
-            orderBy: {datetime: "desc"},
-            include: {
-                author: true,
-                scores: {
-                    orderBy: [{test_case: {datetime: "desc"}}, {datetime: "desc"}],
-                    distinct: "testcase_author_id",
-                    include: {test_case: true}
-                }
-            }
-        },
-        course: {
-            include: {
-                roles: {
-                    include: {
-                        user: true
-                    }
-                }
-            }
-        }
-    }
-});
+// export const fullFetchedAssignmentArgs = Prisma.validator<Prisma.AssignmentDefaultArgs>()({
+//     include: {
+//         submissions: {
+//             distinct: "author_id",
+//             orderBy: {datetime: "desc"},
+//             include: {
+//                 author: true,
+//                 scores: {
+//                     orderBy: [{test_case: {datetime: "desc"}}, {datetime: "desc"}],
+//                     distinct: "testcase_author_id",
+//                     include: {test_case: true}
+//                 }
+//             }
+//         },
+//         course: true
+//     }
+// });
 
-export const scoreableGroupArgs = Prisma.validator<Prisma.GroupDefaultArgs>()({
-    include: {
-        solutions: {
-            distinct: "author_id",
-            orderBy: {datetime: "desc"},
-            select: {
-                author_id: true,
-                author: {
-                    select: {
-                        utorid: true,
-                        givenName: true,
-                        surname: true,
-                        email: true
-                    }
-                },
-                scores: {
-                    orderBy: [{test_case: {datetime: "desc"}}, {datetime: "desc"}],
-                    distinct: "testcase_author_id",
-                    where: {
-                        test_case: {
-                            valid: "VALID"
-                        }
-                    },
-                    select: {
-                        pass: true,
-                        test_case: {select: {
-                            id: true,
-                            valid: true,
-                        }}}
-                },
-            }
-        }
-    }
-});
+// export const scoreableGroupArgs = Prisma.validator<Prisma.GroupDefaultArgs>()({
+//     include: {
+//         solutions: {
+//             distinct: "author_id",
+//             orderBy: {datetime: "desc"},
+//             select: {
+//                 author_id: true,
+//                 author: {
+//                     select: {
+//                         utorid: true,
+//                         givenName: true,
+//                         surname: true,
+//                         email: true
+//                     }
+//                 },
+//                 scores: {
+//                     orderBy: [{test_case: {datetime: "desc"}}, {datetime: "desc"}],
+//                     distinct: "testcase_author_id",
+//                     where: {
+//                         test_case: {
+//                             valid: "VALID"
+//                         }
+//                     },
+//                     select: {
+//                         pass: true,
+//                         test_case: {select: {
+//                             id: true,
+//                             valid: true,
+//                         }}}
+//                 },
+//             }
+//         }
+//     }
+// });
 
 
-export type ScoreableGroup = Prisma.GroupGetPayload<typeof scoreableGroupArgs>;
+// export type ScoreableGroup = Prisma.GroupGetPayload<typeof scoreableGroupArgs>;
 
 export default client;

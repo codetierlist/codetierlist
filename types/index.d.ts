@@ -18,11 +18,6 @@ const fetchedUserArgs = Prisma.validator<Prisma.UserDefaultArgs>()({
 
 const fetchedCourseArgs = Prisma.validator<Prisma.CourseDefaultArgs>()({
     include: {
-        roles: {
-            include: {
-                user: true
-            }
-        },
         assignments: {
             where: {
                 hidden: false
@@ -49,15 +44,7 @@ const fullFetchedAssignmentArgs = Prisma.validator<Prisma.AssignmentDefaultArgs>
                 }
             }
         },
-        course: {
-            include: {
-                roles: {
-                    include: {
-                        user: true
-                    }
-                }
-            }
-        }
+        course: true
     }
 });
 
