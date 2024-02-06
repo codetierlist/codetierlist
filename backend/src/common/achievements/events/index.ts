@@ -3,6 +3,9 @@ import { AchievementConfig, Submission } from "codetierlist-types";
 import prisma from "../../prisma";
 import { subscribe } from "../eventHandler";
 
+/**
+ * Return the number modulo m (positive)
+ */
 const mod = (n: number, m: number) => {
     return ((n % m) + m) % m;
 };
