@@ -15,7 +15,7 @@ jobs:
           echo "${{ secrets.REDIS_HOSTPORT }}" > ./runner/.env;
 
       - name: compose build runners
-        run: DOCKER_BUILDKIT=0 docker compose -f docker-compose-runner.yml build
+        run: docker compose -f docker-compose-runner.yml build
 
       - name: compose up runners
-        run: DOCKER_BUILDKIT=0 docker compose -f docker-compose-runner.yml up -d
+        run: docker compose -f docker-compose-runner.yml up -d
