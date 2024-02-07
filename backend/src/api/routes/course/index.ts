@@ -124,7 +124,7 @@ router.get("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) =>
                             FROM "Groups"
                                      INNER JOIN "_GroupToUser" G on "Groups"._id = G."A"
                             WHERE G."B" = ${req.user.utorid}
-                              AND "Groups".course_id = ${req.course!.id}]),
+                              AND "Groups".course_id = ${req.course!.id}),
              data as (SELECT COUNT("_ScoreCache".testcase_author_id)        as total,
                              COUNT(CASE WHEN "_ScoreCache".pass THEN 1 END) as passed,
                              "_ScoreCache".solution_author_id               as author_id,
@@ -133,7 +133,7 @@ router.get("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) =>
                                INNER JOIN "_Scores" S on S.id = "_ScoreCache".score_id
                                INNER JOIN "Testcases" T on S.testcase_id = T.id
                       WHERE "_ScoreCache".course_id = ${req.course!.id}
-                        AND "_ScoreCache".assignment_title IN ${Prisma.join(course.assignments.map(x => x.title))}
+                        AND "_ScoreCache".assignment_title IN (${Prisma.join(course.assignments.map(x => x.title))})
                         AND EXISTS(SELECT 1
                                    FROM userGroups
                                    WHERE userGroups.number = T.group_number
