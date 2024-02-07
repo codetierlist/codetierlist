@@ -120,7 +120,12 @@ router.get("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) =>
         },
     });
     const queriedSubmissions = await prisma.$queryRaw<(QueriedSubmission & { assignment_title: string })[]>`
-        WITH data as (SELECT COUNT("_ScoreCache".testcase_author_id)        as total,
+        WITH userGroups as (SELECT "Groups".number, "Groups".assignment_title
+                            FROM "Groups"
+                                     INNER JOIN "_GroupToUser" G on "Groups"._id = G."A"
+                            WHERE G."B" = ${req.user.utorid}
+                              AND "Groups".course_id = ${req.course!.id}]),
+             data as (SELECT COUNT("_ScoreCache".testcase_author_id)        as total,
                              COUNT(CASE WHEN "_ScoreCache".pass THEN 1 END) as passed,
                              "_ScoreCache".solution_author_id               as author_id,
                              "_ScoreCache".assignment_title
@@ -129,8 +134,11 @@ router.get("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) =>
                                INNER JOIN "Testcases" T on S.testcase_id = T.id
                       WHERE "_ScoreCache".course_id = ${req.course!.id}
                         AND "_ScoreCache".assignment_title IN ${Prisma.join(course.assignments.map(x => x.title))}
-                        AND (T.group_number, T.assignment_title) IN
-                            ${Prisma.join(course.assignments.map(x => x.groups.map(y => ({group_number: y.number, assignment_title: y.assignment_title}))))}
+                        AND EXISTS(SELECT 1
+                                   FROM userGroups
+                                   WHERE userGroups.number = T.group_number
+                                     AND userGroups.assignment_title =
+                                         "_ScoreCache".assignment_title)
                         AND T.valid = 'VALID'
                       GROUP BY "_ScoreCache".solution_author_id,
                                "_ScoreCache".assignment_title)
