@@ -209,7 +209,12 @@ export const AssignmentPageFilesTab = ({
     useEffect(() => {
         if (content.valid === "PENDING") {
             const interval = setInterval(() => {
-                void getTestData();
+                getTestData().then(() => {
+                    if (content.valid !== "PENDING") {
+                        clearInterval(interval);
+                        void fetchAssignment();
+                    }
+                });
             }, POLLING_RATE);
             return () => clearInterval(interval);
         }
