@@ -253,8 +253,8 @@ router.get('/:assignment/stats', fetchAssignmentMiddleware, errorHandler(async (
             surname: submission.surname,
             email: submission.email,
             tier: invertedTierlist[submission.utorid],
-            testsPassed: submission.passed,
-            totalTests: submission.total
+            testsPassed: Number(submission.passed),
+            totalTests: Number(submission.total)
         };
     });
     res.send(students satisfies AssignmentStudentStats);
