@@ -1,4 +1,4 @@
-import {Prisma, RoleType} from "@prisma/client";
+import {RoleType} from "@prisma/client";
 import {PrismaClientKnownRequestError} from "@prisma/client/runtime/library";
 import {
     AssignmentWithTier,
@@ -105,20 +105,6 @@ router.get("/", errorHandler(async (req, res) => {
 }));
 
 router.get("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) => {
-    const course = await prisma.course.findUniqueOrThrow({
-        where: {id: req.course!.id},
-        include: {
-            roles: isProf(req.course!, req.user) ? true : {where: {user_id: req.user.utorid}},
-            assignments: {
-                where: {hidden: false},
-                include: {
-                    groups: {
-                        where: {members: {some: {utorid: req.user.utorid}}}
-                    }
-                }
-            }
-        },
-    });
     const queriedSubmissions = await prisma.$queryRaw<(QueriedSubmission & { assignment_title: string })[]>`
         WITH userGroups as (SELECT "Groups".number, "Groups".assignment_title
                             FROM "Groups"
@@ -133,7 +119,6 @@ router.get("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) =>
                                INNER JOIN "_Scores" S on S.id = "_ScoreCache".score_id
                                INNER JOIN "Testcases" T on S.testcase_id = T.id
                       WHERE "_ScoreCache".course_id = ${req.course!.id}
-                        AND "_ScoreCache".assignment_title IN (${Prisma.join(course.assignments.map(x => x.title))})
                         AND EXISTS(SELECT 1
                                    FROM userGroups
                                    WHERE userGroups.number = T.group_number
@@ -156,7 +141,7 @@ router.get("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) =>
     `;
 
 
-    const assignments: Omit<AssignmentWithTier, "group_size">[] = course!.assignments.map(assignment => ({
+    const assignments: Omit<AssignmentWithTier, "group_size">[] = req.course!.assignments.map(assignment => ({
         title: assignment.title,
         course_id: assignment.course_id,
         due_date: assignment.due_date?.toISOString(),
@@ -165,7 +150,7 @@ router.get("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) =>
         runner_image: assignment.runner_image,
         hidden: false,
         strict_deadline: assignment.strict_deadline,
-        tier: assignment.groups[0] ? generateTierFromQueriedData(queriedSubmissions.filter(x => x.assignment_title === assignment.title))[1] : "?"
+        tier: generateTierFromQueriedData(queriedSubmissions.filter(x => x.assignment_title === assignment.title))[1]
     }));
     res.send({...req.course!, assignments} satisfies FetchedCourseWithTiers);
 }));
