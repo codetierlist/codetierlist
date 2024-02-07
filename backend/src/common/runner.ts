@@ -191,7 +191,7 @@ job_events.on("completed", async ({jobId}) => {
         let status: TestCaseStatus = "VALID";
         if (["ERROR", "FAIL"].includes(result.status)) {
             status = "INVALID";
-        } else if (result.status === "TESTCASE_EMPTY") {
+        } else if (result.status === "TESTCASE_EMPTY" || (result.status==="PASS" && result.amount <= 0) ) {
             status = "EMPTY";
         }
         await prisma.testCase.update({
