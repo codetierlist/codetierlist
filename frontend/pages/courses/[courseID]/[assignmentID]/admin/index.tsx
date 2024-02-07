@@ -174,7 +174,7 @@ export default function Page({setStage}: {
                 </Table>
 
                 {
-                    !studentData && <Spinner labelPosition="below" label="Fetching the latest data for you&hellip;" />
+                    !studentData && <Spinner className="m-y-xxxl" labelPosition="below" label="Fetching the latest data for you&hellip;" />
                 }
 
             </Card>
