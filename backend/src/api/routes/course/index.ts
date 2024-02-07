@@ -105,7 +105,9 @@ router.get("/", errorHandler(async (req, res) => {
 }));
 
 router.get("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) => {
-    const queriedSubmissions = await prisma.$queryRaw<(QueriedSubmission & { assignment_title: string })[]>`
+    const queriedSubmissions = await prisma.$queryRaw<(QueriedSubmission & {
+        assignment_title: string
+    })[]>`
         WITH userGroups as (SELECT "Groups".number, "Groups".assignment_title
                             FROM "Groups"
                                      INNER JOIN "_GroupToUser" G on "Groups"._id = G."A"
@@ -139,19 +141,50 @@ router.get("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) =>
         WHERE total > 0
         ORDER BY total DESC, passed DESC, utorid;
     `;
-    console.log(queriedSubmissions);
+    const user = await prisma.user.findUnique({
+        where: {utorid: req.user.utorid},
+        include: {
+            solutions: {
+                where: {
+                    course_id: req.course!.id
+                },
+                orderBy: {
+                    datetime: "desc"
+                },
+                distinct: ["assignment_title"]
+            },
+            testcases: {
+                where: {
+                    course_id: req.course!.id
+                },
+                orderBy: {
+                    datetime: "desc"
+                },
+                distinct: ["assignment_title"]
+            }
+        }
+    });
+    if (!user) {
+        throw new Error("User not found");
+    }
 
-    const assignments: Omit<AssignmentWithTier, "group_size">[] = req.course!.assignments.map(assignment => ({
-        title: assignment.title,
-        course_id: assignment.course_id,
-        due_date: assignment.due_date?.toISOString(),
-        description: assignment.description,
-        image_version: assignment.image_version,
-        runner_image: assignment.runner_image,
-        hidden: false,
-        strict_deadline: assignment.strict_deadline,
-        tier: generateTierFromQueriedData(queriedSubmissions.filter(x => x.assignment_title === assignment.title), req.user)[1]
-    }));
+    const assignments: Omit<AssignmentWithTier, "group_size">[] = req.course!.assignments.map(assignment => {
+        const showTier = user.solutions.some(x => x.assignment_title === assignment.title) &&
+            user.testcases.some(x => x.assignment_title === assignment.title && x.valid === "VALID");
+        return ({
+            title: assignment.title,
+            course_id: assignment.course_id,
+            due_date: assignment.due_date?.toISOString(),
+            description: assignment.description,
+            image_version: assignment.image_version,
+            runner_image: assignment.runner_image,
+            hidden: false,
+            strict_deadline: assignment.strict_deadline,
+            tier: showTier
+                ? generateTierFromQueriedData(queriedSubmissions.filter(x => x.assignment_title === assignment.title), req.user)[1]
+                : "?"
+        });
+    });
     res.send({...req.course!, assignments} satisfies FetchedCourseWithTiers);
 }));
 
@@ -258,7 +291,12 @@ router.get("/:courseId/cover", fetchCourseMiddleware, errorHandler(async (req, r
 }));
 router.post("/:courseId/assignments", fetchCourseMiddleware, errorHandler(async (req, res) => {
     const {name, dueDate, description} = req.body;
-    let {runner_image: image, image_version, groupSize, strictDeadlines} = req.body;
+    let {
+        runner_image: image,
+        image_version,
+        groupSize,
+        strictDeadlines
+    } = req.body;
     const date = new Date(dueDate);
     if (!groupSize) {
         groupSize = 0;
