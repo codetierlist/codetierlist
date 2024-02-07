@@ -21,7 +21,7 @@ import {
 import {Dismiss24Regular, Search24Regular} from "@fluentui/react-icons";
 import {
     AssignmentStudentStats,
-    FetchedAssignmentWithTier, UserTier
+    FetchedAssignmentWithTier
 } from "codetierlist-types";
 import Error from 'next/error';
 import {useRouter} from 'next/router';
