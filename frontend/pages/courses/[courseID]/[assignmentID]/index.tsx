@@ -69,7 +69,7 @@ const ViewTierList = (props: React.HTMLAttributes<HTMLDivElement>) => {
 
     useEffect(() => {
         void fetchTierlist();
-    }, [courseID, assignmentID, fetchTierlist]);
+    }, [courseID, assignmentID]);
     return (
         <Col sm={12} {...props}>
             <Subtitle1 className={styles.gutter} block>Tierlist</Subtitle1>
