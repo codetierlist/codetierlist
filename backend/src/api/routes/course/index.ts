@@ -139,7 +139,7 @@ router.get("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) =>
         WHERE total > 0
         ORDER BY total DESC, passed DESC, utorid;
     `;
-
+    console.log(queriedSubmissions);
 
     const assignments: Omit<AssignmentWithTier, "group_size">[] = req.course!.assignments.map(assignment => ({
         title: assignment.title,
@@ -150,7 +150,7 @@ router.get("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) =>
         runner_image: assignment.runner_image,
         hidden: false,
         strict_deadline: assignment.strict_deadline,
-        tier: generateTierFromQueriedData(queriedSubmissions.filter(x => x.assignment_title === assignment.title))[1]
+        tier: generateTierFromQueriedData(queriedSubmissions.filter(x => x.assignment_title === assignment.title), req.user)[1]
     }));
     res.send({...req.course!, assignments} satisfies FetchedCourseWithTiers);
 }));
