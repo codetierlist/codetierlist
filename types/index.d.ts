@@ -70,7 +70,7 @@ export type Submission = _Submission;
 export type TestCase = _TestCase;
 export type FrontendSubmission = Omit<_Submission, "group_number"> & { group_number?: number | null};
 export type FrontendTestCase = Omit<_TestCase, "group_number"> & { group_number?: number | null};
-export type UserFetchedAssignment = Prisma.AssignmentGetPayload<> & { tier: UserTier } & {
+export type UserFetchedAssignment = Prisma.AssignmentGetPayload<> & { tier: UserTier, view_tierlist: boolean } & {
     due_date?: string,
     submissions: Submission[],
     test_cases: TestCase[],
