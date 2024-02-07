@@ -79,7 +79,7 @@ export const generateTierFromQueriedData = (submissions: QueriedSubmission[], us
     let yourTier: UserTier | undefined = undefined;
     for (const score of scores) {
         let tier: Tier;
-        const {score: _, ...scoreNew} = score;
+        const { ...scoreNew} = score;
         if (score.score == 0) {
             tier = "F";
         } else if (score.score == 1 || score.score > mean + 2 * std) {
