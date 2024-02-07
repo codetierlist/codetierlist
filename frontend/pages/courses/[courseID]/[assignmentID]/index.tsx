@@ -22,8 +22,7 @@ import {
 } from '@fluentui/react-components';
 import { Subtitle2, Title2 } from '@fluentui/react-text';
 import {
-    Tierlist, UserFetchedAssignment,
-    UserTier
+    Tierlist, UserFetchedAssignment
 } from "codetierlist-types";
 import Error from 'next/error';
 import Head from 'next/head';
@@ -38,50 +37,45 @@ import styles from './page.module.css';
  * Displays the tierlist
  * @param tierlist
  */
-const ViewTierList = (props: {
-    tierlist: Tierlist
-} & React.HTMLAttributes<HTMLDivElement>) => {
+const ViewTierList = (props: React.HTMLAttributes<HTMLDivElement>) => {
+    const router = useRouter();
+    const { courseID, assignmentID } = router.query;
+    const [tierlist, setTierlist] = useState<Tierlist | null>(null);
+    const { showSnackSev } = useContext(SnackbarContext);
+    const fetchTierlist = async () => {
+        await axios.get<Tierlist>(`/courses/${courseID}/assignments/${assignmentID}/tierlist`, { skipErrorHandling: true })
+            .then((res) => setTierlist(res.data))
+            .catch(e => {
+                handleError(showSnackSev)(e);
+            });
+    };
+
+    /**
+     * the polling rate for fetching the assignment and tierlist
+     */
+    const POLLING_RATE = 60000;
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (!courseID || !assignmentID) {
+                return;
+            }
+            void fetchTierlist();
+        }, POLLING_RATE);
+
+        return () => clearInterval(interval);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    });
+
+    useEffect(() => {
+        void fetchTierlist();
+    }, [courseID, assignmentID, fetchTierlist]);
     return (
         <Col sm={12} {...props}>
             <Subtitle1 className={styles.gutter} block>Tierlist</Subtitle1>
-            <TierList tierlist={props.tierlist} />
+            {tierlist ? <TierList tierlist={tierlist} /> : "No tierlist available."}
         </Col>
     );
-};
-
-/**
- * Checks if the tierlist should be displayed
- * @param assignment
- * @param tierlist can be null
- */
-const shouldViewTierList = (assignment: UserFetchedAssignment, tierlist: Tierlist | null) => {
-    if (tierlist === null) {
-        return false;
-    }
-    if (Object.values(tierlist).every((tier) => tier.length === 0)) {
-        return false;
-    }
-    return (assignment.submissions.length > 0 && assignment.test_cases.length > 0);
-};
-
-/**
- * Gets the tier of the user
- *
- * @param tierlist the tierlist
- */
-const getMyTier = (tierlist: Tierlist): UserTier => {
-    // iterate through both keys and values in the tierlsit array
-    for (const [tier, entries] of Object.entries(tierlist)) {
-        // iterate through the entries
-        for (const entry of entries) {
-            // if the entry is the user, return the tier
-            if (entry.you) {
-                return tier as UserTier;
-            }
-        }
-    }
-
-    return "?";
 };
 
 export default function Page() {
@@ -107,7 +101,6 @@ export default function Page() {
     }, [stage, pathname]);
 
     const [assignment, setAssignment] = useState<UserFetchedAssignment | null>(null);
-    const [tierlist, setTierlist] = useState<Tierlist | null>(null);
     const { showSnackSev } = useContext(SnackbarContext);
     const { courseID, assignmentID } = router.query;
     const { userInfo } = useContext(UserContext);
@@ -120,40 +113,12 @@ export default function Page() {
                 setStage(-404);
             });
     };
-    const fetchTierlist = async () => {
-        await axios.get<Tierlist>(`/courses/${courseID}/assignments/${assignmentID}/tierlist`, { skipErrorHandling: true })
-            .then((res) => setTierlist(res.data))
-            .catch(e => {
-                handleError(showSnackSev)(e);
-                setStage(-404);
-            });
-    };
-
-    /**
-     * the polling rate for fetching the assignment and tierlist
-     */
-    const POLLING_RATE = 60000;
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            if (!courseID || !assignmentID) {
-                return;
-            }
-
-            void fetchAssignment();
-            void fetchTierlist();
-        }, POLLING_RATE);
-
-        return () => clearInterval(interval);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    });
 
     useEffect(() => {
         if (!courseID || !assignmentID) {
             return;
         }
         void fetchAssignment();
-        void fetchTierlist();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [courseID, assignmentID]);
 
@@ -191,7 +156,7 @@ export default function Page() {
                     Upload
                 </Tab>
                 <Tab value="tab2" onClick={() => setStage(2)}
-                    disabled={!shouldViewTierList(assignment, tierlist) && !checkIfCourseAdmin(userInfo, assignment.course_id)}>
+                    disabled={!assignment.view_tierlist && !checkIfCourseAdmin(userInfo, assignment.course_id)}>
                     View tierlist
                 </Tab>
 
@@ -211,7 +176,7 @@ export default function Page() {
                             <Card className={`m-b-l ${styles.assignmentHeader}`} orientation="horizontal">
                                 <CardHeader
                                     className={styles.assignmentHeaderContent}
-                                    action={<TierChip tier={(tierlist && getMyTier(tierlist)) || "?"} />}
+                                    action={<TierChip tier={assignment.tier} />}
                                     header={
                                         <div className={styles.assignmentHeaderContent}>
                                             <Subtitle2 className={styles.dueDate}>
@@ -285,9 +250,7 @@ export default function Page() {
                     )
                 }{
                     stage === 2 && (
-                        tierlist
-                            ? <ViewTierList tierlist={tierlist} className="m-t-xxxl" />
-                            : "No tierlist found"
+                        <ViewTierList className="m-t-xxxl" />
                     )
                 }{
                     (stage === 3 && checkIfCourseAdmin(userInfo, assignment.course_id)) && (
