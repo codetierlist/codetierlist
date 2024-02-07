@@ -76,7 +76,7 @@ router.get("/:assignment", fetchAssignmentMiddleware, errorHandler(async (req, r
             valid: testCase.valid
         } satisfies Omit<TestCase, "group_number">)),
         submissions,
-        tier: assignment.groups.length > 0 ? generateYourTier(assignment.groups[0]) : "?",
+        tier: assignment.groups.length > 0 ? await generateYourTier(assignment.groups[0]) : "?",
     } satisfies (UserFetchedAssignment));
 }));
 
