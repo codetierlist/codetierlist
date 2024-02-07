@@ -1,5 +1,9 @@
 import axios, {handleError} from "@/axios";
-import {AdminToolbarDeleteAssignmentButton, HeaderToolbar} from '@/components';
+import {
+    AdminToolbarDeleteAssignmentButton,
+    HeaderToolbar,
+    TierChip
+} from '@/components';
 import {
     Button,
     Card,
@@ -17,13 +21,14 @@ import {
 import {Dismiss24Regular, Search24Regular} from "@fluentui/react-icons";
 import {
     AssignmentStudentStats,
-    FetchedAssignmentWithTier
+    FetchedAssignmentWithTier, UserTier
 } from "codetierlist-types";
 import Error from 'next/error';
 import {useRouter} from 'next/router';
 import {useContext, useEffect, useState} from "react";
 import {SnackbarContext} from '../../../../../contexts/SnackbarContext';
 import {usePathname, useSearchParams} from "next/navigation";
+import styles from "@/components/TierList/TierList.module.css";
 
 /**
  * Highlights the substring in the string
@@ -97,6 +102,7 @@ export default function Page({setStage}: {
     }
 
     const columns = [
+        {columnKey: "tier", label: "Tier"},
         {columnKey: "utorid", label: "UTORid"},
         {columnKey: "name", label: "Full Name"},
         {columnKey: "testsPassed", label: "Tests Passed"},
@@ -161,20 +167,25 @@ export default function Page({setStage}: {
                                     display: (filterValue === "" || item.utorid.includes(filterValue) || (item.givenName + " " + item.surname).includes(filterValue)) ? undefined : "none"
                                 }}
                             >
+                                <TableCell> <TierChip
+                                    tier={item.tier}
+                                    className={`py-2 px-0 ${styles.tier}`}
+                                /> </TableCell>
                                 <TableCell> {highlightSubstring(item.utorid, filterValue)} </TableCell>
                                 <TableCell> {highlightSubstring(`${item.givenName} ${item.surname}`, filterValue)} </TableCell>
                                 <TableCell> {item.testsPassed}/{item.totalTests} </TableCell>
                                 <TableCell> <Link appearance="subtle"
                                     onClick={() => loadSubmission(item.utorid)}>View
                                     Submission</Link> </TableCell>
-                                {/*<TableCell> {item.submitTest.label} </TableCell>*/}
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
 
                 {
-                    !studentData && <Spinner className="m-y-xxxl" labelPosition="below" label="Fetching the latest data for you&hellip;" />
+                    !studentData &&
+                    <Spinner className="m-y-xxxl" labelPosition="below"
+                        label="Fetching the latest data for you&hellip;"/>
                 }
 
             </Card>
