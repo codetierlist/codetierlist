@@ -124,7 +124,7 @@ router.get("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) =>
                             FROM "Groups"
                                      INNER JOIN "_GroupToUser" G on "Groups"._id = G."A"
                             WHERE G."B" = ${req.user.utorid}
-                              AND "Groups".course_id = ${req.course!.id}]),
+                              AND "Groups".course_id = ${req.course!.id}),
              data as (SELECT COUNT("_ScoreCache".testcase_author_id)        as total,
                              COUNT(CASE WHEN "_ScoreCache".pass THEN 1 END) as passed,
                              "_ScoreCache".solution_author_id               as author_id,
