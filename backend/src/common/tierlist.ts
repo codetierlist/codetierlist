@@ -1,9 +1,10 @@
-import { Group, User } from "@prisma/client";
+import {Group, User} from "@prisma/client";
 import {
     Tier,
     Tierlist,
     UserTier
 } from "codetierlist-types";
+import prisma from "./prisma";
 
 /** @return a two letter hash of the string */
 export const twoLetterHash = (str: string) => {
@@ -24,7 +25,7 @@ const getUtorid = (user: User | string) => typeof user === "string" ? user : use
 const isSelf = (user: User | string, utorid: string) => utorid === getUtorid(user);
 
 /** @return user initials based on email */
-const getUserInitials = (user: {surname: string, givenName: string}) =>
+const getUserInitials = (user: { surname: string, givenName: string }) =>
     // the idea here is to catch weird names like "c" from erroring out
     `${user.givenName.substring(0, 1)}${user.surname.substring(0, 1)}`;
 
@@ -33,7 +34,7 @@ const getUserInitials = (user: {surname: string, givenName: string}) =>
 const getMean = (data: number[]) => data.length === 0 ? 0 : data.reduce((a, b) => Number(a) + Number(b)) / data.length;
 
 function getStandardDeviation(array: number[]) {
-    if(array.length===0) {
+    if (array.length === 0) {
         return 0;
     }
     const n = array.length;
@@ -41,9 +42,15 @@ function getStandardDeviation(array: number[]) {
     return Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n);
 }
 
-export function generateList(group : Group, user?: string | User, anonymize = false): [Tierlist, UserTier] {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const submissions : any = JSON.stringify("{}");
+export type QueriedSubmission = {
+    utorid: string,
+    givenName: string,
+    surname: string,
+    total: number,
+    passed: number
+}
+
+export const generateTierFromQueriedData = (submissions: QueriedSubmission[], user?: User | string, anonymize = false): [Tierlist, UserTier] => {
     const res: Tierlist = {
         S: [],
         A: [],
@@ -55,28 +62,24 @@ export function generateList(group : Group, user?: string | User, anonymize = fa
     if (submissions.length === 0) {
         return [res, "?" as UserTier];
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const scores = submissions.map((submission : any) =>
-    {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const validScores = submission.scores.filter((x : any)=>x.test_case.valid==="VALID");
-        const you = user ? isSelf(user, submission.author.utorid) : false;
-        return{
+
+    const scores = submissions.map((submission) => {
+        const you = user ? isSelf(user, submission.utorid) : false;
+        return {
             you,
-            name : anonymize && !you ? twoLetterHash(submission.author.givenName + " " + submission.author.surname) : getUserInitials(submission.author),
-            utorid: anonymize ? '' : submission.author.utorid,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            score: validScores.length === 0 ? 0.0 : validScores.filter((x : any) => x.pass).length / validScores.length
-        };}
+            name: anonymize && !you ? twoLetterHash(submission.givenName + " " + submission.surname) : getUserInitials(submission),
+            utorid: anonymize ? '' : submission.utorid,
+            score: submission.total === 0 ? 0 : submission.passed / submission.total,
+        };
+    }
     );
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const mean = getMean(scores.map((x: any) => x.score));
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const std = getStandardDeviation(scores.map((x: any) => x.score));
+
+    const mean = getMean(scores.map((x) => x.score));
+    const std = getStandardDeviation(scores.map((x) => x.score));
     let yourTier: UserTier | undefined = undefined;
     for (const score of scores) {
         let tier: Tier;
-        const {score:_, ...scoreNew}=score;
+        const {score: _, ...scoreNew} = score;
         if (score.score == 0) {
             tier = "F";
         } else if (score.score == 1 || score.score > mean + 2 * std) {
@@ -100,9 +103,32 @@ export function generateList(group : Group, user?: string | User, anonymize = fa
     if (!yourTier) yourTier = "?";
 
     return [res, yourTier];
-}
+};
+export const generateList = async (group: Group, user?: string | User, anonymize = false): Promise<[Tierlist, UserTier]> => {
+    const submissions = await prisma.$queryRaw<QueriedSubmission[]>`
+        WITH data as (SELECT COUNT("_ScoreCache".testcase_author_id)        as total,
+                             COUNT(CASE WHEN "_ScoreCache".pass THEN 1 END) as passed,
+                             "_ScoreCache".solution_author_id               as author_id
+                      FROM "_ScoreCache"
+                               INNER JOIN "_Scores" S on S.id = "_ScoreCache".score_id
+                               INNER JOIN "Testcases" T on S.testcase_id = T.id
+                      WHERE "_ScoreCache".course_id = ${group.course_id}
+                        AND "_ScoreCache".assignment_title = ${group.assignment_title}
+                        AND T.valid = 'VALID'
+                        AND T.group_number = ${group.number}
+                      GROUP BY "_ScoreCache".solution_author_id)
+        SELECT utorid, "givenName", surname, total, passed
+        FROM data
+                 INNER JOIN "Users" U on U.utorid = data.author_id
+        WHERE total > 0
+        ORDER BY total DESC, passed DESC, utorid;
+    `;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const generateTierList = (group:any, user?: string | User, anonymize=true): Tierlist => generateList(group, user, anonymize)[0];
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const generateYourTier = (group: any, user?: string | User): UserTier => generateList(group, user, true)[1];
+    return generateTierFromQueriedData(submissions, user, anonymize);
+};
+
+export const generateTierList = (group: Group, user?: string | User, anonymize = true): Promise<Tierlist> =>
+    generateList(group, user, anonymize).then(x => x[0]);
+
+export const generateYourTier = (group: Group, user?: string | User): Promise<UserTier> =>
+    generateList(group, user, true).then(x => x[1]);
