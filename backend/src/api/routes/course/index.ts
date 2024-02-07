@@ -1,21 +1,24 @@
-import { RoleType } from "@prisma/client";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import {Prisma, RoleType} from "@prisma/client";
+import {PrismaClientKnownRequestError} from "@prisma/client/runtime/library";
 import {
     AssignmentWithTier,
     FetchedAssignment,
     FetchedCourseWithTiers,
 } from "codetierlist-types";
-import { randomUUID } from "crypto";
+import {randomUUID} from "crypto";
 import express from "express";
-import { promises as fs } from "fs";
-import { isUTORid } from "is-utorid";
+import {promises as fs} from "fs";
+import {isUTORid} from "is-utorid";
 import multer from "multer";
 import path from "path";
-import { images } from "../../../common/config";
+import {images} from "../../../common/config";
 import prisma, {
     fetchedAssignmentArgs
 } from "../../../common/prisma";
-import { generateYourTier } from "../../../common/tierlist";
+import {
+    generateTierFromQueriedData,
+    QueriedSubmission
+} from "../../../common/tierlist";
 import {
     errorHandler,
     fetchCourseMiddleware, isProf,
@@ -24,7 +27,7 @@ import {
 import assignmentsRoute from "./assignments";
 
 const storage = multer.diskStorage({
-    filename: function (req, file, callback) {
+    filename: function (_, file, callback) {
         callback(null, randomUUID() + "." + path.extname(file.originalname));
     }
 });
@@ -48,11 +51,11 @@ router.post("/", errorHandler(async (req, res) => {
             id: {startsWith: code}
         }, orderBy: {createdAt: "desc"}
     });
-    let id : string;
+    let id: string;
     if (!oldCourse) {
         id = code;
     } else {
-        const num = parseInt(oldCourse.id.slice(code.length+1));
+        const num = parseInt(oldCourse.id.slice(code.length + 1));
         id = code + '-' + (isNaN(num) ? 1 : num + 1).toString();
     }
 
@@ -107,7 +110,8 @@ router.get("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) =>
         include: {
             roles: isProf(req.course!, req.user) ? true : {where: {user_id: req.user.utorid}},
             assignments: {
-                where: {hidden: false}, include: {
+                where: {hidden: false},
+                include: {
                     groups: {
                         where: {members: {some: {utorid: req.user.utorid}}}
                     }
@@ -115,6 +119,34 @@ router.get("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) =>
             }
         },
     });
+    const queriedSubmissions = await prisma.$queryRaw<(QueriedSubmission & { assignment_title: string })[]>`
+        WITH data as (SELECT COUNT("_ScoreCache".testcase_author_id)        as total,
+                             COUNT(CASE WHEN "_ScoreCache".pass THEN 1 END) as passed,
+                             "_ScoreCache".solution_author_id               as author_id,
+                             "_ScoreCache".assignment_title
+                      FROM "_ScoreCache"
+                               INNER JOIN "_Scores" S on S.id = "_ScoreCache".score_id
+                               INNER JOIN "Testcases" T on S.testcase_id = T.id
+                      WHERE "_ScoreCache".course_id = ${req.course!.id}
+                        AND "_ScoreCache".assignment_title IN ${Prisma.join(course.assignments.map(x => x.title))}
+                        AND (T.group_number, T.assignment_title) IN
+                            ${Prisma.join(course.assignments.map(x => x.groups.map(y => ({group_number: y.number, assignment_title: y.assignment_title}))))}
+                        AND T.valid = 'VALID'
+                      GROUP BY "_ScoreCache".solution_author_id,
+                               "_ScoreCache".assignment_title)
+        SELECT utorid,
+               "givenName",
+               surname,
+               email,
+               total,
+               passed,
+               assignment_title
+        FROM data
+                 INNER JOIN "Users" U on U.utorid = data.author_id
+        WHERE total > 0
+        ORDER BY total DESC, passed DESC, utorid;
+    `;
+
 
     const assignments: Omit<AssignmentWithTier, "group_size">[] = course!.assignments.map(assignment => ({
         title: assignment.title,
@@ -125,7 +157,7 @@ router.get("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) =>
         runner_image: assignment.runner_image,
         hidden: false,
         strict_deadline: assignment.strict_deadline,
-        tier: assignment.groups[0] ? generateYourTier(assignment.groups[0], req.user) : "?"
+        tier: assignment.groups[0] ? generateTierFromQueriedData(queriedSubmissions.filter(x => x.assignment_title === assignment.title))[1] : "?"
     }));
     res.send({...req.course!, assignments} satisfies FetchedCourseWithTiers);
 }));
