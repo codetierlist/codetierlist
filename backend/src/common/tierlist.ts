@@ -31,7 +31,7 @@ const getUserInitials = (user: { surname: string, givenName: string }) =>
 
 
 /** @return the mean of the data */
-const getMean = (data: number[]) => data.length === 0 ? 0 : data.reduce((a, b) => Number(a) + Number(b)) / data.length;
+const getMean = (data: number[]) => data.length === 0 ? 0 : data.reduce((a, b) => (Number(a) + Number(b)) / data.length);
 
 function getStandardDeviation(array: number[]) {
     if (array.length === 0) {
