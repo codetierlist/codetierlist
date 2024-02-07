@@ -241,13 +241,12 @@ router.get('/:assignment/stats', fetchAssignmentMiddleware, errorHandler(async (
         ORDER BY total DESC, passed DESC, utorid;
     `;
     const tierlists = fullFetchedAssignment.groups.map(group =>
-        generateTierFromQueriedData(submissions.filter(submission => submission.group_number === group.number), undefined, false));
-    console.log(tierlists);
+        generateTierFromQueriedData(submissions.filter(submission => submission.group_number === group.number), undefined, false)[0]);
     console.timeEnd('tierlistGen');
     console.time('otherGen');
     const invertedTierlist: Record<string, Tier> = {};
     tierlists.forEach(tierlist =>
-        (Object.keys(tierlist) as Tier[]).forEach(tier => tierlist[0][tier].forEach(name => invertedTierlist[name.utorid] = tier)));
+        (Object.keys(tierlist) as Tier[]).forEach(tier => tierlist[tier].forEach(name => invertedTierlist[name.utorid] = tier)));
     const students = submissions.map(submission => {
         return {
             utorid: submission.utorid,
