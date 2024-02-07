@@ -46,8 +46,8 @@ export type QueriedSubmission = {
     utorid: string,
     givenName: string,
     surname: string,
-    total: number,
-    passed: number
+    total: bigint,
+    passed: bigint
 }
 
 export const generateTierFromQueriedData = (submissions: QueriedSubmission[], user?: User | string, anonymize = false): [Tierlist, UserTier] => {
@@ -69,13 +69,13 @@ export const generateTierFromQueriedData = (submissions: QueriedSubmission[], us
             you,
             name: anonymize && !you ? twoLetterHash(submission.givenName + " " + submission.surname) : getUserInitials(submission),
             utorid: anonymize ? '' : submission.utorid,
-            score: submission.total === 0 ? 0 : submission.passed / submission.total,
+            score: Number(submission.total) === 0 ? 0 : submission.passed / submission.total,
         };
     }
     );
 
-    const mean = getMean(scores.map((x) => x.score));
-    const std = getStandardDeviation(scores.map((x) => x.score));
+    const mean = getMean(scores.map((x) => Number(x.score)));
+    const std = getStandardDeviation(scores.map((x) => Number(x.score)));
     let yourTier: UserTier | undefined = undefined;
     for (const score of scores) {
         let tier: Tier;
