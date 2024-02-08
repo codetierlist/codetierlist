@@ -176,16 +176,17 @@ export default function Page(): JSX.Element {
                             </Title2>
                             <Body2
                                 block
+                                className="m-b-l"
                             >{`Update the ${getLongRoleName(role)}s enrolled in this course by uploading a list of UTORids, separated by newlines.`}</Body2>
                             {role == 'TA' && (
                                 <MessageBar intent="warning">
                                     <MessageBarBody>
-                                        <MessageBarTitle>Warning!</MessageBarTitle>{" "}
+                                        <MessageBarTitle>Warning!</MessageBarTitle>{' '}
                                         Teaching assistants have the same permission as
                                         instructors. This includes destructive actions
                                         like deleting the course, deleting assignments,
                                         and sensitive actions like viewing student
-                                        submissions.{" "}
+                                        submissions.{' '}
                                         <strong>Be careful when adding TAs.</strong>
                                     </MessageBarBody>
                                 </MessageBar>
