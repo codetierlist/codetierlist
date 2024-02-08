@@ -1,14 +1,14 @@
 import { Slot, Tooltip, TooltipProps, useId } from '@fluentui/react-components';
 import React, { useState } from 'react';
 
-export declare interface ToolTipIconProps {
+export declare type ToolTipIconProps = {
     /** The tooltip to show */
     tooltip: string | NonNullable<Slot<'div'>>;
-    /** The icon to show, should be a fluent 9 icon satisfying the IconProps interface */
+    /** The icon to show, should be a fluent 9 icon satisfying the IconProps type */
     icon: JSX.Element;
     /** The class name to apply to the tooltip */
     className?: string;
-}
+};
 
 /**
  * A tooltip with an icon that can be hovered over to show the tooltip.

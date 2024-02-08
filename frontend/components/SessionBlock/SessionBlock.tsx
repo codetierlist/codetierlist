@@ -2,10 +2,10 @@ import { Badge } from '@fluentui/react-components';
 import styles from './SessionBlock.module.css';
 import { Session } from 'codetierlist-types';
 
-export declare interface SessionBlockProps {
+export declare type SessionBlockProps = {
     /** the session to display */
     session: Session;
-}
+};
 
 export const SessionBlock = ({ session }: SessionBlockProps): JSX.Element => {
     switch (session) {

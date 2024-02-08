@@ -1,10 +1,10 @@
 import { Title2, Title3 } from '@fluentui/react-components';
 import styles from './CourseBlock.module.css';
 
-export declare interface CourseBlockProps {
+export declare type CourseBlockProps = {
     /** the course ID to display */
     courseID: string;
-}
+};
 
 export const CourseBlockSmall = ({ courseID }: CourseBlockProps): JSX.Element => {
     return (

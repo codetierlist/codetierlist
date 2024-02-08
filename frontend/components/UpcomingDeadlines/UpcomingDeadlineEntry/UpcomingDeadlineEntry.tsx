@@ -2,11 +2,14 @@ import { Divider, Title3 } from '@fluentui/react-components';
 import { DueDate, daysUntilDate, CourseBlockSmall } from '@/components';
 import styles from './UpcomingDeadlineEntry.module.css';
 
-export declare interface UpcomingDeadlineEntryProps {
+export declare type UpcomingDeadlineEntryProps = {
+    /** The course ID */
     courseID: string;
+    /** The name of the assignment */
     assignmentName: string;
+    /** The due date of the assignment */
     dueDate: Date;
-}
+};
 
 export const UpcomingDeadlineEntry = ({
     courseID,

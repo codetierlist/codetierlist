@@ -6,10 +6,10 @@ import {
 } from '@fluentui/react-icons';
 import { TestCaseStatus as TestCaseStatusType } from 'codetierlist-types';
 
-export declare interface TestCaseStatusIconProps {
+export declare type TestCaseStatusIconProps = {
     /** the status of the testcase */
     status: TestCaseStatusType;
-}
+};
 
 /**
  * return an icon reflecting the status of the testcase
@@ -45,10 +45,10 @@ export const TestCaseStatusIcon = ({ status }: TestCaseStatusIconProps): JSX.Ele
     }
 };
 
-export declare interface TestCaseStatusProps {
+export declare type TestCaseStatusProps = {
     /** the status of the testcase */
     status?: TestCaseStatusType;
-}
+};
 
 /**
  * return an icon with tooltip reflecting the status of the testcase

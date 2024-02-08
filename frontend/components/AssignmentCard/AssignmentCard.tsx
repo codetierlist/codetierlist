@@ -5,7 +5,7 @@ import { type Tier, type UserTier } from 'codetierlist-types';
 import { convertDate } from '../utils/TimeUtils/TimeUtils';
 import Link from 'next/link';
 
-export declare interface AssignmentCardProps {
+export declare type AssignmentCardProps = {
     /** The ID of the assignment */
     id: string;
 
@@ -20,7 +20,7 @@ export declare interface AssignmentCardProps {
 
     /** The ID of the course this assignment belongs to */
     courseID: string;
-}
+};
 
 export const AssignmentCard = ({
     id,

@@ -13,14 +13,14 @@ import { RoleType, Session } from 'codetierlist-types';
 import { useRouter } from 'next/navigation';
 import styles from './CourseOverviewCard.module.css';
 
-export declare interface CourseSessionChipProps {
+export declare type CourseSessionChipProps = {
     /** the session of the course */
     session: Session;
     /** the children of the component */
     children?: React.ReactNode;
     /** the props of the component */
     props?: React.HTMLAttributes<HTMLDivElement>;
-}
+};
 
 /**
  * @returns a generic div so it's easier to style
@@ -37,7 +37,7 @@ export const CourseSessionChip = ({
     );
 };
 
-export declare interface CourseOverviewCardProps {
+export declare type CourseOverviewCardProps = {
     /** the id of the course */
     id: string;
     /** the name of the course */
@@ -50,7 +50,7 @@ export declare interface CourseOverviewCardProps {
     role: RoleType;
     /** the props of the component */
     props?: React.HTMLAttributes<HTMLDivElement>;
-}
+};
 
 /**
  * A card shown in the dashboard representing the overview of a course.

@@ -1,7 +1,7 @@
 import { type UserTier, type Tier } from 'codetierlist-types';
 import styles from './TierChip.module.css';
 
-export declare interface TierChipProps {
+export declare type TierChipProps = {
     /** the tier of the course */
     tier: UserTier | Tier;
 
@@ -11,12 +11,12 @@ export declare interface TierChipProps {
     /** the props of the tier chip */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     props?: any;
-}
+};
 
-export declare interface RawTierChipProps extends TierChipProps {
+export declare type RawTierChipProps = TierChipProps & {
     /** the slot of the tier chip */
     Slot: keyof JSX.IntrinsicElements | React.ComponentType;
-}
+};
 
 /**
  * Get the class of the tier chip based on the tier.

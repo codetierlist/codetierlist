@@ -17,10 +17,10 @@ import { useContext, useState } from 'react';
 
 import styles from './CreateCourseForm.module.css';
 
-export declare interface CreateCourseFormProps {
+export declare type CreateCourseFormProps = {
     /** function to close the dialog */
     closeDialog: () => void;
-}
+};
 
 /**
  * Form for creating a course

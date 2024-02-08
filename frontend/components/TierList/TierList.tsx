@@ -161,10 +161,10 @@ const TierRow = ({ tier, tierlist }: TierRowProps): JSX.Element => {
     );
 };
 
-export declare interface TierListProps {
+export declare type TierListProps = {
     /** The tierlist to display */
     tierlist: Tierlist;
-}
+};
 
 /**
  * A tier list displays a list of people in a tier list format.

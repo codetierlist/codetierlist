@@ -19,19 +19,6 @@ import { useContext, useEffect, useState, useCallback } from 'react';
 import styles from './AssignmentPageFilesTab.module.css';
 import { useSearchParams } from 'next/navigation';
 
-interface ListFilesProps {
-    /** the commit to display */
-    commit: Commit;
-    /** the route to use */
-    route: 'testcases' | 'submissions';
-    /** the assignment to display */
-    assignment: UserFetchedAssignment;
-    /** the ID of the assignment */
-    assignmentID: string;
-    /** a function to call when the files are updated */
-    update?: () => void;
-}
-
 /**
  * A list of files for a commit
  *
@@ -43,7 +30,18 @@ const ListFiles = ({
     assignment,
     assignmentID,
     update,
-}: ListFilesProps) => {
+}: {
+    /** the commit to display */
+    commit: Commit;
+    /** the route to use */
+    route: 'testcases' | 'submissions';
+    /** the assignment to display */
+    assignment: UserFetchedAssignment;
+    /** the ID of the assignment */
+    assignmentID: string;
+    /** a function to call when the files are updated */
+    update?: () => void;
+}) => {
     const { showSnackSev } = useContext(SnackbarContext);
     const [files, setFiles] = useState<{ [key: string]: string }>({});
     const searchParams = useSearchParams();
@@ -136,7 +134,7 @@ const ListFiles = ({
     );
 };
 
-export declare interface AssignmentPageFilesTabProps {
+export declare type AssignmentPageFilesTabProps = {
     /** a function that fetches the assignment */
     fetchAssignment: () => Promise<void>;
     /** the assignment to display */
@@ -147,7 +145,7 @@ export declare interface AssignmentPageFilesTabProps {
     routeName: string;
     /** the route to use */
     route: 'testcases' | 'submissions';
-}
+};
 
 /**
  * A tab that displays the files for an assignment

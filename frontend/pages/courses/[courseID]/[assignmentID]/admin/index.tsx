@@ -202,12 +202,12 @@ export default function Page({ setStage }: { setStage: (stage: number) => void }
                                     style={{
                                         display:
                                             filterValue === '' ||
-                                                item.utorid.includes(filterValue) ||
-                                                (
-                                                    item.givenName +
-                                                    ' ' +
-                                                    item.surname
-                                                ).includes(filterValue)
+                                            item.utorid.includes(filterValue) ||
+                                            (
+                                                item.givenName +
+                                                ' ' +
+                                                item.surname
+                                            ).includes(filterValue)
                                                 ? undefined
                                                 : 'none',
                                     }}

@@ -3,13 +3,13 @@ import { UpcomingDeadlineEntry } from '../UpcomingDeadlineEntry/UpcomingDeadline
 import styles from './UpcomingDeadlinesCard.module.css';
 import { useEffect } from 'react';
 
-export declare interface UpcomingDeadlinesCardProps {
+export declare type UpcomingDeadlinesCardProps = {
     /** The parameters for the page */
     params: {
         /** The course ID */
         courseID: string;
     };
-}
+};
 
 export const UpcomingDeadlinesCard = ({
     params,
