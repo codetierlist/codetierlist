@@ -1,28 +1,22 @@
-import {RoleType} from "@prisma/client";
-import {PrismaClientKnownRequestError} from "@prisma/client/runtime/library";
+import { RoleType } from "@prisma/client";
 import {
     AssignmentWithTier,
-    FetchedAssignment,
-    FetchedCourseWithTiers,
+    FetchedCourseWithTiers
 } from "codetierlist-types";
-import {randomUUID} from "crypto";
+import { randomUUID } from "crypto";
 import express from "express";
-import {promises as fs} from "fs";
-import {isUTORid} from "is-utorid";
+import { promises as fs } from "fs";
+import { isUTORid } from "is-utorid";
 import multer from "multer";
 import path from "path";
-import {images} from "../../../common/config";
-import prisma, {
-    fetchedAssignmentArgs
-} from "../../../common/prisma";
+import prisma from "../../../common/prisma";
 import {
-    generateTierFromQueriedData,
-    QueriedSubmission
+    QueriedSubmission,
+    generateTierFromQueriedData
 } from "../../../common/tierlist";
 import {
     errorHandler,
-    fetchCourseMiddleware, isProf,
-    serializeAssignment
+    fetchCourseMiddleware, isProf
 } from "../../../common/utils";
 import assignmentsRoute from "./assignments";
 
@@ -332,77 +326,6 @@ router.get("/:courseId/cover", fetchCourseMiddleware, errorHandler(async (req, r
         return;
     }
     res.sendFile("/uploads/" + req.course!.cover);
-}));
-
-/**
- * create a new assignment
- * @adminonly
- */
-router.post("/:courseId/assignments", fetchCourseMiddleware, errorHandler(async (req, res) => {
-    // check if user is prof or admin
-    if (!isProf(req.course!, req.user)) {
-        res.statusCode = 403;
-        res.send({message: 'You are not a professor or admin.'});
-        return;
-    }
-
-    const {name, dueDate, description} = req.body;
-    let {
-        runner_image: image,
-        image_version,
-        groupSize,
-        strictDeadlines
-    } = req.body;
-    const date = new Date(dueDate);
-    if (!groupSize) {
-        groupSize = 0;
-    }
-    if (typeof strictDeadlines !== 'boolean') {
-        strictDeadlines = false;
-    }
-    if (typeof name !== 'string' || isNaN(date.getDate()) || typeof groupSize !== "number" || isNaN(groupSize) || typeof description !== 'string' || name.length === 0 || description.length === 0) {
-        res.statusCode = 400;
-        res.send({message: 'Invalid request.'});
-        return;
-    }
-    if (!image && !image_version) {
-        const runnerConf = images[0];
-        image = runnerConf.runner_image;
-        image_version = runnerConf.image_version;
-    }
-    if (image && !image_version || image_version && !image || !images.some(x => x.runner_image == image && x.image_version == image_version)) {
-        res.statusCode = 400;
-        res.send({message: 'Invalid image.'});
-        return;
-    }
-    if (!name.match(/^[A-Za-z0-9 ]*/)) {
-        res.statusCode = 400;
-        res.send({message: 'Invalid name.'});
-        return;
-    }
-    try {
-        const assignment = await prisma.assignment.create({
-            data: {
-                title: name,
-                due_date: date.toISOString(),
-                description,
-                image_version,
-                runner_image: image,
-                group_size: groupSize,
-                course: {connect: {id: req.course!.id}},
-                strict_deadline: strictDeadlines
-            }, ...fetchedAssignmentArgs
-        });
-        res.statusCode = 201;
-        res.send(serializeAssignment(assignment) satisfies FetchedAssignment);
-    } catch (e) {
-        if ((e as PrismaClientKnownRequestError).code === 'P2002') {
-            res.statusCode = 400;
-            res.send({message: 'Assignment already exists.'});
-        } else {
-            throw e;
-        }
-    }
 }));
 
 router.use("/:courseId/assignments", assignmentsRoute);

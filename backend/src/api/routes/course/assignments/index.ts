@@ -1,24 +1,32 @@
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import {
     AssignmentStudentStats,
     Commit,
+    FetchedAssignment,
     Submission, TestCase, Tier,
     Tierlist,
     UserFetchedAssignment
 } from "codetierlist-types";
 import express, { NextFunction, Request, Response } from "express";
 import multer from 'multer';
-import prisma from "../../../../common/prisma";
+import { images } from "../../../../common/config";
+import prisma, {
+    fetchedAssignmentArgs
+} from "../../../../common/prisma";
 import {
+    QueriedSubmission,
     generateList, generateTierFromQueriedData,
-    generateYourTier, QueriedSubmission
+    generateYourTier
 } from "../../../../common/tierlist";
 import {
     deleteFile, errorHandler,
     fetchAssignmentMiddleware,
+    fetchCourseMiddleware,
     getCommitFromRequest,
     getFileFromRequest,
     isProf,
-    processSubmission
+    processSubmission,
+    serializeAssignment
 } from "../../../../common/utils";
 
 const storage = multer.diskStorage({
@@ -28,6 +36,77 @@ const storage = multer.diskStorage({
 });
 const upload = multer({storage});
 const router = express.Router({mergeParams: true});
+
+/**
+ * create a new assignment
+ * @adminonly
+ */
+router.post("/", fetchCourseMiddleware, errorHandler(async (req, res) => {
+    // check if user is prof or admin
+    if (!isProf(req.course!, req.user)) {
+        res.statusCode = 403;
+        res.send({message: 'You are not a professor or admin.'});
+        return;
+    }
+
+    const {name, dueDate, description} = req.body;
+    let {
+        runner_image: image,
+        image_version,
+        groupSize,
+        strictDeadlines
+    } = req.body;
+    const date = new Date(dueDate);
+    if (!groupSize) {
+        groupSize = 0;
+    }
+    if (typeof strictDeadlines !== 'boolean') {
+        strictDeadlines = false;
+    }
+    if (typeof name !== 'string' || isNaN(date.getDate()) || typeof groupSize !== "number" || isNaN(groupSize) || typeof description !== 'string' || name.length === 0 || description.length === 0) {
+        res.statusCode = 400;
+        res.send({message: 'Invalid request.'});
+        return;
+    }
+    if (!image && !image_version) {
+        const runnerConf = images[0];
+        image = runnerConf.runner_image;
+        image_version = runnerConf.image_version;
+    }
+    if (image && !image_version || image_version && !image || !images.some(x => x.runner_image == image && x.image_version == image_version)) {
+        res.statusCode = 400;
+        res.send({message: 'Invalid image.'});
+        return;
+    }
+    if (!name.match(/^[A-Za-z0-9 ]*/)) {
+        res.statusCode = 400;
+        res.send({message: 'Invalid name.'});
+        return;
+    }
+    try {
+        const assignment = await prisma.assignment.create({
+            data: {
+                title: name,
+                due_date: date.toISOString(),
+                description,
+                image_version,
+                runner_image: image,
+                group_size: groupSize,
+                course: {connect: {id: req.course!.id}},
+                strict_deadline: strictDeadlines
+            }, ...fetchedAssignmentArgs
+        });
+        res.statusCode = 201;
+        res.send(serializeAssignment(assignment) satisfies FetchedAssignment);
+    } catch (e) {
+        if ((e as PrismaClientKnownRequestError).code === 'P2002') {
+            res.statusCode = 400;
+            res.send({message: 'Assignment already exists.'});
+        } else {
+            throw e;
+        }
+    }
+}));
 
 /**
  * Fetches the assignment from the database and sends it to the client.
