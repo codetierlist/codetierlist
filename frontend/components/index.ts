@@ -4,7 +4,6 @@
 export * from './AchievementCard/AchievementCard';
 export * from './AllCoursesList/AllCoursesList';
 export * from './AssignmentAdminToolbar/AddRemovePeopleMenu/AddRemovePeopleMenu';
-export * from './AssignmentAdminToolbar/AssignmentAdminToolbar';
 export * from './AssignmentAdminToolbar/BaseToolbarDeleteButton/AdminToolbarDeleteAssignmentButton/AdminToolbarDeleteAssignmentButton';
 export * from './AssignmentAdminToolbar/BaseToolbarDeleteButton/AdminToolbarDeleteCourseButton/AdminToolbarDeleteCourseButton';
 export * from './AssignmentCard/AssignmentCard';
