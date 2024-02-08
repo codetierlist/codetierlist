@@ -30,8 +30,8 @@ export const errorHandler = (cb: (req: Request, res: Response, next: NextFunctio
 
 /**
  * Checks if a user is a prof in a course.
- * @param course
- * @param user
+ * @param course course object
+ * @param user user object
  */
 export function isProf(course: Course, user: FetchedUser) {
     return user.admin || user.roles.some(role => course.id===role.course_id && ([RoleType.INSTRUCTOR, RoleType.TA] as RoleType[]).includes(role.type));

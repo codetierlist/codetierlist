@@ -34,6 +34,11 @@ const storage = multer.diskStorage({
 
 const upload = multer({storage});
 const router = express.Router();
+
+/**
+ * create a new course
+ * @adminonly
+ */
 router.post("/", errorHandler(async (req, res) => {
     if (!req.user.admin) {
         res.statusCode = 403;
@@ -84,6 +89,7 @@ router.post("/", errorHandler(async (req, res) => {
 
 /**
  * get all courses if admin
+ * @adminonly
  */
 router.get("/", errorHandler(async (req, res) => {
     // must be admin
@@ -104,6 +110,9 @@ router.get("/", errorHandler(async (req, res) => {
     res.send(courses);
 }));
 
+/**
+ * get a course by id
+ */
 router.get("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) => {
     const queriedSubmissions = await prisma.$queryRaw<(QueriedSubmission & {
         assignment_title: string
@@ -188,6 +197,9 @@ router.get("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) =>
     res.send({...req.course!, assignments} satisfies FetchedCourseWithTiers);
 }));
 
+/**
+ * delete a course
+ */
 router.delete("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) => {
     if (!req.user.admin) {
         res.statusCode = 403;
@@ -205,7 +217,18 @@ router.delete("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res)
     res.send({});
 }));
 
+/**
+ * add a user to a course
+ * @profonly @adminonly
+ */
 router.post("/:courseId/add", fetchCourseMiddleware, errorHandler(async (req, res) => {
+    // check if user is prof or admin
+    if (!isProf(req.course!, req.user) && !req.user.admin) {
+        res.statusCode = 403;
+        res.send({message: 'You are not a professor or admin.'});
+        return;
+    }
+
     const {utorids, role}: { utorids: unknown, role?: string } = req.body;
     if (role !== undefined && !(Object.values(RoleType) as string[]).includes(role)) {
         res.statusCode = 400;
@@ -241,7 +264,17 @@ router.post("/:courseId/add", fetchCourseMiddleware, errorHandler(async (req, re
 
 }));
 
+/**
+ * remove a user from a course
+ */
 router.post("/:courseId/remove", fetchCourseMiddleware, errorHandler(async (req, res) => {
+    // check if user is prof or admin
+    if (!isProf(req.course!, req.user) && !req.user.admin) {
+        res.statusCode = 403;
+        res.send({message: 'You are not a professor or admin.'});
+        return;
+    }
+
     const {utorids, role}: { utorids: unknown, role?: string } = req.body;
     if (role !== undefined && !(Object.values(RoleType) as string[]).includes(role)) {
         res.statusCode = 400;
@@ -267,7 +300,19 @@ router.post("/:courseId/remove", fetchCourseMiddleware, errorHandler(async (req,
 
 }));
 
+/**
+ * update the cover image of a course
+ * @profonly @adminonly
+ */
 router.post("/:courseId/cover", fetchCourseMiddleware, upload.single("file"), errorHandler(async (req, res) => {
+    // check if user is prof or admin
+    if (!isProf(req.course!, req.user) && !req.user.admin) {
+        res.statusCode = 403;
+        res.send({message: 'You are not a professor or admin.'});
+        return;
+    }
+
+
     if (!req.file || !isProf(req.course!, req.user)) {
         res.statusCode = 400;
         res.send({message: "Must upload a file."});
@@ -281,6 +326,9 @@ router.post("/:courseId/cover", fetchCourseMiddleware, upload.single("file"), er
     res.send({});
 }));
 
+/**
+ * get the cover image of a course
+ */
 router.get("/:courseId/cover", fetchCourseMiddleware, errorHandler(async (req, res) => {
     if (!req.course?.cover) {
         res.statusCode = 404;
@@ -289,7 +337,19 @@ router.get("/:courseId/cover", fetchCourseMiddleware, errorHandler(async (req, r
     }
     res.sendFile("/uploads/" + req.course!.cover);
 }));
+
+/**
+ * create a new assignment
+ * @profonly @adminonly
+ */
 router.post("/:courseId/assignments", fetchCourseMiddleware, errorHandler(async (req, res) => {
+    // check if user is prof or admin
+    if (!isProf(req.course!, req.user) && !req.user.admin) {
+        res.statusCode = 403;
+        res.send({message: 'You are not a professor or admin.'});
+        return;
+    }
+
     const {name, dueDate, description} = req.body;
     let {
         runner_image: image,

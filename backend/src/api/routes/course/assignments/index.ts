@@ -29,6 +29,9 @@ const storage = multer.diskStorage({
 const upload = multer({storage});
 const router = express.Router({mergeParams: true});
 
+/**
+ * Fetches the assignment from the database and sends it to the client.
+ */
 router.get("/:assignment", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     const assignment = await prisma.assignment.findUniqueOrThrow({
         where: {
@@ -84,13 +87,17 @@ router.get("/:assignment", fetchAssignmentMiddleware, errorHandler(async (req, r
     } satisfies (UserFetchedAssignment));
 }));
 
-
+/**
+ * @adminonly
+ * Deletes the assignment from the database.
+ */
 router.delete("/:assignment", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     if (!isProf(req.course!, req.user)) {
         res.statusCode = 403;
         res.send({message: 'You are not an instructor.'});
         return;
     }
+
     await prisma.assignment.update({
         where: {
             id: {
@@ -111,14 +118,23 @@ const checkFilesMiddleware = (req: Request, res: Response, next: NextFunction) =
     next();
 };
 
+/**
+ * Processes the submission and sends the result to the client.
+ */
 router.post("/:assignment/submissions", fetchAssignmentMiddleware, upload.array('files', 100), checkFilesMiddleware,
     errorHandler(async (req, res) =>
         processSubmission(req, res, "solution")));
 
+/**
+ * Processes the test case and sends the result to the client.
+ */
 router.post("/:assignment/testcases", fetchAssignmentMiddleware, upload.array('files', 100), checkFilesMiddleware,
     errorHandler(async (req, res) =>
         processSubmission(req, res, "testCase")));
 
+/**
+ * Fetches the submission from the database and sends it to the client.
+ */
 router.get("/:assignment/submissions/:commitId?", fetchAssignmentMiddleware,
     errorHandler(async (req, res) => {
         const commit = await getCommitFromRequest(req, "solution");
@@ -134,14 +150,23 @@ router.get("/:assignment/submissions/:commitId?", fetchAssignmentMiddleware,
         res.send(commit satisfies Commit);
     }));
 
+/**
+ * Gets a file from the submission and sends it to the client.
+ */
 router.get("/:assignment/submissions/:commitId?/:file", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     await getFileFromRequest(req, res, "solution");
 }));
 
+/**
+ * Deletes a file from the submission.
+ */
 router.delete("/:assignment/submissions/:file", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     await deleteFile(req, res, "solution");
 }));
 
+/**
+ * Fetches the test case from the database and sends it to the client.
+ */
 router.get("/:assignment/testcases/:commitId?", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     const commit = await getCommitFromRequest(req, "testCase");
 
@@ -157,14 +182,25 @@ router.get("/:assignment/testcases/:commitId?", fetchAssignmentMiddleware, error
     res.send(commit satisfies Commit);
 }));
 
+/**
+ * Deletes a file from the test case.
+ */
 router.delete("/:assignment/testcases/:file", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     await deleteFile(req, res, "testCase");
 }));
 
+/**
+ * Gets a file from the test case and sends it to the client.
+ */
 router.get("/:assignment/testcases/:commitId?/:file", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     await getFileFromRequest(req, res, "testCase");
 }));
 
+/**
+ * Fetches the tierlist from the database and sends it to the client.
+ *
+ * @param utorid ADMIN ONLY: The utorid of the user to fetch the tierlist for.
+ */
 router.get("/:assignment/tierlist", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     let utorid = req.user.utorid as string;
 
@@ -242,6 +278,10 @@ router.get("/:assignment/tierlist", fetchAssignmentMiddleware, errorHandler(asyn
     res.send(tierlist[0] satisfies Tierlist);
 }));
 
+/**
+ * Fetches the tierlist from the database and sends it to the client.
+ * @adminonly
+ */
 router.get('/:assignment/stats', fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     if (!isProf(req.course!, req.user)) {
         res.statusCode = 403;
