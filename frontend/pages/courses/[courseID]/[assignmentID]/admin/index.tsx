@@ -70,10 +70,7 @@ const useAssignment = (courseID: string, assignmentID: string) => {
                 }
             )
             .then((res) => setAssignment(res.data))
-            .catch((e) => {
-                handleError(showSnackSev)(e);
-                notFound();
-            });
+            .catch(handleError(showSnackSev));
     };
 
     const fetchAssignmentStats = async () => {
@@ -85,10 +82,7 @@ const useAssignment = (courseID: string, assignmentID: string) => {
                 }
             )
             .then((res) => setStudentData(res.data))
-            .catch((e) => {
-                handleError(showSnackSev)(e);
-                notFound();
-            });
+            .catch(handleError(showSnackSev));
     };
 
     useEffect(() => {
@@ -131,7 +125,7 @@ export default function Page({ setStage }: { setStage: (stage: number) => void }
         document.title = `${assignment?.title || assignmentID} - Codetierlist`;
     }, [assignment, assignmentID]);
 
-    if (!courseID || !assignmentID) {
+    if (!courseID || !assignmentID || !assignment) {
         return <Error statusCode={404} />;
     }
 
@@ -152,9 +146,7 @@ export default function Page({ setStage }: { setStage: (stage: number) => void }
     return (
         <section className="p-b-xxxl">
             <HeaderToolbar>
-                {assignment && (
-                    <AdminToolbarDeleteAssignmentButton assignment={assignment} />
-                )}
+                <AdminToolbarDeleteAssignmentButton assignment={assignment} />
             </HeaderToolbar>
 
             <Card className="m-x-l m-t-xxl">
@@ -210,12 +202,12 @@ export default function Page({ setStage }: { setStage: (stage: number) => void }
                                     style={{
                                         display:
                                             filterValue === '' ||
-                                            item.utorid.includes(filterValue) ||
-                                            (
-                                                item.givenName +
-                                                ' ' +
-                                                item.surname
-                                            ).includes(filterValue)
+                                                item.utorid.includes(filterValue) ||
+                                                (
+                                                    item.givenName +
+                                                    ' ' +
+                                                    item.surname
+                                                ).includes(filterValue)
                                                 ? undefined
                                                 : 'none',
                                     }}
