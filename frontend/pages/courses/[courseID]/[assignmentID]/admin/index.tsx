@@ -70,8 +70,10 @@ const useAssignment = (courseID: string, assignmentID: string) => {
                 }
             )
             .then((res) => setAssignment(res.data))
-            .catch(handleError(showSnackSev))
-            .catch(notFound());
+            .catch((e) => {
+                handleError(showSnackSev)(e);
+                notFound();
+            });
     };
 
     const fetchAssignmentStats = async () => {
@@ -83,8 +85,10 @@ const useAssignment = (courseID: string, assignmentID: string) => {
                 }
             )
             .then((res) => setStudentData(res.data))
-            .catch(handleError(showSnackSev))
-            .catch(notFound());
+            .catch((e) => {
+                handleError(showSnackSev)(e);
+                notFound();
+            });
     };
 
     useEffect(() => {
