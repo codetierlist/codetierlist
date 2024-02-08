@@ -42,6 +42,9 @@ const updateTimezoneOffset = (date: string) => {
     return d;
 };
 
+/**
+ * Custom hook to fetch the runner images
+ */
 const useRunners = () => {
     const [runners, setRunners] = useState<Record<string, string[]>>({});
     const [selectedRunner, setSelectedRunner] = useState<RunnerImage | null>(null);
