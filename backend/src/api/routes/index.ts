@@ -9,19 +9,15 @@ import userRoute from "./users";
 
 const router = express.Router();
 
-/**
- * Get the user's information
- * @public
- */
-router.get("/", (req, res) => {
-    res.send(req.user satisfies FetchedUser);
+router.get("/", (_, res) => {
+    res.send("( ͡° ͜ʖ ͡°)");
 });
 
 /**
  * Get the images for the runner
  * @public
  */
-router.get("/runner/images", (req,res) =>{
+router.get("/runner/images", (_, res) =>{
     res.send(images satisfies RunnerImage[]);
 });
 

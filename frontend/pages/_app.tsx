@@ -56,7 +56,7 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
     const [userInfo, setUserInfo] = useState<FetchedUser>(defaultUser);
 
     const fetchUserInfo = async () => {
-        await axios('/')
+        await axios('/users')
             .then(({ data }) => {
                 setUserInfo(data as FetchedUser);
             })
