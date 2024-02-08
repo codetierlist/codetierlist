@@ -22,6 +22,19 @@ import { Container } from 'react-grid-system';
 import styles from './page.module.css';
 
 /**
+ * random seed to update the cover image
+ */
+const useSeed = () => {
+    const [seed, updateSeed] = useState(Math.random());
+
+    const setSeed = () => {
+        updateSeed(Math.random());
+    };
+
+    return { seed, setSeed };
+}
+
+/**
  * Fetches the course with the given courseID
  * @param courseID The courseID to fetch
  */
@@ -58,6 +71,7 @@ const useCourse = (courseID: string) => {
 const CourseAdminToolbar = ({
     courseID,
     fetchCourse,
+    updateSeed
 }: {
     /**
      * the course ID of the course
@@ -67,6 +81,10 @@ const CourseAdminToolbar = ({
      * fetches the course
      */
     fetchCourse: () => Promise<void>;
+    /**
+     * updates the seed
+     */
+    updateSeed: () => void;
 }): JSX.Element => {
     const router = useRouter();
     const { showSnackSev } = useContext(SnackbarContext);
@@ -109,6 +127,7 @@ const CourseAdminToolbar = ({
                         .then(() => {
                             void fetchCourse();
                         })
+                        .then(updateSeed)
                         .catch(handleError(showSnackSev));
                 }}
             >
@@ -124,6 +143,7 @@ export default function Page() {
     const { userInfo } = useContext(UserContext);
     const { courseID } = useRouter().query;
     const { course, fetchCourse } = useCourse(courseID as string);
+    const { seed, setSeed } = useSeed();
 
     useEffect(() => {
         void fetchCourse();
@@ -138,7 +158,7 @@ export default function Page() {
                     style={{
                         backgroundImage: `
                         linear-gradient(color-mix(in srgb, var(--colorNeutralBackground3) 60%, transparent), color-mix(in srgb, var(--colorNeutralBackground3) 80%, transparent)),
-                        url("${process.env.NEXT_PUBLIC_API_URL}/courses/${courseID as string}/cover")`,
+                        url("${process.env.NEXT_PUBLIC_API_URL}/courses/${courseID as string}/cover?seed=${seed}")`,
                     }}
                     className={`${styles.banner} m-b-xxxl m-x-l`}
                     aria-hidden="true"
@@ -161,6 +181,7 @@ export default function Page() {
                     <CourseAdminToolbar
                         courseID={courseID as string}
                         fetchCourse={fetchCourse}
+                        updateSeed={setSeed}
                     />
                 ) : undefined}
 
