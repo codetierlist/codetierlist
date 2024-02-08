@@ -129,25 +129,37 @@ export type ParentJobData = {
 export type ParentJobStatus = "WAITING_FILES" | "READY" | "COMPLETED"
 
 enum _JobStatus {
-    PASS = "PASS", // passes all test cases
-    FAIL = "FAIL", // fails at least one test case
-    ERROR = "ERROR", // code error, server error, or timeout
+    /** passed all test cases */
+    PASS = "PASS",
+    /** fails at least one test case */
+    FAIL = "FAIL",
+    /** code error, server error, or timeout */
+    ERROR = "ERROR",
+    /** submission is empty */
     SUBMISSION_EMPTY = "SUBMISSION_EMPTY",
+    /** test case is empty */
     TESTCASE_EMPTY = "TESTCASE_EMPTY",
 }
 
+/**
+ * Status of a job
+ */
 export type JobStatus = `${_JobStatus}`;
 
 export type JobResult =
     ({
         status: "PASS",
-        amount: number // amount of testcases & amount passed
+        /** amount of test cases & amount passed */
+        amount: number
     } |
         {
             status: "FAIL",
-            amount: number // amount of testcases
-            score: number // amount passed
-            failed: string[] // list of failed testcase info
+            /** total test cases amount */
+            amount: number,
+            /** amount of test cases passed */
+            score: number,
+            /** list of failed test case info */
+            failed: string[]
         } |
         {
             status: "ERROR" | "SUBMISSION_EMPTY" | "TESTCASE_EMPTY"
