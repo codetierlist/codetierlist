@@ -1,11 +1,6 @@
-import {
-    Caption1,
-    Card,
-    CardHeader,
-    Label
-} from "@fluentui/react-components";
+import { Caption1, Card, CardHeader, Label } from '@fluentui/react-components';
 
-import styles from "./ControlCard.module.css";
+import styles from './ControlCard.module.css';
 
 export declare type ControlCardProps = {
     /** The title of the card. */
@@ -31,21 +26,21 @@ export const ControlCard = (props: ControlCardProps): JSX.Element => {
         <Card size="large">
             <CardHeader
                 image={props.icon}
-                header={<Label className={styles.semibold} required={props.required} htmlFor={props.htmlFor}>{props.title}</Label>}
+                header={
+                    <Label
+                        className={styles.semibold}
+                        required={props.required}
+                        htmlFor={props.htmlFor}
+                    >
+                        {props.title}
+                    </Label>
+                }
                 description={
-                    props.description && (
-                        <Caption1>
-                            {props.description}
-                        </Caption1>
-                    )
+                    props.description && <Caption1>{props.description}</Caption1>
                 }
-                action={
-                    <div className={styles.showOnDesktop}>{props.children}</div>
-                }
+                action={<div className={styles.showOnDesktop}>{props.children}</div>}
             />
-            <div className={styles.showOnMobile}>
-                {props.children}
-            </div>
+            <div className={styles.showOnMobile}>{props.children}</div>
         </Card>
     );
 };

@@ -1,21 +1,15 @@
-import {
-    FetchedUser,
-    RunnerImage,
-} from "codetierlist-types";
 import express from "express";
-import { images } from "../../common/config";
 import courseRoute from "./course";
+import runnerRoute from "./runner";
 import userRoute from "./users";
 
 const router = express.Router();
 
-router.get("/", (req, res) => {
-    res.send(req.user satisfies FetchedUser);
+router.get("/", (_, res) => {
+    res.send({message: "( ͡° ͜ʖ ͡°)"});
 });
 
-router.get("/runner/images", (req,res) =>{
-    res.send(images satisfies RunnerImage[]);
-});
+router.use("/runner", runnerRoute);
 
 router.use("/courses", courseRoute);
 

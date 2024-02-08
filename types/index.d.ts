@@ -81,25 +81,61 @@ export type FetchedCourseWithTiers = Omit<FetchedCourse, "assignments"> & {
     assignments: Omit<AssignmentWithTier, "group_size">[]
 };
 
+/**
+ * a git commit for a submission
+ */
 export type Commit = {
     files: string[],
     valid?: TestCaseStatus,
     log: string[],
 }
 
+/**
+ * the tier of a user for an assignment
+ */
 export type Tier = "S" | "A" | "B" | "C" | "D" | "F";
+
+/**
+ * the tier of a user for an assignment, includes "?" if
+ * the user has not been assigned a tier
+ */
 export type UserTier = Tier | "?"
-export type TierlistEntry = { name: string, you: boolean, utorid: string }
+
+/**
+ * an entry for a user in a tierlist
+ */
+export type TierlistEntry = {
+    /** the name of the user (typically just the initials) */
+    name: string,
+    /** whether the user is the current user */
+    you: boolean,
+    /** the utorid of the user (typically empty for privacy) */
+    utorid: string
+}
+
+/**
+ * a tierlist for an assignment
+ */
 export type Tierlist = Record<Tier, TierlistEntry[]>;
 
+/**
+ * a session of the course
+ */
 export type Session = "Fall" | "Winter" | "Summer"
 
 const role: Role;
 export type RoleType = typeof role.type
 
 const user: User;
+
+/**
+ * the theme selection of the user
+ */
 export type Theme = typeof user.theme;
 
+/**
+ * A runner image, relative to the images folder in the runner project
+ */
 export type RunnerImage = { runner_image: string, image_version: string };
 
 type JobFiles = {
@@ -129,25 +165,40 @@ export type ParentJobData = {
 export type ParentJobStatus = "WAITING_FILES" | "READY" | "COMPLETED"
 
 enum _JobStatus {
-    PASS = "PASS", // passes all test cases
-    FAIL = "FAIL", // fails at least one test case
-    ERROR = "ERROR", // code error, server error, or timeout
+    /** passed all test cases */
+    PASS = "PASS",
+    /** fails at least one test case */
+    FAIL = "FAIL",
+    /** code error, server error, or timeout */
+    ERROR = "ERROR",
+    /** submission is empty */
     SUBMISSION_EMPTY = "SUBMISSION_EMPTY",
+    /** test case is empty */
     TESTCASE_EMPTY = "TESTCASE_EMPTY",
 }
 
+/**
+ * Status of a job
+ */
 export type JobStatus = `${_JobStatus}`;
 
+/**
+ * A job result from the runner
+ */
 export type JobResult =
     ({
         status: "PASS",
-        amount: number // amount of testcases & amount passed
+        /** amount of test cases & amount passed */
+        amount: number
     } |
         {
             status: "FAIL",
-            amount: number // amount of testcases
-            score: number // amount passed
-            failed: string[] // list of failed testcase info
+            /** total test cases amount */
+            amount: number,
+            /** amount of test cases passed */
+            score: number,
+            /** list of failed test case info */
+            failed: string[]
         } |
         {
             status: "ERROR" | "SUBMISSION_EMPTY" | "TESTCASE_EMPTY"
@@ -167,18 +218,29 @@ export type AssignmentStudentStats = (Omit<User, "admin" | "theme" | "new_achiev
 
 
 export type AchievementConfig = {
+    /** the unique id of the achievement, -1 if hidden */
     id: number,
+    /** the name of the achievement */
     name: string,
+    /** the description of the achievement */
     description: string,
+    /** the icon of the achievement, relative to the public folder in frontend*/
     icon: string,
+    /** the config of the achievement */
     config: object,
+    /** the type of the achievement */
     type: string,
+    /** id of the achievement that this achievement depends on */
     depends_on: number
 }
+
 export type Achievement = Prisma.AchievementGetPayload<{}>;
 
+/** the config of the backend */
 export type BackendConfig = {
+    /** the list of achievements */
     achievements: AchievementConfig[],
+    /** the list of runner images */
     runners: RunnerImage[],
     max_file_size: number,
     max_file_count: number,

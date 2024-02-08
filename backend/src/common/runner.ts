@@ -25,6 +25,9 @@ import prisma from "./prisma";
 import { runTestcase, updateScore } from "./updateScores";
 import { getCommit, getFile } from "./utils";
 
+/**
+ * The job types that can be queued
+ */
 export enum JobType {
     validateTestCase = "validateTestCase",
     testSubmission = "testSubmission",
@@ -87,7 +90,9 @@ export const getFiles = async (submission: Submission | TestCase): Promise<JobFi
     return res;
 };
 
-
+/**
+ * Bulk queue test cases for a submission
+ */
 export const bulkQueueTestCases = async <T extends Submission | TestCase>(image: RunnerImage, item: T, queue: (T extends TestCase ? Submission : TestCase)[]) => {
     console.info(`Bulk queueing ${queue.length} test cases for ${item.author_id} submission/test case`);
     await flowProducer.add({
@@ -212,6 +217,7 @@ job_events.on("completed", async ({jobId}) => {
     } catch { /* empty */ }
 });
 
+/** Remove all pending jobs for a user */
 export const removeSubmission = async (utorid: string): Promise<void> => {
     await Promise.all(await pending_queue.getJobs(["waiting", "active"])
         .then(async (jobs) =>
@@ -219,6 +225,7 @@ export const removeSubmission = async (utorid: string): Promise<void> => {
                 .map(async job => await job.remove())));
 };
 
+/** Remove all pending jobs for a user */
 export const removeTestcases = async (utorid: string): Promise<void> => {
     await Promise.all(await pending_queue.getJobs(["waiting", "active"])
         .then(async (jobs) =>
@@ -265,6 +272,7 @@ new Worker<ParentJobData, undefined, JobType>(parent_job_queue, async (job, toke
     console.info(`Parent job ${job.id} completed with ${passed.length} passed out of ${children.length}. Finished processing at ${Date.now()}`);
 }, queue_conf);
 
+/** Fetches jobs from the pending queue and adds them to the job queue */
 const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue.name, async (job) => {
     const isRateLimited = await job_queue.count();
     const waiting = await job_queue.getWaitingChildrenCount()
@@ -315,6 +323,7 @@ const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue
     concurrency: 50
 });
 
+/** Fetches jobs from the parent job queue and adds them to the job queue */
 const parent_queue = new Queue<ParentJobData, undefined, JobType>(parent_job_queue, queue_conf);
 parent_job_events.on("completed", async ({jobId}) => {
     const job = await parent_queue.getJob(jobId);

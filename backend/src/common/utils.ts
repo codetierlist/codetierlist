@@ -31,11 +31,11 @@ export const errorHandler = (cb: (req: Request, res: Response, next: NextFunctio
 
 /**
  * Checks if a user is a prof in a course.
- * @param course
- * @param user
+ * @param course course object
+ * @param user user object
  */
 export function isProf(course: Course, user: FetchedUser) {
-    return user.admin || user.roles.some(role => course.id===role.course_id && ([RoleType.INSTRUCTOR, RoleType.TA] as RoleType[]).includes(role.type));
+    return user.admin || user.roles.some(role => course.id === role.course_id && ([RoleType.INSTRUCTOR, RoleType.TA] as RoleType[]).includes(role.type));
 }
 
 
@@ -66,9 +66,16 @@ const softResetRepo = async (repoPath: string, commit: string) => {
     await git.checkout({ dir:repoPath, fs, ref: commit, force: true });
 };
 
+/**
+ * Commits files to a users' git repo.
+ * @param req the request
+ * @param object the object to commit
+ * @param table the repo to commit to. Either "solution" or "testCase"
+ */
 const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'datetime' | 'id'>, table: "solution" | "testCase") => {
     const repoPath = path.resolve(`/repos/${object.course_id}/${object.assignment_title}/${object.author_id}_${table}`);
-    const status = await git.statusMatrix({fs, dir:repoPath});
+    const status = await git.statusMatrix({ fs, dir: repoPath });
+
     // no unstaged changes
     if (status.every(x=>x[2]==1)) {
         return {error: "No changes"};
@@ -78,7 +85,7 @@ const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'date
         await softResetRepo(repoPath, object.git_id);
         return {error : "Too many files added"};
     }
-    await git.add({fs, dir: repoPath, filepath: '.'});
+    await git.add({ fs, dir: repoPath, filepath: '.' });
     try {
         const commit = await git.commit({
             fs,
@@ -90,7 +97,7 @@ const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'date
             }
         });
 
-        const data :  Omit<TestCase | Solution, 'datetime' | 'id'> = {
+        const data: Omit<TestCase | Solution, 'datetime' | 'id'> = {
             git_id: commit,
             git_url: repoPath,
             course_id: req.course!.id,
@@ -99,14 +106,14 @@ const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'date
             group_number: object.group_number === -1 ? null : object.group_number
         };
         if (table === "solution") {
-            const solution = await prisma.solution.create({data});
+            const solution = await prisma.solution.create({ data });
             if (isProf(req.course!, req.user)) {
                 await onNewProfSubmission(solution, req.assignment!);
             } else {
                 await onNewSubmission(solution, req.assignment!);
             }
         } else {
-            const testCase = await prisma.testCase.create({data});
+            const testCase = await prisma.testCase.create({ data });
             await onNewTestCase(testCase, req.assignment!);
         }
         return commit;
@@ -116,16 +123,24 @@ const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'date
     }
 };
 
+/**
+ * Gets a solution or test case from a request.
+ * @param req the request
+ * @param table the table to get the object from. Either "solution" or "testCase"
+ */
 const getObjectFromRequest = async (req: Request, table: "solution" | "testCase") => {
     let utorid = req.user.utorid;
-    if(req.query.utorid && req.query.utorid !== req.user.utorid){
-        if(!isProf(req.course!, req.user) || typeof req.query.utorid !== "string" || !isUTORid(req.query.utorid)){
+
+    // check if the user has permission to view another user's submission
+    if (req.query.utorid && req.query.utorid !== req.user.utorid) {
+        if (!isProf(req.course!, req.user) || typeof req.query.utorid !== "string" || !isUTORid(req.query.utorid)) {
             return null;
         }
         utorid = req.query.utorid;
     }
+
     let object: Solution | TestCase | null;
-    const query : Prisma.SolutionFindFirstArgs | Prisma.TestCaseFindFirstArgs = {
+    const query: Prisma.SolutionFindFirstArgs | Prisma.TestCaseFindFirstArgs = {
         where: {
             author_id: utorid,
             assignment_title: req.assignment!.title,
@@ -149,7 +164,12 @@ const getObjectFromRequest = async (req: Request, table: "solution" | "testCase"
     return object;
 };
 
-export const exists = async (p: PathLike) => {
+/**
+ * Checks if a file exists.
+ * @param p the path to check
+ * @returns true if the file exists, false otherwise
+ */
+export const exists = async (p: PathLike): Promise<boolean> => {
     try {
         await fs.access(p);
         return true;
@@ -158,15 +178,21 @@ export const exists = async (p: PathLike) => {
     }
 };
 
+/**
+ * Processes a submission.
+ * @param req
+ * @param res
+ * @param table the table to process the submission for. Either "solution" or "testCase"
+ */
 export const processSubmission = async (req: Request, res: Response, table: "solution" | "testCase") => {
-    if(!req.user.roles.some(role => role.course_id === req.course!.id)){
+    if (!req.user.roles.some(role => role.course_id === req.course!.id)) {
         res.statusCode = 403;
-        res.send({message: 'You are not enrolled in this course.'});
+        res.send({ message: 'You are not enrolled in this course.' });
         return;
     }
-    if(req.assignment!.strict_deadline && req.assignment!.due_date && Date.now() > new Date(req.assignment!.due_date).getTime()){
+    if (req.assignment!.strict_deadline && req.assignment!.due_date && Date.now() > new Date(req.assignment!.due_date).getTime()) {
         res.statusCode = 403;
-        res.send({message: 'The deadline has passed.'});
+        res.send({ message: 'The deadline has passed.' });
         return;
     }
     // upload files
@@ -191,14 +217,14 @@ export const processSubmission = async (req: Request, res: Response, table: "sol
             submission = null;
         }
         // create folder if it doesnt exist
-        await fs.mkdir(repoPath, {recursive: true});
-        await git.init({fs, dir: repoPath});
+        await fs.mkdir(repoPath, { recursive: true });
+        await git.init({ fs, dir: repoPath });
     }
-    if(submission && !isProf(req.course!, req.user)){
+    if (submission && !isProf(req.course!, req.user)) {
         const delay = process.env.SUBMISSION_DELAY_TIME !== undefined ? parseInt(process.env.SUBMISSION_DELAY_TIME) : 0;
         if (Date.now() < submission.datetime.getTime() + delay) {
             res.statusCode = 429;
-            res.send({message: `Submission too soon, please wait ${Math.ceil(submission.datetime.getTime() + delay - Date.now()) / 60000} minute(s).`});
+            res.send({ message: `Submission too soon, please wait ${Math.ceil(submission.datetime.getTime() + delay - Date.now()) / 60000} minute(s).` });
             return;
         }
     }
@@ -207,9 +233,9 @@ export const processSubmission = async (req: Request, res: Response, table: "sol
         if (file === null) continue;
         await fs.copyFile(file.path, `${repoPath}/${file.filename}`);
     }
-    let group : number = -1;
-    if(!isProf(req.course!, req.user))
-    {
+
+    let group: number = -1;
+    if (!isProf(req.course!, req.user)) {
         if (submission && submission.group_number !== null) {
             group = submission.group_number;
         } else {
@@ -241,27 +267,27 @@ export const processSubmission = async (req: Request, res: Response, table: "sol
 
                 await prisma.group.upsert({
                     where: {
-                        _id:{
+                        _id: {
                             number: group,
                             course_id: req.course!.id,
                             assignment_title: req.assignment!.title
                         }
                     },
                     update: {
-                        members: {connect: {utorid: req.user.utorid}}
+                        members: { connect: { utorid: req.user.utorid } }
                     },
                     create: {
                         number: group,
                         course_id: req.course!.id,
                         assignment_title: req.assignment!.title,
-                        members: {connect: {utorid: req.user.utorid}}
+                        members: { connect: { utorid: req.user.utorid } }
                     }
                 });
             }
         }
     }
-    // commit files
-    const commit =  await commitFiles(req, submission ?? {
+    /** commit files */
+    const commit = await commitFiles(req, submission ?? {
         git_id: "",
         git_url: repoPath,
         course_id: req.course!.id,
@@ -269,9 +295,10 @@ export const processSubmission = async (req: Request, res: Response, table: "sol
         author_id: req.user.utorid,
         group_number: group
     }, table);
+
     if (commit === null) {
         res.statusCode = 500;
-        res.send({message: 'Failed to commit.'});
+        res.send({ message: 'Failed to commit.' });
         return;
     }
     if(typeof commit === "object" && "error" in commit){
@@ -279,7 +306,7 @@ export const processSubmission = async (req: Request, res: Response, table: "sol
         res.send({message: commit.error});
         return;
     }
-    res.send({commit});
+    res.send({ commit });
 };
 
 /**
@@ -313,7 +340,7 @@ export const getCommit = async (submission: Omit<Solution | TestCase, "group_num
             dir: submission.git_url,
             ref: commit.oid
         });
-        const log = await git.log({fs, dir: submission.git_url});
+        const log = await git.log({ fs, dir: submission.git_url });
         const res: Commit = {
             files,
             log: log.map(commitIterator => commitIterator.oid)
@@ -328,6 +355,14 @@ export const getCommit = async (submission: Omit<Solution | TestCase, "group_num
         return null;
     }
 };
+
+/**
+ * get a file from a commit
+ *
+ * @param file the file to get
+ * @param dir the directory to get the file from
+ * @param commitId the commit to get the file from
+ */
 export const getFile = async (file: string, dir: string, commitId: string) => {
     try {
         return git.readBlob({
@@ -340,11 +375,19 @@ export const getFile = async (file: string, dir: string, commitId: string) => {
         return null;
     }
 };
+
+/**
+ * Gets a file from a request.
+ *
+ * @param req the request
+ * @param res the response
+ * @param table the table to get the file from. Either "solution" or "testCase"
+ */
 export const getFileFromRequest = async (req: Request, res: Response, table: "solution" | "testCase") => {
     const object = await getObjectFromRequest(req, table);
     if (object === null) {
         res.statusCode = 404;
-        res.send({message: 'Submission not found.'});
+        res.send({ message: 'Submission not found.' });
         return;
     }
     let file: ReadBlobResult | null = null;
@@ -354,17 +397,23 @@ export const getFileFromRequest = async (req: Request, res: Response, table: "so
     }
     if (file === null) {
         res.statusCode = 404;
-        res.send({message: 'Commit not found.'});
+        res.send({ message: 'Commit not found.' });
         return;
     }
     res.send(Buffer.from(file.blob));
 };
 
+/**
+ * Deletes a file from a submission.
+ * @param req
+ * @param res
+ * @param table the table to delete the file from. Either "solution" or "testCase"
+ */
 export const deleteFile = async (req: Request, res: Response, table: "solution" | "testCase") => {
     const object = await getObjectFromRequest(req, table);
     if (object === null) {
         res.statusCode = 404;
-        res.send({message: 'Submission not found.'});
+        res.send({ message: 'Submission not found.' });
         return;
     }
     if(object.author_id !== req.user.utorid) {
@@ -373,7 +422,7 @@ export const deleteFile = async (req: Request, res: Response, table: "solution" 
         return;
     }
     try {
-        await git.remove({fs, dir: object.git_url, filepath: req.params.file});
+        await git.remove({ fs, dir: object.git_url, filepath: req.params.file });
         await fs.unlink(`${object!.git_url}/${req.params.file}`);
     } catch (_) {
         /* if the file doesn't exist then continue */
@@ -382,7 +431,7 @@ export const deleteFile = async (req: Request, res: Response, table: "solution" 
     const commit = await commitFiles(req, object, table);
     if (commit === null) {
         res.statusCode = 500;
-        res.send({message: 'Failed to commit.'});
+        res.send({ message: 'Failed to commit.' });
         return;
     }
     if(typeof commit === "object" && "error" in commit){
@@ -390,7 +439,7 @@ export const deleteFile = async (req: Request, res: Response, table: "solution" 
         res.send({message: commit.error});
         return;
     }
-    res.send({commit});
+    res.send({ commit });
 };
 
 /**
@@ -410,12 +459,15 @@ export const getCommitFromRequest = async (req: Request, table: "solution" | "te
     return await getCommit(object, req.params.commitId);
 };
 
+/**
+ * Middleware to fetch a course and add it to the request.
+ */
 export const fetchCourseMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const course = await prisma.course.findUnique({
         where: {
             id: req.params.courseId,
             hidden: false,
-            roles: req.user.admin ? undefined : {some: {user: {utorid: req.user.utorid}}}
+            roles: req.user.admin ? undefined : { some: { user: { utorid: req.user.utorid } } }
         },
         ...fetchedCourseArgs
     });
@@ -431,10 +483,16 @@ export const fetchCourseMiddleware = async (req: Request, res: Response, next: N
     next();
 };
 
+/**
+ * turn a prisma assignment into a serializable object
+ */
 export const serializeAssignment = <T extends PrismaAssignment>(assignment: T): Omit<T, "due_date"> & {
     due_date?: string
-} => ({...assignment, due_date: assignment.due_date?.toISOString()});
+} => ({ ...assignment, due_date: assignment.due_date?.toISOString() });
 
+/**
+ * Middleware to fetch an assignment and add it to the request.
+ */
 export const fetchAssignmentMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const assignment = await prisma.assignment.findUnique({
         where: {
@@ -443,11 +501,11 @@ export const fetchAssignmentMiddleware = async (req: Request, res: Response, nex
                 course_id: req.params.courseId,
             },
             course: {
-                roles: req.user.admin ? {} : {some: {user: {utorid: req.user.utorid}}}
+                roles: req.user.admin ? {} : { some: { user: { utorid: req.user.utorid } } }
             },
             hidden: false
         },
-        include: {...fetchedAssignmentArgs.include, course: fetchedCourseArgs}
+        include: { ...fetchedAssignmentArgs.include, course: fetchedCourseArgs }
     });
     if (assignment === null) {
         res.statusCode = 404;

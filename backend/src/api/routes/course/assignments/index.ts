@@ -1,24 +1,32 @@
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import {
     AssignmentStudentStats,
     Commit,
+    FetchedAssignment,
     Submission, TestCase, Tier,
     Tierlist,
     UserFetchedAssignment
 } from "codetierlist-types";
 import express, { NextFunction, Request, Response } from "express";
 import multer from 'multer';
-import prisma from "../../../../common/prisma";
+import { images } from "../../../../common/config";
+import prisma, {
+    fetchedAssignmentArgs
+} from "../../../../common/prisma";
 import {
+    QueriedSubmission,
     generateList, generateTierFromQueriedData,
-    generateYourTier, QueriedSubmission
+    generateYourTier
 } from "../../../../common/tierlist";
 import {
     deleteFile, errorHandler,
     fetchAssignmentMiddleware,
+    fetchCourseMiddleware,
     getCommitFromRequest,
     getFileFromRequest,
     isProf,
-    processSubmission
+    processSubmission,
+    serializeAssignment
 } from "../../../../common/utils";
 import {config} from "../../../../common/config";
 
@@ -33,6 +41,81 @@ const upload = multer({storage, limits:{
 }});
 const router = express.Router({mergeParams: true});
 
+/**
+ * create a new assignment
+ * @adminonly
+ */
+router.post("/", fetchCourseMiddleware, errorHandler(async (req, res) => {
+    // check if user is prof or admin
+    if (!isProf(req.course!, req.user)) {
+        res.statusCode = 403;
+        res.send({message: 'You are not a professor or admin.'});
+        return;
+    }
+
+    const {name, dueDate, description} = req.body;
+    let {
+        runner_image: image,
+        image_version,
+        groupSize,
+        strictDeadlines
+    } = req.body;
+    const date = new Date(dueDate);
+    if (!groupSize) {
+        groupSize = 0;
+    }
+    if (typeof strictDeadlines !== 'boolean') {
+        strictDeadlines = false;
+    }
+    if (typeof name !== 'string' || isNaN(date.getDate()) || typeof groupSize !== "number" || isNaN(groupSize) || typeof description !== 'string' || name.length === 0 || description.length === 0) {
+        res.statusCode = 400;
+        res.send({message: 'Invalid request.'});
+        return;
+    }
+    if (!image && !image_version) {
+        const runnerConf = images[0];
+        image = runnerConf.runner_image;
+        image_version = runnerConf.image_version;
+    }
+    if (image && !image_version || image_version && !image || !images.some(x => x.runner_image == image && x.image_version == image_version)) {
+        res.statusCode = 400;
+        res.send({message: 'Invalid image.'});
+        return;
+    }
+    if (!name.match(/^[A-Za-z0-9 ]*/)) {
+        res.statusCode = 400;
+        res.send({message: 'Invalid name.'});
+        return;
+    }
+    try {
+        const assignment = await prisma.assignment.create({
+            data: {
+                title: name,
+                due_date: date.toISOString(),
+                description,
+                image_version,
+                runner_image: image,
+                group_size: groupSize,
+                course: {connect: {id: req.course!.id}},
+                strict_deadline: strictDeadlines
+            }, ...fetchedAssignmentArgs
+        });
+        res.statusCode = 201;
+        res.send(serializeAssignment(assignment) satisfies FetchedAssignment);
+    } catch (e) {
+        if ((e as PrismaClientKnownRequestError).code === 'P2002') {
+            res.statusCode = 400;
+            res.send({message: 'Assignment already exists.'});
+        } else {
+            throw e;
+        }
+    }
+}));
+
+/**
+ * Fetches the assignment from the database and sends it to the client.
+ * @public
+ */
 router.get("/:assignment", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     const assignment = await prisma.assignment.findUniqueOrThrow({
         where: {
@@ -88,13 +171,17 @@ router.get("/:assignment", fetchAssignmentMiddleware, errorHandler(async (req, r
     } satisfies (UserFetchedAssignment));
 }));
 
-
+/**
+ * Deletes the assignment from the database.
+ * @adminonly
+ */
 router.delete("/:assignment", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     if (!isProf(req.course!, req.user)) {
         res.statusCode = 403;
         res.send({message: 'You are not an instructor.'});
         return;
     }
+
     await prisma.assignment.update({
         where: {
             id: {
@@ -115,14 +202,26 @@ const checkFilesMiddleware = (req: Request, res: Response, next: NextFunction) =
     next();
 };
 
+/**
+ * Processes the submission and sends the result to the client.
+ * @public
+ */
 router.post("/:assignment/submissions", fetchAssignmentMiddleware, upload.array('files', 100), checkFilesMiddleware,
     errorHandler(async (req, res) =>
         processSubmission(req, res, "solution")));
 
+/**
+ * Processes the test case and sends the result to the client.
+ * @public
+ */
 router.post("/:assignment/testcases", fetchAssignmentMiddleware, upload.array('files', 100), checkFilesMiddleware,
     errorHandler(async (req, res) =>
         processSubmission(req, res, "testCase")));
 
+/**
+ * Fetches the submission from the database and sends it to the client.
+ * @public
+ */
 router.get("/:assignment/submissions/:commitId?", fetchAssignmentMiddleware,
     errorHandler(async (req, res) => {
         const commit = await getCommitFromRequest(req, "solution");
@@ -138,14 +237,26 @@ router.get("/:assignment/submissions/:commitId?", fetchAssignmentMiddleware,
         res.send(commit satisfies Commit);
     }));
 
+/**
+ * Gets a file from the submission and sends it to the client.
+ * @public
+ */
 router.get("/:assignment/submissions/:commitId?/:file", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     await getFileFromRequest(req, res, "solution");
 }));
 
+/**
+ * Deletes a file from the submission.
+ * @public
+ */
 router.delete("/:assignment/submissions/:file", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     await deleteFile(req, res, "solution");
 }));
 
+/**
+ * Fetches the test case from the database and sends it to the client.
+ * @public
+ */
 router.get("/:assignment/testcases/:commitId?", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     const commit = await getCommitFromRequest(req, "testCase");
 
@@ -161,16 +272,31 @@ router.get("/:assignment/testcases/:commitId?", fetchAssignmentMiddleware, error
     res.send(commit satisfies Commit);
 }));
 
+/**
+ * Deletes a file from the test case.
+ * @public
+ */
 router.delete("/:assignment/testcases/:file", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     await deleteFile(req, res, "testCase");
 }));
 
+/**
+ * Gets a file from the test case and sends it to the client.
+ * @public
+ */
 router.get("/:assignment/testcases/:commitId?/:file", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     await getFileFromRequest(req, res, "testCase");
 }));
 
+/**
+ * Fetches the tierlist from the database and sends it to the client.
+ *
+ * @param utorid ADMIN ONLY: The utorid of the user to fetch the tierlist for.
+ *
+ * @public
+ */
 router.get("/:assignment/tierlist", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
-    let utorid = req.user.utorid as string | undefined;
+    let utorid = req.user.utorid as string;
 
     if (req.query.utorid) {
         if (!isProf(req.course!, req.user)) {
@@ -232,10 +358,24 @@ router.get("/:assignment/tierlist", fetchAssignmentMiddleware, errorHandler(asyn
         } satisfies Tierlist);
         return;
     }
+
+    // so that "YOU" is the user's utorid even if queried by prof
+    req.user.utorid = utorid;
+
+    // if there are no groups then there is no tierlist
+    if (!fullFetchedAssignment.groups[0]) {
+        res.statusCode = 404;
+        res.send({message: `No tierlist found for ${utorid}.`});
+    }
+
     const tierlist = await generateList(fullFetchedAssignment.groups[0], req.user, !isProf(req.course!, req.user));
     res.send(tierlist[0] satisfies Tierlist);
 }));
 
+/**
+ * Fetches the tierlist from the database and sends it to the client.
+ * @adminonly
+ */
 router.get('/:assignment/stats', fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     if (!isProf(req.course!, req.user)) {
         res.statusCode = 403;

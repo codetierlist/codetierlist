@@ -1,35 +1,149 @@
-import axios, { handleError } from "@/axios";
+import axios, { handleError } from '@/axios';
 import {
-    AssignmentAdminToolbar, AssignmentCard, CourseSessionChip, checkIfCourseAdmin, getSession
+    AddRemovePeopleMenu,
+    AdminToolbarDeleteCourseButton,
+    AssignmentCard,
+    CourseSessionChip,
+    HeaderToolbar,
+    checkIfCourseAdmin,
+    getSession,
+    promptForFileObject,
 } from '@/components';
 import { SnackbarContext } from '@/contexts/SnackbarContext';
-import { UserContext } from "@/contexts/UserContext";
-import {
-    Caption1
-} from "@fluentui/react-components";
+import { UserContext } from '@/contexts/UserContext';
+import { Caption1, ToolbarButton } from '@fluentui/react-components';
+import { Add24Filled, ImageAdd20Regular } from '@fluentui/react-icons';
 import { Title2 } from '@fluentui/react-text';
-import { FetchedCourseWithTiers } from "codetierlist-types";
-import { notFound } from "next/navigation";
+import { FetchedCourseWithTiers } from 'codetierlist-types';
+import { notFound } from 'next/navigation';
 import { useRouter } from 'next/router';
-import { useContext, useEffect, useState } from "react";
-import { Container } from "react-grid-system";
+import { useContext, useEffect, useState } from 'react';
+import { Container } from 'react-grid-system';
 import styles from './page.module.css';
 
-export default function Page() {
-    const { userInfo } = useContext(UserContext);
+/**
+ * random seed to update the cover image
+ */
+const useSeed = () => {
+    const [seed, updateSeed] = useState(Math.random());
+
+    const setSeed = () => {
+        updateSeed(Math.random());
+    };
+
+    return { seed, setSeed };
+};
+
+/**
+ * Fetches the course with the given courseID
+ * @param courseID The courseID to fetch
+ */
+const useCourse = (courseID: string) => {
     const [course, setCourse] = useState<FetchedCourseWithTiers | null>(null);
-    const { courseID } = useRouter().query;
     const { showSnackSev } = useContext(SnackbarContext);
 
     const fetchCourse = async () => {
         if (!courseID) return;
-        await axios.get<FetchedCourseWithTiers>(`/courses/${courseID}`, { skipErrorHandling: true })
+        await axios
+            .get<FetchedCourseWithTiers>(`/courses/${courseID}`, {
+                skipErrorHandling: true,
+            })
             .then((res) => setCourse(res.data))
-            .catch(e => {
+            .catch((e) => {
                 handleError(showSnackSev)(e);
                 notFound();
             });
     };
+
+    useEffect(() => {
+        void fetchCourse();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [courseID]);
+
+    return { course, fetchCourse };
+};
+
+/**
+ * Toolbar for admin page
+ * @property {string} courseID the course ID of the course
+ * @returns {JSX.Element} the toolbar
+ */
+const CourseAdminToolbar = ({
+    courseID,
+    fetchCourse,
+    updateSeed,
+}: {
+    /**
+     * the course ID of the course
+     */
+    courseID: string;
+    /**
+     * fetches the course
+     */
+    fetchCourse: () => Promise<void>;
+    /**
+     * updates the seed
+     */
+    updateSeed: () => void;
+}): JSX.Element => {
+    const router = useRouter();
+    const { showSnackSev } = useContext(SnackbarContext);
+
+    return (
+        <HeaderToolbar aria-label="Admin Toolbar">
+            <ToolbarButton
+                appearance="subtle"
+                icon={<Add24Filled />}
+                onClick={() =>
+                    router.push(`/courses/${courseID}/admin/create_assignment`)
+                }
+            >
+                Add assignment
+            </ToolbarButton>
+
+            <AddRemovePeopleMenu courseID={courseID} add={true} />
+
+            <AddRemovePeopleMenu courseID={courseID} add={false} />
+
+            <ToolbarButton
+                appearance="subtle"
+                icon={<ImageAdd20Regular />}
+                onClick={async (event) => {
+                    event.stopPropagation();
+                    const files = await promptForFileObject('image/*');
+                    if (!files || files.length != 1) {
+                        return;
+                    }
+
+                    const formData = new FormData();
+                    formData.append('file', files[0]);
+
+                    axios
+                        .post(`/courses/${courseID}/cover`, formData, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data',
+                            },
+                        })
+                        .then(() => {
+                            void fetchCourse();
+                        })
+                        .then(updateSeed)
+                        .catch(handleError(showSnackSev));
+                }}
+            >
+                Change cover image
+            </ToolbarButton>
+
+            <AdminToolbarDeleteCourseButton courseID={courseID} />
+        </HeaderToolbar>
+    );
+};
+
+export default function Page() {
+    const { userInfo } = useContext(UserContext);
+    const { courseID } = useRouter().query;
+    const { course, fetchCourse } = useCourse(courseID as string);
+    const { seed, setSeed } = useSeed();
 
     useEffect(() => {
         void fetchCourse();
@@ -44,49 +158,59 @@ export default function Page() {
                     style={{
                         backgroundImage: `
                         linear-gradient(color-mix(in srgb, var(--colorNeutralBackground3) 60%, transparent), color-mix(in srgb, var(--colorNeutralBackground3) 80%, transparent)),
-                        url("${process.env.NEXT_PUBLIC_API_URL}/courses/${courseID as string}/cover")`
+                        url("${process.env.NEXT_PUBLIC_API_URL}/courses/${courseID as string}/cover?seed=${seed}")`,
                     }}
                     className={`${styles.banner} m-b-xxxl m-x-l`}
                     aria-hidden="true"
                 >
                     <div className={styles.header}>
                         <Title2 className={styles.courseTitle}>
-                            {course &&
+                            {course && (
                                 <CourseSessionChip
-                                    session={getSession(new Date(course.createdAt))}>
+                                    session={getSession(new Date(course.createdAt))}
+                                >
                                     {courseID}
                                 </CourseSessionChip>
-                            }
+                            )}
                         </Title2>
-                        <Title2>
-                            {course?.name || 'Course not found'}
-                        </Title2>
+                        <Title2>{course?.name || 'Course not found'}</Title2>
                     </div>
                 </header>
 
-                {checkIfCourseAdmin(userInfo, courseID as string) ? <AssignmentAdminToolbar courseID={courseID as string} fetchCourse={fetchCourse} /> : undefined}
+                {checkIfCourseAdmin(userInfo, courseID as string) ? (
+                    <CourseAdminToolbar
+                        courseID={courseID as string}
+                        fetchCourse={fetchCourse}
+                        updateSeed={setSeed}
+                    />
+                ) : undefined}
 
                 <section className="m-y-xxxl m-x-l">
                     <div className="flex-wrap">
-                        {((course !== null) && course.assignments.length === 0) &&
-                            <Caption1>This course has no assignments yet. If your believe that this message you are
-                                receiving is incorrect, please contact your instructor to correct this issue.</Caption1>
-                        }
-
-                        {course ? (
-                            course.assignments.map((assignment) => (
-                                <AssignmentCard
-                                    key={assignment.title}
-                                    id={assignment.title}
-                                    name={assignment.title}
-                                    dueDate={assignment.due_date ? new Date(assignment.due_date) : undefined}
-                                    tier={assignment.tier}
-                                    courseID={courseID as string}
-                                />
-                            ))
-                        ) : (
-                            "Loading..."
+                        {course !== null && course.assignments.length === 0 && (
+                            <Caption1>
+                                This course has no assignments yet. If your believe that
+                                this message you are receiving is incorrect, please
+                                contact your instructor to correct this issue.
+                            </Caption1>
                         )}
+
+                        {course
+                            ? course.assignments.map((assignment) => (
+                                  <AssignmentCard
+                                      key={assignment.title}
+                                      id={assignment.title}
+                                      name={assignment.title}
+                                      dueDate={
+                                          assignment.due_date
+                                              ? new Date(assignment.due_date)
+                                              : undefined
+                                      }
+                                      tier={assignment.tier}
+                                      courseID={courseID as string}
+                                  />
+                              ))
+                            : 'Loading...'}
                     </div>
                 </section>
             </Container>

@@ -3,16 +3,17 @@ import { UpcomingDeadlineEntry } from '../UpcomingDeadlineEntry/UpcomingDeadline
 import styles from './UpcomingDeadlinesCard.module.css';
 import { useEffect } from 'react';
 
-
-export declare interface UpcomingDeadlinesCardProps {
+export declare type UpcomingDeadlinesCardProps = {
     /** The parameters for the page */
     params: {
         /** The course ID */
         courseID: string;
     };
-}
+};
 
-export const UpcomingDeadlinesCard = ({ params }: UpcomingDeadlinesCardProps): JSX.Element => {
+export const UpcomingDeadlinesCard = ({
+    params,
+}: UpcomingDeadlinesCardProps): JSX.Element => {
     useEffect(() => {
         params.courseID;
     }, [params.courseID]);
@@ -24,10 +25,26 @@ export const UpcomingDeadlinesCard = ({ params }: UpcomingDeadlinesCardProps): J
         <Card className={styles.mainCard}>
             <Title3>Upcoming</Title3>
             <Divider></Divider>
-            <UpcomingDeadlineEntry courseID="CSC108" assignmentName="A1" dueDate={dueDate}/>
-            <UpcomingDeadlineEntry courseID="CSC108" assignmentName="Lab 1" dueDate={dueDate} />
-            <UpcomingDeadlineEntry courseID="CSC108" assignmentName="Lab 2" dueDate={dueDate} />
-            <UpcomingDeadlineEntry courseID="CSC108" assignmentName="A2" dueDate={dueDate} />
+            <UpcomingDeadlineEntry
+                courseID="CSC108"
+                assignmentName="A1"
+                dueDate={dueDate}
+            />
+            <UpcomingDeadlineEntry
+                courseID="CSC108"
+                assignmentName="Lab 1"
+                dueDate={dueDate}
+            />
+            <UpcomingDeadlineEntry
+                courseID="CSC108"
+                assignmentName="Lab 2"
+                dueDate={dueDate}
+            />
+            <UpcomingDeadlineEntry
+                courseID="CSC108"
+                assignmentName="A2"
+                dueDate={dueDate}
+            />
         </Card>
     );
 };

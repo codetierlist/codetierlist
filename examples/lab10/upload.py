@@ -67,10 +67,31 @@ def create_assignment(course: str, assignment: str, due_date: str) -> str:
 
 
 def add_padding(user: str):
+    """
+    Add enough u's to the user id so that it is 6 characters long.
+    """
     return 'u' * (6 - len(user)) + user
 
 
+def generate_headers(user: int) -> dict:
+    """
+    Given a student id, generate the headers for the student.
+
+    Preconditions:
+        - id is a positive integer
+    """
+    return {
+        "utorid": add_padding(user),
+        "http_mail": f"{user}@mail.utoronto.ca",
+        "sn": user,
+        "givenName": user
+    }
+
+
 def upload_submission(user: str):
+    """
+    Upload the submission for the given user.
+    """
     print(course, assignment, user)
     with open(f'./lab_10_submissions/{user}/lab10.py', mode='rb') as f:
         contents = f.read()
@@ -78,18 +99,16 @@ def upload_submission(user: str):
         url = f'{base_url}/courses/{course}/assignments/{assignment}/submissions'
         response = client.post(url, files={
             'files': ("lab10.py", contents, "text/plain"),
-        }, headers={
-            "utorid": add_padding(user),
-            "http_mail": f"{user}@mail.utoronto.ca",
-            "sn": "Last name",
-            "givenName": user,
-        })
+        }, headers=generate_headers(user))
         if response.status_code != 200:
             print(response.status_code)
             print(response.json())
 
 
 def upload_tests(user: str):
+    """
+    Upload the tests for the given user.
+    """
     print(course, assignment, user)
     with open(f'./lab_10_submissions/{user}/lab10_tests.py', mode='rb') as f:
         contents = f.read()
@@ -98,22 +117,23 @@ def upload_tests(user: str):
         files = {
             'files': ("lab10_tests.py", contents, "text/plain")
         }
-        response = client.post(url, files=files, headers={
-            "utorid": add_padding(user),
-            "http_mail": f"{user}@mail.utoronto.ca",
-            "sn": "Last name",
-            "givenName": user
-        })
+        response = client.post(url, files=files, headers=generate_headers(user))
         if response.status_code != 200:
             print(response.status_code)
             print(response.json())
 
 
 def get_students():
+    """
+    Get a list of all the students in the lab_10_submissions directory.
+    """
     return list(listdir(f'./lab_10_submissions'))
 
 
 def enroll_students(students: list[str]):
+    """
+    Enroll all the students in the given list into the course.
+    """
     url = f'{base_url}/courses/{course}/add'
     print([add_padding(student) for student in students])
     data = {

@@ -1,40 +1,45 @@
-import {ToastIntent} from "@fluentui/react-components";
-import axios, {AxiosError} from "axios";
+import { ToastIntent } from '@fluentui/react-components';
+import axios, { AxiosError } from 'axios';
 
-declare module "axios" {
+declare module 'axios' {
     export interface AxiosRequestConfig {
         skipErrorHandling?: boolean;
     }
 }
 
-export const handleError = (showSnackSev?: (message?: string, severity?: ToastIntent) => void, message?: string) => (error: AxiosError) => {
-    if (!error.isAxiosError) {
-        throw error;
-    }
-    let res: string;
-    if (message) {
-        res = message;
-    } else if (error.response) {
-        if ((error.response.data as { message: string } | undefined)?.message) {
-            res = (error.response.data as { message: string })?.message;
-        } else {
-            res = error.message;
+export const handleError =
+    (
+        showSnackSev?: (message?: string, severity?: ToastIntent) => void,
+        message?: string
+    ) =>
+    (error: AxiosError) => {
+        if (!error.isAxiosError) {
+            throw error;
         }
-    } else {
-        res = "Server was unresponsive, please try again later";
-    }
-    if (showSnackSev) {
-        showSnackSev(res, "error");
-    } else {
-        console.error(res);
-    }
-};
+        let res: string;
+        if (message) {
+            res = message;
+        } else if (error.response) {
+            if ((error.response.data as { message: string } | undefined)?.message) {
+                res = (error.response.data as { message: string })?.message;
+            } else {
+                res = error.message;
+            }
+        } else {
+            res = 'Server was unresponsive, please try again later';
+        }
+        if (showSnackSev) {
+            showSnackSev(res, 'error');
+        } else {
+            console.error(res);
+        }
+    };
 
 /**
  * Axios instance
  */
 const instance = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL || "/api"
+    baseURL: process.env.NEXT_PUBLIC_API_URL || '/api',
 });
 
 let loading = 0;
@@ -57,7 +62,10 @@ instance.interceptors.response.use(
         if (!loadingWheel) {
             return response;
         }
-        if ('skipLoadingWheel' in response.config && response.config.skipLoadingWheel === true) {
+        if (
+            'skipLoadingWheel' in response.config &&
+            response.config.skipLoadingWheel === true
+        ) {
             return response;
         }
         loading -= 1;
@@ -80,7 +88,7 @@ instance.interceptors.response.use(
             }
         }, 500);
         return Promise.reject(error);
-    },
+    }
 );
 
 export default instance;

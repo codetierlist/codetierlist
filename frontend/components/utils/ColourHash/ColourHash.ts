@@ -30,7 +30,7 @@ const fluentNineColors = [
     styles.beige,
     styles.mink,
     styles.platinum,
-    styles.anchor
+    styles.anchor,
 ];
 
 /**
@@ -40,10 +40,10 @@ const fluentNineColors = [
 const getHashCode = (str: string | undefined): number => {
     let hashCode = 0;
     if (!str) return hashCode;
-    for(let len = str.length - 1; len >= 0; len--){
+    for (let len = str.length - 1; len >= 0; len--) {
         const ch = str.charCodeAt(len);
         const shift = len % 8;
-        hashCode ^= (ch << shift) + (ch >> 8 - shift); // eslint-disable-line no-bitwise
+        hashCode ^= (ch << shift) + (ch >> (8 - shift)); // eslint-disable-line no-bitwise
     }
     return hashCode;
 };

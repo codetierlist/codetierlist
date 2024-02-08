@@ -1,28 +1,22 @@
-import {RoleType} from "@prisma/client";
-import {PrismaClientKnownRequestError} from "@prisma/client/runtime/library";
+import { RoleType } from "@prisma/client";
 import {
     AssignmentWithTier,
-    FetchedAssignment,
-    FetchedCourseWithTiers,
+    FetchedCourseWithTiers
 } from "codetierlist-types";
-import {randomUUID} from "crypto";
+import { randomUUID } from "crypto";
 import express from "express";
-import {promises as fs} from "fs";
-import {isUTORid} from "is-utorid";
+import { promises as fs } from "fs";
+import { isUTORid } from "is-utorid";
 import multer from "multer";
 import path from "path";
-import {images} from "../../../common/config";
-import prisma, {
-    fetchedAssignmentArgs
-} from "../../../common/prisma";
+import prisma from "../../../common/prisma";
 import {
-    generateTierFromQueriedData,
-    QueriedSubmission
+    QueriedSubmission,
+    generateTierFromQueriedData
 } from "../../../common/tierlist";
 import {
     errorHandler,
-    fetchCourseMiddleware, isProf,
-    serializeAssignment
+    fetchCourseMiddleware, isProf
 } from "../../../common/utils";
 import assignmentsRoute from "./assignments";
 
@@ -34,6 +28,11 @@ const storage = multer.diskStorage({
 
 const upload = multer({storage});
 const router = express.Router();
+
+/**
+ * create a new course
+ * @adminonly
+ */
 router.post("/", errorHandler(async (req, res) => {
     if (!req.user.admin) {
         res.statusCode = 403;
@@ -84,6 +83,7 @@ router.post("/", errorHandler(async (req, res) => {
 
 /**
  * get all courses if admin
+ * @adminonly
  */
 router.get("/", errorHandler(async (req, res) => {
     // must be admin
@@ -104,6 +104,10 @@ router.get("/", errorHandler(async (req, res) => {
     res.send(courses);
 }));
 
+/**
+ * get a course by id
+ * @public
+ */
 router.get("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) => {
     const queriedSubmissions = await prisma.$queryRaw<(QueriedSubmission & {
         assignment_title: string
@@ -188,6 +192,10 @@ router.get("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) =>
     res.send({...req.course!, assignments} satisfies FetchedCourseWithTiers);
 }));
 
+/**
+ * delete a course
+ * @adminonly
+ */
 router.delete("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) => {
     if (!req.user.admin) {
         res.statusCode = 403;
@@ -205,7 +213,18 @@ router.delete("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res)
     res.send({});
 }));
 
+/**
+ * add a user to a course
+ * @adminonly
+ */
 router.post("/:courseId/add", fetchCourseMiddleware, errorHandler(async (req, res) => {
+    // check if user is prof or admin
+    if (!isProf(req.course!, req.user)) {
+        res.statusCode = 403;
+        res.send({message: 'You are not a professor or admin.'});
+        return;
+    }
+
     const {utorids, role}: { utorids: unknown, role?: string } = req.body;
     if (role !== undefined && !(Object.values(RoleType) as string[]).includes(role)) {
         res.statusCode = 400;
@@ -241,7 +260,18 @@ router.post("/:courseId/add", fetchCourseMiddleware, errorHandler(async (req, re
 
 }));
 
+/**
+ * remove a user from a course
+ * @adminonly
+ */
 router.post("/:courseId/remove", fetchCourseMiddleware, errorHandler(async (req, res) => {
+    // check if user is prof or admin
+    if (!isProf(req.course!, req.user)) {
+        res.statusCode = 403;
+        res.send({message: 'You are not a professor or admin.'});
+        return;
+    }
+
     const {utorids, role}: { utorids: unknown, role?: string } = req.body;
     if (role !== undefined && !(Object.values(RoleType) as string[]).includes(role)) {
         res.statusCode = 400;
@@ -267,6 +297,10 @@ router.post("/:courseId/remove", fetchCourseMiddleware, errorHandler(async (req,
 
 }));
 
+/**
+ * update the cover image of a course
+ * @adminonly
+ */
 router.post("/:courseId/cover", fetchCourseMiddleware, upload.single("file"), errorHandler(async (req, res) => {
     if (!req.file || !isProf(req.course!, req.user)) {
         res.statusCode = 400;
@@ -281,6 +315,10 @@ router.post("/:courseId/cover", fetchCourseMiddleware, upload.single("file"), er
     res.send({});
 }));
 
+/**
+ * get the cover image of a course
+ * @public
+ */
 router.get("/:courseId/cover", fetchCourseMiddleware, errorHandler(async (req, res) => {
     if (!req.course?.cover) {
         res.statusCode = 404;
@@ -288,65 +326,6 @@ router.get("/:courseId/cover", fetchCourseMiddleware, errorHandler(async (req, r
         return;
     }
     res.sendFile("/uploads/" + req.course!.cover);
-}));
-router.post("/:courseId/assignments", fetchCourseMiddleware, errorHandler(async (req, res) => {
-    const {name, dueDate, description} = req.body;
-    let {
-        runner_image: image,
-        image_version,
-        groupSize,
-        strictDeadlines
-    } = req.body;
-    const date = new Date(dueDate);
-    if (!groupSize) {
-        groupSize = 0;
-    }
-    if (typeof strictDeadlines !== 'boolean') {
-        strictDeadlines = false;
-    }
-    if (typeof name !== 'string' || isNaN(date.getDate()) || typeof groupSize !== "number" || isNaN(groupSize) || typeof description !== 'string' || name.length === 0 || description.length === 0) {
-        res.statusCode = 400;
-        res.send({message: 'Invalid request.'});
-        return;
-    }
-    if (!image && !image_version) {
-        const runnerConf = images[0];
-        image = runnerConf.runner_image;
-        image_version = runnerConf.image_version;
-    }
-    if (image && !image_version || image_version && !image || !images.some(x => x.runner_image == image && x.image_version == image_version)) {
-        res.statusCode = 400;
-        res.send({message: 'Invalid image.'});
-        return;
-    }
-    if (!name.match(/^[A-Za-z0-9 ]*/)) {
-        res.statusCode = 400;
-        res.send({message: 'Invalid name.'});
-        return;
-    }
-    try {
-        const assignment = await prisma.assignment.create({
-            data: {
-                title: name,
-                due_date: date.toISOString(),
-                description,
-                image_version,
-                runner_image: image,
-                group_size: groupSize,
-                course: {connect: {id: req.course!.id}},
-                strict_deadline: strictDeadlines
-            }, ...fetchedAssignmentArgs
-        });
-        res.statusCode = 201;
-        res.send(serializeAssignment(assignment) satisfies FetchedAssignment);
-    } catch (e) {
-        if ((e as PrismaClientKnownRequestError).code === 'P2002') {
-            res.statusCode = 400;
-            res.send({message: 'Assignment already exists.'});
-        } else {
-            throw e;
-        }
-    }
 }));
 
 router.use("/:courseId/assignments", assignmentsRoute);

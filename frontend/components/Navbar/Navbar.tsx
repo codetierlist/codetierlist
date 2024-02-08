@@ -1,6 +1,18 @@
-import { GenerateInitalsAvatarProps, NavbarUserPopover, generateInitals } from '@/components';
+import {
+    GenerateInitalsAvatarProps,
+    NavbarUserPopover,
+    generateInitals,
+} from '@/components';
 import { UserContext, defaultUser } from '@/contexts/UserContext';
-import { Badge, Button, Persona, Popover, PopoverSurface, PopoverTrigger, SkeletonItem } from '@fluentui/react-components';
+import {
+    Badge,
+    Button,
+    Persona,
+    Popover,
+    PopoverSurface,
+    PopoverTrigger,
+    SkeletonItem,
+} from '@fluentui/react-components';
 import Link from 'next/link';
 import { useContext } from 'react';
 import styles from './Navbar.module.css';
@@ -15,18 +27,22 @@ const UserAvatar = (): JSX.Element => {
     return (
         <Persona
             textPosition="before"
-            avatar={GenerateInitalsAvatarProps(generateInitals(userInfo), { badge: userInfo.new_achievements ? { status: "busy" } : undefined })}
+            avatar={GenerateInitalsAvatarProps(generateInitals(userInfo), {
+                badge: userInfo.new_achievements ? { status: 'busy' } : undefined,
+            })}
             primaryText={
                 <span className={styles.subtext}>
-                    {userInfo.admin && <Badge className={styles.adminBadge} appearance="outline">Admin</Badge>}
-                    {`${userInfo.givenName} ${userInfo.surname}` == " " ? userInfo.utorid : `${userInfo.givenName} ${userInfo.surname}`}
+                    {userInfo.admin && (
+                        <Badge className={styles.adminBadge} appearance="outline">
+                            Admin
+                        </Badge>
+                    )}
+                    {`${userInfo.givenName} ${userInfo.surname}` == ' '
+                        ? userInfo.utorid
+                        : `${userInfo.givenName} ${userInfo.surname}`}
                 </span>
             }
-            secondaryText={
-                <span className={styles.subtext}>
-                    { userInfo.utorid }
-                </span>
-            }
+            secondaryText={<span className={styles.subtext}>{userInfo.utorid}</span>}
         />
     );
 };
@@ -42,13 +58,20 @@ export const Navbar = (): JSX.Element => {
     return (
         <header className={styles.navbar}>
             <h1 className={styles.title}>
-                <Link className={styles.brand} href="/" aria-label="Code tier list">Codetierlist</Link>
+                <Link className={styles.brand} href="/" aria-label="Code tier list">
+                    Codetierlist
+                </Link>
             </h1>
 
-            {(userInfo.email !== defaultUser.email) && (
+            {userInfo.email !== defaultUser.email && (
                 <Popover size="small">
                     <PopoverTrigger>
-                        <Button appearance="subtle" size="small" className={styles.userButton} aria-label={`Account manager for ${userInfo.givenName} ${userInfo.surname}`}>
+                        <Button
+                            appearance="subtle"
+                            size="small"
+                            className={styles.userButton}
+                            aria-label={`Account manager for ${userInfo.givenName} ${userInfo.surname}`}
+                        >
                             <UserAvatar />
                         </Button>
                     </PopoverTrigger>
@@ -58,7 +81,7 @@ export const Navbar = (): JSX.Element => {
                 </Popover>
             )}
 
-            {(userInfo.email === defaultUser.email) && (
+            {userInfo.email === defaultUser.email && (
                 <div className={styles.skeletonPersona}>
                     <div className={`${styles.skeletonName} ${styles.subtext}`}>
                         <SkeletonItem size={12} />
@@ -67,7 +90,6 @@ export const Navbar = (): JSX.Element => {
                     <SkeletonItem shape="circle" size={36} />
                 </div>
             )}
-
         </header>
     );
 };

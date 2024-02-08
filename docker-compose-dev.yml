@@ -31,7 +31,6 @@ services:
       - ./redis/.env
       - ./runner/.env
 
-
   frontend:
     restart: always
     depends_on:

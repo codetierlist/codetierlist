@@ -11,6 +11,9 @@ const port = process.env.PORT || 3000;
 const app = express();
 const server = http.createServer(app);
 
+/**
+ * Middleware for dev
+ */
 if (process.env.NODE_ENV === 'development') {
     app.use(
         cors({
@@ -20,6 +23,10 @@ if (process.env.NODE_ENV === 'development') {
     );
 }
 app.use(bodyParser.json());
+
+/**
+ * Middleware for prod
+ */
 app.use(errorHandler(async (req, res, next) => {
     if (!req.headers.utorid || !req.headers.http_mail || !req.headers.sn || !req.headers.givenname) {
         res.statusCode = 401;
@@ -66,6 +73,10 @@ app.use(errorHandler(async (req, res, next) => {
 }));
 
 app.use(routes);
+
+/**
+ * Error handling
+ */
 app.use(((err, req, res, _) => {
     console.error(err);
     let message = 'Internal server error.';

@@ -1,418 +1,610 @@
 * {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-  background: transparent;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    background: transparent;
 }
 
 :root {
-  --accent-hue: 120;
+    --accent-hue: 120;
 }
 
 html,
 body {
-  max-width: 100vw;
-  accent-color: hsl(var(--accent-hue), 100%, 50%);
+    max-width: 100vw;
+    accent-color: hsl(var(--accent-hue), 100%, 50%);
 
-  &.dark {
-    color-scheme: dark;
-  }
+    &.dark {
+        color-scheme: dark;
+    }
 }
 
 .flex-wrap {
-  display: flex;
-  gap: var(--spacingVerticalL);
-  flex-wrap: wrap;
+    display: flex;
+    gap: var(--spacingVerticalL);
+    flex-wrap: wrap;
 }
 
 .fui-FluentProvider {
-  --background-intensity: 85%;
-  --background-85: color-mix(in srgb, var(--colorNeutralBackground1) var(--background-intensity), transparent);
-  --background-gradient: radial-gradient(at 51% 34%, hsla(126,87%,76%,1) 0px, transparent 50%),
-  radial-gradient(at 90% 51%, hsla(214,95%,75%,1) 0px, transparent 50%),
-  radial-gradient(at 87% 80%, hsla(239,90%,70%,1) 0px, transparent 50%),
-  radial-gradient(at 98% 47%, hsla(203,69%,78%,1) 0px, transparent 50%),
-  radial-gradient(at 49% 86%, hsla(336,69%,66%,1) 0px, transparent 50%),
-  radial-gradient(at 95% 18%, hsla(60,68%,64%,1) 0px, transparent 50%),
-  radial-gradient(at 67% 84%, hsla(357,66%,76%,1) 0px, transparent 50%),
-  radial-gradient(at 11% 10%, rgba(186,247,141,1) 0%, transparent 50%),
-  radial-gradient(at 15% 51%, rgba(131,252,191,1) 0%,  transparent 50%),
-  radial-gradient(at 20% 84%, rgba(153,180,234,1) 0%,  transparent 50%);
+    --background-intensity: 85%;
+    --background-85: color-mix(
+        in srgb,
+        var(--colorNeutralBackground1) var(--background-intensity),
+        transparent
+    );
+    --background-gradient: radial-gradient(
+            at 51% 34%,
+            hsla(126, 87%, 76%, 1) 0px,
+            transparent 50%
+        ),
+        radial-gradient(at 90% 51%, hsla(214, 95%, 75%, 1) 0px, transparent 50%),
+        radial-gradient(at 87% 80%, hsla(239, 90%, 70%, 1) 0px, transparent 50%),
+        radial-gradient(at 98% 47%, hsla(203, 69%, 78%, 1) 0px, transparent 50%),
+        radial-gradient(at 49% 86%, hsla(336, 69%, 66%, 1) 0px, transparent 50%),
+        radial-gradient(at 95% 18%, hsla(60, 68%, 64%, 1) 0px, transparent 50%),
+        radial-gradient(at 67% 84%, hsla(357, 66%, 76%, 1) 0px, transparent 50%),
+        radial-gradient(at 11% 10%, rgba(186, 247, 141, 1) 0%, transparent 50%),
+        radial-gradient(at 15% 51%, rgba(131, 252, 191, 1) 0%, transparent 50%),
+        radial-gradient(at 20% 84%, rgba(153, 180, 234, 1) 0%, transparent 50%);
 
-  background-color: var(--colorNeutralBackground3) !important;
-  /* fake mica effect */
-  background-image:
-  linear-gradient(0deg, var(--background-85) 0%, var(--background-85) 100%), var(--background-gradient);
+    background-color: var(--colorNeutralBackground3) !important;
+    /* fake mica effect */
+    background-image: linear-gradient(
+            0deg,
+            var(--background-85) 0%,
+            var(--background-85) 100%
+        ),
+        var(--background-gradient);
 
-  & main {
-    min-height: calc(100vh - var(--spacingVerticalXXXL) * 2);
-  }
+    & main {
+        min-height: calc(100vh - var(--spacingVerticalXXXL) * 2);
+    }
 
-  & .main {
-    background-color: color-mix(in srgb, var(--colorNeutralBackground1) 75%, transparent) !important;
-    box-shadow: var(--shadow8);
-    padding: var(--spacingVerticalXL);
-  }
+    & .main {
+        background-color: color-mix(
+            in srgb,
+            var(--colorNeutralBackground1) 75%,
+            transparent
+        ) !important;
+        box-shadow: var(--shadow8);
+        padding: var(--spacingVerticalXL);
+    }
 }
 
 #axios-loading-backdrop {
-  left: 0;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 9999;
-  display: none;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 9999;
+    display: none;
 }
 
 /* helpers */
-.p-t-none, .p-y-none, .p-none {
-  padding-top: var(--spacingVerticalNone) !important;
+.p-t-none,
+.p-y-none,
+.p-none {
+    padding-top: var(--spacingVerticalNone) !important;
 }
 
-.p-t-xxs, .p-y-xxs, .p-xss {
-  padding-top: var(--spacingVerticalXXS) !important;
+.p-t-xxs,
+.p-y-xxs,
+.p-xss {
+    padding-top: var(--spacingVerticalXXS) !important;
 }
 
-.p-t-xs, .p-y-xs, .p-xs {
-  padding-top: var(--spacingVerticalXS) !important;
+.p-t-xs,
+.p-y-xs,
+.p-xs {
+    padding-top: var(--spacingVerticalXS) !important;
 }
 
-.p-t-s, .p-y-s, .p-s {
-  padding-top: var(--spacingVerticalS) !important;
+.p-t-s,
+.p-y-s,
+.p-s {
+    padding-top: var(--spacingVerticalS) !important;
 }
 
-.p-t-s-nudge, .p-y-s-nudge, .p-s-nudge {
-  padding-top: var(--spacingVerticalSNudge) !important;
+.p-t-s-nudge,
+.p-y-s-nudge,
+.p-s-nudge {
+    padding-top: var(--spacingVerticalSNudge) !important;
 }
 
-.p-t-m, .p-y-m, .p-m {
-  padding-top: var(--spacingVerticalM) !important;
+.p-t-m,
+.p-y-m,
+.p-m {
+    padding-top: var(--spacingVerticalM) !important;
 }
 
-.p-t-m-nudge, .p-y-m-nudge, .p-m-nudge {
-  padding-top: var(--spacingVerticalMNudge) !important;
+.p-t-m-nudge,
+.p-y-m-nudge,
+.p-m-nudge {
+    padding-top: var(--spacingVerticalMNudge) !important;
 }
 
-.p-t-l, .p-y-l, .p-l {
-  padding-top: var(--spacingVerticalL) !important;
+.p-t-l,
+.p-y-l,
+.p-l {
+    padding-top: var(--spacingVerticalL) !important;
 }
 
-.p-t-xl, .p-y-xl, .p-xl {
-  padding-top: var(--spacingVerticalXL) !important;
+.p-t-xl,
+.p-y-xl,
+.p-xl {
+    padding-top: var(--spacingVerticalXL) !important;
 }
 
-.p-t-xxl, .p-y-xxl, .p-xxl {
-  padding-top: var(--spacingVerticalXXL) !important;
+.p-t-xxl,
+.p-y-xxl,
+.p-xxl {
+    padding-top: var(--spacingVerticalXXL) !important;
 }
 
-.p-t-xxxl, .p-y-xxxl, .p-xxxl {
-  padding-top: var(--spacingVerticalXXXL) !important;
+.p-t-xxxl,
+.p-y-xxxl,
+.p-xxxl {
+    padding-top: var(--spacingVerticalXXXL) !important;
 }
 
-.p-b-none, .p-y-none, .p-none {
-  padding-bottom: var(--spacingVerticalNone) !important;
+.p-b-none,
+.p-y-none,
+.p-none {
+    padding-bottom: var(--spacingVerticalNone) !important;
 }
 
-.p-b-xxs, .p-y-xxs, .p-xss {
-  padding-bottom: var(--spacingVerticalXXS) !important;
+.p-b-xxs,
+.p-y-xxs,
+.p-xss {
+    padding-bottom: var(--spacingVerticalXXS) !important;
 }
 
-.p-b-xs, .p-y-xs, .p-xs {
-  padding-bottom: var(--spacingVerticalXS) !important;
+.p-b-xs,
+.p-y-xs,
+.p-xs {
+    padding-bottom: var(--spacingVerticalXS) !important;
 }
 
-.p-b-s, .p-y-s, .p-s {
-  padding-bottom: var(--spacingVerticalS) !important;
+.p-b-s,
+.p-y-s,
+.p-s {
+    padding-bottom: var(--spacingVerticalS) !important;
 }
 
-.p-b-s-nudge, .p-y-s-nudge, .p-s-nudge {
-  padding-bottom: var(--spacingVerticalSNudge) !important;
+.p-b-s-nudge,
+.p-y-s-nudge,
+.p-s-nudge {
+    padding-bottom: var(--spacingVerticalSNudge) !important;
 }
 
-.p-b-m, .p-y-m, .p-m {
-  padding-bottom: var(--spacingVerticalM) !important;
+.p-b-m,
+.p-y-m,
+.p-m {
+    padding-bottom: var(--spacingVerticalM) !important;
 }
 
-.p-b-m-nudge, .p-y-m-nudge, .p-m-nudge {
-  padding-bottom: var(--spacingVerticalMNudge) !important;
+.p-b-m-nudge,
+.p-y-m-nudge,
+.p-m-nudge {
+    padding-bottom: var(--spacingVerticalMNudge) !important;
 }
 
-.p-b-l, .p-y-l, .p-l {
-  padding-bottom: var(--spacingVerticalL) !important;
+.p-b-l,
+.p-y-l,
+.p-l {
+    padding-bottom: var(--spacingVerticalL) !important;
 }
 
-.p-b-xl, .p-y-xl, .p-xl {
-  padding-bottom: var(--spacingVerticalXL) !important;
+.p-b-xl,
+.p-y-xl,
+.p-xl {
+    padding-bottom: var(--spacingVerticalXL) !important;
 }
 
-.p-b-xxl, .p-y-xxl, .p-xxl {
-  padding-bottom: var(--spacingVerticalXXL) !important;
+.p-b-xxl,
+.p-y-xxl,
+.p-xxl {
+    padding-bottom: var(--spacingVerticalXXL) !important;
 }
 
-.p-b-xxxl, .p-y-xxxl, .p-xxxl {
-  padding-bottom: var(--spacingVerticalXXXL) !important;
+.p-b-xxxl,
+.p-y-xxxl,
+.p-xxxl {
+    padding-bottom: var(--spacingVerticalXXXL) !important;
 }
 
-.p-l-none, .p-x-none, .p-none {
-  padding-left: var(--spacingHorizontalNone) !important;
+.p-l-none,
+.p-x-none,
+.p-none {
+    padding-left: var(--spacingHorizontalNone) !important;
 }
 
-.p-l-xxs, .p-x-xxs, .p-xxs {
-  padding-left: var(--spacingHorizontalXXS) !important;
+.p-l-xxs,
+.p-x-xxs,
+.p-xxs {
+    padding-left: var(--spacingHorizontalXXS) !important;
 }
 
-.p-l-xs, .p-x-xs, .p-xs {
-  padding-left: var(--spacingHorizontalXS) !important;
+.p-l-xs,
+.p-x-xs,
+.p-xs {
+    padding-left: var(--spacingHorizontalXS) !important;
 }
 
-.p-l-s, .p-x-s, .p-s {
-  padding-left: var(--spacingHorizontalS) !important;
+.p-l-s,
+.p-x-s,
+.p-s {
+    padding-left: var(--spacingHorizontalS) !important;
 }
 
-.p-l-s-nudge, .p-x-s-nudge, .p-s-nudge {
-  padding-left: var(--spacingHorizontalSNudge) !important;
+.p-l-s-nudge,
+.p-x-s-nudge,
+.p-s-nudge {
+    padding-left: var(--spacingHorizontalSNudge) !important;
 }
 
-.p-l-m, .p-x-m, .p-m {
-  padding-left: var(--spacingHorizontalM) !important;
+.p-l-m,
+.p-x-m,
+.p-m {
+    padding-left: var(--spacingHorizontalM) !important;
 }
 
-.p-l-m-nudge, .p-x-m-nudge, .p-m-nudge {
-  padding-left: var(--spacingHorizontalMNudge) !important;
+.p-l-m-nudge,
+.p-x-m-nudge,
+.p-m-nudge {
+    padding-left: var(--spacingHorizontalMNudge) !important;
 }
 
-.p-l-l, .p-x-l, .p-l {
-  padding-left: var(--spacingHorizontalL) !important;
+.p-l-l,
+.p-x-l,
+.p-l {
+    padding-left: var(--spacingHorizontalL) !important;
 }
 
-.p-l-xl, .p-x-xl, .p-xl {
-  padding-left: var(--spacingHorizontalXL) !important;
+.p-l-xl,
+.p-x-xl,
+.p-xl {
+    padding-left: var(--spacingHorizontalXL) !important;
 }
 
-.p-l-xxl, .p-x-xxl, .p-xxl {
-  padding-left: var(--spacingHorizontalXXL) !important;
+.p-l-xxl,
+.p-x-xxl,
+.p-xxl {
+    padding-left: var(--spacingHorizontalXXL) !important;
 }
 
-.p-l-xxxl, .p-x-xxxl, .p-xxxl {
-  padding-left: var(--spacingHorizontalXXXL) !important;
+.p-l-xxxl,
+.p-x-xxxl,
+.p-xxxl {
+    padding-left: var(--spacingHorizontalXXXL) !important;
 }
 
-.p-r-none, .p-x-none, .p-none {
-  padding-right: var(--spacingHorizontalNone) !important;
+.p-r-none,
+.p-x-none,
+.p-none {
+    padding-right: var(--spacingHorizontalNone) !important;
 }
 
-.p-r-xxs, .p-x-xxs, .p-xxs {
-  padding-right: var(--spacingHorizontalXXS) !important;
+.p-r-xxs,
+.p-x-xxs,
+.p-xxs {
+    padding-right: var(--spacingHorizontalXXS) !important;
 }
 
-.p-r-xs, .p-x-xs, .p-xs {
-  padding-right: var(--spacingHorizontalXS) !important;
+.p-r-xs,
+.p-x-xs,
+.p-xs {
+    padding-right: var(--spacingHorizontalXS) !important;
 }
 
-.p-r-s, .p-x-s, .p-s {
-  padding-right: var(--spacingHorizontalS) !important;
+.p-r-s,
+.p-x-s,
+.p-s {
+    padding-right: var(--spacingHorizontalS) !important;
 }
 
-.p-r-s-nudge, .p-x-s-nudge, .p-s-nudge {
-  padding-right: var(--spacingHorizontalSNudge) !important;
+.p-r-s-nudge,
+.p-x-s-nudge,
+.p-s-nudge {
+    padding-right: var(--spacingHorizontalSNudge) !important;
 }
 
-.p-r-m, .p-x-m, .p-m {
-  padding-right: var(--spacingHorizontalM) !important;
+.p-r-m,
+.p-x-m,
+.p-m {
+    padding-right: var(--spacingHorizontalM) !important;
 }
 
-.p-r-m-nudge, .p-x-m-nudge, .p-m-nudge {
-  padding-right: var(--spacingHorizontalMNudge) !important;
+.p-r-m-nudge,
+.p-x-m-nudge,
+.p-m-nudge {
+    padding-right: var(--spacingHorizontalMNudge) !important;
 }
 
-.p-r-l, .p-x-l, .p-l {
-  padding-right: var(--spacingHorizontalL) !important;
+.p-r-l,
+.p-x-l,
+.p-l {
+    padding-right: var(--spacingHorizontalL) !important;
 }
 
-.p-r-xl, .p-x-xl, .p-xl {
-  padding-right: var(--spacingHorizontalXL) !important;
+.p-r-xl,
+.p-x-xl,
+.p-xl {
+    padding-right: var(--spacingHorizontalXL) !important;
 }
 
-.p-r-xxl, .p-x-xxl, .p-xxl {
-  padding-right: var(--spacingHorizontalXXL) !important;
+.p-r-xxl,
+.p-x-xxl,
+.p-xxl {
+    padding-right: var(--spacingHorizontalXXL) !important;
 }
 
-.p-r-xxxl, .p-x-xxxl, .p-xxxl {
-  padding-right: var(--spacingHorizontalXXXL) !important;
+.p-r-xxxl,
+.p-x-xxxl,
+.p-xxxl {
+    padding-right: var(--spacingHorizontalXXXL) !important;
 }
 
-.m-t-none, .m-y-none, .m-none {
-  margin-top: var(--spacingVerticalNone) !important;
+.m-t-none,
+.m-y-none,
+.m-none {
+    margin-top: var(--spacingVerticalNone) !important;
 }
 
-.m-t-xxs, .m-y-xxs, .m-xss {
-  margin-top: var(--spacingVerticalXXS) !important;
+.m-t-xxs,
+.m-y-xxs,
+.m-xss {
+    margin-top: var(--spacingVerticalXXS) !important;
 }
 
-.m-t-xs, .m-y-xs, .m-xs {
-  margin-top: var(--spacingVerticalXS) !important;
+.m-t-xs,
+.m-y-xs,
+.m-xs {
+    margin-top: var(--spacingVerticalXS) !important;
 }
 
-.m-t-s, .m-y-s, .m-s {
-  margin-top: var(--spacingVerticalS) !important;
+.m-t-s,
+.m-y-s,
+.m-s {
+    margin-top: var(--spacingVerticalS) !important;
 }
 
-.m-t-s-nudge, .m-y-s-nudge, .m-s-nudge {
-  margin-top: var(--spacingVerticalSNudge) !important;
+.m-t-s-nudge,
+.m-y-s-nudge,
+.m-s-nudge {
+    margin-top: var(--spacingVerticalSNudge) !important;
 }
 
-.m-t-m, .m-y-m, .m-m {
-  margin-top: var(--spacingVerticalM) !important;
+.m-t-m,
+.m-y-m,
+.m-m {
+    margin-top: var(--spacingVerticalM) !important;
 }
 
-.m-t-m-nudge, .m-y-m-nudge, .m-m-nudge {
-  margin-top: var(--spacingVerticalMNudge) !important;
+.m-t-m-nudge,
+.m-y-m-nudge,
+.m-m-nudge {
+    margin-top: var(--spacingVerticalMNudge) !important;
 }
 
-.m-t-l, .m-y-l, .m-l {
-  margin-top: var(--spacingVerticalL) !important;
+.m-t-l,
+.m-y-l,
+.m-l {
+    margin-top: var(--spacingVerticalL) !important;
 }
 
-.m-t-xl, .m-y-xl, .m-xl {
-  margin-top: var(--spacingVerticalXL) !important;
+.m-t-xl,
+.m-y-xl,
+.m-xl {
+    margin-top: var(--spacingVerticalXL) !important;
 }
 
-.m-t-xxl, .m-y-xxl, .m-xxl {
-  margin-top: var(--spacingVerticalXXL) !important;
+.m-t-xxl,
+.m-y-xxl,
+.m-xxl {
+    margin-top: var(--spacingVerticalXXL) !important;
 }
 
-.m-t-xxxl, .m-y-xxxl, .m-xxxl {
-  margin-top: var(--spacingVerticalXXXL) !important;
+.m-t-xxxl,
+.m-y-xxxl,
+.m-xxxl {
+    margin-top: var(--spacingVerticalXXXL) !important;
 }
 
-.m-b-none, .m-y-none, .m-none {
-  margin-bottom: var(--spacingVerticalNone) !important;
+.m-b-none,
+.m-y-none,
+.m-none {
+    margin-bottom: var(--spacingVerticalNone) !important;
 }
 
-.m-b-xxs, .m-y-xxs, .m-xss {
-  margin-bottom: var(--spacingVerticalXXS) !important;
+.m-b-xxs,
+.m-y-xxs,
+.m-xss {
+    margin-bottom: var(--spacingVerticalXXS) !important;
 }
 
-.m-b-xs, .m-y-xs, .m-xs {
-  margin-bottom: var(--spacingVerticalXS) !important;
+.m-b-xs,
+.m-y-xs,
+.m-xs {
+    margin-bottom: var(--spacingVerticalXS) !important;
 }
 
-.m-b-s, .m-y-s, .m-s {
-  margin-bottom: var(--spacingVerticalS) !important;
+.m-b-s,
+.m-y-s,
+.m-s {
+    margin-bottom: var(--spacingVerticalS) !important;
 }
 
-.m-b-s-nudge, .m-y-s-nudge, .m-s-nudge {
-  margin-bottom: var(--spacingVerticalSNudge) !important;
+.m-b-s-nudge,
+.m-y-s-nudge,
+.m-s-nudge {
+    margin-bottom: var(--spacingVerticalSNudge) !important;
 }
 
-.m-b-m, .m-y-m, .m-m {
-  margin-bottom: var(--spacingVerticalM) !important;
+.m-b-m,
+.m-y-m,
+.m-m {
+    margin-bottom: var(--spacingVerticalM) !important;
 }
 
-.m-b-m-nudge, .m-y-m-nudge, .m-m-nudge {
-  margin-bottom: var(--spacingVerticalMNudge) !important;
+.m-b-m-nudge,
+.m-y-m-nudge,
+.m-m-nudge {
+    margin-bottom: var(--spacingVerticalMNudge) !important;
 }
 
-.m-b-l, .m-y-l, .m-l {
-  margin-bottom: var(--spacingVerticalL) !important;
+.m-b-l,
+.m-y-l,
+.m-l {
+    margin-bottom: var(--spacingVerticalL) !important;
 }
 
-.m-b-xl, .m-y-xl, .m-xl {
-  margin-bottom: var(--spacingVerticalXL) !important;
+.m-b-xl,
+.m-y-xl,
+.m-xl {
+    margin-bottom: var(--spacingVerticalXL) !important;
 }
 
-.m-b-xxl, .m-y-xxl, .m-xxl {
-  margin-bottom: var(--spacingVerticalXXL) !important;
+.m-b-xxl,
+.m-y-xxl,
+.m-xxl {
+    margin-bottom: var(--spacingVerticalXXL) !important;
 }
 
-.m-b-xxxl, .m-y-xxxl, .m-xxxl {
-  margin-bottom: var(--spacingVerticalXXXL) !important;
+.m-b-xxxl,
+.m-y-xxxl,
+.m-xxxl {
+    margin-bottom: var(--spacingVerticalXXXL) !important;
 }
 
-.m-l-none, .m-x-none, .m-none {
-  margin-left: var(--spacingHorizontalNone) !important;
+.m-l-none,
+.m-x-none,
+.m-none {
+    margin-left: var(--spacingHorizontalNone) !important;
 }
 
-.m-l-xxs, .m-x-xxs, .m-xxs {
-  margin-left: var(--spacingHorizontalXXS) !important;
+.m-l-xxs,
+.m-x-xxs,
+.m-xxs {
+    margin-left: var(--spacingHorizontalXXS) !important;
 }
 
-.m-l-xs, .m-x-xs, .m-xs {
-  margin-left: var(--spacingHorizontalXS) !important;
+.m-l-xs,
+.m-x-xs,
+.m-xs {
+    margin-left: var(--spacingHorizontalXS) !important;
 }
 
-.m-l-s, .m-x-s, .m-s {
-  margin-left: var(--spacingHorizontalS) !important;
+.m-l-s,
+.m-x-s,
+.m-s {
+    margin-left: var(--spacingHorizontalS) !important;
 }
 
-.m-l-s-nudge, .m-x-s-nudge, .m-s-nudge {
-  margin-left: var(--spacingHorizontalSNudge) !important;
+.m-l-s-nudge,
+.m-x-s-nudge,
+.m-s-nudge {
+    margin-left: var(--spacingHorizontalSNudge) !important;
 }
 
-.m-l-m, .m-x-m, .m-m {
-  margin-left: var(--spacingHorizontalM) !important;
+.m-l-m,
+.m-x-m,
+.m-m {
+    margin-left: var(--spacingHorizontalM) !important;
 }
 
-.m-l-m-nudge, .m-x-m-nudge, .m-m-nudge {
-  margin-left: var(--spacingHorizontalMNudge) !important;
+.m-l-m-nudge,
+.m-x-m-nudge,
+.m-m-nudge {
+    margin-left: var(--spacingHorizontalMNudge) !important;
 }
 
-.m-l-l, .m-x-l, .m-l {
-  margin-left: var(--spacingHorizontalL) !important;
+.m-l-l,
+.m-x-l,
+.m-l {
+    margin-left: var(--spacingHorizontalL) !important;
 }
 
-.m-l-xl, .m-x-xl, .m-xl {
-  margin-left: var(--spacingHorizontalXL) !important;
+.m-l-xl,
+.m-x-xl,
+.m-xl {
+    margin-left: var(--spacingHorizontalXL) !important;
 }
 
-.m-l-xxl, .m-x-xxl, .m-xxl {
-  margin-left: var(--spacingHorizontalXXL) !important;
+.m-l-xxl,
+.m-x-xxl,
+.m-xxl {
+    margin-left: var(--spacingHorizontalXXL) !important;
 }
 
-.m-l-xxxl, .m-x-xxxl, .m-xxxl {
-  margin-left: var(--spacingHorizontalXXXL) !important;
+.m-l-xxxl,
+.m-x-xxxl,
+.m-xxxl {
+    margin-left: var(--spacingHorizontalXXXL) !important;
 }
 
-.m-r-none, .m-x-none, .m-none {
-  margin-right: var(--spacingHorizontalNone) !important;
+.m-r-none,
+.m-x-none,
+.m-none {
+    margin-right: var(--spacingHorizontalNone) !important;
 }
 
-.m-r-xxs, .m-x-xxs, .m-xxs {
-  margin-right: var(--spacingHorizontalXXS) !important;
+.m-r-xxs,
+.m-x-xxs,
+.m-xxs {
+    margin-right: var(--spacingHorizontalXXS) !important;
 }
 
-.m-r-xs, .m-x-xs, .m-xs {
-  margin-right: var(--spacingHorizontalXS) !important;
+.m-r-xs,
+.m-x-xs,
+.m-xs {
+    margin-right: var(--spacingHorizontalXS) !important;
 }
 
-.m-r-s, .m-x-s, .m-s {
-  margin-right: var(--spacingHorizontalS) !important;
+.m-r-s,
+.m-x-s,
+.m-s {
+    margin-right: var(--spacingHorizontalS) !important;
 }
 
-.m-r-s-nudge, .m-x-s-nudge, .m-s-nudge {
-  margin-right: var(--spacingHorizontalSNudge) !important;
+.m-r-s-nudge,
+.m-x-s-nudge,
+.m-s-nudge {
+    margin-right: var(--spacingHorizontalSNudge) !important;
 }
 
-.m-r-m, .m-x-m, .m-m {
-  margin-right: var(--spacingHorizontalM) !important;
+.m-r-m,
+.m-x-m,
+.m-m {
+    margin-right: var(--spacingHorizontalM) !important;
 }
 
-.m-r-m-nudge, .m-x-m-nudge, .m-m-nudge {
-  margin-right: var(--spacingHorizontalMNudge) !important;
+.m-r-m-nudge,
+.m-x-m-nudge,
+.m-m-nudge {
+    margin-right: var(--spacingHorizontalMNudge) !important;
 }
 
-.m-r-l, .m-x-l, .m-l {
-  margin-right: var(--spacingHorizontalL) !important;
+.m-r-l,
+.m-x-l,
+.m-l {
+    margin-right: var(--spacingHorizontalL) !important;
 }
 
-.m-r-xl, .m-x-xl, .m-xl {
-  margin-right: var(--spacingHorizontalXL) !important;
+.m-r-xl,
+.m-x-xl,
+.m-xl {
+    margin-right: var(--spacingHorizontalXL) !important;
 }
 
-.m-r-xxl, .m-x-xxl, .m-xxl {
-  margin-right: var(--spacingHorizontalXXL) !important;
+.m-r-xxl,
+.m-x-xxl,
+.m-xxl {
+    margin-right: var(--spacingHorizontalXXL) !important;
 }
 
-.m-r-xxxl, .m-x-xxxl, .m-xxxl {
-  margin-right: var(--spacingHorizontalXXXL) !important;
+.m-r-xxxl,
+.m-x-xxxl,
+.m-xxxl {
+    margin-right: var(--spacingHorizontalXXXL) !important;
 }

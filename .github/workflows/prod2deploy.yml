@@ -14,8 +14,11 @@ jobs:
           echo "${{ secrets.REDIS_PASSWORD }}" > ./redis/.env;
           echo "${{ secrets.REDIS_HOSTPORT }}" > ./runner/.env;
 
+      - name: pull docker image
+        run: bash -c "docker rmi docker:dind; docker pull docker:dind"
+
       - name: compose build runners
-        run: docker compose -f docker-compose-runner.yml build
+        run: bash -c "docker compose -f docker-compose-runner.yml build"
 
       - name: compose up runners
-        run: docker compose -f docker-compose-runner.yml up -d
+        run: bash -c "docker compose -f docker-compose-runner.yml up -d"

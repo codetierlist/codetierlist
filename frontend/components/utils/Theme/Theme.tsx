@@ -20,19 +20,23 @@ const greenTheme: BrandVariants = {
     130: `hsl(var(--accent-hue), 45.45%, 56.86%)`,
     140: `hsl(var(--accent-hue), 55.1%, 61.57%)`,
     150: `hsl(var(--accent-hue), 68.6%, 66.27%)`,
-    160: `hsl(var(--accent-hue), 86.49%, 70.98%)`
+    160: `hsl(var(--accent-hue), 86.49%, 70.98%)`,
 };
 
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--spaceGrotesk' });
 const inter = Inter({ subsets: ['latin'], variable: '--inter' });
-const spaceMono = Space_Mono({ subsets: ['latin'], variable: '--spaceMono', weight: "400" });
+const spaceMono = Space_Mono({
+    subsets: ['latin'],
+    variable: '--spaceMono',
+    weight: '400',
+});
 
 export const lightTheme: Theme = {
-    ...createLightTheme(greenTheme)
+    ...createLightTheme(greenTheme),
 };
 
 export const darkTheme: Theme = {
-    ...createDarkTheme(greenTheme)
+    ...createDarkTheme(greenTheme),
 };
 
 lightTheme.fontFamilyNumeric = spaceGrotesk.style.fontFamily;

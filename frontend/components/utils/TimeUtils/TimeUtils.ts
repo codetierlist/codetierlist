@@ -1,6 +1,6 @@
 /** @filesummary This file contains small utility functions for time. */
 
-import { Session } from "codetierlist-types";
+import { Session } from 'codetierlist-types';
 
 /**
  * Converts ISP 8601 date string to more readable format
@@ -8,8 +8,8 @@ import { Session } from "codetierlist-types";
  * @returns The localized date string
  */
 export const convertDate = (date?: string | Date): string => {
-    if(date === undefined){
-        return "No date";
+    if (date === undefined) {
+        return 'No date';
     }
     let dateObj: Date;
 
@@ -56,9 +56,12 @@ export const addHoursToDate = (date: Date, hours: number): Date => {
  * @property endDate The end date of the booking
  * @return A formatted string of the time range of the booking
  */
-export const convertTime = (date?: Date | string, options?: Intl.DateTimeFormatOptions): string => {
-    if(date === undefined){
-        return "No time";
+export const convertTime = (
+    date?: Date | string,
+    options?: Intl.DateTimeFormatOptions
+): string => {
+    if (date === undefined) {
+        return 'No time';
     }
 
     let dateObj: Date;
@@ -120,12 +123,12 @@ export const getSession = (date: Date): Session => {
 
     if (2 <= month && month < 6) {
         // April - July
-        return "Summer";
+        return 'Summer';
     } else if (7 <= month && month < 9) {
         // Aug - Sep
-        return "Fall";
+        return 'Fall';
     } else {
         // Oct - Mar
-        return "Winter";
+        return 'Winter';
     }
 };

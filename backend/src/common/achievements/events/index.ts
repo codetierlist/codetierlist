@@ -28,6 +28,7 @@ subscribe("time:testcase", "testcase:submit", timeHandler);
 subscribe("time:any", "solution:submit", timeHandler);
 subscribe("time:any", "testcase:submit", timeHandler);
 
+/** Return the number of submissions or test cases */
 const countHandler = (table: "solution" | "testcase") => async (submission: Submission | TestCase, achievements: AchievementConfig[]) => {
     const query: Prisma.SolutionCountArgs & Prisma.TestCaseCountArgs = {
         where: {

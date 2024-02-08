@@ -18,16 +18,16 @@ import {
 } from '@fluentui/react-components';
 import type { AppProps } from 'next/app';
 import { defaultUser, UserContext } from '@/contexts/UserContext';
-import { FetchedUser } from "codetierlist-types";
-import { useEffect, useState } from "react";
-import axios, { handleError } from "@/axios";
+import { FetchedUser } from 'codetierlist-types';
+import { useEffect, useState } from 'react';
+import axios, { handleError } from '@/axios';
 import { SnackbarContext } from '@/contexts/SnackbarContext';
 
 type EnhancedAppProps = AppProps & { renderer?: GriffelRenderer };
 
 function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
     /** snackbar */
-    const toasterId = useId("toaster");
+    const toasterId = useId('toaster');
     const { dispatchToast } = useToastController(toasterId);
 
     const showSnack = (message?: string, action?: JSX.Element, content?: JSX.Element) => {
@@ -36,9 +36,10 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
                 <Toast>
                     <ToastTitle>{message}</ToastTitle>
                 </Toast>,
-                { intent: "info" });
+                { intent: 'info' }
+            );
         } else {
-            dispatchToast(content, { intent: "info" });
+            dispatchToast(content, { intent: 'info' });
         }
     };
 
@@ -55,7 +56,7 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
     const [userInfo, setUserInfo] = useState<FetchedUser>(defaultUser);
 
     const fetchUserInfo = async () => {
-        await axios("/")
+        await axios('/users')
             .then(({ data }) => {
                 setUserInfo(data as FetchedUser);
             })
@@ -64,15 +65,15 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
 
     useEffect(() => {
         void fetchUserInfo();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // change system colour scheme based on current user theme
     useEffect(() => {
-        if (userInfo.theme === "DARK") {
-            document.documentElement.style.colorScheme = "dark";
+        if (userInfo.theme === 'DARK') {
+            document.documentElement.style.colorScheme = 'dark';
         } else {
-            document.documentElement.style.colorScheme = "light";
+            document.documentElement.style.colorScheme = 'light';
         }
     }, [userInfo.theme]);
 
@@ -81,12 +82,11 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
         //    Also triggers rehydration a client
         <RendererProvider renderer={renderer || createDOMRenderer()}>
             <SSRProvider>
-                <UserContext.Provider
-                    value={{ userInfo, setUserInfo, fetchUserInfo }}>
-                    <FluentProvider theme={userInfo.theme === "DARK" ? darkTheme : lightTheme}>
-                        <SnackbarContext.Provider
-                            value={{ showSnack, showSnackSev }}
-                        >
+                <UserContext.Provider value={{ userInfo, setUserInfo, fetchUserInfo }}>
+                    <FluentProvider
+                        theme={userInfo.theme === 'DARK' ? darkTheme : lightTheme}
+                    >
+                        <SnackbarContext.Provider value={{ showSnack, showSnackSev }}>
                             <Field validationState="none" id="axios-loading-backdrop">
                                 <ProgressBar />
                             </Field>

@@ -56,6 +56,11 @@ export const updateScore = async (submission: Submission, testCase: TestCase, pa
     });
 };
 
+/**
+ * When a new submission is added, run it against all test cases
+ * @param submission
+ * @param image
+ */
 export const onNewSubmission = async (submission: Submission, image: Assignment) => {
     publish("solution:submit", submission);
     await removeSubmission(submission.author_id);
