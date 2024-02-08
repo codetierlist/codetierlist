@@ -150,9 +150,11 @@ const EmptyMessageBar = ({
                 You can submit a solution by clicking on the &ldquo;{tab}&rdquo; tab. You
                 will not be able to see the tier list until you submit a {thing}.
             </MessageBarBody>
-            <MessageBarActions>
-                <Button onClick={() => setStage(stage)}>Upload a {thing}</Button>
-            </MessageBarActions>
+            <MessageBarActions
+                containerAction={
+                    <Button onClick={() => setStage(stage)}>Upload a {thing}</Button>
+                }
+            />
         </MessageBar>
     );
 };
