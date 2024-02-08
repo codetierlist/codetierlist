@@ -10,7 +10,7 @@ import userRoute from "./users";
 const router = express.Router();
 
 router.get("/", (_, res) => {
-    res.send("( ͡° ͜ʖ ͡°)");
+    res.send({message: "( ͡° ͜ʖ ͡°)"});
 });
 
 /**
