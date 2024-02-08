@@ -1,7 +1,5 @@
 FROM docker:dind
-RUN apk update
-RUN apk add bash
-RUN apk add --update nodejs npm
+RUN apk add --no-cache bash nodejs npm
 RUN npm install -g typescript
 
 # npm install types
@@ -9,6 +7,8 @@ WORKDIR /types
 COPY ./types/package.json ./types/package-lock.json ./
 RUN npm ci
 COPY ./types ./
+
+SHELL ["/bin/bash", "-c"]
 RUN npm run prisma
 
 # npm install backend
