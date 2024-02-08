@@ -144,7 +144,7 @@ const EmptyMessageBar = ({
     stage: number;
 }) => {
     return (
-        <MessageBar intent="warning" className={styles.messageBar} layout="multiline">
+        <MessageBar intent="warning" className={styles.messageBar} layout="auto">
             <MessageBarBody>
                 <MessageBarTitle>You have not submitted a {thing} yet.</MessageBarTitle>
                 You can submit a solution by clicking on the &ldquo;{tab}&rdquo; tab. You
