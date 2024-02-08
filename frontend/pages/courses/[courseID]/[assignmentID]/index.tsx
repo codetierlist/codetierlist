@@ -28,7 +28,7 @@ import Error from 'next/error';
 import Head from 'next/head';
 import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from 'next/router';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { Key, useCallback, useContext, useEffect, useState } from 'react';
 import { Col, Container } from "react-grid-system";
 import AdminPage from "./admin/index";
 import styles from './page.module.css';
@@ -233,9 +233,11 @@ export default function Page() {
 
                             <Subtitle1 block className={styles.gutterTop}>Assignment Description</Subtitle1>
                             <Card className={styles.gutter}>
-                                <Text as="p">
-                                    {assignment.description}
-                                </Text>
+                                {
+                                    assignment.description.split("\n").map((line: string, i: Key) => {
+                                        return <Text key={i}>{line}</Text>;
+                                    })
+                                }
                             </Card>
                         </>
                     )
