@@ -24,7 +24,7 @@ import {
 import { Dismiss24Regular, Search24Regular } from '@fluentui/react-icons';
 import { AssignmentStudentStats, FetchedAssignmentWithTier } from 'codetierlist-types';
 import Error from 'next/error';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { notFound, usePathname, useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import { UserContext } from '@/contexts/UserContext';
@@ -70,7 +70,8 @@ const useAssignment = (courseID: string, assignmentID: string) => {
                 }
             )
             .then((res) => setAssignment(res.data))
-            .catch(handleError(showSnackSev));
+            .catch(handleError(showSnackSev))
+            .catch(notFound());
     };
 
     const fetchAssignmentStats = async () => {
@@ -82,7 +83,8 @@ const useAssignment = (courseID: string, assignmentID: string) => {
                 }
             )
             .then((res) => setStudentData(res.data))
-            .catch(handleError(showSnackSev));
+            .catch(handleError(showSnackSev))
+            .catch(notFound());
     };
 
     useEffect(() => {
@@ -125,7 +127,7 @@ export default function Page({ setStage }: { setStage: (stage: number) => void }
         document.title = `${assignment?.title || assignmentID} - Codetierlist`;
     }, [assignment, assignmentID]);
 
-    if (!assignment || !courseID || !assignmentID) {
+    if (!courseID || !assignmentID) {
         return <Error statusCode={404} />;
     }
 
