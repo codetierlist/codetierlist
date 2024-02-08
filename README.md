@@ -45,31 +45,34 @@ independently, and to prevent [Academic Offenses](https://www.utm.utoronto.ca/ac
 ## 💼 Local Development
 
 ### Running Locally
-
-For frontend, you'll need a .env.local file:
-```
-NEXT_PUBLIC_API_URI=http://localhost:3555/api
-```
-
-To install dependencies and generate the prisma schema, run:
-```
-make
+To start the run the containers needed to run Codetierlist, run the following command in the root directory of the project:
+```bash
+make docker_up_dev
 ```
 
-To start the run the frontend, backend, and database docker containers, run:
-```
-make docker_up
-```
-
-To tear down the frontend, backend, and database docker containers when finished with development, run:
-```
-make docker_down
+To tear down the docker containers when finished with development, run:
+```bash
+make docker_down_dev
 ```
 
 After running the docker containers, go to http://localhost:3555/ to visit the site.
 
 
-## 🚀 Deployment
+## 🚀 Production Deployment
+Production is handled via GitHub actions CI/CD.
+
+### Running Locally
+To start the run the containers needed to run Codetierlist, run the following command in the root directory of the project:
+```bash
+make docker_up
+```
+
+To tear down the docker containers, run:
+```bash
+make docker_down
+```
+After running the docker containers, go to http://localhost:3555/ to visit the site.
+
 
 ### Tech stack:
 * Frontend
@@ -79,6 +82,7 @@ After running the docker containers, go to http://localhost:3555/ to visit the s
     * [Express.js](https://expressjs.com/) 🚂
     * [Docker](https://www.docker.com/) 🐳
 * Database, ORM, and data storage
+    * [Redis](https://redis.io/) 🍎
     * [Postgres](https://www.postgresql.org/) 🐘
     * [Prisma](https://www.prisma.io/) 🦄
     * [Isomorphic-git](https://github.com/isomorphic-git/isomorphic-git) 🐙
