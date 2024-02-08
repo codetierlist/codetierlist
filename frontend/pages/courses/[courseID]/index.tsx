@@ -17,10 +17,12 @@ import { useContext, useEffect, useState } from 'react';
 import { Container } from 'react-grid-system';
 import styles from './page.module.css';
 
-export default function Page() {
-    const { userInfo } = useContext(UserContext);
+/**
+ * Fetches the course with the given courseID
+ * @param courseID The courseID to fetch
+ */
+const useCourse = (courseID: string) => {
     const [course, setCourse] = useState<FetchedCourseWithTiers | null>(null);
-    const { courseID } = useRouter().query;
     const { showSnackSev } = useContext(SnackbarContext);
 
     const fetchCourse = async () => {
@@ -35,6 +37,19 @@ export default function Page() {
                 notFound();
             });
     };
+
+    useEffect(() => {
+        void fetchCourse();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [courseID]);
+
+    return { course, fetchCourse };
+};
+
+export default function Page() {
+    const { userInfo } = useContext(UserContext);
+    const { courseID } = useRouter().query;
+    const { course, fetchCourse } = useCourse(courseID as string);
 
     useEffect(() => {
         void fetchCourse();

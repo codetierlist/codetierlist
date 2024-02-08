@@ -49,6 +49,11 @@ const highlightSubstring = (str: string, substr: string) => {
     );
 };
 
+/**
+ * Fetches the assignment and student data
+ * @param courseID the course ID
+ * @param assignmentID the assignment ID
+ */
 const useAssignment = (courseID: string, assignmentID: string) => {
     const [assignment, setAssignment] = useState<FetchedAssignmentWithTier | null>(null);
     const [studentData, setStudentData] = useState<AssignmentStudentStats | null>(null);
