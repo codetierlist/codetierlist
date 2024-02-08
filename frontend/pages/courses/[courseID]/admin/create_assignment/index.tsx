@@ -42,12 +42,45 @@ const updateTimezoneOffset = (date: string) => {
     return d;
 };
 
+const useRunners = () => {
+    const [runners, setRunners] = useState<Record<string, string[]>>({});
+    const [selectedRunner, setSelectedRunner] = useState<RunnerImage | null>(null);
+    const { showSnackSev } = useContext(SnackbarContext);
+
+    useEffect(() => {
+        const fetchRunners = async () => {
+            const res = await axios
+                .get<RunnerImage[]>('/runner/images')
+                .catch(handleError(showSnackSev));
+            if (!res) {
+                return;
+            }
+            setRunners(
+                res.data.reduce(
+                    (acc, runner) => {
+                        acc[runner.runner_image] = acc[runner.runner_image] ?? [];
+                        acc[runner.runner_image].push(runner.image_version);
+                        return acc;
+                    },
+                    {} as Record<string, string[]>
+                )
+            );
+
+            setSelectedRunner(res.data[0]);
+        };
+
+        void fetchRunners();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    return { runners, setSelectedRunner, selectedRunner };
+}
+
 export default function Page(): JSX.Element {
     const { showSnackSev } = useContext(SnackbarContext);
     const [assignmentName, setAssignmentName] = useState('');
     const [description, setDescription] = useState('');
-    const [runners, setRunners] = useState<Record<string, string[]>>({});
-    const [selectedRunner, setSelectedRunner] = useState<RunnerImage | null>(null);
+    const { runners, setSelectedRunner, selectedRunner } = useRunners();
     const [dueDate, setDueDate] = useState(new Date());
     const { courseID } = useRouter().query;
     const { fetchUserInfo } = useContext(UserContext);
@@ -138,32 +171,6 @@ export default function Page(): JSX.Element {
             .then(() => router.push(`/courses/${courseID}`))
             .catch(handleError(showSnackSev));
     };
-
-    useEffect(() => {
-        const fetchRunners = async () => {
-            const res = await axios
-                .get<RunnerImage[]>('/runner/images')
-                .catch(handleError(showSnackSev));
-            if (!res) {
-                return;
-            }
-            setRunners(
-                res.data.reduce(
-                    (acc, runner) => {
-                        acc[runner.runner_image] = acc[runner.runner_image] ?? [];
-                        acc[runner.runner_image].push(runner.image_version);
-                        return acc;
-                    },
-                    {} as Record<string, string[]>
-                )
-            );
-
-            setSelectedRunner(res.data[0]);
-        };
-
-        void fetchRunners();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [runners]);
 
     // If the user is not an admin, error 403
     if (!checkIfCourseAdmin(userInfo, courseID as string)) {
