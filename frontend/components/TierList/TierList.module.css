@@ -27,6 +27,7 @@
     padding: var(--spacingVerticalL) 0;
     flex-wrap: wrap;
     display: flex;
+    width: 100%;
 }
 
 .avatar {

@@ -61,9 +61,8 @@ const TierAvatars = forwardRef<HTMLDivElement, TierAvatarsProps>(({ people, maxI
         <Col
             className={styles.tierAvatars}
             xs={10}
-            ref={ref}
         >
-            <AvatarGroup className={styles.avatarGroup}>
+            <AvatarGroup className={styles.avatarGroup} ref={ref}>
                 {
                     newInlineItems.filter((person) => person).map((person, i) => {
                         return (
