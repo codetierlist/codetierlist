@@ -1,13 +1,7 @@
 import axios, { handleError } from "@/axios";
-import { AchievementCard } from "@/components";
+import { AchievementCard, RawAchievementCard } from "@/components";
 import { SnackbarContext } from '@/contexts/SnackbarContext';
 import { UserContext } from "@/contexts/UserContext";
-import {
-    Caption1,
-    Card,
-    CardPreview,
-    Text
-} from "@fluentui/react-components";
 import { Title2 } from '@fluentui/react-text';
 import { AchievementConfig } from "codetierlist-types";
 import { notFound } from "next/navigation";
@@ -60,19 +54,11 @@ export default function Page() {
             {hiddenAchievementCount > 0 &&
                 <Row>
                     <Col sm={12} className="m-b-l">
-                        <Card orientation="horizontal">
-                            <CardPreview>
-                                <img src={`achievements/unknown.png`} alt="" />
-                            </CardPreview>
-
-                            <div>
-                                <Text as="h3" weight="semibold">{hiddenAchievementCount} hidden achievement{hiddenAchievementCount > 1 ? "s" : ""} remaining</Text>
-                                <br/>
-                                <Caption1 as="p">
-                                    Details of these achievements are hidden until you unlock them.
-                                </Caption1>
-                            </div>
-                        </Card>
+                        <RawAchievementCard
+                            icon="unknown.png"
+                            name={`${hiddenAchievementCount} hidden achievement${hiddenAchievementCount > 1 ? "s" : ""} remaining`}
+                            description="Details of these achievements are hidden until you unlock them."
+                        />
                     </Col>
                 </Row>
             }
