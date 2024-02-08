@@ -180,4 +180,6 @@ export type Achievement = Prisma.AchievementGetPayload<{}>;
 export type BackendConfig = {
     achievements: AchievementConfig[],
     runners: RunnerImage[],
+    max_file_size: number,
+    max_file_count: number,
 }
