@@ -9,10 +9,17 @@ import userRoute from "./users";
 
 const router = express.Router();
 
+/**
+ * Get the user's information
+ */
 router.get("/", (req, res) => {
     res.send(req.user satisfies FetchedUser);
 });
 
+/**
+ * Get the images for the runner
+ * @adminonly
+ */
 router.get("/runner/images", (req,res) =>{
     res.send(images satisfies RunnerImage[]);
 });

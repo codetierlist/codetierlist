@@ -35,6 +35,9 @@ router.post("/theme", errorHandler(async (req, res) => {
 
 }));
 
+/**
+ * get the achievements of the user
+ */
 router.get("/achievements", errorHandler(async (req, res) => {
     const achievements = await prisma.achievement.findMany({
         where: {utorid: req.user.utorid}
@@ -50,7 +53,7 @@ router.get("/achievements", errorHandler(async (req, res) => {
             const {config : _, ...rest} = achievement;
             return rest;
         } else {
-            return {id: -1, type: "???", name: "???", description: "???", icon: "unknown.png"};
+            return {id: -1, type: "", name: "", description: "", icon: "unknown.png"};
         }
     }).sort((a,b)=>{
         if(a.id === -1) return 1;

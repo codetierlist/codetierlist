@@ -1,5 +1,5 @@
 import axios, { handleError } from '@/axios';
-import { ControlCard, HeaderToolbar, Monaco } from '@/components';
+import { ControlCard, HeaderToolbar, Monaco, checkIfCourseAdmin } from '@/components';
 import { SnackbarContext } from '@/contexts/SnackbarContext';
 import { UserContext } from '@/contexts/UserContext';
 import {
@@ -12,9 +12,9 @@ import {
     Label,
     Option,
     OptionGroup,
+    Switch,
     Title2,
     ToolbarButton,
-    Switch,
 } from '@fluentui/react-components';
 import {
     ArrowLeft24Regular,
@@ -26,6 +26,7 @@ import {
     TextDescription24Regular,
 } from '@fluentui/react-icons';
 import { RunnerImage } from 'codetierlist-types';
+import Error from 'next/error';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
@@ -52,7 +53,7 @@ export default function Page(): JSX.Element {
     const { fetchUserInfo } = useContext(UserContext);
     const [groupSize, setGroupSize] = useState<number | null>(null);
     const [strictDeadlines, setStrictDeadlines] = useState(false);
-
+    const { userInfo } = useContext(UserContext);
     const router = useRouter();
 
     /**
@@ -162,7 +163,12 @@ export default function Page(): JSX.Element {
 
         void fetchRunners();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [showSnackSev]);
+    }, [runners]);
+
+    // If the user is not an admin, error 403
+    if (!checkIfCourseAdmin(userInfo, courseID as string)) {
+        return <Error statusCode={403} />;
+    }
 
     return (
         <>
