@@ -248,7 +248,7 @@ export const processSubmission = async (req: Request, res: Response, table: "sol
             }
         }
     }
-    // commit files
+    /** commit files */
     const commit = await commitFiles(req, submission ?? {
         git_id: "",
         git_url: repoPath,
@@ -313,6 +313,13 @@ export const getCommit = async (submission: Omit<Solution | TestCase, "group_num
     }
 };
 
+/**
+ * get a file from a commit
+ *
+ * @param file the file to get
+ * @param dir the directory to get the file from
+ * @param commitId the commit to get the file from
+ */
 export const getFile = async (file: string, dir: string, commitId: string) => {
     try {
         return git.readBlob({
@@ -326,6 +333,13 @@ export const getFile = async (file: string, dir: string, commitId: string) => {
     }
 };
 
+/**
+ * Gets a file from a request.
+ *
+ * @param req the request
+ * @param res the response
+ * @param table the table to get the file from. Either "solution" or "testCase"
+ */
 export const getFileFromRequest = async (req: Request, res: Response, table: "solution" | "testCase") => {
     const object = await getObjectFromRequest(req, table);
     if (object === null) {
@@ -346,6 +360,12 @@ export const getFileFromRequest = async (req: Request, res: Response, table: "so
     res.send(Buffer.from(file.blob));
 };
 
+/**
+ * Deletes a file from a submission.
+ * @param req
+ * @param res
+ * @param table the table to delete the file from. Either "solution" or "testCase"
+ */
 export const deleteFile = async (req: Request, res: Response, table: "solution" | "testCase") => {
     const object = await getObjectFromRequest(req, table);
     if (object === null) {
@@ -386,6 +406,9 @@ export const getCommitFromRequest = async (req: Request, table: "solution" | "te
     return await getCommit(object, req.params.commitId);
 };
 
+/**
+ * Middleware to fetch a course and add it to the request.
+ */
 export const fetchCourseMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const course = await prisma.course.findUnique({
         where: {
@@ -407,10 +430,16 @@ export const fetchCourseMiddleware = async (req: Request, res: Response, next: N
     next();
 };
 
+/**
+ * turn a prisma assignment into a serializable object
+ */
 export const serializeAssignment = <T extends PrismaAssignment>(assignment: T): Omit<T, "due_date"> & {
     due_date?: string
 } => ({ ...assignment, due_date: assignment.due_date?.toISOString() });
 
+/**
+ * Middleware to fetch an assignment and add it to the request.
+ */
 export const fetchAssignmentMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const assignment = await prisma.assignment.findUnique({
         where: {

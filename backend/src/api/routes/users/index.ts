@@ -49,7 +49,7 @@ router.get("/achievements", errorHandler(async (req, res) => {
     const achievements = await prisma.achievement.findMany({
         where: {utorid: req.user.utorid}
     });
-    if(req.user.new_achievements) {
+    if (req.user.new_achievements) {
         await prisma.user.update({
             where: {utorid: req.user.utorid},
             data: {new_achievements: false}

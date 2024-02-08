@@ -30,6 +30,7 @@ const subscribers: Map<EventType, {
     callback: CallbackType
 }[]> = new Map();
 
+/** Subscribe to an event */
 export const subscribe = (handler: HandlerType, event: EventType, callback: CallbackType) => {
     if (!subscribers.has(event)) {
         subscribers.set(event, []);
@@ -37,6 +38,7 @@ export const subscribe = (handler: HandlerType, event: EventType, callback: Call
     subscribers.get(event)!.push({handler, callback});
 };
 
+/** Publish an event */
 export const publish = (event: EventType, submission: Submission | TestCase, data?: unknown) => {
     prisma.achievement.findMany({
         where: {

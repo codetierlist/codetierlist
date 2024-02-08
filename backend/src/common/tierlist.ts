@@ -43,10 +43,15 @@ function getStandardDeviation(array: number[]) {
 }
 
 export type QueriedSubmission = {
+    /** utorid of the user */
     utorid: string,
+    /** given name of the user */
     givenName: string,
+    /** surname of the user */
     surname: string,
+    /** total number of test cases */
     total: bigint,
+    /** number of test cases passed */
     passed: bigint
 }
 
@@ -59,6 +64,7 @@ export const generateTierFromQueriedData = (submissions: QueriedSubmission[], us
         D: [],
         F: [],
     };
+
     if (submissions.length === 0) {
         return [res, "?" as UserTier];
     }
@@ -74,8 +80,13 @@ export const generateTierFromQueriedData = (submissions: QueriedSubmission[], us
     }
     );
 
+    /** the mean of the scores */
     const mean = getMean(scores.map((x) => x.score));
+
+    /** the standard deviation of the scores */
     const std = getStandardDeviation(scores.map((x) => x.score));
+
+    /** tier of the user */
     let yourTier: UserTier | undefined = undefined;
     for (const score of scores) {
         let tier: Tier;
@@ -104,6 +115,10 @@ export const generateTierFromQueriedData = (submissions: QueriedSubmission[], us
 
     return [res, yourTier];
 };
+
+/**
+ * Generate a tier list for a group
+ */
 export const generateList = async (group: Group, user?: string | User, anonymize = false): Promise<[Tierlist, UserTier]> => {
     const submissions = await prisma.$queryRaw<QueriedSubmission[]>`
         WITH data as (SELECT COUNT("_ScoreCache".testcase_author_id)        as total,
@@ -127,8 +142,14 @@ export const generateList = async (group: Group, user?: string | User, anonymize
     return generateTierFromQueriedData(submissions, user, anonymize);
 };
 
+/**
+ * Generate a tier list for a group
+ */
 export const generateTierList = (group: Group, user?: string | User, anonymize = true): Promise<Tierlist> =>
     generateList(group, user, anonymize).then(x => x[0]);
 
+/**
+ * Generate a tier list for a group
+ */
 export const generateYourTier = (group: Group, user?: string | User): Promise<UserTier> =>
     generateList(group, user, true).then(x => x[1]);
