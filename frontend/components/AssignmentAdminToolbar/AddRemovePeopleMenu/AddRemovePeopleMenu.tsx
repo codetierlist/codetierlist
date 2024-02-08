@@ -13,25 +13,21 @@ import {
 } from '@fluentui/react-icons';
 import { useRouter } from 'next/router';
 
-declare type AddRemovePeopleButtonProps = {
-    /**
-     * the course ID of the course
-     */
-    courseID: string;
-    /**
-     * the type of people to add/remove
-     */
-    type: 'students' | 'tas' | 'instructors';
-    /**
-     * whether to add or remove people. True for add, false for remove
-     */
-    add: boolean;
-};
-
 /**
  * Menu item for adding/removing people
  */
-const AddRemovePeopleButton = ({ courseID, type, add }: AddRemovePeopleButtonProps) => {
+const AddRemovePeopleButton = ({
+    courseID,
+    type,
+    add,
+}: {
+    /** the course ID of the course */
+    courseID: string;
+    /** the type of people to add/remove */
+    type: 'students' | 'tas' | 'instructors';
+    /** whether to add or remove people. True for add, false for remove */
+    add: boolean;
+}) => {
     const router = useRouter();
 
     return (
@@ -50,13 +46,9 @@ const AddRemovePeopleButton = ({ courseID, type, add }: AddRemovePeopleButtonPro
 };
 
 export declare type AddRemovePeopleMenuProps = {
-    /**
-     * the course ID of the course
-     */
+    /** the course ID of the course */
     courseID: string;
-    /**
-     * whether to add or remove people. True for add, false for remove
-     */
+    /** whether to add or remove people. True for add, false for remove  */
     add: boolean;
 };
 
