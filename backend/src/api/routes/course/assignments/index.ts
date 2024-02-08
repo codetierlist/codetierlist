@@ -166,6 +166,18 @@ router.get("/:assignment/testcases/:commitId?/:file", fetchAssignmentMiddleware,
 }));
 
 router.get("/:assignment/tierlist", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
+    let utorid = req.user.utorid as string | undefined;
+
+    if (req.query.utorid) {
+        if (!isProf(req.course!, req.user)) {
+            res.statusCode = 403;
+            res.send({message: 'You are not an instructor.'});
+            return;
+        } else {
+            utorid = req.query.utorid as string;
+        }
+    }
+
     const fullFetchedAssignment = await prisma.assignment.findUniqueOrThrow({
         where: {
             id: {
@@ -177,13 +189,13 @@ router.get("/:assignment/tierlist", fetchAssignmentMiddleware, errorHandler(asyn
                 where: {
                     members: {
                         some: {
-                            utorid: req.user.utorid
+                            utorid
                         }
                     }
                 },
             }, submissions: {
                 where: {
-                    author_id: req.user.utorid
+                    author_id: utorid
                 },
                 orderBy: {
                     datetime: "desc"
@@ -192,7 +204,7 @@ router.get("/:assignment/tierlist", fetchAssignmentMiddleware, errorHandler(asyn
             },
             test_cases: {
                 where: {
-                    author_id: req.user.utorid
+                    author_id: utorid
                 },
                 orderBy: {
                     datetime: "desc"

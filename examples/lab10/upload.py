@@ -3,7 +3,7 @@ import time
 from os import listdir
 
 import httpx
-import aiofiles
+# import aiofiles
 import requests
 import uuid
 

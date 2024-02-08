@@ -42,8 +42,15 @@ const ViewTierList = (props: React.HTMLAttributes<HTMLDivElement>) => {
     const { courseID, assignmentID } = router.query;
     const [tierlist, setTierlist] = useState<Tierlist | null>(null);
     const { showSnackSev } = useContext(SnackbarContext);
+    const searchParams = useSearchParams();
+
     const fetchTierlist = async () => {
-        await axios.get<Tierlist>(`/courses/${courseID}/assignments/${assignmentID}/tierlist`, { skipErrorHandling: true })
+        await axios.get<Tierlist>(`/courses/${courseID}/assignments/${assignmentID}/tierlist`, {
+            skipErrorHandling: true,
+            params: {
+                utorid: searchParams.get("utorid") ?? undefined
+            }
+        })
             .then((res) => setTierlist(res.data))
             .catch(e => {
                 handleError(showSnackSev)(e);
@@ -69,7 +76,9 @@ const ViewTierList = (props: React.HTMLAttributes<HTMLDivElement>) => {
 
     useEffect(() => {
         void fetchTierlist();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [courseID, assignmentID]);
+
     return (
         <Col sm={12} {...props}>
             <Subtitle1 className={styles.gutter} block>Tierlist</Subtitle1>
@@ -94,8 +103,10 @@ export default function Page() {
     );
 
     useEffect(() => {
-        if (stage != 1 && searchParams.has("utorid")) {
-            void router.replace(pathname + "?" + createQueryString());
+        // remove utorid query when not in upload or tierlist stage
+        if ((stage != 1 && stage != 2) && searchParams.has("utorid")) {
+            const query = createQueryString();
+            void router.replace(`${pathname}${query ? '?' : ''}${query}`);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [stage, pathname]);
