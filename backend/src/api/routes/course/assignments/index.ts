@@ -1,4 +1,4 @@
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import {PrismaClientKnownRequestError} from "@prisma/client/runtime/library";
 import {
     AssignmentStudentStats,
     Commit,
@@ -7,9 +7,9 @@ import {
     Tierlist,
     UserFetchedAssignment
 } from "codetierlist-types";
-import express, { NextFunction, Request, Response } from "express";
+import express, {NextFunction, Request, Response} from "express";
 import multer from 'multer';
-import { images } from "../../../../common/config";
+import {images} from "../../../../common/config";
 import prisma, {
     fetchedAssignmentArgs
 } from "../../../../common/prisma";
@@ -31,14 +31,27 @@ import {
 import {config} from "../../../../common/config";
 
 const storage = multer.diskStorage({
-    filename: function (req, file, callback) {
+    filename: function (_, file, callback) {
         callback(null, file.originalname);
     }
 });
-const upload = multer({storage, limits:{
-    fileSize: config.max_file_size, // 1MB
-    files: config.max_file_count // 30 files, 30MB total
-}});
+const upload = multer({
+    storage, limits: {
+        fileSize: config.max_file_size, // 1MB
+        files: config.max_file_count // 30 files, 30MB total
+    }
+});
+const uploadMiddleware = (req: Request, res: Response, next: NextFunction) =>
+    upload.array('files')(req, res, (err) => {
+        if(err instanceof multer.MulterError && err.code === 'LIMIT_FILE_COUNT' || err.code === 'LIMIT_FILE_SIZE') {
+            res.statusCode = 413;
+            res.send({message: "File size or count exceeded."});
+        }
+        if(err) {
+            next(err);
+        }
+        next();
+    });
 const router = express.Router({mergeParams: true});
 
 /**
@@ -206,7 +219,7 @@ const checkFilesMiddleware = (req: Request, res: Response, next: NextFunction) =
  * Processes the submission and sends the result to the client.
  * @public
  */
-router.post("/:assignment/submissions", fetchAssignmentMiddleware, upload.array('files', 100), checkFilesMiddleware,
+router.post("/:assignment/submissions", fetchAssignmentMiddleware, uploadMiddleware, checkFilesMiddleware,
     errorHandler(async (req, res) =>
         processSubmission(req, res, "solution")));
 
@@ -214,7 +227,7 @@ router.post("/:assignment/submissions", fetchAssignmentMiddleware, upload.array(
  * Processes the test case and sends the result to the client.
  * @public
  */
-router.post("/:assignment/testcases", fetchAssignmentMiddleware, upload.array('files', 100), checkFilesMiddleware,
+router.post("/:assignment/testcases", fetchAssignmentMiddleware, uploadMiddleware, checkFilesMiddleware,
     errorHandler(async (req, res) =>
         processSubmission(req, res, "testCase")));
 
