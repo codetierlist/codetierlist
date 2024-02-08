@@ -87,34 +87,164 @@ const ViewTierList = (props: React.HTMLAttributes<HTMLDivElement>) => {
     );
 };
 
-export default function Page() {
+/**
+ * The files tab for the assignment page
+ */
+const ViewFilesTab = ({ fetchAssignment, assignment, assignmentID }: {
+    fetchAssignment: () => Promise<void>,
+    assignment: UserFetchedAssignment,
+    assignmentID: string
+}) => {
+    return (
+        <div className={`${styles.massiveGap}`}>
+            <AssignmentPageFilesTab
+                routeName="solution"
+                route="submissions"
+                fetchAssignment={fetchAssignment}
+                assignment={assignment}
+                assignmentID={assignmentID}
+            />
+
+            <AssignmentPageFilesTab
+                routeName="test"
+                route="testcases"
+                fetchAssignment={fetchAssignment}
+                assignment={assignment}
+                assignmentID={assignmentID}
+            />
+        </div>
+    );
+};
+
+/**
+ * The empty message bar for the assignment page
+ */
+const EmptyMessageBar = ({ thing, tab, setStage, stage }: {
+    /** The thing that the user has not submitted */
+    thing: string,
+    /** The tab that the user has to click to submit the thing */
+    tab: string,
+    /** The function to set the stage */
+    setStage: (stage: number) => void,
+    /** The stage to set */
+    stage: number
+}) => {
+    return (
+        <MessageBar intent={"warning"} className={styles.messageBar}>
+            <MessageBarBody>
+                <MessageBarTitle>You have not submitted a {thing} yet.</MessageBarTitle>
+                You can submit a solution by clicking on the &ldquo;{tab}&rdquo; tab.
+                You will not be able to see the tierlist until you submit a {thing}.
+            </MessageBarBody>
+            <MessageBarActions>
+                <Button onClick={() => setStage(stage)}>Upload a {thing}</Button>
+            </MessageBarActions>
+        </MessageBar>
+    );
+};
+
+/**
+ * The view details tab for the assignment page
+ */
+const ViewDetailsTab = ({ assignment, setStage }: {
+    assignment: UserFetchedAssignment, setStage: (stage: number) => void
+}) => {
+    return (
+        <>
+            <Card className={`m-b-l ${styles.assignmentHeader}`} orientation="horizontal">
+                <CardHeader
+                    className={styles.assignmentHeaderContent}
+                    action={<TierChip tier={assignment.tier} />}
+                    header={
+                        <div className={styles.assignmentHeaderContent}>
+                            <Subtitle2 className={styles.dueDate}>
+                                <strong>Due</strong> {convertDate(assignment.due_date)} at {convertTime(assignment.due_date)}
+                            </Subtitle2>
+
+                            <Title2>
+                                {assignment.title}
+                            </Title2>
+                        </div>
+                    }
+                />
+            </Card>
+
+            {assignment.submissions.length === 0 && (
+                <EmptyMessageBar thing="solution" tab="Upload" setStage={setStage} stage={1} />
+            )}
+
+            {assignment.test_cases.length === 0 && (
+                <EmptyMessageBar thing="test case" tab="Upload" setStage={setStage} stage={1} />
+            )}
+
+            <Subtitle1 block className={styles.gutterTop}>Assignment Description</Subtitle1>
+            <Card className={styles.gutter}>
+                {
+                    assignment.description.split("\n").map((line: string, i: Key) => {
+                        return <Text key={i}>{line}</Text>;
+                    })
+                }
+            </Card>
+        </>
+    );
+};
+
+const LoadingSkeleton = () => {
+    return (
+        <>
+            <Head><title>Codetierlist</title></Head>
+            <TabList className={styles.tabList} size="large"
+                selectedValue={`tab0`}>
+                <Tab value="tab0" disabled> Assignment details </Tab>
+                <Tab value="tab1" disabled> Upload </Tab>
+                <Tab value="tab2" disabled> View tierlist </Tab>
+            </TabList>
+            <Container component="main" className={styles.container}>
+                <></>
+            </Container>
+        </>
+    );
+};
+
+/**
+ * Removes the utorid query from the url when not in the upload or tierlist stage
+ *
+ * @param queryKey the query key to remove
+ * @param excludeStages the stages to exclude from removing the query
+ * @param currentStage the current stage
+ */
+const useQueryString = (queryKey: string, excludeStages: number[], currentStage: number) => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const pathname = usePathname();
 
-    const [stage, setStage] = useState(0);
     const createQueryString = useCallback(
         () => {
             const params = new URLSearchParams(searchParams.toString());
-            params.delete("utorid");
+            params.delete(queryKey);
             return params.toString();
         },
-        [searchParams]
+        [searchParams, queryKey]
     );
 
-    useEffect(() => {
+    return useEffect(() => {
         // remove utorid query when not in upload or tierlist stage
-        if ((stage != 1 && stage != 2) && searchParams.has("utorid")) {
+        if (!excludeStages.includes(currentStage) && searchParams.has(queryKey)) {
             const query = createQueryString();
             void router.replace(`${pathname}${query ? '?' : ''}${query}`);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [stage, pathname]);
+    }, [createQueryString, currentStage, excludeStages, pathname, queryKey, router, searchParams]);
+};
 
+export default function Page() {
+    const router = useRouter();
+    const [stage, setStage] = useState(0);
     const [assignment, setAssignment] = useState<UserFetchedAssignment | null>(null);
     const { showSnackSev } = useContext(SnackbarContext);
     const { courseID, assignmentID } = router.query;
     const { userInfo } = useContext(UserContext);
+
+    useQueryString("utorid", [1, 2], stage);
 
     const fetchAssignment = async () => {
         await axios.get<UserFetchedAssignment>(`/courses/${courseID}/assignments/${assignmentID}`, { skipErrorHandling: true })
@@ -136,20 +266,7 @@ export default function Page() {
     if (stage === -404) {
         return <Error statusCode={404} />;
     } else if (!assignment || !courseID || !assignmentID) {
-        return (
-            <>
-                <Head><title>Codetierlist</title></Head>
-                <TabList className={styles.tabList} size="large"
-                    selectedValue={`tab${stage}`}>
-                    <Tab value="tab0" disabled> Assignment details </Tab>
-                    <Tab value="tab1" disabled> Upload </Tab>
-                    <Tab value="tab2" disabled> View tierlist </Tab>
-                </TabList>
-                <Container component="main" className={styles.container}>
-                    <></>
-                </Container>
-            </>
-        );
+        return <LoadingSkeleton />;
     }
 
     return (
@@ -183,83 +300,11 @@ export default function Page() {
             <Container component="main" className="m-t-xxxl">
                 {
                     stage === 0 && (
-                        <>
-                            <Card className={`m-b-l ${styles.assignmentHeader}`} orientation="horizontal">
-                                <CardHeader
-                                    className={styles.assignmentHeaderContent}
-                                    action={<TierChip tier={assignment.tier} />}
-                                    header={
-                                        <div className={styles.assignmentHeaderContent}>
-                                            <Subtitle2 className={styles.dueDate}>
-                                                <strong>Due</strong> {convertDate(assignment.due_date)} at {convertTime(assignment.due_date)}
-                                            </Subtitle2>
-
-                                            <Title2>
-                                                {assignment.title}
-                                            </Title2>
-                                        </div>
-                                    }
-                                />
-                            </Card>
-
-                            {assignment.submissions.length === 0 && (
-                                <MessageBar intent={"warning"}
-                                    className={styles.messageBar}>
-                                    <MessageBarBody>
-                                        <MessageBarTitle>You have not submitted a solution yet.</MessageBarTitle>
-                                        You can submit a solution by clicking on  the &ldquo;Upload&rdquo; tab.
-                                        You will not be able to see the tierlist until you submit a solution.
-                                    </MessageBarBody>
-                                    <MessageBarActions>
-                                        <Button onClick={() => setStage(1)}>Upload a
-                                            solution</Button>
-                                    </MessageBarActions>
-                                </MessageBar>
-                            )}
-
-                            {assignment.test_cases.length === 0 && (
-                                <MessageBar intent={"warning"}
-                                    className={styles.messageBar}>
-                                    <MessageBarBody>
-                                        <MessageBarTitle>You have not submitted a test yet.</MessageBarTitle>
-                                        You can submit a test by clicking on &ldquo;Upload&rdquo; tab.
-                                        You will not be able to see the tierlist until you submit a test.
-                                    </MessageBarBody>
-                                    <MessageBarActions>
-                                        <Button onClick={() => setStage(1)}>Submit a test</Button>
-                                    </MessageBarActions>
-                                </MessageBar>
-                            )}
-
-                            <Subtitle1 block className={styles.gutterTop}>Assignment Description</Subtitle1>
-                            <Card className={styles.gutter}>
-                                {
-                                    assignment.description.split("\n").map((line: string, i: Key) => {
-                                        return <Text key={i}>{line}</Text>;
-                                    })
-                                }
-                            </Card>
-                        </>
+                        <ViewDetailsTab assignment={assignment} setStage={setStage} />
                     )
                 }{
                     stage === 1 && (
-                        <div className={`${styles.massiveGap}`}>
-                            <AssignmentPageFilesTab
-                                routeName="solution"
-                                route="submissions"
-                                fetchAssignment={fetchAssignment}
-                                assignment={assignment}
-                                assignmentID={assignmentID as string}
-                            />
-
-                            <AssignmentPageFilesTab
-                                routeName="test"
-                                route="testcases"
-                                fetchAssignment={fetchAssignment}
-                                assignment={assignment}
-                                assignmentID={assignmentID as string}
-                            />
-                        </div>
+                        <ViewFilesTab fetchAssignment={fetchAssignment} assignment={assignment} assignmentID={assignmentID as string} />
                     )
                 }{
                     stage === 2 && (
