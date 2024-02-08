@@ -202,10 +202,10 @@ router.get("/:assignment/tierlist", fetchAssignmentMiddleware, errorHandler(asyn
         }
     });
 
-    if (!fullFetchedAssignment.groups[0] ||
+    if (!isProf(req.course!, req.user) && (!fullFetchedAssignment.groups[0] ||
         !fullFetchedAssignment.test_cases[0] ||
         !fullFetchedAssignment.submissions[0] ||
-        !fullFetchedAssignment.test_cases.some(x => x.valid === "VALID")) {
+        !fullFetchedAssignment.test_cases.some(x => x.valid === "VALID"))) {
         res.send({
             S: [],
             A: [],
@@ -246,7 +246,10 @@ router.get('/:assignment/stats', fetchAssignmentMiddleware, errorHandler(async (
     });
     console.timeEnd('statsFetch');
     console.time('tierlistGen');
-    const submissions = await prisma.$queryRaw<(QueriedSubmission & { email: string, group_number: number })[]>`
+    const submissions = await prisma.$queryRaw<(QueriedSubmission & {
+        email: string,
+        group_number: number
+    })[]>`
         WITH data as (SELECT COUNT("_ScoreCache".testcase_author_id)        as total,
                              COUNT(CASE WHEN "_ScoreCache".pass THEN 1 END) as passed,
                              "_ScoreCache".solution_author_id               as author_id,
