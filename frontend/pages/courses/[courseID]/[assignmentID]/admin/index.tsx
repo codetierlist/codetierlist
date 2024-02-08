@@ -4,19 +4,20 @@ import {
     HeaderToolbar,
     getTierClass
 } from '@/components';
+import { SnackbarContext } from '@/contexts/SnackbarContext';
 import {
     Button,
     Card,
     Field,
     Input, Link,
+    Spinner,
     Table,
     TableBody,
     TableCell,
     TableHeader,
     TableHeaderCell,
     TableRow,
-    Tooltip,
-    Spinner
+    Tooltip
 } from "@fluentui/react-components";
 import { Dismiss24Regular, Search24Regular } from "@fluentui/react-icons";
 import {
@@ -24,10 +25,9 @@ import {
     FetchedAssignmentWithTier
 } from "codetierlist-types";
 import Error from 'next/error';
+import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from "react";
-import { SnackbarContext } from '@/contexts/SnackbarContext';
-import { usePathname, useSearchParams } from "next/navigation";
 
 /**
  * Highlights the substring in the string
@@ -173,16 +173,14 @@ export default function Page({ setStage }: {
                                 }}
                             >
                                 <TableCell>
-                                    <Tooltip content={"View tierlist"} relationship="label">
-                                        <Button
-                                            appearance="subtle"
-                                            className={getTierClass(item.tier)}
-                                            onClick={() => loadTierlist(item.utorid)}
-                                            icon={item.tier}
-                                        >
-                                            View Tierlist
-                                        </Button>
-                                    </Tooltip>
+                                    <Button
+                                        appearance="subtle"
+                                        className={getTierClass(item.tier)}
+                                        onClick={() => loadTierlist(item.utorid)}
+                                        icon={item.tier}
+                                    >
+                                        View Tierlist
+                                    </Button>
                                 </TableCell>
 
                                 <TableCell> {highlightSubstring(item.utorid, filterValue)} </TableCell>

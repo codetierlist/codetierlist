@@ -30,7 +30,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from 'next/router';
 import { Key, useCallback, useContext, useEffect, useState } from 'react';
 import { Col, Container } from "react-grid-system";
-import AdminPage from "./admin/index";
+import ViewAdminTab from "./admin/index";
 import styles from './page.module.css';
 
 /**
@@ -81,7 +81,7 @@ const ViewTierList = (props: React.HTMLAttributes<HTMLDivElement>) => {
     return (
         <Col sm={12} {...props}>
             <Subtitle1 className={styles.gutter} block>Tierlist</Subtitle1>
-            {tierlist ? <TierList tierlist={tierlist} /> : "No tierlist available."}
+            {tierlist ? <TierList tierlist={tierlist} /> : "No tier list available."}
         </Col>
     );
 };
@@ -136,7 +136,7 @@ const EmptyMessageBar = ({ thing, tab, setStage, stage }: {
             <MessageBarBody>
                 <MessageBarTitle>You have not submitted a {thing} yet.</MessageBarTitle>
                 You can submit a solution by clicking on the &ldquo;{tab}&rdquo; tab.
-                You will not be able to see the tierlist until you submit a {thing}.
+                You will not be able to see the tier list until you submit a {thing}.
             </MessageBarBody>
             <MessageBarActions>
                 <Button onClick={() => setStage(stage)}>Upload a {thing}</Button>
@@ -204,9 +204,9 @@ const LoadingSkeleton = () => {
             <Head><title>Codetierlist</title></Head>
             <TabList className={styles.tabList} size="large"
                 selectedValue={`tab0`}>
-                <Tab value="tab0" disabled> Assignment details </Tab>
-                <Tab value="tab1" disabled> Upload </Tab>
-                <Tab value="tab2" disabled> View tierlist </Tab>
+                <Tab value="tab0" disabled>Assignment details</Tab>
+                <Tab value="tab1" disabled>Upload</Tab>
+                <Tab value="tab2" disabled>View tierlist</Tab>
             </TabList>
             <Container component="main" className={styles.container}>
                 <></>
@@ -324,7 +324,7 @@ export default function Page() {
                     )
                 }{
                     (stage === 3 && checkIfCourseAdmin(userInfo, assignment.course_id)) && (
-                        <AdminPage setStage={setStage} />
+                        <ViewAdminTab setStage={setStage} />
                     )
                 }
             </Container>
