@@ -188,7 +188,7 @@ const ViewDetailsTab = ({
                 />
             </Card>
 
-            {assignment.submissions.length === 0 && (
+            {assignment.submissions.files.length === 0 && (
                 <EmptyMessageBar
                     thing="solution"
                     tab="Upload"
@@ -197,7 +197,7 @@ const ViewDetailsTab = ({
                 />
             )}
 
-            {assignment.test_cases.length === 0 && (
+            {assignment.test_cases.files.length === 0 && (
                 <EmptyMessageBar
                     thing="test case"
                     tab="Upload"

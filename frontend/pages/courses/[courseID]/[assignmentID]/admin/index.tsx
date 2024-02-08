@@ -133,9 +133,7 @@ export default function Page({ setStage }: { setStage: (stage: number) => void }
         { columnKey: 'tier', label: 'Tier' },
         { columnKey: 'utorid', label: 'UTORid' },
         { columnKey: 'name', label: 'Full Name' },
-        { columnKey: 'testsPassed', label: 'Tests Passed' },
-        // { columnKey: "submitSol", label: "Submitted Solutions" },
-        // { columnKey: "submitTest", label: "Submitted Tests" }
+        { columnKey: 'testsPassed', label: 'Tests Passed' }
     ];
 
     // If the user is not an admin, error 403
@@ -204,9 +202,7 @@ export default function Page({ setStage }: { setStage: (stage: number) => void }
                                             filterValue === '' ||
                                             item.utorid.includes(filterValue) ||
                                             (
-                                                item.givenName +
-                                                ' ' +
-                                                item.surname
+                                                `${item.givenName} ${item.surname}`
                                             ).includes(filterValue)
                                                 ? undefined
                                                 : 'none',
@@ -224,22 +220,19 @@ export default function Page({ setStage }: { setStage: (stage: number) => void }
                                     </TableCell>
 
                                     <TableCell>
-                                        {' '}
                                         {highlightSubstring(
                                             item.utorid,
                                             filterValue
-                                        )}{' '}
+                                        )}
                                     </TableCell>
                                     <TableCell>
-                                        {' '}
                                         {highlightSubstring(
                                             `${item.givenName} ${item.surname}`,
                                             filterValue
-                                        )}{' '}
+                                        )}
                                     </TableCell>
                                     <TableCell>
-                                        {' '}
-                                        {item.testsPassed}/{item.totalTests}{' '}
+                                        {item.testsPassed}/{item.totalTests}
                                     </TableCell>
                                     <TableCell>
                                         <Link
