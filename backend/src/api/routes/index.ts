@@ -21,12 +21,6 @@ router.get("/", (req, res) => {
  * @adminonly
  */
 router.get("/runner/images", (req,res) =>{
-    // check if the user is an admin or a prof
-    if (!req.user.admin) {
-        res.status(403).send({message:"You do not have permission to access this route."});
-        return;
-    }
-
     res.send(images satisfies RunnerImage[]);
 });
 

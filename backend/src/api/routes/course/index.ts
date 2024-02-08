@@ -223,7 +223,7 @@ router.delete("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res)
  */
 router.post("/:courseId/add", fetchCourseMiddleware, errorHandler(async (req, res) => {
     // check if user is prof or admin
-    if (!isProf(req.course!, req.user) && !req.user.admin) {
+    if (!isProf(req.course!, req.user)) {
         res.statusCode = 403;
         res.send({message: 'You are not a professor or admin.'});
         return;
@@ -269,7 +269,7 @@ router.post("/:courseId/add", fetchCourseMiddleware, errorHandler(async (req, re
  */
 router.post("/:courseId/remove", fetchCourseMiddleware, errorHandler(async (req, res) => {
     // check if user is prof or admin
-    if (!isProf(req.course!, req.user) && !req.user.admin) {
+    if (!isProf(req.course!, req.user)) {
         res.statusCode = 403;
         res.send({message: 'You are not a professor or admin.'});
         return;
@@ -305,14 +305,6 @@ router.post("/:courseId/remove", fetchCourseMiddleware, errorHandler(async (req,
  * @profonly @adminonly
  */
 router.post("/:courseId/cover", fetchCourseMiddleware, upload.single("file"), errorHandler(async (req, res) => {
-    // check if user is prof or admin
-    if (!isProf(req.course!, req.user) && !req.user.admin) {
-        res.statusCode = 403;
-        res.send({message: 'You are not a professor or admin.'});
-        return;
-    }
-
-
     if (!req.file || !isProf(req.course!, req.user)) {
         res.statusCode = 400;
         res.send({message: "Must upload a file."});
@@ -344,7 +336,7 @@ router.get("/:courseId/cover", fetchCourseMiddleware, errorHandler(async (req, r
  */
 router.post("/:courseId/assignments", fetchCourseMiddleware, errorHandler(async (req, res) => {
     // check if user is prof or admin
-    if (!isProf(req.course!, req.user) && !req.user.admin) {
+    if (!isProf(req.course!, req.user)) {
         res.statusCode = 403;
         res.send({message: 'You are not a professor or admin.'});
         return;
