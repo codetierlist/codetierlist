@@ -1,8 +1,8 @@
 import { AvatarGroup, AvatarGroupItem, partitionAvatarGroupItems } from "@fluentui/react-components";
-import { Tier, Tierlist, UserTier, TierlistEntry } from "codetierlist-types";
+import { Tier, Tierlist, TierlistEntry } from "codetierlist-types";
 import { Col, Row } from "react-grid-system";
-import { TierChip } from "..";
-import { GenerateInitalsAvatarProps } from "../../components/InitialsAvatar/InitialsAvatar";
+import { GenerateInitalsAvatarProps, TierChip, getTierClass } from "@/components";
+import { useState, forwardRef, useRef, useEffect } from "react";
 import styles from "./TierList.module.css";
 
 const EMPTY_DATA: Tierlist = {
@@ -25,16 +25,10 @@ declare interface TierIndicatorProps {
 const TierIndicator = ({ tier }: TierIndicatorProps): JSX.Element => {
     return (
         <Col
-            style={{
-                textAlign: "center",
-                padding: 0
-            }}
-            sm={12} lg={2}
+            xs={2}
+            className={`${getTierClass(tier)} ${styles.tierIndicator}`}
         >
-            <TierChip
-                tier={tier as UserTier}
-                className={`py-2 px-0 ${styles.tier}`}
-            />
+            <TierChip tier={tier} className="py-2 px-0" />
         </Col>
     );
 };
@@ -49,7 +43,7 @@ declare interface TierAvatarsProps {
 /**
  * A tier avatars displays the avatars of the people in the tier.
  */
-const TierAvatars = ({ people, maxInlineItems }: TierAvatarsProps): JSX.Element => {
+const TierAvatars = forwardRef<HTMLDivElement, TierAvatarsProps>(({ people, maxInlineItems }, ref): JSX.Element => {
     const { inlineItems, overflowItems } = partitionAvatarGroupItems({ items: people, maxInlineItems });
 
     // get index of you in tier for swapping
@@ -66,7 +60,8 @@ const TierAvatars = ({ people, maxInlineItems }: TierAvatarsProps): JSX.Element 
     return (
         <Col
             className={styles.tierAvatars}
-            sm={12} lg={10}
+            xs={10}
+            ref={ref}
         >
             <AvatarGroup className={styles.avatarGroup}>
                 {
@@ -93,7 +88,9 @@ const TierAvatars = ({ people, maxInlineItems }: TierAvatarsProps): JSX.Element 
             </AvatarGroup>
         </Col>
     );
-};
+});
+
+TierAvatars.displayName = "TierAvatars";
 
 declare interface TierRowProps {
     /** The tier to display */
@@ -106,29 +103,55 @@ declare interface TierRowProps {
  * A tier displays a tier and the people in the tier.
  */
 const TierRow = ({ tier, tierlist }: TierRowProps): JSX.Element => {
-    const MAX_INLINE_ITEMS = 20;
+    const [maxInlineItems, setMaxInlineItems] = useState(20);
+
+    // ref for the tier avatars
+    const tierAvatarsRef = useRef<HTMLDivElement>(null);
 
     // current tier, remove any potential undefined or null values
     const thisTier = tierlist[tier as Tier].filter((person) => person);
 
-    // to make the data visualization more readable, we want to scale the
-    // number of people in each tier so that when all tiers exceed the max inline
-    // items, it is still easy to tell who has the most people in their tier
-    const LARGEST_TIER_LENGTH = Math.max(...Object.values(tierlist).map((t) => t.length));
-    const SCALED_TIER_PERCENT = thisTier.length / LARGEST_TIER_LENGTH;
-    const SCALED_TIER_LENGTH = Math.ceil(SCALED_TIER_PERCENT * MAX_INLINE_ITEMS);
+    const handleResize = () => {
+        // calculate the largest tier length based on the width of the tierlist
+        const TIERLIST_WIDTH = tierAvatarsRef.current?.clientWidth || 0;
+
+        // avatar is 32px wide
+        const MAX_INLINE_ITEMS = Math.floor(TIERLIST_WIDTH / 32);
+
+        // to make the data visualization more readable, we want to scale the
+        // number of people in each tier so that when all tiers exceed the max inline
+        // items, it is still easy to tell who has the most people in their tier
+        const LARGEST_TIER_LENGTH = Math.max(...Object.values(tierlist).map((t) => t.length));
+        const SCALED_TIER_PERCENT = thisTier.length / LARGEST_TIER_LENGTH;
+        const SCALED_TIER_LENGTH = Math.ceil(SCALED_TIER_PERCENT * MAX_INLINE_ITEMS);
+
+        setMaxInlineItems(
+            LARGEST_TIER_LENGTH > MAX_INLINE_ITEMS ?
+                SCALED_TIER_LENGTH :
+                MAX_INLINE_ITEMS
+        );
+    };
+
+    useEffect(() => {
+        handleResize();
+        window.addEventListener("resize", handleResize);
+
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [tierlist, thisTier]);
 
     return (
         <>
             <TierIndicator tier={tier as Tier} />
 
             <TierAvatars
+                ref={tierAvatarsRef}
                 people={thisTier}
 
                 maxInlineItems={
-                    LARGEST_TIER_LENGTH > MAX_INLINE_ITEMS ?
-                        SCALED_TIER_LENGTH :
-                        MAX_INLINE_ITEMS
+                    maxInlineItems
                 }
             />
         </>
