@@ -52,6 +52,7 @@ const ListFiles = ({
                 `/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/${commit.log[0]}/${file}`,
                 {
                     skipErrorHandling: true,
+                    transformResponse: (res) => res,
                     params: {
                         utorid: searchParams.get('utorid') ?? undefined,
                     },
@@ -172,6 +173,7 @@ export const AssignmentPageFilesTab = ({
                 `/courses/${assignment.course_id}/assignments/${assignmentID}/${route}`,
                 {
                     skipErrorHandling: true,
+                    transformResponse: (res) => res,
                     params: {
                         utorid: searchParams.get('utorid') ?? undefined,
                     },
