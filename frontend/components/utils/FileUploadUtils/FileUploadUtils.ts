@@ -4,17 +4,17 @@
  * @returns the contents of the file
  */
 export const promptForFileReader = async (type: string): Promise<FileReader> => {
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
     fileInput.accept = type;
 
-    return new Promise(resolve => {
-        fileInput.addEventListener('change', () => {
+    return new Promise((resolve) => {
+        fileInput.addEventListener("change", () => {
             if (fileInput.files && fileInput.files[0]) {
                 const file = fileInput.files[0];
                 const reader = new FileReader();
-                reader.addEventListener('load', () => {
-                    if (typeof reader.result === 'string') {
+                reader.addEventListener("load", () => {
+                    if (typeof reader.result === "string") {
                         resolve(reader);
                     }
                 });
@@ -35,17 +35,17 @@ export const promptForFileObject = async (
     type: string,
     multiple = false
 ): Promise<FileList> => {
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
     fileInput.accept = type;
     fileInput.multiple = multiple;
 
-    return new Promise(resolve => {
-        fileInput.addEventListener('change', () => {
+    return new Promise((resolve) => {
+        fileInput.addEventListener("change", () => {
             if (fileInput.files) {
                 resolve(fileInput.files);
             } else {
-                throw new Error('Select a file!');
+                throw new Error("Select a file!");
             }
         });
         fileInput.click();

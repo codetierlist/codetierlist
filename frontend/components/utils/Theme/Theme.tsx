@@ -1,8 +1,8 @@
-import { createDarkTheme, createLightTheme } from '@fluentui/react-components';
+import { createDarkTheme, createLightTheme } from "@fluentui/react-components";
 
-import type { BrandVariants, Theme } from '@fluentui/react-components';
+import type { BrandVariants, Theme } from "@fluentui/react-components";
 
-import { Space_Grotesk, Inter, Space_Mono } from 'next/font/google';
+import { Space_Grotesk, Inter, Space_Mono } from "next/font/google";
 
 const greenTheme: BrandVariants = {
     10: `hsl(var(--accent-hue), 33.33%, 1.18%)`,
@@ -23,12 +23,12 @@ const greenTheme: BrandVariants = {
     160: `hsl(var(--accent-hue), 86.49%, 70.98%)`,
 };
 
-const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--spaceGrotesk' });
-const inter = Inter({ subsets: ['latin'], variable: '--inter' });
+const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--spaceGrotesk" });
+const inter = Inter({ subsets: ["latin"], variable: "--inter" });
 const spaceMono = Space_Mono({
-    subsets: ['latin'],
-    variable: '--spaceMono',
-    weight: '400',
+    subsets: ["latin"],
+    variable: "--spaceMono",
+    weight: "400",
 });
 
 export const lightTheme: Theme = {

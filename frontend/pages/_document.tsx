@@ -1,5 +1,5 @@
-import { createDOMRenderer, renderToStyleElements } from '@fluentui/react-components';
-import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/document';
+import { createDOMRenderer, renderToStyleElements } from "@fluentui/react-components";
+import Document, { Html, Head, Main, NextScript, DocumentContext } from "next/document";
 
 class MyDocument extends Document {
     static async getInitialProps(ctx: DocumentContext) {
@@ -9,7 +9,7 @@ class MyDocument extends Document {
 
         ctx.renderPage = () =>
             originalRenderPage({
-                enhanceApp: App =>
+                enhanceApp: (App) =>
                     function EnhancedApp(props) {
                         const enhancedProps = {
                             ...props,

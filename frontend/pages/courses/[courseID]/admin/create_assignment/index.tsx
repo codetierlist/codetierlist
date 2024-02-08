@@ -1,7 +1,7 @@
-import axios, { handleError } from '@/axios';
-import { ControlCard, HeaderToolbar, Monaco } from '@/components';
-import { SnackbarContext } from '@/contexts/SnackbarContext';
-import { UserContext } from '@/contexts/UserContext';
+import axios, { handleError } from "@/axios";
+import { ControlCard, HeaderToolbar, Monaco } from "@/components";
+import { SnackbarContext } from "@/contexts/SnackbarContext";
+import { UserContext } from "@/contexts/UserContext";
 import {
     Button,
     Caption1,
@@ -15,7 +15,7 @@ import {
     Title2,
     ToolbarButton,
     Switch,
-} from '@fluentui/react-components';
+} from "@fluentui/react-components";
 import {
     ArrowLeft24Regular,
     Calendar24Regular,
@@ -24,13 +24,13 @@ import {
     Rename24Regular,
     Run24Regular,
     TextDescription24Regular,
-} from '@fluentui/react-icons';
-import { RunnerImage } from 'codetierlist-types';
-import Head from 'next/head';
-import { useRouter } from 'next/router';
-import { useContext, useEffect, useState } from 'react';
-import { Container } from 'react-grid-system';
-import styles from './page.module.css';
+} from "@fluentui/react-icons";
+import { RunnerImage } from "codetierlist-types";
+import Head from "next/head";
+import { useRouter } from "next/router";
+import { useContext, useEffect, useState } from "react";
+import { Container } from "react-grid-system";
+import styles from "./page.module.css";
 
 /**
  * Converts an ISO string to a date object
@@ -43,8 +43,8 @@ const updateTimezoneOffset = (date: string) => {
 
 export default function Page(): JSX.Element {
     const { showSnackSev } = useContext(SnackbarContext);
-    const [assignmentName, setAssignmentName] = useState('');
-    const [description, setDescription] = useState('');
+    const [assignmentName, setAssignmentName] = useState("");
+    const [description, setDescription] = useState("");
     const [runners, setRunners] = useState<Record<string, string[]>>({});
     const [selectedRunner, setSelectedRunner] = useState<RunnerImage | null>(null);
     const [dueDate, setDueDate] = useState(new Date());
@@ -70,11 +70,11 @@ export default function Page(): JSX.Element {
 
         await navigator.clipboard
             .writeText(serialized)
-            .catch(e => {
-                showSnackSev(`Failed to write to clipboard: ${e.message}`, 'error');
+            .catch((e) => {
+                showSnackSev(`Failed to write to clipboard: ${e.message}`, "error");
             })
             .then(() => {
-                showSnackSev('Copied to clipboard', 'success');
+                showSnackSev("Copied to clipboard", "success");
             });
     };
 
@@ -82,9 +82,9 @@ export default function Page(): JSX.Element {
      * Imports the assignment from a JSON file in the clipboard
      */
     const importFormData = async () => {
-        const serialized = await navigator.clipboard.readText().catch(e => {
-            showSnackSev(`Failed to read from clipboard: ${e.message}`, 'error');
-            return '';
+        const serialized = await navigator.clipboard.readText().catch((e) => {
+            showSnackSev(`Failed to read from clipboard: ${e.message}`, "error");
+            return "";
         });
 
         let data;
@@ -92,7 +92,7 @@ export default function Page(): JSX.Element {
         try {
             data = JSON.parse(serialized);
         } catch (e) {
-            showSnackSev('Invalid JSON', 'error');
+            showSnackSev("Invalid JSON", "error");
             return;
         }
 
@@ -103,7 +103,7 @@ export default function Page(): JSX.Element {
             !data.image ||
             !data.image_version
         ) {
-            showSnackSev('Invalid assignment data', 'error');
+            showSnackSev("Invalid assignment data", "error");
             return;
         }
 
@@ -120,7 +120,7 @@ export default function Page(): JSX.Element {
      */
     const submitAssignment = async () => {
         if (!description) {
-            showSnackSev('Description is required', 'error');
+            showSnackSev("Description is required", "error");
             return;
         }
 
@@ -141,7 +141,7 @@ export default function Page(): JSX.Element {
     useEffect(() => {
         const fetchRunners = async () => {
             const res = await axios
-                .get<RunnerImage[]>('/runner/images')
+                .get<RunnerImage[]>("/runner/images")
                 .catch(handleError(showSnackSev));
             if (!res) {
                 return;
@@ -187,15 +187,15 @@ export default function Page(): JSX.Element {
                     }
                 >
                     {assignmentName && description && selectedRunner
-                        ? 'Export Assignment to Clipboard'
-                        : 'Import Assignment from Clipboard'}
+                        ? "Export Assignment to Clipboard"
+                        : "Import Assignment from Clipboard"}
                 </ToolbarButton>
             </HeaderToolbar>
 
             <Container component="main" className="p-y-xxxl">
                 <form
                     className={styles.form}
-                    onSubmit={e => {
+                    onSubmit={(e) => {
                         e.preventDefault();
                         void submitAssignment();
                     }}
@@ -217,7 +217,7 @@ export default function Page(): JSX.Element {
                             id="name"
                             name="courseCode"
                             value={assignmentName}
-                            onChange={e => setAssignmentName(e.target.value)}
+                            onChange={(e) => setAssignmentName(e.target.value)}
                         />
                     </ControlCard>
 
@@ -234,10 +234,10 @@ export default function Page(): JSX.Element {
                             id="dueDate"
                             name="dueDate"
                             value={dueDate.toISOString().slice(0, -8)}
-                            onChange={e => {
+                            onChange={(e) => {
                                 // check if the date is valid
                                 if (
-                                    new Date(e.target.value).toString() !== 'Invalid Date'
+                                    new Date(e.target.value).toString() !== "Invalid Date"
                                 )
                                     setDueDate(updateTimezoneOffset(e.target.value));
                             }}
@@ -269,7 +269,7 @@ export default function Page(): JSX.Element {
                             name="runner"
                             value={
                                 selectedRunner?.runner_image +
-                                '/' +
+                                "/" +
                                 selectedRunner?.image_version
                             }
                             onOptionSelect={(_, data) =>
@@ -280,9 +280,9 @@ export default function Page(): JSX.Element {
                                 )
                             }
                         >
-                            {Object.keys(runners).map(image => (
+                            {Object.keys(runners).map((image) => (
                                 <OptionGroup label={image} key={image}>
-                                    {runners[image].map(version => (
+                                    {runners[image].map((version) => (
                                         <Option
                                             key={`${image}/${version}`}
                                             text={`${image}/${version}`}
@@ -310,8 +310,8 @@ export default function Page(): JSX.Element {
                             min={0}
                             id="groupSize"
                             name="groupSize"
-                            value={groupSize ? groupSize.toString() : ''}
-                            onChange={e =>
+                            value={groupSize ? groupSize.toString() : ""}
+                            onChange={(e) =>
                                 setGroupSize(
                                     isNaN(e.target.valueAsNumber)
                                         ? null
@@ -342,7 +342,7 @@ export default function Page(): JSX.Element {
 
                         <Monaco
                             value={description}
-                            onChange={value => setDescription(value || '')}
+                            onChange={(value) => setDescription(value || "")}
                             language="markdown"
                             height="500px"
                         />

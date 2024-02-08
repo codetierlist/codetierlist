@@ -1,4 +1,4 @@
-import { Display } from '@fluentui/react-text';
+import { Display } from "@fluentui/react-text";
 
 export default function NotFound() {
     return (

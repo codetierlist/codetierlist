@@ -1,6 +1,6 @@
-import { Avatar } from '@fluentui/react-components';
-import type { AvatarProps } from '@fluentui/react-components';
-import { FetchedUser } from 'codetierlist-types';
+import { Avatar } from "@fluentui/react-components";
+import type { AvatarProps } from "@fluentui/react-components";
+import { FetchedUser } from "codetierlist-types";
 
 export const generateInitals = (user: FetchedUser): string =>
     `${user.givenName.substring(0, 1)}${user.surname.substring(0, 1)}`;
@@ -14,9 +14,9 @@ export const GenerateInitalsAvatarProps = (
     props?: AvatarProps
 ): AvatarProps => {
     return {
-        'aria-hidden': true,
+        "aria-hidden": true,
         initials: initials.substring(0, 2).toUpperCase(),
-        color: 'colorful',
+        color: "colorful",
         idForColor: initials,
         ...props,
     };
@@ -34,7 +34,7 @@ export declare type InitialsAvatarProps = AvatarProps & {
  * @returns {JSX.Element} the avatar with the initials
  */
 export const InitialsAvatar = ({
-    name = '',
+    name = "",
     ...props
 }: InitialsAvatarProps): JSX.Element => {
     return <Avatar {...GenerateInitalsAvatarProps(name, props)} />;

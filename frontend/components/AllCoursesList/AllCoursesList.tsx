@@ -1,10 +1,10 @@
-import axios, { handleError } from '@/axios';
-import { CourseOverviewCard, getSession } from '@/components';
-import { SnackbarContext } from '@/contexts/SnackbarContext';
-import { UserContext } from '@/contexts/UserContext';
-import { FetchedCourse } from 'codetierlist-types';
-import { notFound } from 'next/navigation';
-import { useContext, useEffect, useState } from 'react';
+import axios, { handleError } from "@/axios";
+import { CourseOverviewCard, getSession } from "@/components";
+import { SnackbarContext } from "@/contexts/SnackbarContext";
+import { UserContext } from "@/contexts/UserContext";
+import { FetchedCourse } from "codetierlist-types";
+import { notFound } from "next/navigation";
+import { useContext, useEffect, useState } from "react";
 
 /**
  * Show all courses if admin
@@ -17,15 +17,15 @@ export const AllCoursesList = () => {
     const fetchAllCourses = async () => {
         await axios
             .get<FetchedCourse[]>(`/courses`, { skipErrorHandling: true })
-            .then(res =>
+            .then((res) =>
                 setAllCourses(
                     res.data.filter(
-                        course =>
-                            !userInfo.roles.some(role => role.course_id === course.id)
+                        (course) =>
+                            !userInfo.roles.some((role) => role.course_id === course.id)
                     )
                 )
             )
-            .catch(e => {
+            .catch((e) => {
                 handleError(showSnackSev)(e);
                 notFound();
             });
@@ -51,7 +51,7 @@ export const AllCoursesList = () => {
 
             <div className="flex-wrap">
                 {allCourses &&
-                    allCourses.map(course => (
+                    allCourses.map((course) => (
                         <CourseOverviewCard
                             key={course.id}
                             id={course.id}

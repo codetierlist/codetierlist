@@ -1,9 +1,9 @@
-import { Caption1, Card, CardHeader, Title3 } from '@fluentui/react-components';
-import styles from './AssignmentCard.module.css';
-import { TierChip } from '@/components';
-import { type Tier, type UserTier } from 'codetierlist-types';
-import { convertDate } from '../utils/TimeUtils/TimeUtils';
-import Link from 'next/link';
+import { Caption1, Card, CardHeader, Title3 } from "@fluentui/react-components";
+import styles from "./AssignmentCard.module.css";
+import { TierChip } from "@/components";
+import { type Tier, type UserTier } from "codetierlist-types";
+import { convertDate } from "../utils/TimeUtils/TimeUtils";
+import Link from "next/link";
 
 export declare interface AssignmentCardProps {
     /** The ID of the assignment */
@@ -35,7 +35,7 @@ export const AssignmentCard = ({
         <Link
             href={`${courseID}/${id}`}
             className={styles.cardLink}
-            aria-label={`View assignment ${name}, due ${formattedDueDate}. ${tier == '?' ? 'Tier not set.' : `You are in ${tier} tier.`}`}
+            aria-label={`View assignment ${name}, due ${formattedDueDate}. ${tier == "?" ? "Tier not set." : `You are in ${tier} tier.`}`}
         >
             <Card className={styles.card} selected={false}>
                 <CardHeader header={<TierChip tier={tier as UserTier} />} />

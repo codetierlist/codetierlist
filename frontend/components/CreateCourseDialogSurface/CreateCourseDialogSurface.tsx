@@ -1,6 +1,6 @@
-import axios, { handleError } from '@/axios';
-import { SnackbarContext } from '@/contexts/SnackbarContext';
-import { UserContext } from '@/contexts/UserContext';
+import axios, { handleError } from "@/axios";
+import { SnackbarContext } from "@/contexts/SnackbarContext";
+import { UserContext } from "@/contexts/UserContext";
 import {
     Button,
     Caption1,
@@ -12,10 +12,10 @@ import {
     DialogTrigger,
     Input,
     Label,
-} from '@fluentui/react-components';
-import { useContext, useState } from 'react';
+} from "@fluentui/react-components";
+import { useContext, useState } from "react";
 
-import styles from './CreateCourseForm.module.css';
+import styles from "./CreateCourseForm.module.css";
 
 export declare interface CreateCourseFormProps {
     /** function to close the dialog */
@@ -28,19 +28,19 @@ export declare interface CreateCourseFormProps {
 export const CreateCourseDialogSurface = ({
     closeDialog,
 }: CreateCourseFormProps): JSX.Element => {
-    const [code, setCourseCode] = useState('');
-    const [name, setCourseName] = useState('');
+    const [code, setCourseCode] = useState("");
+    const [name, setCourseName] = useState("");
     const { fetchUserInfo } = useContext(UserContext);
     const { showSnackSev } = useContext(SnackbarContext);
 
     return (
         <DialogSurface>
             <form
-                onSubmit={e => {
+                onSubmit={(e) => {
                     e.preventDefault();
 
                     axios
-                        .post('/courses', { code, name })
+                        .post("/courses", { code, name })
                         .then(closeDialog)
                         .catch(handleError(showSnackSev))
                         .finally(fetchUserInfo);
@@ -67,7 +67,7 @@ export const CreateCourseDialogSurface = ({
                                 name="courseCode"
                                 value={code}
                                 maxLength={10}
-                                onChange={e => setCourseCode(e.target.value)}
+                                onChange={(e) => setCourseCode(e.target.value)}
                             />
                         </div>
 
@@ -82,7 +82,7 @@ export const CreateCourseDialogSurface = ({
                                 name="courseName"
                                 value={name}
                                 maxLength={50}
-                                onChange={e => setCourseName(e.target.value)}
+                                onChange={(e) => setCourseName(e.target.value)}
                             />
                         </div>
                     </DialogContent>

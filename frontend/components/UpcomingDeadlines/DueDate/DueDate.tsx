@@ -1,5 +1,5 @@
-import { Text, Title3 } from '@fluentui/react-components';
-import styles from './DueDate.module.css';
+import { Text, Title3 } from "@fluentui/react-components";
+import styles from "./DueDate.module.css";
 
 export declare interface DueDateProps {
     daysUntilDue: number;

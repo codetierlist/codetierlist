@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { createContext } from 'react';
-import { type FetchedUser } from 'codetierlist-types';
+import { createContext } from "react";
+import { type FetchedUser } from "codetierlist-types";
 
 /**
  * The user that is shown when the user's information is still loading.
  */
 export const defaultUser: FetchedUser = {
-    utorid: 'mikuhats',
-    email: 'hatsune.miku@utoronto.ca',
+    utorid: "mikuhats",
+    email: "hatsune.miku@utoronto.ca",
     roles: [],
     admin: false,
-    surname: 'Hatsune',
-    givenName: 'Miku',
-    theme: 'LIGHT',
+    surname: "Hatsune",
+    givenName: "Miku",
+    theme: "LIGHT",
     new_achievements: false,
 };
 

@@ -66,7 +66,7 @@
 }
 
 .commitId::before {
-    content: 'Submission ID: ';
+    content: "Submission ID: ";
     font-weight: var(--fontWeightBold);
 }
 

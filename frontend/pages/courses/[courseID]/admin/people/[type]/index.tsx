@@ -1,33 +1,33 @@
-import axios, { handleError } from '@/axios';
-import { HeaderToolbar, Monaco, promptForFileReader } from '@/components';
-import { SnackbarContext } from '@/contexts/SnackbarContext';
+import axios, { handleError } from "@/axios";
+import { HeaderToolbar, Monaco, promptForFileReader } from "@/components";
+import { SnackbarContext } from "@/contexts/SnackbarContext";
 import {
     Body2,
     Button,
     Card,
     LargeTitle,
     ToolbarButton,
-} from '@fluentui/react-components';
-import { Add24Filled, ArrowLeft24Regular } from '@fluentui/react-icons';
-import { Title2 } from '@fluentui/react-text';
-import { RoleType } from 'codetierlist-types';
-import { isUTORid } from 'is-utorid';
-import Head from 'next/head';
-import { useRouter } from 'next/router';
-import { useContext, useEffect, useState } from 'react';
-import { Container } from 'react-grid-system';
+} from "@fluentui/react-components";
+import { Add24Filled, ArrowLeft24Regular } from "@fluentui/react-icons";
+import { Title2 } from "@fluentui/react-text";
+import { RoleType } from "codetierlist-types";
+import { isUTORid } from "is-utorid";
+import Head from "next/head";
+import { useRouter } from "next/router";
+import { useContext, useEffect, useState } from "react";
+import { Container } from "react-grid-system";
 
 /**
  * Get the role name from the role type
  */
 export const getRoleName = (roleName: RoleType | string): string =>
-    roleName === 'TA' ? roleName : roleName.toLocaleLowerCase();
+    roleName === "TA" ? roleName : roleName.toLocaleLowerCase();
 
 /**
  * Like getRoleName, but returns teaching assistant instead of ta
  */
 export const getLongRoleName = (roleName: RoleType | string): string =>
-    roleName === 'TA' ? 'Teaching Assistant' : getRoleName(roleName);
+    roleName === "TA" ? "Teaching Assistant" : getRoleName(roleName);
 
 /**
  * given a csv of students, enroll them in or remove them from the course
@@ -41,27 +41,27 @@ export const getLongRoleName = (roleName: RoleType | string): string =>
 async function modifyEnrollment(
     courseID: string,
     csv: string,
-    action: 'add' | 'remove',
+    action: "add" | "remove",
     role: RoleType,
-    showSnackSev: (message: string, severity: 'success' | 'error') => void
+    showSnackSev: (message: string, severity: "success" | "error") => void
 ): Promise<void> {
-    const utorids = csv.split('\n').map(utorid => utorid.trim());
+    const utorids = csv.split("\n").map((utorid) => utorid.trim());
 
     if (!csv || !utorids.length) {
-        showSnackSev('Please enter some UTORids', 'error');
+        showSnackSev("Please enter some UTORids", "error");
     } else if (utorids.some((utorid: string) => !isUTORid(utorid))) {
-        showSnackSev('One of the UTORids are invalid', 'error');
+        showSnackSev("One of the UTORids are invalid", "error");
     } else {
         await axios
             .post(`/courses/${courseID}/${action}`, { utorids, role })
             .then(() =>
                 showSnackSev(
-                    `${action == 'add' ? 'Added' : 'Removed'} ${getRoleName(role)} successfully`,
-                    'success'
+                    `${action == "add" ? "Added" : "Removed"} ${getRoleName(role)} successfully`,
+                    "success"
                 )
             )
-            .catch(e => {
-                showSnackSev(e.message, 'error');
+            .catch((e) => {
+                showSnackSev(e.message, "error");
                 throw e;
             });
     }
@@ -71,38 +71,38 @@ export default function Page(): JSX.Element {
     const router = useRouter();
     const { type } = useRouter().query;
     const [add, isAdd] = useState(true);
-    const [role, setRole] = useState('');
-    const [editorValue, setEditorValue] = useState('');
+    const [role, setRole] = useState("");
+    const [editorValue, setEditorValue] = useState("");
     const { showSnackSev } = useContext(SnackbarContext);
 
     useEffect(() => {
         switch (type) {
-            case 'add-students':
-                setRole('STUDENT');
+            case "add-students":
+                setRole("STUDENT");
                 isAdd(true);
                 break;
-            case 'add-tas':
-                setRole('TA');
+            case "add-tas":
+                setRole("TA");
                 isAdd(true);
                 break;
-            case 'add-instructors':
-                setRole('INSTRUCTOR');
+            case "add-instructors":
+                setRole("INSTRUCTOR");
                 isAdd(true);
                 break;
-            case 'remove-students':
-                setRole('STUDENT');
+            case "remove-students":
+                setRole("STUDENT");
                 isAdd(false);
                 break;
-            case 'remove-tas':
-                setRole('TA');
+            case "remove-tas":
+                setRole("TA");
                 isAdd(false);
                 break;
-            case 'remove-instructors':
-                setRole('INSTRUCTOR');
+            case "remove-instructors":
+                setRole("INSTRUCTOR");
                 isAdd(false);
                 break;
             default:
-                setRole('invalid');
+                setRole("invalid");
                 break;
         }
     }, [type]);
@@ -110,7 +110,7 @@ export default function Page(): JSX.Element {
     return (
         <>
             <Head>
-                <title>{`${add ? 'Add' : 'Remove'} ${getLongRoleName(role)}s - Codetierlist`}</title>
+                <title>{`${add ? "Add" : "Remove"} ${getLongRoleName(role)}s - Codetierlist`}</title>
             </Head>
 
             <HeaderToolbar>
@@ -123,7 +123,7 @@ export default function Page(): JSX.Element {
                 <ToolbarButton
                     icon={<Add24Filled />}
                     onClick={async () => {
-                        promptForFileReader('.csv').then(csv => {
+                        promptForFileReader(".csv").then((csv) => {
                             if (csv) {
                                 setEditorValue(csv.result as string);
                             }
@@ -135,28 +135,28 @@ export default function Page(): JSX.Element {
             </HeaderToolbar>
 
             <Container component="main" className="m-t-xxxl">
-                {role === 'invalid' && (
+                {role === "invalid" && (
                     <>
                         <LargeTitle block as="h1">
                             Error 404
                         </LargeTitle>
                         <Body2 block as="p">
-                            The only valid types are <code>add-students</code>,{' '}
-                            <code>add-tas</code>, <code>add-instructors</code>,{' '}
-                            <code>remove-students</code>, <code>remove-tas</code>, and{' '}
+                            The only valid types are <code>add-students</code>,{" "}
+                            <code>add-tas</code>, <code>add-instructors</code>,{" "}
+                            <code>remove-students</code>, <code>remove-tas</code>, and{" "}
                             <code>remove-instructors</code>.
                         </Body2>
                     </>
                 )}
 
-                {role !== 'invalid' && (
+                {role !== "invalid" && (
                     <>
                         <header className={`m-b-xl`}>
                             <Title2
                                 block
                                 aria-label={`Add or remove ${getLongRoleName(role)}s`}
                             >
-                                {`${add ? 'Add' : 'Remove'} ${getRoleName(role)}s`}{' '}
+                                {`${add ? "Add" : "Remove"} ${getRoleName(role)}s`}{" "}
                             </Title2>
                             <Body2
                                 block
@@ -168,22 +168,22 @@ export default function Page(): JSX.Element {
                                 height="56vh"
                                 defaultLanguage="csv"
                                 value={editorValue}
-                                onChange={value => setEditorValue(value || '')}
+                                onChange={(value) => setEditorValue(value || "")}
                             />
                         </Card>
 
                         <Button
                             appearance="primary"
                             className={`m-y-xxl`}
-                            style={{ float: 'right' }}
+                            style={{ float: "right" }}
                             onClick={() => {
                                 modifyEnrollment(
                                     router.query.courseID as string,
                                     editorValue,
-                                    add ? 'add' : 'remove',
+                                    add ? "add" : "remove",
                                     role as RoleType,
                                     showSnackSev
-                                ).catch(e => handleError(showSnackSev, e.message));
+                                ).catch((e) => handleError(showSnackSev, e.message));
                             }}
                         >
                             Submit

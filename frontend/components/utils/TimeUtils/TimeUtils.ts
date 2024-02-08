@@ -1,6 +1,6 @@
 /** @filesummary This file contains small utility functions for time. */
 
-import { Session } from 'codetierlist-types';
+import { Session } from "codetierlist-types";
 
 /**
  * Converts ISP 8601 date string to more readable format
@@ -9,12 +9,12 @@ import { Session } from 'codetierlist-types';
  */
 export const convertDate = (date?: string | Date): string => {
     if (date === undefined) {
-        return 'No date';
+        return "No date";
     }
     let dateObj: Date;
 
     // parse the date string into a date object
-    if (typeof date === 'string') {
+    if (typeof date === "string") {
         // parse the date string into a date object
         dateObj = new Date(date);
     } else {
@@ -24,9 +24,9 @@ export const convertDate = (date?: string | Date): string => {
     // convert the date object into a string with the desired format
     // undefined to use the browser's locale
     const dateStr = dateObj.toLocaleDateString(undefined, {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
+        year: "numeric",
+        month: "long",
+        day: "numeric",
     });
 
     // return the date string
@@ -61,25 +61,25 @@ export const convertTime = (
     options?: Intl.DateTimeFormatOptions
 ): string => {
     if (date === undefined) {
-        return 'No time';
+        return "No time";
     }
 
     let dateObj: Date;
 
     // parse the date string into a date object
-    if (typeof date === 'string') {
+    if (typeof date === "string") {
         // parse the date string into a date object
         dateObj = new Date(date);
     } else {
         dateObj = date;
     }
     const formatDateOptions: Intl.DateTimeFormatOptions = {
-        hour: 'numeric',
-        minute: 'numeric',
+        hour: "numeric",
+        minute: "numeric",
         ...options,
     };
 
-    return dateObj.toLocaleTimeString('en-CA', formatDateOptions);
+    return dateObj.toLocaleTimeString("en-CA", formatDateOptions);
 };
 
 /**
@@ -123,12 +123,12 @@ export const getSession = (date: Date): Session => {
 
     if (2 <= month && month < 6) {
         // April - July
-        return 'Summer';
+        return "Summer";
     } else if (7 <= month && month < 9) {
         // Aug - Sep
-        return 'Fall';
+        return "Fall";
     } else {
         // Oct - Mar
-        return 'Winter';
+        return "Winter";
     }
 };

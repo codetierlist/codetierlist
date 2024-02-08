@@ -1,10 +1,10 @@
-import axios, { handleError } from '@/axios';
-import { UserContext } from '@/contexts/UserContext';
-import { useRouter } from 'next/router';
-import { useContext } from 'react';
-import { SnackbarContext } from '@/contexts/SnackbarContext';
-import { BaseToolbarDeleteButton } from '@/components/AssignmentAdminToolbar/BaseToolbarDeleteButton/BaseToolbarDeleteButton';
-import { FetchedAssignment } from 'codetierlist-types';
+import axios, { handleError } from "@/axios";
+import { UserContext } from "@/contexts/UserContext";
+import { useRouter } from "next/router";
+import { useContext } from "react";
+import { SnackbarContext } from "@/contexts/SnackbarContext";
+import { BaseToolbarDeleteButton } from "@/components/AssignmentAdminToolbar/BaseToolbarDeleteButton/BaseToolbarDeleteButton";
+import { FetchedAssignment } from "codetierlist-types";
 
 /**
  * A button that deletes an assignment
@@ -22,7 +22,7 @@ export const AdminToolbarDeleteAssignmentButton = ({
     const deleteAssignment = async () => {
         await axios
             .delete(`/courses/${assignment.course_id}/assignments/${assignment.title}`)
-            .then(() => router.push('/'))
+            .then(() => router.push("/"))
             .catch(handleError(showSnackSev))
             .finally(() => fetchUserInfo());
     };

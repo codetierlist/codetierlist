@@ -1,6 +1,6 @@
-import { Badge } from '@fluentui/react-components';
-import styles from './SessionBlock.module.css';
-import { Session } from 'codetierlist-types';
+import { Badge } from "@fluentui/react-components";
+import styles from "./SessionBlock.module.css";
+import { Session } from "codetierlist-types";
 
 export declare interface SessionBlockProps {
     /** the session to display */
@@ -9,40 +9,40 @@ export declare interface SessionBlockProps {
 
 export const SessionBlock = ({ session }: SessionBlockProps): JSX.Element => {
     switch (session) {
-        case 'Summer':
+        case "Summer":
             return (
                 <Badge
                     appearance="filled"
                     className={styles.badge}
                     style={{
-                        color: 'var(--colorNeutralForegroundInverted)',
-                        backgroundColor: 'var(--colorPaletteGreenForeground2)',
+                        color: "var(--colorNeutralForegroundInverted)",
+                        backgroundColor: "var(--colorPaletteGreenForeground2)",
                     }}
                 >
                     Summer
                 </Badge>
             );
-        case 'Fall':
+        case "Fall":
             return (
                 <Badge
                     appearance="filled"
                     className={styles.badge}
                     style={{
-                        color: 'var(--colorNeutralForegroundInverted)',
-                        backgroundColor: 'var(--colorPaletteRedForeground2)',
+                        color: "var(--colorNeutralForegroundInverted)",
+                        backgroundColor: "var(--colorPaletteRedForeground2)",
                     }}
                 >
                     Fall
                 </Badge>
             );
-        case 'Winter':
+        case "Winter":
             return (
                 <Badge
                     appearance="filled"
                     className={styles.badge}
                     style={{
-                        color: 'var(--colorNeutralForegroundInverted)',
-                        backgroundColor: 'var(--colorPaletteBlueForeground2)',
+                        color: "var(--colorNeutralForegroundInverted)",
+                        backgroundColor: "var(--colorPaletteBlueForeground2)",
                     }}
                 >
                     Winter

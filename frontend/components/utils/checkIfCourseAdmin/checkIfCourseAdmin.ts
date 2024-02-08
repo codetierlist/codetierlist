@@ -1,4 +1,4 @@
-import { FetchedUser } from 'codetierlist-types';
+import { FetchedUser } from "codetierlist-types";
 
 /**
  * Check if a user has administrator privileges in a course, i.e., is a prof
@@ -11,9 +11,9 @@ import { FetchedUser } from 'codetierlist-types';
 export const checkIfCourseAdmin = (user: FetchedUser, courseId: string) => {
     return (
         user.roles.some(
-            role =>
+            (role) =>
                 role.course_id === courseId &&
-                (role.type === 'INSTRUCTOR' || role.type == 'TA')
+                (role.type === "INSTRUCTOR" || role.type == "TA")
         ) || user.admin
     );
 };

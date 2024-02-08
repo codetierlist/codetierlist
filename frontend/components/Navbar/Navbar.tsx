@@ -2,8 +2,8 @@ import {
     GenerateInitalsAvatarProps,
     NavbarUserPopover,
     generateInitals,
-} from '@/components';
-import { UserContext, defaultUser } from '@/contexts/UserContext';
+} from "@/components";
+import { UserContext, defaultUser } from "@/contexts/UserContext";
 import {
     Badge,
     Button,
@@ -12,10 +12,10 @@ import {
     PopoverSurface,
     PopoverTrigger,
     SkeletonItem,
-} from '@fluentui/react-components';
-import Link from 'next/link';
-import { useContext } from 'react';
-import styles from './Navbar.module.css';
+} from "@fluentui/react-components";
+import Link from "next/link";
+import { useContext } from "react";
+import styles from "./Navbar.module.css";
 
 /**
  * The user avatar is the avatar that appears in the navbar. It contains
@@ -28,7 +28,7 @@ const UserAvatar = (): JSX.Element => {
         <Persona
             textPosition="before"
             avatar={GenerateInitalsAvatarProps(generateInitals(userInfo), {
-                badge: userInfo.new_achievements ? { status: 'busy' } : undefined,
+                badge: userInfo.new_achievements ? { status: "busy" } : undefined,
             })}
             primaryText={
                 <span className={styles.subtext}>
@@ -37,7 +37,7 @@ const UserAvatar = (): JSX.Element => {
                             Admin
                         </Badge>
                     )}
-                    {`${userInfo.givenName} ${userInfo.surname}` == ' '
+                    {`${userInfo.givenName} ${userInfo.surname}` == " "
                         ? userInfo.utorid
                         : `${userInfo.givenName} ${userInfo.surname}`}
                 </span>

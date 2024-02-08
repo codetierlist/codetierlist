@@ -1,12 +1,12 @@
-import { Caption1, Card, CardPreview, Text } from '@fluentui/react-components';
-import { AchievementConfig } from 'codetierlist-types';
-import Image from 'next/image';
+import { Caption1, Card, CardPreview, Text } from "@fluentui/react-components";
+import { AchievementConfig } from "codetierlist-types";
+import Image from "next/image";
 
 export const RawAchievementCard = ({
     icon,
     description,
     name,
-}: Omit<AchievementConfig, 'id' | 'config' | 'type' | 'depends_on'>) => {
+}: Omit<AchievementConfig, "id" | "config" | "type" | "depends_on">) => {
     return (
         <Card orientation="horizontal" className="p-y-none" style={{ height: 100 }}>
             <CardPreview
@@ -20,7 +20,7 @@ export const RawAchievementCard = ({
                     alt=""
                     width="100"
                     height="100"
-                    style={{ objectFit: 'contain' }}
+                    style={{ objectFit: "contain" }}
                 />
             </CardPreview>
 
