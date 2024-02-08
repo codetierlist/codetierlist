@@ -242,4 +242,6 @@ export type BackendConfig = {
     achievements: AchievementConfig[],
     /** the list of runner images */
     runners: RunnerImage[],
+    max_file_size: number,
+    max_file_count: number,
 }

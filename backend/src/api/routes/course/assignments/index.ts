@@ -28,13 +28,17 @@ import {
     processSubmission,
     serializeAssignment
 } from "../../../../common/utils";
+import {config} from "../../../../common/config";
 
 const storage = multer.diskStorage({
     filename: function (req, file, callback) {
         callback(null, file.originalname);
     }
 });
-const upload = multer({storage});
+const upload = multer({storage, limits:{
+    fileSize: config.max_file_size, // 1MB
+    files: config.max_file_count // 30 files, 30MB total
+}});
 const router = express.Router({mergeParams: true});
 
 /**

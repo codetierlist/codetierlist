@@ -18,6 +18,7 @@ import {
     onNewSubmission,
     onNewTestCase
 } from "./updateScores";
+import {config} from "./config";
 
 export const errorHandler = (cb: (req: Request, res: Response, next: NextFunction) => Promise<unknown>) => {
     return (req: Request, res: Response, next: NextFunction) => {
@@ -37,6 +38,34 @@ export function isProf(course: Course, user: FetchedUser) {
     return user.admin || user.roles.some(role => course.id === role.course_id && ([RoleType.INSTRUCTOR, RoleType.TA] as RoleType[]).includes(role.type));
 }
 
+
+/**
+ * Soft resets the staging area in a git repository to a specific commit.
+ * @param repoPath the path to the repository
+ * @param commit the commit to reset to
+ */
+const softResetRepo = async (repoPath: string, commit: string) => {
+    // https://github.com/isomorphic-git/isomorphic-git/issues/129
+    // Status Matrix Row Indexes
+    const FILEPATH = 0;
+    const WORKDIR = 2;
+    const STAGE = 3;
+
+    // Status Matrix State
+    const UNCHANGED = 1;
+
+    const allFiles = await git.statusMatrix({ dir:repoPath, fs });
+    // Get all files which have been modified or staged - does not include new untracked files or deleted files
+    const modifiedFiles = allFiles
+        .filter((row) => row[WORKDIR] > UNCHANGED && row[STAGE] > UNCHANGED)
+        .map((row) => row[FILEPATH]);
+
+    // Delete modified/staged files
+    await Promise.all(modifiedFiles.map((x) => fs.rm(x)));
+
+    await git.checkout({ dir:repoPath, fs, ref: commit, force: true });
+};
+
 /**
  * Commits files to a users' git repo.
  * @param req the request
@@ -48,8 +77,13 @@ const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'date
     const status = await git.statusMatrix({ fs, dir: repoPath });
 
     // no unstaged changes
-    if (status.every(x => x[2] == 1)) {
-        return null;
+    if (status.every(x=>x[2]==1)) {
+        return {error: "No changes"};
+    }
+    // too many files added
+    if(status.filter(x=>x[2]!==1).length > config.max_file_count){
+        await softResetRepo(repoPath, object.git_id);
+        return {error : "Too many files added"};
     }
     await git.add({ fs, dir: repoPath, filepath: '.' });
     try {
@@ -166,7 +200,11 @@ export const processSubmission = async (req: Request, res: Response, table: "sol
 
     // check if git repo exists
     let submission = await getObjectFromRequest(req, table);
-
+    if(submission?.author_id !== req.user.utorid){
+        res.statusCode = 403;
+        res.send({message: 'Cannot make a submission for other users.'});
+        return;
+    }
     if (submission === null || submission === undefined || !(await exists(submission.git_url))) {
         if (submission !== null) {
             await prisma.solution.deleteMany({
@@ -261,6 +299,11 @@ export const processSubmission = async (req: Request, res: Response, table: "sol
     if (commit === null) {
         res.statusCode = 500;
         res.send({ message: 'Failed to commit.' });
+        return;
+    }
+    if(typeof commit === "object" && "error" in commit){
+        res.statusCode = 400;
+        res.send({message: commit.error});
         return;
     }
     res.send({ commit });
@@ -373,6 +416,11 @@ export const deleteFile = async (req: Request, res: Response, table: "solution" 
         res.send({ message: 'Submission not found.' });
         return;
     }
+    if(object.author_id !== req.user.utorid) {
+        res.statusCode = 403;
+        res.send({message: 'Cannot delete files from other users.'});
+        return;
+    }
     try {
         await git.remove({ fs, dir: object.git_url, filepath: req.params.file });
         await fs.unlink(`${object!.git_url}/${req.params.file}`);
@@ -384,6 +432,11 @@ export const deleteFile = async (req: Request, res: Response, table: "solution" 
     if (commit === null) {
         res.statusCode = 500;
         res.send({ message: 'Failed to commit.' });
+        return;
+    }
+    if(typeof commit === "object" && "error" in commit){
+        res.statusCode = 400;
+        res.send({message: commit.error});
         return;
     }
     res.send({ commit });
