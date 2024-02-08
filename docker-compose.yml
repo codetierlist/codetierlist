@@ -3,6 +3,7 @@ version: '3.8'
 services:
   nginx:
     restart: always
+    container_name: codetl-nginx
     depends_on:
       - frontend
       - backend
@@ -14,6 +15,7 @@ services:
 
   backend:
     restart: always
+    container_name: codetl-backend
     depends_on:
       - db
       - redis
@@ -32,6 +34,7 @@ services:
       - ./runner/.env
 
   frontend:
+    container_name: codetl-frontend
     restart: always
     depends_on:
       - backend
@@ -43,6 +46,7 @@ services:
         - NEXT_PUBLIC_API_URL=/api
 
   db:
+    container_name: codetl-db
     image: postgres
     restart: always
     environment:
@@ -53,6 +57,7 @@ services:
       - "5432:5432"
 
   redis:
+    container_name: codetl-redis
     restart: always
     build:
       context: ./redis
