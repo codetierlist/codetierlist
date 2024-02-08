@@ -6,6 +6,7 @@ import {
     getTierClass,
 } from '@/components';
 import { SnackbarContext } from '@/contexts/SnackbarContext';
+import { UserContext } from '@/contexts/UserContext';
 import {
     Button,
     Card,
@@ -24,10 +25,9 @@ import {
 import { Dismiss24Regular, Search24Regular } from '@fluentui/react-icons';
 import { AssignmentStudentStats, FetchedAssignmentWithTier } from 'codetierlist-types';
 import Error from 'next/error';
-import { notFound, usePathname, useSearchParams } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
-import { UserContext } from '@/contexts/UserContext';
 
 /**
  * Highlights the substring in the string
