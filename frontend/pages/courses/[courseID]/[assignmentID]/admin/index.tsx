@@ -26,7 +26,7 @@ import {
 import Error from 'next/error';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from "react";
-import { SnackbarContext } from '../../../../../contexts/SnackbarContext';
+import { SnackbarContext } from '@/contexts/SnackbarContext';
 import { usePathname, useSearchParams } from "next/navigation";
 
 /**
