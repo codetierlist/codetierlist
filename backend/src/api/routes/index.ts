@@ -9,7 +9,7 @@ router.get("/", (_, res) => {
     res.send({message: "( ͡° ͜ʖ ͡°)"});
 });
 
-router.use("/router", runnerRoute);
+router.use("/runner", runnerRoute);
 
 router.use("/courses", courseRoute);
 
