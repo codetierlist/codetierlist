@@ -166,7 +166,7 @@ router.get("/:assignment/testcases/:commitId?/:file", fetchAssignmentMiddleware,
 }));
 
 router.get("/:assignment/tierlist", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
-    let utorid = req.user.utorid as string | undefined;
+    let utorid = req.user.utorid as string;
 
     if (req.query.utorid) {
         if (!isProf(req.course!, req.user)) {
@@ -228,6 +228,16 @@ router.get("/:assignment/tierlist", fetchAssignmentMiddleware, errorHandler(asyn
         } satisfies Tierlist);
         return;
     }
+
+    // so that "YOU" is the user's utorid even if queried by prof
+    req.user.utorid = utorid;
+
+    // if there are no groups then there is no tierlist
+    if (!fullFetchedAssignment.groups[0]) {
+        res.statusCode = 404;
+        res.send({message: `No tierlist found for ${utorid}.`});
+    }
+
     const tierlist = await generateList(fullFetchedAssignment.groups[0], req.user, !isProf(req.course!, req.user));
     res.send(tierlist[0] satisfies Tierlist);
 }));
