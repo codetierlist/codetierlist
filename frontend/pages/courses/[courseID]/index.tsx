@@ -32,7 +32,7 @@ const useSeed = () => {
     };
 
     return { seed, setSeed };
-}
+};
 
 /**
  * Fetches the course with the given courseID
@@ -71,7 +71,7 @@ const useCourse = (courseID: string) => {
 const CourseAdminToolbar = ({
     courseID,
     fetchCourse,
-    updateSeed
+    updateSeed,
 }: {
     /**
      * the course ID of the course

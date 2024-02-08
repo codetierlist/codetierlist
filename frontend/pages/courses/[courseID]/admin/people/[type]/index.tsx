@@ -11,6 +11,9 @@ import {
     Button,
     Card,
     LargeTitle,
+    MessageBar,
+    MessageBarBody,
+    MessageBarTitle,
     ToolbarButton,
 } from '@fluentui/react-components';
 import { Add24Filled, ArrowLeft24Regular } from '@fluentui/react-icons';
@@ -174,6 +177,19 @@ export default function Page(): JSX.Element {
                             <Body2
                                 block
                             >{`Update the ${getLongRoleName(role)}s enrolled in this course by uploading a list of UTORids, separated by newlines.`}</Body2>
+                            {role == 'TA' && (
+                                <MessageBar intent="warning">
+                                    <MessageBarBody>
+                                        <MessageBarTitle>Warning</MessageBarTitle>
+                                        Teaching assistants have the same permission as
+                                        instructors. This includes destructive actions
+                                        like deleting the course, deleting assignments,
+                                        and sensitive actions like viewing student
+                                        submissions.
+                                        <strong>Be careful when adding TAs.</strong>
+                                    </MessageBarBody>
+                                </MessageBar>
+                            )}
                         </header>
 
                         <Card>

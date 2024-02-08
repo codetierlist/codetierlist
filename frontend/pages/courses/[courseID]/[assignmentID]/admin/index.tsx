@@ -138,7 +138,6 @@ export default function Page({ setStage }: { setStage: (stage: number) => void }
         // { columnKey: "submitTest", label: "Submitted Tests" }
     ];
 
-
     // If the user is not an admin, error 403
     if (!checkIfCourseAdmin(userInfo, courseID as string)) {
         return <Error statusCode={403} />;

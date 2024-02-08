@@ -77,7 +77,7 @@ const useRunners = () => {
     }, []);
 
     return { runners, setSelectedRunner, selectedRunner };
-}
+};
 
 export default function Page(): JSX.Element {
     const { showSnackSev } = useContext(SnackbarContext);
