@@ -1,14 +1,18 @@
 import axios, { handleError } from '@/axios';
 import {
-    AssignmentAdminToolbar,
+    AddRemovePeopleMenu,
+    AdminToolbarDeleteCourseButton,
     AssignmentCard,
     CourseSessionChip,
+    HeaderToolbar,
     checkIfCourseAdmin,
     getSession,
+    promptForFileObject,
 } from '@/components';
 import { SnackbarContext } from '@/contexts/SnackbarContext';
 import { UserContext } from '@/contexts/UserContext';
-import { Caption1 } from '@fluentui/react-components';
+import { Caption1, ToolbarButton } from '@fluentui/react-components';
+import { Add24Filled, ImageAdd20Regular } from '@fluentui/react-icons';
 import { Title2 } from '@fluentui/react-text';
 import { FetchedCourseWithTiers } from 'codetierlist-types';
 import { notFound } from 'next/navigation';
@@ -44,6 +48,75 @@ const useCourse = (courseID: string) => {
     }, [courseID]);
 
     return { course, fetchCourse };
+};
+
+export declare type AdminToolbarProps = {
+    /**
+     * the course ID of the course
+     */
+    courseID: string;
+    /**
+     * fetches the course
+     */
+    fetchCourse: () => Promise<void>;
+};
+
+/**
+ * Toolbar for admin page
+ * @property {string} courseID the course ID of the course
+ * @returns {JSX.Element} the toolbar
+ */
+const CourseAdminToolbar = ({ courseID, fetchCourse }: AdminToolbarProps): JSX.Element => {
+    const router = useRouter();
+    const { showSnackSev } = useContext(SnackbarContext);
+
+    return (
+        <HeaderToolbar aria-label="Admin Toolbar">
+            <ToolbarButton
+                appearance="subtle"
+                icon={<Add24Filled />}
+                onClick={() =>
+                    router.push(`/courses/${courseID}/admin/create_assignment`)
+                }
+            >
+                Add assignment
+            </ToolbarButton>
+
+            <AddRemovePeopleMenu courseID={courseID} add={true} />
+
+            <AddRemovePeopleMenu courseID={courseID} add={false} />
+
+            <ToolbarButton
+                appearance="subtle"
+                icon={<ImageAdd20Regular />}
+                onClick={async (event) => {
+                    event.stopPropagation();
+                    const files = await promptForFileObject('image/*');
+                    if (!files || files.length != 1) {
+                        return;
+                    }
+
+                    const formData = new FormData();
+                    formData.append('file', files[0]);
+
+                    axios
+                        .post(`/courses/${courseID}/cover`, formData, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data',
+                            },
+                        })
+                        .then(() => {
+                            void fetchCourse();
+                        })
+                        .catch(handleError(showSnackSev));
+                }}
+            >
+                Change cover image
+            </ToolbarButton>
+
+            <AdminToolbarDeleteCourseButton courseID={courseID} />
+        </HeaderToolbar>
+    );
 };
 
 export default function Page() {
@@ -84,7 +157,7 @@ export default function Page() {
                 </header>
 
                 {checkIfCourseAdmin(userInfo, courseID as string) ? (
-                    <AssignmentAdminToolbar
+                    <CourseAdminToolbar
                         courseID={courseID as string}
                         fetchCourse={fetchCourse}
                     />
