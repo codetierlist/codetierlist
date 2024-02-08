@@ -112,6 +112,7 @@ router.get("/", errorHandler(async (req, res) => {
 
 /**
  * get a course by id
+ * @public
  */
 router.get("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) => {
     const queriedSubmissions = await prisma.$queryRaw<(QueriedSubmission & {
@@ -199,6 +200,7 @@ router.get("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) =>
 
 /**
  * delete a course
+ * @adminonly
  */
 router.delete("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res) => {
     if (!req.user.admin) {
@@ -219,7 +221,7 @@ router.delete("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res)
 
 /**
  * add a user to a course
- * @profonly @adminonly
+ * @adminonly
  */
 router.post("/:courseId/add", fetchCourseMiddleware, errorHandler(async (req, res) => {
     // check if user is prof or admin
@@ -266,6 +268,7 @@ router.post("/:courseId/add", fetchCourseMiddleware, errorHandler(async (req, re
 
 /**
  * remove a user from a course
+ * @adminonly
  */
 router.post("/:courseId/remove", fetchCourseMiddleware, errorHandler(async (req, res) => {
     // check if user is prof or admin
@@ -302,7 +305,7 @@ router.post("/:courseId/remove", fetchCourseMiddleware, errorHandler(async (req,
 
 /**
  * update the cover image of a course
- * @profonly @adminonly
+ * @adminonly
  */
 router.post("/:courseId/cover", fetchCourseMiddleware, upload.single("file"), errorHandler(async (req, res) => {
     if (!req.file || !isProf(req.course!, req.user)) {
@@ -320,6 +323,7 @@ router.post("/:courseId/cover", fetchCourseMiddleware, upload.single("file"), er
 
 /**
  * get the cover image of a course
+ * @public
  */
 router.get("/:courseId/cover", fetchCourseMiddleware, errorHandler(async (req, res) => {
     if (!req.course?.cover) {
@@ -332,7 +336,7 @@ router.get("/:courseId/cover", fetchCourseMiddleware, errorHandler(async (req, r
 
 /**
  * create a new assignment
- * @profonly @adminonly
+ * @adminonly
  */
 router.post("/:courseId/assignments", fetchCourseMiddleware, errorHandler(async (req, res) => {
     // check if user is prof or admin

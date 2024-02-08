@@ -6,6 +6,10 @@ import { errorHandler } from "../../../common/utils";
 
 const router = express.Router();
 
+/**
+ * Get user info
+ * @public
+ */
 router.get("/", (req, res) => {
     res.send(req.user satisfies FetchedUser);
 });
@@ -14,6 +18,8 @@ router.get("/", (req, res) => {
  * Sets the user's theme to the specified theme.
  * @param theme the theme to set. Must be "LIGHT" or "DARK".
  * @returns 200 if success, 400 if fail
+ *
+ * @public
  */
 router.post("/theme", errorHandler(async (req, res) => {
     if (!req.body.theme) {
@@ -37,6 +43,7 @@ router.post("/theme", errorHandler(async (req, res) => {
 
 /**
  * get the achievements of the user
+ * @public
  */
 router.get("/achievements", errorHandler(async (req, res) => {
     const achievements = await prisma.achievement.findMany({

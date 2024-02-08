@@ -11,6 +11,7 @@ const router = express.Router();
 
 /**
  * Get the user's information
+ * @public
  */
 router.get("/", (req, res) => {
     res.send(req.user satisfies FetchedUser);
@@ -18,7 +19,7 @@ router.get("/", (req, res) => {
 
 /**
  * Get the images for the runner
- * @adminonly
+ * @public
  */
 router.get("/runner/images", (req,res) =>{
     res.send(images satisfies RunnerImage[]);

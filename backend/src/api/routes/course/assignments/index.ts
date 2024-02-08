@@ -31,6 +31,7 @@ const router = express.Router({mergeParams: true});
 
 /**
  * Fetches the assignment from the database and sends it to the client.
+ * @public
  */
 router.get("/:assignment", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     const assignment = await prisma.assignment.findUniqueOrThrow({
@@ -88,8 +89,8 @@ router.get("/:assignment", fetchAssignmentMiddleware, errorHandler(async (req, r
 }));
 
 /**
- * @adminonly
  * Deletes the assignment from the database.
+ * @adminonly
  */
 router.delete("/:assignment", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     if (!isProf(req.course!, req.user)) {
@@ -120,6 +121,7 @@ const checkFilesMiddleware = (req: Request, res: Response, next: NextFunction) =
 
 /**
  * Processes the submission and sends the result to the client.
+ * @public
  */
 router.post("/:assignment/submissions", fetchAssignmentMiddleware, upload.array('files', 100), checkFilesMiddleware,
     errorHandler(async (req, res) =>
@@ -127,6 +129,7 @@ router.post("/:assignment/submissions", fetchAssignmentMiddleware, upload.array(
 
 /**
  * Processes the test case and sends the result to the client.
+ * @public
  */
 router.post("/:assignment/testcases", fetchAssignmentMiddleware, upload.array('files', 100), checkFilesMiddleware,
     errorHandler(async (req, res) =>
@@ -134,6 +137,7 @@ router.post("/:assignment/testcases", fetchAssignmentMiddleware, upload.array('f
 
 /**
  * Fetches the submission from the database and sends it to the client.
+ * @public
  */
 router.get("/:assignment/submissions/:commitId?", fetchAssignmentMiddleware,
     errorHandler(async (req, res) => {
@@ -152,6 +156,7 @@ router.get("/:assignment/submissions/:commitId?", fetchAssignmentMiddleware,
 
 /**
  * Gets a file from the submission and sends it to the client.
+ * @public
  */
 router.get("/:assignment/submissions/:commitId?/:file", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     await getFileFromRequest(req, res, "solution");
@@ -159,6 +164,7 @@ router.get("/:assignment/submissions/:commitId?/:file", fetchAssignmentMiddlewar
 
 /**
  * Deletes a file from the submission.
+ * @public
  */
 router.delete("/:assignment/submissions/:file", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     await deleteFile(req, res, "solution");
@@ -166,6 +172,7 @@ router.delete("/:assignment/submissions/:file", fetchAssignmentMiddleware, error
 
 /**
  * Fetches the test case from the database and sends it to the client.
+ * @public
  */
 router.get("/:assignment/testcases/:commitId?", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     const commit = await getCommitFromRequest(req, "testCase");
@@ -184,6 +191,7 @@ router.get("/:assignment/testcases/:commitId?", fetchAssignmentMiddleware, error
 
 /**
  * Deletes a file from the test case.
+ * @public
  */
 router.delete("/:assignment/testcases/:file", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     await deleteFile(req, res, "testCase");
@@ -191,6 +199,7 @@ router.delete("/:assignment/testcases/:file", fetchAssignmentMiddleware, errorHa
 
 /**
  * Gets a file from the test case and sends it to the client.
+ * @public
  */
 router.get("/:assignment/testcases/:commitId?/:file", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     await getFileFromRequest(req, res, "testCase");
@@ -200,6 +209,8 @@ router.get("/:assignment/testcases/:commitId?/:file", fetchAssignmentMiddleware,
  * Fetches the tierlist from the database and sends it to the client.
  *
  * @param utorid ADMIN ONLY: The utorid of the user to fetch the tierlist for.
+ *
+ * @public
  */
 router.get("/:assignment/tierlist", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     let utorid = req.user.utorid as string;
