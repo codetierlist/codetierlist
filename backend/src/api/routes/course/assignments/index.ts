@@ -5,7 +5,7 @@ import {
     Tierlist,
     UserFetchedAssignment
 } from "codetierlist-types";
-import express, {NextFunction, Request, Response} from "express";
+import express, { NextFunction, Request, Response } from "express";
 import multer from 'multer';
 import prisma from "../../../../common/prisma";
 import {
