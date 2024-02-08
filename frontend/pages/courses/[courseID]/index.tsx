@@ -66,7 +66,10 @@ export declare type AdminToolbarProps = {
  * @property {string} courseID the course ID of the course
  * @returns {JSX.Element} the toolbar
  */
-const CourseAdminToolbar = ({ courseID, fetchCourse }: AdminToolbarProps): JSX.Element => {
+const CourseAdminToolbar = ({
+    courseID,
+    fetchCourse,
+}: AdminToolbarProps): JSX.Element => {
     const router = useRouter();
     const { showSnackSev } = useContext(SnackbarContext);
 
