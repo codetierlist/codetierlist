@@ -1,9 +1,8 @@
-<h1>
-<picture>
-  <img alt="Code Tier List" src="https://i.imgur.com/IJ0aAfV.png" height="25">
-</picture>
-Codetierlist
-</h1>
+<h1><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://i.imgur.com/NMaJcsy.png">
+  <source media="(prefers-color-scheme: light)" srcset="https://i.imgur.com/BthpMZh.png">
+  <img alt="Codetierlist" src="https://i.imgur.com/BthpMZh.png" height="34">
+</picture></h1>
 
 Ever wondered when you complete an assignment and do not know how well you're
 doing compared to other students? Introducing the Codetierlist!
