@@ -173,7 +173,6 @@ export const AssignmentPageFilesTab = ({
                 `/courses/${assignment.course_id}/assignments/${assignmentID}/${route}`,
                 {
                     skipErrorHandling: true,
-                    transformResponse: (res) => res,
                     params: {
                         utorid: searchParams.get('utorid') ?? undefined,
                     },
