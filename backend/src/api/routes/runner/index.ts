@@ -12,9 +12,9 @@ const router = express.Router();
  * Get the images for the runner
  * @adminonly
  */
-router.get("/images", (req, res) =>{
-    if (!req.user.admin && !req.user.roles.some((role: RoleType) =>
-        role === RoleType.INSTRUCTOR || role === RoleType.TA)) {
+router.get("/images", (req, res) => {
+    if (!req.user.admin && !req.user.roles.some((role) =>
+        ([RoleType.INSTRUCTOR, RoleType.TA] as RoleType[]).includes(role.type))) {
         return res.status(403).send("You must be a TA or Instructor of at least one course to access this route");
     }
 
