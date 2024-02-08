@@ -50,17 +50,6 @@ const useCourse = (courseID: string) => {
     return { course, fetchCourse };
 };
 
-export declare type AdminToolbarProps = {
-    /**
-     * the course ID of the course
-     */
-    courseID: string;
-    /**
-     * fetches the course
-     */
-    fetchCourse: () => Promise<void>;
-};
-
 /**
  * Toolbar for admin page
  * @property {string} courseID the course ID of the course
@@ -69,7 +58,16 @@ export declare type AdminToolbarProps = {
 const CourseAdminToolbar = ({
     courseID,
     fetchCourse,
-}: AdminToolbarProps): JSX.Element => {
+}: {
+    /**
+     * the course ID of the course
+     */
+    courseID: string;
+    /**
+     * fetches the course
+     */
+    fetchCourse: () => Promise<void>;
+}): JSX.Element => {
     const router = useRouter();
     const { showSnackSev } = useContext(SnackbarContext);
 
