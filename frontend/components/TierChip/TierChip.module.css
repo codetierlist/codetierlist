@@ -1,44 +1,44 @@
 .tier {
-  border-radius: 0.5rem;
-  padding: var(--spacingHorizontalL) var(--spacingVerticalL);
-  font-size: var(--fontSizeHero800);
-  font-weight: var(--fontWeightSemibold);
-  text-transform: uppercase;
-  text-decoration: none !important;
-  font-family: var(--fontFamilyMonospace);
+    border-radius: 0.5rem;
+    padding: var(--spacingHorizontalL) var(--spacingVerticalL);
+    font-size: var(--fontSizeHero800);
+    font-weight: var(--fontWeightSemibold);
+    text-transform: uppercase;
+    text-decoration: none !important;
+    font-family: var(--fontFamilyMonospace);
 }
 
 .tier-S {
-  background-color: var(--colorPaletteDarkRedBackground2) !important;
-  color: var(--colorPaletteDarkRedForeground2) !important;
+    background-color: var(--colorPaletteDarkRedBackground2) !important;
+    color: var(--colorPaletteDarkRedForeground2) !important;
 }
 
 .tier-A {
-  background-color: var(--colorPaletteDarkGreenBackground2) !important;
-  color: var(--colorPaletteDarkGreenForeground2) !important;
+    background-color: var(--colorPaletteDarkGreenBackground2) !important;
+    color: var(--colorPaletteDarkGreenForeground2) !important;
 }
 
 .tier-B {
-  background-color: var(--colorPaletteMarigoldBackground2) !important;
-  color: var(--colorPaletteMarigoldForeground2) !important;
+    background-color: var(--colorPaletteMarigoldBackground2) !important;
+    color: var(--colorPaletteMarigoldForeground2) !important;
 }
 
 .tier-C {
-  background-color: var(--colorPaletteCornflowerBackground2) !important;
-  color: var(--colorPaletteCornflowerForeground2) !important;
+    background-color: var(--colorPaletteCornflowerBackground2) !important;
+    color: var(--colorPaletteCornflowerForeground2) !important;
 }
 
 .tier-D {
-  background-color: var(--colorPaletteLavenderBackground2) !important;
-  color: var(--colorPaletteLavenderForeground2) !important;
+    background-color: var(--colorPaletteLavenderBackground2) !important;
+    color: var(--colorPaletteLavenderForeground2) !important;
 }
 
 .tier-F {
-  background-color: var(--colorPaletteBerryBackground2) !important;
-  color: var(--colorPaletteBerryForeground2) !important;
+    background-color: var(--colorPaletteBerryBackground2) !important;
+    color: var(--colorPaletteBerryForeground2) !important;
 }
 
 .tier-IDK {
-  background-color: var(--colorPaletteBeigeBackground2) !important;
-  color: var(--colorPaletteBeigeForeground2) !important;
+    background-color: var(--colorPaletteBeigeBackground2) !important;
+    color: var(--colorPaletteBeigeForeground2) !important;
 }

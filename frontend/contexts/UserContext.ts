@@ -6,14 +6,14 @@ import { type FetchedUser } from 'codetierlist-types';
  * The user that is shown when the user's information is still loading.
  */
 export const defaultUser: FetchedUser = {
-    utorid: "mikuhats",
-    email: "hatsune.miku@utoronto.ca",
+    utorid: 'mikuhats',
+    email: 'hatsune.miku@utoronto.ca',
     roles: [],
     admin: false,
-    surname: "Hatsune",
-    givenName: "Miku",
-    theme: "LIGHT",
-    new_achievements: false
+    surname: 'Hatsune',
+    givenName: 'Miku',
+    theme: 'LIGHT',
+    new_achievements: false,
 };
 
 /**
@@ -36,7 +36,7 @@ export const UserContext = createContext({
      */
     fetchUserInfo: async () => {},
 } as {
-    userInfo: FetchedUser,
-    setUserInfo: (user: FetchedUser) => void,
-    fetchUserInfo: () => Promise<void>,
+    userInfo: FetchedUser;
+    setUserInfo: (user: FetchedUser) => void;
+    fetchUserInfo: () => Promise<void>;
 });

@@ -1,98 +1,105 @@
 {
-  "name": "frontend",
-  "version": "0.1.0",
-  "license": "LGPL-3.0-or-later",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "lint:fix": "next lint --fix"
-  },
-  "dependencies": {
-    "@fluentui/react-components": "^9.46.4",
-    "@fluentui/react-date-time": "^8.7.136",
-    "@fluentui/react-datepicker-compat": "^0.4.22",
-    "@fluentui/react-icons": "^2.0.226",
-    "@monaco-editor/react": "^4.6.0",
-    "axios": "^1.6.7",
-    "is-utorid": "^1.2.2",
-    "monaco-editor": "^0.45.0",
-    "next": "latest",
-    "react": "latest",
-    "react-dom": "latest",
-    "react-grid-system": "^8.1.9"
-  },
-  "devDependencies": {
-    "@types/node": "latest",
-    "@types/react": "latest",
-    "@types/react-dom": "latest",
-    "@typescript-eslint/eslint-plugin": "^6.19.0",
-    "@typescript-eslint/parser": "^6.21.0",
-    "codetierlist-types": "../types",
-    "eslint": "^8.52.0",
-    "eslint-config-next": "latest",
-    "typescript": "^5.2.2"
-  },
-  "eslintConfig": {
-    "extends": [
-      "eslint:recommended",
-      "plugin:@typescript-eslint/recommended",
-      "next/core-web-vitals",
-      "plugin:react-hooks/recommended",
-      "plugin:react/recommended",
-      "plugin:react/jsx-runtime"
-    ],
-    "parser": "@typescript-eslint/parser",
-    "plugins": [
-      "@typescript-eslint"
-    ],
-    "rules": {
-      "@typescript-eslint/no-unused-vars": [
-        "error",
-        {
-          "argsIgnorePattern": "^_",
-          "varsIgnorePattern": "^_",
-          "caughtErrorsIgnorePattern": "^_"
-        }
-      ],
-      "indent": [
-        "error",
-        4
-      ],
-      "no-console": [
-        "warn"
-      ],
-      "semi": [
-        "error",
-        "always"
-      ],
-      "no-shadow": "off",
-      "@typescript-eslint/no-shadow": [
-        "error"
-      ],
-      "no-use-before-define": "off",
-      "@typescript-eslint/no-use-before-define": [
-        "error"
-      ],
-      "react/jsx-filename-extension": [
-        "warn",
-        {
-          "extensions": [
-            ".tsx"
-          ]
-        }
-      ]
+    "name": "frontend",
+    "version": "0.1.0",
+    "license": "LGPL-3.0-or-later",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint",
+        "lint:fix": "next lint --fix",
+        "pretty": "prettier --write ."
     },
-    "env": {
-      "browser": true
+    "dependencies": {
+        "@fluentui/react-components": "^9.46.4",
+        "@fluentui/react-date-time": "^8.7.136",
+        "@fluentui/react-datepicker-compat": "^0.4.22",
+        "@fluentui/react-icons": "^2.0.226",
+        "@monaco-editor/react": "^4.6.0",
+        "axios": "^1.6.7",
+        "is-utorid": "^1.2.2",
+        "monaco-editor": "^0.45.0",
+        "next": "latest",
+        "react": "latest",
+        "react-dom": "latest",
+        "react-grid-system": "^8.1.9"
     },
-    "settings": {
-      "react": {
-        "pragma": "React",
-        "version": "detect"
-      }
+    "devDependencies": {
+        "@types/node": "latest",
+        "@types/react": "latest",
+        "@types/react-dom": "latest",
+        "@typescript-eslint/eslint-plugin": "^6.19.0",
+        "@typescript-eslint/parser": "^6.21.0",
+        "codetierlist-types": "../types",
+        "eslint": "^8.56.0",
+        "eslint-config-next": "latest",
+        "prettier": "^3.2.5",
+        "typescript": "^5.2.2"
+    },
+    "prettier": {
+        "arrowParens": "avoid",
+        "bracketSameLine": false,
+        "bracketSpacing": true,
+        "endOfLine": "auto",
+        "jsxSingleQuote": false,
+        "printWidth": 90,
+        "quoteProps": "as-needed",
+        "semi": true,
+        "singleQuote": true,
+        "tabWidth": 4,
+        "trailingComma": "es5"
+    },
+    "eslintConfig": {
+        "extends": [
+            "eslint:recommended",
+            "plugin:@typescript-eslint/recommended",
+            "next/core-web-vitals",
+            "plugin:react-hooks/recommended",
+            "plugin:react/recommended",
+            "plugin:react/jsx-runtime"
+        ],
+        "parser": "@typescript-eslint/parser",
+        "plugins": [
+            "@typescript-eslint"
+        ],
+        "rules": {
+            "@typescript-eslint/no-unused-vars": [
+                "error",
+                {
+                    "argsIgnorePattern": "^_",
+                    "varsIgnorePattern": "^_",
+                    "caughtErrorsIgnorePattern": "^_"
+                }
+            ],
+            "no-console": [
+                "warn"
+            ],
+            "no-shadow": "off",
+            "@typescript-eslint/no-shadow": [
+                "error"
+            ],
+            "no-use-before-define": "off",
+            "@typescript-eslint/no-use-before-define": [
+                "error"
+            ],
+            "react/jsx-filename-extension": [
+                "warn",
+                {
+                    "extensions": [
+                        ".tsx"
+                    ]
+                }
+            ]
+        },
+        "env": {
+            "browser": true
+        },
+        "settings": {
+            "react": {
+                "pragma": "React",
+                "version": "detect"
+            }
+        }
     }
-  }
 }

@@ -1,23 +1,29 @@
 .cardContent {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 .cardLink {
-  text-decoration: none;
+    text-decoration: none;
 }
 
 .card {
-  --maxWidth: 24rem;
-  display: flex;
-  flex-direction: row !important;
-  height: 75px;
-  max-width: var(--maxWidth);
+    --maxWidth: 24rem;
+    display: flex;
+    flex-direction: row !important;
+    height: 75px;
+    max-width: var(--maxWidth);
 }
 
 .cardText {
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  max-width: calc(var(--maxWidth) - (var(--spacingHorizontalL) * 2 + var(--fontSizeHero800) + var(--spacingHorizontalM)));
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: calc(
+        var(--maxWidth) -
+            (
+                var(--spacingHorizontalL) * 2 + var(--fontSizeHero800) +
+                    var(--spacingHorizontalM)
+            )
+    );
 }

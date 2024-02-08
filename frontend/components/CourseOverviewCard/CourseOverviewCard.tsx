@@ -8,25 +8,30 @@ import {
     CardPreview,
     Link,
     Title3,
-    Tooltip
+    Tooltip,
 } from '@fluentui/react-components';
 import { useRouter } from 'next/navigation';
 import { useContext, useState } from 'react';
 import styles from './CourseOverviewCard.module.css';
 import { RoleType, Session } from 'codetierlist-types';
-import { ImageAdd20Regular } from "@fluentui/react-icons";
-import axios, { handleError } from "@/axios";
-import { promptForFileObject, checkIfCourseAdmin, SessionBlock, generatePlaceholderImage } from "@/components";
-import { SnackbarContext } from "@/contexts/SnackbarContext";
+import { ImageAdd20Regular } from '@fluentui/react-icons';
+import axios, { handleError } from '@/axios';
+import {
+    promptForFileObject,
+    checkIfCourseAdmin,
+    SessionBlock,
+    generatePlaceholderImage,
+} from '@/components';
+import { SnackbarContext } from '@/contexts/SnackbarContext';
 import { UserContext } from '@/contexts/UserContext';
 
 export declare interface CourseSessionChipProps {
     /** the session of the course */
-    session: Session
+    session: Session;
     /** the children of the component */
-    children?: React.ReactNode
+    children?: React.ReactNode;
     /** the props of the component */
-    props?: React.HTMLAttributes<HTMLDivElement>
+    props?: React.HTMLAttributes<HTMLDivElement>;
 }
 
 /**
@@ -35,7 +40,7 @@ export declare interface CourseSessionChipProps {
 export const CourseSessionChip = ({
     session,
     children,
-    props
+    props,
 }: CourseSessionChipProps): JSX.Element => {
     return (
         <div className={styles.sessionChip + ' ' + styles[session]} {...props}>
@@ -46,17 +51,17 @@ export const CourseSessionChip = ({
 
 export declare interface CourseOverviewCardProps {
     /** the id of the course */
-    id: string
+    id: string;
     /** the name of the course */
-    name: string
+    name: string;
     /** the image of the course */
-    image: string
+    image: string;
     /** the session of the course */
-    session: Session,
+    session: Session;
     /** the role of the user */
-    role: RoleType,
+    role: RoleType;
     /** the props of the component */
-    props?: React.HTMLAttributes<HTMLDivElement>
+    props?: React.HTMLAttributes<HTMLDivElement>;
 }
 
 /**
@@ -68,7 +73,7 @@ export const CourseOverviewCard = ({
     image,
     session,
     props,
-    role
+    role,
 }: CourseOverviewCardProps): JSX.Element => {
     // trigger reset of image
     const [seed, setSeed] = useState(1);
@@ -82,41 +87,44 @@ export const CourseOverviewCard = ({
     return (
         <Card
             className={styles.courseCard}
-            onClick={(e) => {
+            onClick={e => {
                 e.preventDefault();
                 router.push(`/courses/${id}`);
             }}
             aria-label={`${name} course in the ${session} session. You are a ${role}.`}
             floatingAction={
                 <>
-                    {
-                        (checkIfCourseAdmin(userInfo, id)) &&
+                    {checkIfCourseAdmin(userInfo, id) && (
                         <Tooltip content="Change cover image" relationship="label">
                             <Button
                                 appearance="primary"
                                 icon={<ImageAdd20Regular />}
                                 shape="circular"
                                 className="m-t-m m-r-m"
-                                onClick={async (event) => {
+                                onClick={async event => {
                                     event.stopPropagation();
-                                    const files = await promptForFileObject("image/*");
-                                    if (!files || files.length != 1) { return; }
+                                    const files = await promptForFileObject('image/*');
+                                    if (!files || files.length != 1) {
+                                        return;
+                                    }
 
                                     const formData = new FormData();
-                                    formData.append("file", files[0]);
+                                    formData.append('file', files[0]);
 
-                                    axios.post(`/courses/${id}/cover`,
-                                        formData,
-                                        {
-                                            headers: { "Content-Type": "multipart/form-data" }
+                                    axios
+                                        .post(`/courses/${id}/cover`, formData, {
+                                            headers: {
+                                                'Content-Type': 'multipart/form-data',
+                                            },
                                         })
                                         .then(() => {
                                             reset();
-                                        }).catch(handleError(showSnackSev));
+                                        })
+                                        .catch(handleError(showSnackSev));
                                 }}
                             />
                         </Tooltip>
-                    }
+                    )}
                 </>
             }
             {...props}
@@ -124,21 +132,20 @@ export const CourseOverviewCard = ({
             <CardPreview className={styles.coursePreview}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                    style={{ objectFit: "cover", height: 200, width: 300 }}
-                    src={image + "?" + seed}
+                    style={{ objectFit: 'cover', height: 200, width: 300 }}
+                    src={image + '?' + seed}
                     width={300}
                     alt=""
                     height={200}
-                    onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = generatePlaceholderImage(id); }}
+                    onError={event => {
+                        event.currentTarget.onerror = null;
+                        event.currentTarget.src = generatePlaceholderImage(id);
+                    }}
                 />
             </CardPreview>
 
             <CardHeader
-                header={
-                    <Title3 className={styles.courseTitle}>
-                        {name}
-                    </Title3>
-                }
+                header={<Title3 className={styles.courseTitle}>{name}</Title3>}
                 className={styles.courseHeader}
                 description={
                     <div className={styles.badges}>

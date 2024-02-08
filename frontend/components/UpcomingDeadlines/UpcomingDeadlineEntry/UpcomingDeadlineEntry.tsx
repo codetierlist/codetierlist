@@ -1,6 +1,6 @@
-import { Divider, Title3 } from "@fluentui/react-components";
-import { DueDate, daysUntilDate, CourseBlockSmall  } from "@/components";
-import styles from "./UpcomingDeadlineEntry.module.css";
+import { Divider, Title3 } from '@fluentui/react-components';
+import { DueDate, daysUntilDate, CourseBlockSmall } from '@/components';
+import styles from './UpcomingDeadlineEntry.module.css';
 
 export declare interface UpcomingDeadlineEntryProps {
     courseID: string;
@@ -8,7 +8,11 @@ export declare interface UpcomingDeadlineEntryProps {
     dueDate: Date;
 }
 
-export const UpcomingDeadlineEntry = ({ courseID, assignmentName, dueDate }: UpcomingDeadlineEntryProps): JSX.Element => {
+export const UpcomingDeadlineEntry = ({
+    courseID,
+    assignmentName,
+    dueDate,
+}: UpcomingDeadlineEntryProps): JSX.Element => {
     return (
         <div>
             <div className={styles.entry}>

@@ -33,19 +33,18 @@ export const getTierClass = (tier: UserTier | Tier): string => {
  * @property {UserTier | Tier} tier the tier of the course
  * @returns {JSX.Element} the tier chip
  */
-export const RawTierChip = ({ tier, Slot, className, ...props }: RawTierChipProps): JSX.Element => {
+export const RawTierChip = ({
+    tier,
+    Slot,
+    className,
+    ...props
+}: RawTierChipProps): JSX.Element => {
     return (
-        <Slot
-            className={
-                `${getTierClass(tier)} ${className ?? ''}`
-            }
-            {...props}
-        >
+        <Slot className={`${getTierClass(tier)} ${className ?? ''}`} {...props}>
             {tier}
         </Slot>
     );
 };
-
 
 /**
  * A tier chip displays a single tier inside of a div. This makes it easy
@@ -55,6 +54,11 @@ export const RawTierChip = ({ tier, Slot, className, ...props }: RawTierChipProp
  */
 export const TierChip = ({ tier, className, ...props }: TierChipProps): JSX.Element => {
     return (
-        <RawTierChip tier={tier} Slot="div" className={`${styles.tier} ${className ?? ''}`} {...props} />
+        <RawTierChip
+            tier={tier}
+            Slot="div"
+            className={`${styles.tier} ${className ?? ''}`}
+            {...props}
+        />
     );
 };

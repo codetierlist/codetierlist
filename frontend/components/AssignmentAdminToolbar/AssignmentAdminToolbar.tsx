@@ -1,9 +1,7 @@
 import { HeaderToolbar } from '@/components';
 import { AdminToolbarDeleteCourseButton } from '@/components/AssignmentAdminToolbar/BaseToolbarDeleteButton/AdminToolbarDeleteCourseButton/AdminToolbarDeleteCourseButton';
 import { AddRemovePeopleMenu } from '@/components/AssignmentAdminToolbar/AddRemovePeopleMenu/AddRemovePeopleMenu';
-import {
-    ToolbarButton
-} from "@fluentui/react-components";
+import { ToolbarButton } from '@fluentui/react-components';
 import { Add24Filled } from '@fluentui/react-icons';
 import { useRouter } from 'next/router';
 
@@ -27,13 +25,13 @@ export const AssignmentAdminToolbar = ({ courseID }: AdminToolbarProps): JSX.Ele
     const router = useRouter();
 
     return (
-        <HeaderToolbar
-            aria-label="Admin Toolbar"
-        >
+        <HeaderToolbar aria-label="Admin Toolbar">
             <ToolbarButton
                 appearance="subtle"
                 icon={<Add24Filled />}
-                onClick={() => router.push(`/courses/${courseID}/admin/create_assignment`)}
+                onClick={() =>
+                    router.push(`/courses/${courseID}/admin/create_assignment`)
+                }
             >
                 Add assignment
             </ToolbarButton>

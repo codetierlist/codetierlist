@@ -1,9 +1,13 @@
-import axios, { handleError } from "@/axios";
+import axios, { handleError } from '@/axios';
 import { GenerateInitalsAvatarProps, generateInitals } from '@/components';
 import { SnackbarContext } from '@/contexts/SnackbarContext';
 import { UserContext } from '@/contexts/UserContext';
 import { Badge, Button, Persona, Switch } from '@fluentui/react-components';
-import { ErrorCircle12Filled, SignOut24Regular, Trophy24Regular } from "@fluentui/react-icons";
+import {
+    ErrorCircle12Filled,
+    SignOut24Regular,
+    Trophy24Regular,
+} from '@fluentui/react-icons';
 import { Theme } from 'codetierlist-types';
 import { useContext } from 'react';
 import { useRouter } from 'next/router';
@@ -23,11 +27,14 @@ export const NavbarUserPopover = (): JSX.Element => {
      * @param theme the theme to change to
      */
     const changeTheme = (theme: Theme) => {
-        axios.post('/users/theme', {
-            theme,
-        }).catch(handleError(showSnackSev)).finally(() => {
-            fetchUserInfo();
-        });
+        axios
+            .post('/users/theme', {
+                theme,
+            })
+            .catch(handleError(showSnackSev))
+            .finally(() => {
+                fetchUserInfo();
+            });
     };
 
     return (
@@ -39,8 +46,14 @@ export const NavbarUserPopover = (): JSX.Element => {
                     avatar={GenerateInitalsAvatarProps(generateInitals(userInfo))}
                     primaryText={
                         <>
-                            {`${userInfo.givenName} ${userInfo.surname}` == " " ? userInfo.utorid : `${userInfo.givenName} ${userInfo.surname}`}
-                            {userInfo.admin && <Badge className={styles.adminBadge} appearance="outline">Admin</Badge>}
+                            {`${userInfo.givenName} ${userInfo.surname}` == ' '
+                                ? userInfo.utorid
+                                : `${userInfo.givenName} ${userInfo.surname}`}
+                            {userInfo.admin && (
+                                <Badge className={styles.adminBadge} appearance="outline">
+                                    Admin
+                                </Badge>
+                            )}
                         </>
                     }
                     secondaryText={userInfo.email}
@@ -50,27 +63,39 @@ export const NavbarUserPopover = (): JSX.Element => {
             <div className={`${styles.popoverFooter} p-l`}>
                 <Switch
                     className={styles.popoverRight}
-                    checked={userInfo.theme === "DARK"}
-                    onChange={() => changeTheme(userInfo.theme === "DARK" ? "LIGHT" : "DARK")}
-                    label={userInfo.theme === "DARK" ? "Dark Mode" : "Light Mode"}
+                    checked={userInfo.theme === 'DARK'}
+                    onChange={() =>
+                        changeTheme(userInfo.theme === 'DARK' ? 'LIGHT' : 'DARK')
+                    }
+                    label={userInfo.theme === 'DARK' ? 'Dark Mode' : 'Light Mode'}
                 />
 
                 <Button
                     appearance="subtle"
                     className={`${styles.popoverButton} m-x-none p-r-none`}
                     icon={<Trophy24Regular />}
-                    as={"a"}
+                    as={'a'}
                     href="/achievements"
-                    onClick={(e) => { e.preventDefault(); router.push("/achievements"); }}
+                    onClick={e => {
+                        e.preventDefault();
+                        router.push('/achievements');
+                    }}
                 >
-                    Achievements {userInfo.new_achievements ? <ErrorCircle12Filled fill="red" color="red" className="m-l-s-nudge" /> : null}
+                    Achievements{' '}
+                    {userInfo.new_achievements ? (
+                        <ErrorCircle12Filled
+                            fill="red"
+                            color="red"
+                            className="m-l-s-nudge"
+                        />
+                    ) : null}
                 </Button>
 
                 <Button
                     appearance="subtle"
                     className={`${styles.popoverButton} m-x-none p-r-none`}
                     icon={<SignOut24Regular />}
-                    as={"a"}
+                    as={'a'}
                     href="https://codetierlist.utm.utoronto.ca/Shibboleth.sso/Logout"
                 >
                     Sign out

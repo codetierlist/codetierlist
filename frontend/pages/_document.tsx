@@ -3,7 +3,7 @@ import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/do
 
 class MyDocument extends Document {
     static async getInitialProps(ctx: DocumentContext) {
-    // 👇 creates a renderer that will be used for SSR
+        // 👇 creates a renderer that will be used for SSR
         const renderer = createDOMRenderer();
         const originalRenderPage = ctx.renderPage;
 
