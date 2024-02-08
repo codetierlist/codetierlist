@@ -17,7 +17,6 @@ jobs:
       - name: pull docker image
         run: bash -c "docker rmi docker:dind; docker pull docker:dind"
 
-
       - name: compose build runners
         run: bash -c "docker compose -f docker-compose-runner.yml build"
 

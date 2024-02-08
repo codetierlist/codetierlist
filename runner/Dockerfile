@@ -8,9 +8,6 @@ COPY ./types/package.json ./types/package-lock.json ./
 RUN npm ci
 COPY ./types ./
 
-RUN echo which sh
-RUN echo which bash
-
 RUN npm run prisma
 
 # npm install backend
