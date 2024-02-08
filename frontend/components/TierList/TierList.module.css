@@ -11,21 +11,23 @@
     }
 }
 
-.tier {
-    border-radius: 0;
-    height: 100%;
-    line-height: 2em;
-}
-
 .tierAvatars {
     background-color: var(--colorNeutralBackground1Hover);
     border-bottom: 1px solid var(--colorNeutralBackground1Pressed);
+}
+
+.tierIndicator {
+    align-items: center !important;
+    display: flex !important;
+    justify-content: center !important;
+    min-height: 6rem !important;
 }
 
 .avatarGroup {
     padding: var(--spacingVerticalL) 0;
     flex-wrap: wrap;
     display: flex;
+    width: 100%;
 }
 
 .avatar {

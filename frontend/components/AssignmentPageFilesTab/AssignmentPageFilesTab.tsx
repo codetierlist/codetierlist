@@ -206,6 +206,7 @@ export const AssignmentPageFilesTab = ({
     };
 
     const POLLING_RATE = 1000;
+
     useEffect(() => {
         if (content.valid === "PENDING") {
             const interval = setInterval(() => {
@@ -218,6 +219,7 @@ export const AssignmentPageFilesTab = ({
             }, POLLING_RATE);
             return () => clearInterval(interval);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [content.valid, getTestData]);
 
     useEffect(() => {

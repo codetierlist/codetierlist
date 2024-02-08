@@ -1,34 +1,33 @@
-import axios, {handleError} from "@/axios";
+import axios, { handleError } from "@/axios";
 import {
     AdminToolbarDeleteAssignmentButton,
     HeaderToolbar,
-    TierChip
+    getTierClass
 } from '@/components';
+import { SnackbarContext } from '@/contexts/SnackbarContext';
 import {
     Button,
     Card,
     Field,
     Input, Link,
+    Spinner,
     Table,
     TableBody,
     TableCell,
     TableHeader,
     TableHeaderCell,
     TableRow,
-    Tooltip,
-    Spinner
+    Tooltip
 } from "@fluentui/react-components";
-import {Dismiss24Regular, Search24Regular} from "@fluentui/react-icons";
+import { Dismiss24Regular, Search24Regular } from "@fluentui/react-icons";
 import {
     AssignmentStudentStats,
     FetchedAssignmentWithTier
 } from "codetierlist-types";
 import Error from 'next/error';
-import {useRouter} from 'next/router';
-import {useContext, useEffect, useState} from "react";
-import {SnackbarContext} from '../../../../../contexts/SnackbarContext';
-import {usePathname, useSearchParams} from "next/navigation";
-import styles from "@/components/TierList/TierList.module.css";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useRouter } from 'next/router';
+import { useContext, useEffect, useState } from "react";
 
 /**
  * Highlights the substring in the string
@@ -44,7 +43,7 @@ const highlightSubstring = (str: string, substr: string) => {
     return (
         <>
             {str.substring(0, index)}
-            <strong style={{color: "var(--colorBrandForeground1)"}}>
+            <strong style={{ color: "var(--colorBrandForeground1)" }}>
                 {str.substring(index, index + substr.length)}
             </strong>
             {str.substring(index + substr.length)}
@@ -52,11 +51,11 @@ const highlightSubstring = (str: string, substr: string) => {
     );
 };
 
-export default function Page({setStage}: {
+export default function Page({ setStage }: {
     setStage: (stage: number) => void
 }) {
-    const {courseID, assignmentID} = useRouter().query;
-    const {showSnackSev} = useContext(SnackbarContext);
+    const { courseID, assignmentID } = useRouter().query;
+    const { showSnackSev } = useContext(SnackbarContext);
     const [assignment, setAssignment] = useState<FetchedAssignmentWithTier | null>(null);
     const [studentData, setStudentData] = useState<AssignmentStudentStats | null>(null);
     const [filterValue, setFilterValue] = useState<string>("");
@@ -70,8 +69,14 @@ export default function Page({setStage}: {
         router.push(`${pathname}?${params.toString()}`).then(() => setStage(1));
     };
 
+    const loadTierlist = (utorid: string) => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set("utorid", utorid);
+        router.push(`${pathname}?${params.toString()}`).then(() => setStage(2));
+    };
+
     const fetchAssignment = async () => {
-        await axios.get<FetchedAssignmentWithTier>(`/courses/${courseID}/assignments/${assignmentID}`, {skipErrorHandling: true})
+        await axios.get<FetchedAssignmentWithTier>(`/courses/${courseID}/assignments/${assignmentID}`, { skipErrorHandling: true })
             .then((res) => {
                 setAssignment(res.data);
             })
@@ -79,7 +84,7 @@ export default function Page({setStage}: {
     };
 
     const fetchAssignmentStats = async () => {
-        await axios.get<AssignmentStudentStats>(`/courses/${courseID}/assignments/${assignmentID}/stats`, {skipErrorHandling: true})
+        await axios.get<AssignmentStudentStats>(`/courses/${courseID}/assignments/${assignmentID}/stats`, { skipErrorHandling: true })
             .then((res) => setStudentData(res.data))
             .catch(handleError(showSnackSev));
     };
@@ -98,14 +103,14 @@ export default function Page({setStage}: {
     }, [assignment, assignmentID]);
 
     if (!assignment || !courseID || !assignmentID) {
-        return <Error statusCode={404}/>;
+        return <Error statusCode={404} />;
     }
 
     const columns = [
-        {columnKey: "tier", label: "Tier"},
-        {columnKey: "utorid", label: "UTORid"},
-        {columnKey: "name", label: "Full Name"},
-        {columnKey: "testsPassed", label: "Tests Passed"},
+        { columnKey: "tier", label: "Tier" },
+        { columnKey: "utorid", label: "UTORid" },
+        { columnKey: "name", label: "Full Name" },
+        { columnKey: "testsPassed", label: "Tests Passed" },
         // { columnKey: "submitSol", label: "Submitted Solutions" },
         // { columnKey: "submitTest", label: "Submitted Tests" }
     ];
@@ -113,7 +118,7 @@ export default function Page({setStage}: {
     return (
         <section className="p-b-xxxl">
             <HeaderToolbar>
-                <AdminToolbarDeleteAssignmentButton assignment={assignment}/>
+                <AdminToolbarDeleteAssignmentButton assignment={assignment} />
             </HeaderToolbar>
 
             <Card className="m-x-l m-t-xxl">
@@ -122,7 +127,7 @@ export default function Page({setStage}: {
                         <Input
                             size="large"
                             placeholder="Search"
-                            contentBefore={<Search24Regular/>}
+                            contentBefore={<Search24Regular />}
                             contentAfter={
                                 <>
                                     {
@@ -131,7 +136,7 @@ export default function Page({setStage}: {
                                             relationship="label"
                                             showDelay={0} hideDelay={300}>
                                             <Button
-                                                icon={<Dismiss24Regular/>}
+                                                icon={<Dismiss24Regular />}
                                                 appearance="subtle"
                                                 onClick={() => setFilterValue("")}
                                             />
@@ -167,16 +172,27 @@ export default function Page({setStage}: {
                                     display: (filterValue === "" || item.utorid.includes(filterValue) || (item.givenName + " " + item.surname).includes(filterValue)) ? undefined : "none"
                                 }}
                             >
-                                <TableCell> <TierChip
-                                    tier={item.tier}
-                                    className={`py-2 px-0 ${styles.tier}`}
-                                /> </TableCell>
+                                <TableCell>
+                                    <Button
+                                        appearance="subtle"
+                                        className={getTierClass(item.tier)}
+                                        onClick={() => loadTierlist(item.utorid)}
+                                        icon={item.tier}
+                                    >
+                                        View Tierlist
+                                    </Button>
+                                </TableCell>
+
                                 <TableCell> {highlightSubstring(item.utorid, filterValue)} </TableCell>
                                 <TableCell> {highlightSubstring(`${item.givenName} ${item.surname}`, filterValue)} </TableCell>
                                 <TableCell> {item.testsPassed}/{item.totalTests} </TableCell>
-                                <TableCell> <Link appearance="subtle"
-                                    onClick={() => loadSubmission(item.utorid)}>View
-                                    Submission</Link> </TableCell>
+                                <TableCell>
+                                    <Link
+                                        appearance="subtle"
+                                        onClick={() => loadSubmission(item.utorid)}>
+                                        View Submission
+                                    </Link>
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
@@ -185,10 +201,10 @@ export default function Page({setStage}: {
                 {
                     !studentData &&
                     <Spinner className="m-y-xxxl" labelPosition="below"
-                        label="Fetching the latest data for you&hellip;"/>
+                        label="Fetching the latest data for you&hellip;" />
                 }
 
             </Card>
-        </section>
+        </section >
     );
 }
