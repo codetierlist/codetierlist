@@ -15,7 +15,7 @@ const router = express.Router();
 router.get("/images", (req, res) => {
     if (!req.user.admin && !req.user.roles.some((role) =>
         ([RoleType.INSTRUCTOR, RoleType.TA] as RoleType[]).includes(role.type))) {
-        return res.status(403).send("You must be a TA or Instructor of at least one course to access this route");
+        return res.status(403).send({ message: "You must be a TA or Instructor of at least one course to access this route" });
     }
 
     res.send(images satisfies RunnerImage[]);
