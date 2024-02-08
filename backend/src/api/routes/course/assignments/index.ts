@@ -43,11 +43,12 @@ const upload = multer({
 });
 const uploadMiddleware = (req: Request, res: Response, next: NextFunction) =>
     upload.array('files')(req, res, (err) => {
-        if(err instanceof multer.MulterError && err.code === 'LIMIT_FILE_COUNT' || err.code === 'LIMIT_FILE_SIZE') {
-            res.statusCode = 413;
-            res.send({message: "File size or count exceeded."});
-        }
-        if(err) {
+        if(err){
+            if(err instanceof multer.MulterError && err.code === 'LIMIT_FILE_COUNT' || err.code === 'LIMIT_FILE_SIZE') {
+                res.statusCode = 413;
+                res.send({message: "File size or count exceeded."});
+                return;
+            }
             next(err);
         }
         next();
