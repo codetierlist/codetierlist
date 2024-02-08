@@ -200,7 +200,7 @@ export const processSubmission = async (req: Request, res: Response, table: "sol
 
     // check if git repo exists
     let submission = await getObjectFromRequest(req, table);
-    if(submission?.author_id !== req.user.utorid){
+    if(submission && submission.author_id !== req.user.utorid){
         res.statusCode = 403;
         res.send({message: 'Cannot make a submission for other users.'});
         return;
