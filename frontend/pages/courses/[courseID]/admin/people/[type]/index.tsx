@@ -180,12 +180,12 @@ export default function Page(): JSX.Element {
                             {role == 'TA' && (
                                 <MessageBar intent="warning">
                                     <MessageBarBody>
-                                        <MessageBarTitle>Warning</MessageBarTitle>
+                                        <MessageBarTitle>Warning!</MessageBarTitle>{" "}
                                         Teaching assistants have the same permission as
                                         instructors. This includes destructive actions
                                         like deleting the course, deleting assignments,
                                         and sensitive actions like viewing student
-                                        submissions.
+                                        submissions.{" "}
                                         <strong>Be careful when adding TAs.</strong>
                                     </MessageBarBody>
                                 </MessageBar>
