@@ -1,5 +1,10 @@
 import axios, { handleError } from '@/axios';
-import { HeaderToolbar, Monaco, promptForFileReader } from '@/components';
+import {
+    HeaderToolbar,
+    Monaco,
+    checkIfCourseAdmin,
+    promptForFileReader,
+} from '@/components';
 import { SnackbarContext } from '@/contexts/SnackbarContext';
 import {
     Body2,
@@ -13,9 +18,11 @@ import { Title2 } from '@fluentui/react-text';
 import { RoleType } from 'codetierlist-types';
 import { isUTORid } from 'is-utorid';
 import Head from 'next/head';
+import Error from 'next/error';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import { Container } from 'react-grid-system';
+import { UserContext } from '@/contexts/UserContext';
 
 /**
  * Get the role name from the role type
@@ -69,11 +76,12 @@ async function modifyEnrollment(
 
 export default function Page(): JSX.Element {
     const router = useRouter();
-    const { type } = useRouter().query;
+    const { courseID, type } = useRouter().query;
     const [add, isAdd] = useState(true);
     const [role, setRole] = useState('');
     const [editorValue, setEditorValue] = useState('');
     const { showSnackSev } = useContext(SnackbarContext);
+    const { userInfo } = useContext(UserContext);
 
     useEffect(() => {
         switch (type) {
@@ -106,6 +114,11 @@ export default function Page(): JSX.Element {
                 break;
         }
     }, [type]);
+
+    // If the user is not an admin, error 403
+    if (!checkIfCourseAdmin(userInfo, courseID as string)) {
+        return <Error statusCode={403} />;
+    }
 
     return (
         <>

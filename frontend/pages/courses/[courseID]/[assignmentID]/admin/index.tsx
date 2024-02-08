@@ -2,6 +2,7 @@ import axios, { handleError } from '@/axios';
 import {
     AdminToolbarDeleteAssignmentButton,
     HeaderToolbar,
+    checkIfCourseAdmin,
     getTierClass,
 } from '@/components';
 import { SnackbarContext } from '@/contexts/SnackbarContext';
@@ -26,6 +27,7 @@ import Error from 'next/error';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
+import { UserContext } from '@/contexts/UserContext';
 
 /**
  * Highlights the substring in the string
@@ -100,6 +102,7 @@ export default function Page({ setStage }: { setStage: (stage: number) => void }
     const searchParams = useSearchParams();
     const router = useRouter();
     const pathname = usePathname();
+    const { userInfo } = useContext(UserContext);
 
     const loadSubmission = (utorid: string) => {
         const params = new URLSearchParams(searchParams.toString());
@@ -129,6 +132,12 @@ export default function Page({ setStage }: { setStage: (stage: number) => void }
         // { columnKey: "submitSol", label: "Submitted Solutions" },
         // { columnKey: "submitTest", label: "Submitted Tests" }
     ];
+
+
+    // If the user is not an admin, error 403
+    if (!checkIfCourseAdmin(userInfo, courseID as string)) {
+        return <Error statusCode={403} />;
+    }
 
     return (
         <section className="p-b-xxxl">
