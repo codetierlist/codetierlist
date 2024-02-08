@@ -166,6 +166,18 @@ router.get("/:assignment/testcases/:commitId?/:file", fetchAssignmentMiddleware,
 }));
 
 router.get("/:assignment/tierlist", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
+    let utorid = req.user.utorid as string | undefined;
+
+    if (req.query.utorid) {
+        if (!isProf(req.course!, req.user)) {
+            res.statusCode = 403;
+            res.send({message: 'You are not an instructor.'});
+            return;
+        } else {
+            utorid = req.query.utorid as string;
+        }
+    }
+
     const fullFetchedAssignment = await prisma.assignment.findUniqueOrThrow({
         where: {
             id: {
@@ -177,15 +189,35 @@ router.get("/:assignment/tierlist", fetchAssignmentMiddleware, errorHandler(asyn
                 where: {
                     members: {
                         some: {
-                            utorid: req.user.utorid
+                            utorid
                         }
                     }
                 },
+            }, submissions: {
+                where: {
+                    author_id: utorid
+                },
+                orderBy: {
+                    datetime: "desc"
+                },
+                take: 1
+            },
+            test_cases: {
+                where: {
+                    author_id: utorid
+                },
+                orderBy: {
+                    datetime: "desc"
+                },
+                take: 1
             }
         }
     });
 
-    if (!fullFetchedAssignment.groups[0]) {
+    if (!fullFetchedAssignment.groups[0] ||
+        !fullFetchedAssignment.test_cases[0] ||
+        !fullFetchedAssignment.submissions[0] ||
+        !fullFetchedAssignment.test_cases.some(x => x.valid === "VALID")) {
         res.send({
             S: [],
             A: [],
@@ -218,7 +250,7 @@ router.get('/:assignment/stats', fetchAssignmentMiddleware, errorHandler(async (
         include: {
             groups: true,
             submissions: {
-                where:{
+                where: {
                     author_id: req.user.utorid
                 }
             }
@@ -226,11 +258,11 @@ router.get('/:assignment/stats', fetchAssignmentMiddleware, errorHandler(async (
     });
     console.timeEnd('statsFetch');
     console.time('tierlistGen');
-    const submissions = await prisma.$queryRaw<(QueriedSubmission & {email: string, group_number : number})[]>`
+    const submissions = await prisma.$queryRaw<(QueriedSubmission & { email: string, group_number: number })[]>`
         WITH data as (SELECT COUNT("_ScoreCache".testcase_author_id)        as total,
                              COUNT(CASE WHEN "_ScoreCache".pass THEN 1 END) as passed,
                              "_ScoreCache".solution_author_id               as author_id,
-                             T.group_number as group_number
+                             T.group_number                                 as group_number
                       FROM "_ScoreCache"
                                INNER JOIN "_Scores" S on S.id = "_ScoreCache".score_id
                                INNER JOIN "Testcases" T on S.testcase_id = T.id

@@ -122,6 +122,7 @@ export const CourseOverviewCard = ({
             {...props}
         >
             <CardPreview className={styles.coursePreview}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                     style={{ objectFit: "cover", height: 200, width: 300 }}
                     src={image + "?" + seed}

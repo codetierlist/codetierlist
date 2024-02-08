@@ -21,7 +21,7 @@ import { defaultUser, UserContext } from '@/contexts/UserContext';
 import { FetchedUser } from "codetierlist-types";
 import { useEffect, useState } from "react";
 import axios, { handleError } from "@/axios";
-import { SnackbarContext } from '../contexts/SnackbarContext';
+import { SnackbarContext } from '@/contexts/SnackbarContext';
 
 type EnhancedAppProps = AppProps & { renderer?: GriffelRenderer };
 

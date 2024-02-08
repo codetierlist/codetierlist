@@ -12,6 +12,7 @@ updates:
     # Raise pull requests for version updates
     # to pip against the `develop` branch
     target-branch: "dev"
+
   - package-ecosystem: "npm" # See documentation for possible values
     directory: "/frontend" # Location of package manifests
     schedule:
@@ -19,6 +20,7 @@ updates:
     # Raise pull requests for version updates
     # to pip against the `develop` branch
     target-branch: "dev"
+
   - package-ecosystem: "npm" # See documentation for possible values
     directory: "/types" # Location of package manifests
     schedule:
@@ -26,6 +28,7 @@ updates:
     # Raise pull requests for version updates
     # to pip against the `develop` branch
     target-branch: "dev"
+
   - package-ecosystem: "npm" # See documentation for possible values
     directory: "/runners" # Location of package manifests
     schedule:
