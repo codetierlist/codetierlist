@@ -1,7 +1,5 @@
 FROM docker:dind
-RUN apk update
-RUN apk add bash
-RUN apk add --update nodejs npm
+RUN apk add --no-cache bash nodejs npm
 RUN npm install -g typescript
 
 # npm install types
