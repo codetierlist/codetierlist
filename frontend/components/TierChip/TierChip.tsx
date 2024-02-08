@@ -1,5 +1,5 @@
-import { type UserTier, type Tier } from "codetierlist-types";
-import styles from "./TierChip.module.css";
+import { type UserTier, type Tier } from 'codetierlist-types';
+import styles from './TierChip.module.css';
 
 export declare interface TierChipProps {
     /** the tier of the course */
@@ -24,7 +24,7 @@ export declare interface RawTierChipProps extends TierChipProps {
  * @returns {string} the class of the tier chip
  */
 export const getTierClass = (tier: UserTier | Tier): string => {
-    return tier === "?" ? styles["tier-IDK"] : styles[`tier-${tier}`];
+    return tier === '?' ? styles['tier-IDK'] : styles[`tier-${tier}`];
 };
 
 /**
@@ -40,7 +40,7 @@ export const RawTierChip = ({
     ...props
 }: RawTierChipProps): JSX.Element => {
     return (
-        <Slot className={`${getTierClass(tier)} ${className ?? ""}`} {...props}>
+        <Slot className={`${getTierClass(tier)} ${className ?? ''}`} {...props}>
             {tier}
         </Slot>
     );
@@ -57,7 +57,7 @@ export const TierChip = ({ tier, className, ...props }: TierChipProps): JSX.Elem
         <RawTierChip
             tier={tier}
             Slot="div"
-            className={`${styles.tier} ${className ?? ""}`}
+            className={`${styles.tier} ${className ?? ''}`}
             {...props}
         />
     );

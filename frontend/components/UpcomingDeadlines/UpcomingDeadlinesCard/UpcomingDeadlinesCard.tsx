@@ -1,7 +1,7 @@
-import { Card, Divider, Title3 } from "@fluentui/react-components";
-import { UpcomingDeadlineEntry } from "../UpcomingDeadlineEntry/UpcomingDeadlineEntry";
-import styles from "./UpcomingDeadlinesCard.module.css";
-import { useEffect } from "react";
+import { Card, Divider, Title3 } from '@fluentui/react-components';
+import { UpcomingDeadlineEntry } from '../UpcomingDeadlineEntry/UpcomingDeadlineEntry';
+import styles from './UpcomingDeadlinesCard.module.css';
+import { useEffect } from 'react';
 
 export declare interface UpcomingDeadlinesCardProps {
     /** The parameters for the page */
@@ -19,7 +19,7 @@ export const UpcomingDeadlinesCard = ({
     }, [params.courseID]);
 
     // TODO: comment the following out! This is just for mock data
-    const dueDate = new Date("2023-11-04");
+    const dueDate = new Date('2023-11-04');
     // Add 5 days to the current date
     return (
         <Card className={styles.mainCard}>

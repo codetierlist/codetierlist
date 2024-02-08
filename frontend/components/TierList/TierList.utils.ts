@@ -1,4 +1,4 @@
-import { Tierlist, TierlistEntry } from "codetierlist-types";
+import { Tierlist, TierlistEntry } from 'codetierlist-types';
 
 /**
  * Generate mock data for one tier of the tier list.
@@ -7,13 +7,13 @@ import { Tierlist, TierlistEntry } from "codetierlist-types";
  */
 export const generatePeople = (count: number, you: boolean): TierlistEntry[] => {
     const getRandomLetter = (): string => {
-        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
         return `${alphabet[Math.floor(Math.random() * alphabet.length)]}`;
     };
 
     const getRandomLetters = (lettersCount: number): string => {
-        return [...Array(lettersCount)].map(() => getRandomLetter()).join("");
+        return [...Array(lettersCount)].map(() => getRandomLetter()).join('');
     };
 
     return [...Array(count)].map((_, i) => {

@@ -1,10 +1,10 @@
-import axios, { handleError } from "@/axios";
+import axios, { handleError } from '@/axios';
 import {
     AdminToolbarDeleteAssignmentButton,
     HeaderToolbar,
     getTierClass,
-} from "@/components";
-import { SnackbarContext } from "@/contexts/SnackbarContext";
+} from '@/components';
+import { SnackbarContext } from '@/contexts/SnackbarContext';
 import {
     Button,
     Card,
@@ -19,13 +19,13 @@ import {
     TableHeaderCell,
     TableRow,
     Tooltip,
-} from "@fluentui/react-components";
-import { Dismiss24Regular, Search24Regular } from "@fluentui/react-icons";
-import { AssignmentStudentStats, FetchedAssignmentWithTier } from "codetierlist-types";
-import Error from "next/error";
-import { usePathname, useSearchParams } from "next/navigation";
-import { useRouter } from "next/router";
-import { useContext, useEffect, useState } from "react";
+} from '@fluentui/react-components';
+import { Dismiss24Regular, Search24Regular } from '@fluentui/react-icons';
+import { AssignmentStudentStats, FetchedAssignmentWithTier } from 'codetierlist-types';
+import Error from 'next/error';
+import { usePathname, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/router';
+import { useContext, useEffect, useState } from 'react';
 
 /**
  * Highlights the substring in the string
@@ -41,7 +41,7 @@ const highlightSubstring = (str: string, substr: string) => {
     return (
         <>
             {str.substring(0, index)}
-            <strong style={{ color: "var(--colorBrandForeground1)" }}>
+            <strong style={{ color: 'var(--colorBrandForeground1)' }}>
                 {str.substring(index, index + substr.length)}
             </strong>
             {str.substring(index + substr.length)}
@@ -49,27 +49,10 @@ const highlightSubstring = (str: string, substr: string) => {
     );
 };
 
-export default function Page({ setStage }: { setStage: (stage: number) => void }) {
-    const { courseID, assignmentID } = useRouter().query;
-    const { showSnackSev } = useContext(SnackbarContext);
+const useAssignment = (courseID: string, assignmentID: string) => {
     const [assignment, setAssignment] = useState<FetchedAssignmentWithTier | null>(null);
     const [studentData, setStudentData] = useState<AssignmentStudentStats | null>(null);
-    const [filterValue, setFilterValue] = useState<string>("");
-    const searchParams = useSearchParams();
-    const router = useRouter();
-    const pathname = usePathname();
-
-    const loadSubmission = (utorid: string) => {
-        const params = new URLSearchParams(searchParams.toString());
-        params.set("utorid", utorid);
-        router.push(`${pathname}?${params.toString()}`).then(() => setStage(1));
-    };
-
-    const loadTierlist = (utorid: string) => {
-        const params = new URLSearchParams(searchParams.toString());
-        params.set("utorid", utorid);
-        router.push(`${pathname}?${params.toString()}`).then(() => setStage(2));
-    };
+    const { showSnackSev } = useContext(SnackbarContext);
 
     const fetchAssignment = async () => {
         await axios
@@ -79,9 +62,7 @@ export default function Page({ setStage }: { setStage: (stage: number) => void }
                     skipErrorHandling: true,
                 }
             )
-            .then((res) => {
-                setAssignment(res.data);
-            })
+            .then((res) => setAssignment(res.data))
             .catch(handleError(showSnackSev));
     };
 
@@ -106,6 +87,32 @@ export default function Page({ setStage }: { setStage: (stage: number) => void }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [courseID, assignmentID]);
 
+    return { assignment, studentData };
+};
+
+export default function Page({ setStage }: { setStage: (stage: number) => void }) {
+    const { courseID, assignmentID } = useRouter().query;
+    const { assignment, studentData } = useAssignment(
+        courseID as string,
+        assignmentID as string
+    );
+    const [filterValue, setFilterValue] = useState<string>('');
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const pathname = usePathname();
+
+    const loadSubmission = (utorid: string) => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('utorid', utorid);
+        router.push(`${pathname}?${params.toString()}`).then(() => setStage(1));
+    };
+
+    const loadTierlist = (utorid: string) => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('utorid', utorid);
+        router.push(`${pathname}?${params.toString()}`).then(() => setStage(2));
+    };
+
     useEffect(() => {
         document.title = `${assignment?.title || assignmentID} - Codetierlist`;
     }, [assignment, assignmentID]);
@@ -115,10 +122,10 @@ export default function Page({ setStage }: { setStage: (stage: number) => void }
     }
 
     const columns = [
-        { columnKey: "tier", label: "Tier" },
-        { columnKey: "utorid", label: "UTORid" },
-        { columnKey: "name", label: "Full Name" },
-        { columnKey: "testsPassed", label: "Tests Passed" },
+        { columnKey: 'tier', label: 'Tier' },
+        { columnKey: 'utorid', label: 'UTORid' },
+        { columnKey: 'name', label: 'Full Name' },
+        { columnKey: 'testsPassed', label: 'Tests Passed' },
         // { columnKey: "submitSol", label: "Submitted Solutions" },
         // { columnKey: "submitTest", label: "Submitted Tests" }
     ];
@@ -138,7 +145,7 @@ export default function Page({ setStage }: { setStage: (stage: number) => void }
                             contentBefore={<Search24Regular />}
                             contentAfter={
                                 <>
-                                    {filterValue !== "" && (
+                                    {filterValue !== '' && (
                                         <Tooltip
                                             content="Clear search"
                                             relationship="label"
@@ -148,7 +155,7 @@ export default function Page({ setStage }: { setStage: (stage: number) => void }
                                             <Button
                                                 icon={<Dismiss24Regular />}
                                                 appearance="subtle"
-                                                onClick={() => setFilterValue("")}
+                                                onClick={() => setFilterValue('')}
                                             />
                                         </Tooltip>
                                     )}
@@ -181,15 +188,15 @@ export default function Page({ setStage }: { setStage: (stage: number) => void }
                                     key={item.utorid}
                                     style={{
                                         display:
-                                            filterValue === "" ||
+                                            filterValue === '' ||
                                             item.utorid.includes(filterValue) ||
                                             (
                                                 item.givenName +
-                                                " " +
+                                                ' ' +
                                                 item.surname
                                             ).includes(filterValue)
                                                 ? undefined
-                                                : "none",
+                                                : 'none',
                                     }}
                                 >
                                     <TableCell>
@@ -204,22 +211,22 @@ export default function Page({ setStage }: { setStage: (stage: number) => void }
                                     </TableCell>
 
                                     <TableCell>
-                                        {" "}
+                                        {' '}
                                         {highlightSubstring(
                                             item.utorid,
                                             filterValue
-                                        )}{" "}
+                                        )}{' '}
                                     </TableCell>
                                     <TableCell>
-                                        {" "}
+                                        {' '}
                                         {highlightSubstring(
                                             `${item.givenName} ${item.surname}`,
                                             filterValue
-                                        )}{" "}
+                                        )}{' '}
                                     </TableCell>
                                     <TableCell>
-                                        {" "}
-                                        {item.testsPassed}/{item.totalTests}{" "}
+                                        {' '}
+                                        {item.testsPassed}/{item.totalTests}{' '}
                                     </TableCell>
                                     <TableCell>
                                         <Link

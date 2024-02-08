@@ -3,8 +3,8 @@ import {
     CourseOverviewCard,
     CreateCourseDialogSurface,
     getSession,
-} from "@/components";
-import { UserContext } from "@/contexts/UserContext";
+} from '@/components';
+import { UserContext } from '@/contexts/UserContext';
 import {
     Button,
     Caption1,
@@ -14,10 +14,10 @@ import {
     DialogTrigger,
     Title2,
     Tooltip,
-} from "@fluentui/react-components";
-import Head from "next/head";
-import { useContext, useState } from "react";
-import { Container } from "react-grid-system";
+} from '@fluentui/react-components';
+import Head from 'next/head';
+import { useContext, useState } from 'react';
+import { Container } from 'react-grid-system';
 
 export default function Home() {
     const { userInfo } = useContext(UserContext);

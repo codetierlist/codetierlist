@@ -1,4 +1,4 @@
-import axios, { handleError } from "@/axios";
+import axios, { handleError } from '@/axios';
 import {
     AssignmentPageFilesTab,
     TierChip,
@@ -6,9 +6,9 @@ import {
     checkIfCourseAdmin,
     convertDate,
     convertTime,
-} from "@/components";
-import { SnackbarContext } from "@/contexts/SnackbarContext";
-import { UserContext } from "@/contexts/UserContext";
+} from '@/components';
+import { SnackbarContext } from '@/contexts/SnackbarContext';
+import { UserContext } from '@/contexts/UserContext';
 import {
     Button,
     Card,
@@ -21,17 +21,17 @@ import {
     Tab,
     TabList,
     Text,
-} from "@fluentui/react-components";
-import { Subtitle2, Title2 } from "@fluentui/react-text";
-import { Tierlist, UserFetchedAssignment } from "codetierlist-types";
-import Error from "next/error";
-import Head from "next/head";
-import { usePathname, useSearchParams } from "next/navigation";
-import { useRouter } from "next/router";
-import { Key, useCallback, useContext, useEffect, useState } from "react";
-import { Col, Container } from "react-grid-system";
-import ViewAdminTab from "./admin/index";
-import styles from "./page.module.css";
+} from '@fluentui/react-components';
+import { Subtitle2, Title2 } from '@fluentui/react-text';
+import { Tierlist, UserFetchedAssignment } from 'codetierlist-types';
+import Error from 'next/error';
+import Head from 'next/head';
+import { usePathname, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/router';
+import { Key, useCallback, useContext, useEffect, useState } from 'react';
+import { Col, Container } from 'react-grid-system';
+import ViewAdminTab from './admin/index';
+import styles from './page.module.css';
 
 /**
  * Displays the tierlist
@@ -49,7 +49,7 @@ const ViewTierList = (props: React.HTMLAttributes<HTMLDivElement>) => {
             .get<Tierlist>(`/courses/${courseID}/assignments/${assignmentID}/tierlist`, {
                 skipErrorHandling: true,
                 params: {
-                    utorid: searchParams.get("utorid") ?? undefined,
+                    utorid: searchParams.get('utorid') ?? undefined,
                 },
             })
             .then((res) => setTierlist(res.data))
@@ -84,7 +84,7 @@ const ViewTierList = (props: React.HTMLAttributes<HTMLDivElement>) => {
             <Subtitle1 className={styles.gutter} block>
                 Tierlist
             </Subtitle1>
-            {tierlist ? <TierList tierlist={tierlist} /> : "No tier list available."}
+            {tierlist ? <TierList tierlist={tierlist} /> : 'No tier list available.'}
         </Col>
     );
 };
@@ -144,7 +144,7 @@ const EmptyMessageBar = ({
     stage: number;
 }) => {
     return (
-        <MessageBar intent={"warning"} className={styles.messageBar}>
+        <MessageBar intent={'warning'} className={styles.messageBar}>
             <MessageBarBody>
                 <MessageBarTitle>You have not submitted a {thing} yet.</MessageBarTitle>
                 You can submit a solution by clicking on the &ldquo;{tab}&rdquo; tab. You
@@ -178,7 +178,7 @@ const ViewDetailsTab = ({
                     header={
                         <div className={styles.assignmentHeaderContent}>
                             <Subtitle2 className={styles.dueDate}>
-                                <strong>Due</strong> {convertDate(assignment.due_date)} at{" "}
+                                <strong>Due</strong> {convertDate(assignment.due_date)} at{' '}
                                 {convertTime(assignment.due_date)}
                             </Subtitle2>
 
@@ -211,7 +211,7 @@ const ViewDetailsTab = ({
             </Subtitle1>
 
             <Card className={styles.gutter}>
-                {assignment.description.split("\n").map((line: string, i: Key) => {
+                {assignment.description.split('\n').map((line: string, i: Key) => {
                     return <Text key={i}>{line}</Text>;
                 })}
             </Card>
@@ -272,7 +272,7 @@ const useQueryString = (
         // remove utorid query when not in upload or tierlist stage
         if (!excludeStages.includes(currentStage) && searchParams.has(queryKey)) {
             const query = createQueryString();
-            void router.replace(`${pathname}${query ? "?" : ""}${query}`);
+            void router.replace(`${pathname}${query ? '?' : ''}${query}`);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentStage]);
@@ -286,7 +286,7 @@ export default function Page() {
     const { courseID, assignmentID } = router.query;
     const { userInfo } = useContext(UserContext);
 
-    useQueryString("utorid", [1, 2], stage);
+    useQueryString('utorid', [1, 2], stage);
 
     const fetchAssignment = async () => {
         await axios

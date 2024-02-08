@@ -1,5 +1,5 @@
-import { DismissCircle24Filled, CheckmarkCircle24Filled } from "@fluentui/react-icons";
-import styles from "./CheckedTodo.module.css";
+import { DismissCircle24Filled, CheckmarkCircle24Filled } from '@fluentui/react-icons';
+import styles from './CheckedTodo.module.css';
 
 export declare type CheckedTodoItemProps = {
     /** The text to put inside the todo */
@@ -10,10 +10,10 @@ export declare type CheckedTodoItemProps = {
 
 export const CheckedTodoItem = ({ todo, checked }: CheckedTodoItemProps) => {
     return (
-        <div className={"d-flex align-items-center " + styles.checkedTodoItem}>
+        <div className={'d-flex align-items-center ' + styles.checkedTodoItem}>
             {checked ? (
                 <CheckmarkCircle24Filled
-                    primaryFill={"var(--colorStatusSuccessBackground3)"}
+                    primaryFill={'var(--colorStatusSuccessBackground3)'}
                 />
             ) : (
                 <DismissCircle24Filled />

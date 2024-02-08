@@ -2,12 +2,12 @@ import {
     AvatarGroup,
     AvatarGroupItem,
     partitionAvatarGroupItems,
-} from "@fluentui/react-components";
-import { Tier, Tierlist, TierlistEntry } from "codetierlist-types";
-import { Col, Row } from "react-grid-system";
-import { GenerateInitalsAvatarProps, TierChip, getTierClass } from "@/components";
-import { useState, forwardRef, useRef, useEffect } from "react";
-import styles from "./TierList.module.css";
+} from '@fluentui/react-components';
+import { Tier, Tierlist, TierlistEntry } from 'codetierlist-types';
+import { Col, Row } from 'react-grid-system';
+import { GenerateInitalsAvatarProps, TierChip, getTierClass } from '@/components';
+import { useState, forwardRef, useRef, useEffect } from 'react';
+import styles from './TierList.module.css';
 
 const EMPTY_DATA: Tierlist = {
     S: [],
@@ -87,7 +87,7 @@ const TierAvatars = forwardRef<HTMLDivElement, TierAvatarsProps>(
                             overflowLabel={`${overflowItems.length} more`}
                             className={styles.avatar}
                             initials={`+${youIndex !== -1 ? overflowItems.length - 1 : overflowItems.length}`}
-                            color={"neutral"}
+                            color={'neutral'}
                         />
                     )}
                 </AvatarGroup>
@@ -96,7 +96,7 @@ const TierAvatars = forwardRef<HTMLDivElement, TierAvatarsProps>(
     }
 );
 
-TierAvatars.displayName = "TierAvatars";
+TierAvatars.displayName = 'TierAvatars';
 
 declare interface TierRowProps {
     /** The tier to display */
@@ -140,10 +140,10 @@ const TierRow = ({ tier, tierlist }: TierRowProps): JSX.Element => {
 
     useEffect(() => {
         handleResize();
-        window.addEventListener("resize", handleResize);
+        window.addEventListener('resize', handleResize);
 
         return () => {
-            window.removeEventListener("resize", handleResize);
+            window.removeEventListener('resize', handleResize);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tierlist, thisTier]);

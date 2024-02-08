@@ -1,12 +1,12 @@
-import axios, { handleError } from "@/axios";
-import { AchievementCard, RawAchievementCard } from "@/components";
-import { SnackbarContext } from "@/contexts/SnackbarContext";
-import { UserContext } from "@/contexts/UserContext";
-import { Title2 } from "@fluentui/react-text";
-import { AchievementConfig } from "codetierlist-types";
-import { notFound } from "next/navigation";
-import { useContext, useEffect, useMemo, useState } from "react";
-import { Col, Container, Row } from "react-grid-system";
+import axios, { handleError } from '@/axios';
+import { AchievementCard, RawAchievementCard } from '@/components';
+import { SnackbarContext } from '@/contexts/SnackbarContext';
+import { UserContext } from '@/contexts/UserContext';
+import { Title2 } from '@fluentui/react-text';
+import { AchievementConfig } from 'codetierlist-types';
+import { notFound } from 'next/navigation';
+import { useContext, useEffect, useMemo, useState } from 'react';
+import { Col, Container, Row } from 'react-grid-system';
 
 export default function Page() {
     const [achievements, setAchievements] = useState<AchievementConfig[] | null>(null);
@@ -40,7 +40,7 @@ export default function Page() {
 
     return (
         <Container component="main" className="m-t-xxxl">
-            <header className={"m-b-l"}>
+            <header className={'m-b-l'}>
                 <Title2 as="h2">Achievements</Title2>
                 <br />
             </header>
@@ -62,7 +62,7 @@ export default function Page() {
                     <Col sm={12} className="m-b-l">
                         <RawAchievementCard
                             icon="unknown.png"
-                            name={`${hiddenAchievementCount} hidden achievement${hiddenAchievementCount > 1 ? "s" : ""} remaining`}
+                            name={`${hiddenAchievementCount} hidden achievement${hiddenAchievementCount > 1 ? 's' : ''} remaining`}
                             description="Details of these achievements are hidden until you unlock them."
                         />
                     </Col>

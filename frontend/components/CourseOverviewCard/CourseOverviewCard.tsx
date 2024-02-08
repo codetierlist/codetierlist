@@ -9,21 +9,21 @@ import {
     Link,
     Title3,
     Tooltip,
-} from "@fluentui/react-components";
-import { useRouter } from "next/navigation";
-import { useContext, useState } from "react";
-import styles from "./CourseOverviewCard.module.css";
-import { RoleType, Session } from "codetierlist-types";
-import { ImageAdd20Regular } from "@fluentui/react-icons";
-import axios, { handleError } from "@/axios";
+} from '@fluentui/react-components';
+import { useRouter } from 'next/navigation';
+import { useContext, useState } from 'react';
+import styles from './CourseOverviewCard.module.css';
+import { RoleType, Session } from 'codetierlist-types';
+import { ImageAdd20Regular } from '@fluentui/react-icons';
+import axios, { handleError } from '@/axios';
 import {
     promptForFileObject,
     checkIfCourseAdmin,
     SessionBlock,
     generatePlaceholderImage,
-} from "@/components";
-import { SnackbarContext } from "@/contexts/SnackbarContext";
-import { UserContext } from "@/contexts/UserContext";
+} from '@/components';
+import { SnackbarContext } from '@/contexts/SnackbarContext';
+import { UserContext } from '@/contexts/UserContext';
 
 export declare interface CourseSessionChipProps {
     /** the session of the course */
@@ -43,7 +43,7 @@ export const CourseSessionChip = ({
     props,
 }: CourseSessionChipProps): JSX.Element => {
     return (
-        <div className={styles.sessionChip + " " + styles[session]} {...props}>
+        <div className={styles.sessionChip + ' ' + styles[session]} {...props}>
             {children || session}
         </div>
     );
@@ -103,18 +103,18 @@ export const CourseOverviewCard = ({
                                 className="m-t-m m-r-m"
                                 onClick={async (event) => {
                                     event.stopPropagation();
-                                    const files = await promptForFileObject("image/*");
+                                    const files = await promptForFileObject('image/*');
                                     if (!files || files.length != 1) {
                                         return;
                                     }
 
                                     const formData = new FormData();
-                                    formData.append("file", files[0]);
+                                    formData.append('file', files[0]);
 
                                     axios
                                         .post(`/courses/${id}/cover`, formData, {
                                             headers: {
-                                                "Content-Type": "multipart/form-data",
+                                                'Content-Type': 'multipart/form-data',
                                             },
                                         })
                                         .then(() => {
@@ -132,8 +132,8 @@ export const CourseOverviewCard = ({
             <CardPreview className={styles.coursePreview}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                    style={{ objectFit: "cover", height: 200, width: 300 }}
-                    src={image + "?" + seed}
+                    style={{ objectFit: 'cover', height: 200, width: 300 }}
+                    src={image + '?' + seed}
                     width={300}
                     alt=""
                     height={200}

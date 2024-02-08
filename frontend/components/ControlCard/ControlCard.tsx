@@ -1,6 +1,6 @@
-import { Caption1, Card, CardHeader, Label } from "@fluentui/react-components";
+import { Caption1, Card, CardHeader, Label } from '@fluentui/react-components';
 
-import styles from "./ControlCard.module.css";
+import styles from './ControlCard.module.css';
 
 export declare type ControlCardProps = {
     /** The title of the card. */

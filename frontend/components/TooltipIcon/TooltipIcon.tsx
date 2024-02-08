@@ -1,9 +1,9 @@
-import { Slot, Tooltip, TooltipProps, useId } from "@fluentui/react-components";
-import React, { useState } from "react";
+import { Slot, Tooltip, TooltipProps, useId } from '@fluentui/react-components';
+import React, { useState } from 'react';
 
 export declare interface ToolTipIconProps {
     /** The tooltip to show */
-    tooltip: string | NonNullable<Slot<"div">>;
+    tooltip: string | NonNullable<Slot<'div'>>;
     /** The icon to show, should be a fluent 9 icon satisfying the IconProps interface */
     icon: JSX.Element;
     /** The class name to apply to the tooltip */
@@ -16,7 +16,7 @@ export declare interface ToolTipIconProps {
 export const ToolTipIcon = (
     props: Partial<TooltipProps> & ToolTipIconProps
 ): JSX.Element | undefined => {
-    const contentId = useId("content");
+    const contentId = useId('content');
     const [visible, setVisible] = useState(false);
 
     if (!props.icon) {
@@ -26,7 +26,7 @@ export const ToolTipIcon = (
         <span aria-owns={visible ? contentId : undefined} className={props.className}>
             <Tooltip
                 content={
-                    typeof props.tooltip === "string"
+                    typeof props.tooltip === 'string'
                         ? {
                               children: props.tooltip,
                               id: contentId,

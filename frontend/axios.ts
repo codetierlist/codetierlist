@@ -1,7 +1,7 @@
-import { ToastIntent } from "@fluentui/react-components";
-import axios, { AxiosError } from "axios";
+import { ToastIntent } from '@fluentui/react-components';
+import axios, { AxiosError } from 'axios';
 
-declare module "axios" {
+declare module 'axios' {
     export interface AxiosRequestConfig {
         skipErrorHandling?: boolean;
     }
@@ -26,10 +26,10 @@ export const handleError =
                 res = error.message;
             }
         } else {
-            res = "Server was unresponsive, please try again later";
+            res = 'Server was unresponsive, please try again later';
         }
         if (showSnackSev) {
-            showSnackSev(res, "error");
+            showSnackSev(res, 'error');
         } else {
             console.error(res);
         }
@@ -39,31 +39,31 @@ export const handleError =
  * Axios instance
  */
 const instance = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL || "/api",
+    baseURL: process.env.NEXT_PUBLIC_API_URL || '/api',
 });
 
 let loading = 0;
 instance.interceptors.request.use((config) => {
-    if ("skipLoadingWheel" in config && config.skipLoadingWheel === true) {
+    if ('skipLoadingWheel' in config && config.skipLoadingWheel === true) {
         return config;
     }
-    const loadingWheel = document.getElementById("axios-loading-backdrop");
+    const loadingWheel = document.getElementById('axios-loading-backdrop');
     if (!loadingWheel) {
         return config;
     }
-    loadingWheel.style.display = "flex";
+    loadingWheel.style.display = 'flex';
     loading += 1;
     return config;
 });
 
 instance.interceptors.response.use(
     (response) => {
-        const loadingWheel = document.getElementById("axios-loading-backdrop");
+        const loadingWheel = document.getElementById('axios-loading-backdrop');
         if (!loadingWheel) {
             return response;
         }
         if (
-            "skipLoadingWheel" in response.config &&
+            'skipLoadingWheel' in response.config &&
             response.config.skipLoadingWheel === true
         ) {
             return response;
@@ -71,20 +71,20 @@ instance.interceptors.response.use(
         loading -= 1;
         setTimeout(() => {
             if (loading === 0) {
-                loadingWheel.style.display = "none";
+                loadingWheel.style.display = 'none';
             }
         }, 500);
         return response;
     },
     (error) => {
         loading -= 1;
-        const loadingWheel = document.getElementById("axios-loading-backdrop");
+        const loadingWheel = document.getElementById('axios-loading-backdrop');
         if (!loadingWheel) {
             return;
         }
         setTimeout(() => {
             if (loading === 0) {
-                loadingWheel.style.display = "none";
+                loadingWheel.style.display = 'none';
             }
         }, 500);
         return Promise.reject(error);

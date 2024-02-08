@@ -1,9 +1,9 @@
-import axios, { handleError } from "@/axios";
-import { UserContext } from "@/contexts/UserContext";
-import { useRouter } from "next/router";
-import { useContext } from "react";
-import { SnackbarContext } from "@/contexts/SnackbarContext";
-import { BaseToolbarDeleteButton } from "@/components/AssignmentAdminToolbar/BaseToolbarDeleteButton/BaseToolbarDeleteButton";
+import axios, { handleError } from '@/axios';
+import { UserContext } from '@/contexts/UserContext';
+import { useRouter } from 'next/router';
+import { useContext } from 'react';
+import { SnackbarContext } from '@/contexts/SnackbarContext';
+import { BaseToolbarDeleteButton } from '@/components/AssignmentAdminToolbar/BaseToolbarDeleteButton/BaseToolbarDeleteButton';
 
 /**
  * A button that deletes a course
@@ -18,7 +18,7 @@ export const AdminToolbarDeleteCourseButton = ({ courseID }: { courseID: string 
     const deleteCourse = async () => {
         await axios
             .delete(`/courses/${courseID}`)
-            .then(() => router.push("/"))
+            .then(() => router.push('/'))
             .catch(handleError(showSnackSev))
             .finally(() => fetchUserInfo());
     };

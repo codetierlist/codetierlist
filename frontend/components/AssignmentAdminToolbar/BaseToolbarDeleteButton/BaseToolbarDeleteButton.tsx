@@ -8,9 +8,9 @@ import {
     DialogTitle,
     DialogTrigger,
     ToolbarButton,
-} from "@fluentui/react-components";
-import { BinRecycle24Regular } from "@fluentui/react-icons";
-import styles from "./BaseToolbarDeleteButton.module.css";
+} from '@fluentui/react-components';
+import { BinRecycle24Regular } from '@fluentui/react-icons';
+import styles from './BaseToolbarDeleteButton.module.css';
 
 export declare type BaseToolbarDeleteButtonProps = {
     /**

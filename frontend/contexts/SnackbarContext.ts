@@ -1,5 +1,5 @@
-import { ToastIntent } from "@fluentui/react-components";
-import { createContext } from "react";
+import { ToastIntent } from '@fluentui/react-components';
+import { createContext } from 'react';
 
 /**
  * The context for the global snackbar. Just use `enqueue` to display a

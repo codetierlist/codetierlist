@@ -5,13 +5,13 @@ import {
     MenuPopover,
     MenuTrigger,
     ToolbarButton,
-} from "@fluentui/react-components";
+} from '@fluentui/react-components';
 import {
     ChevronDown16Regular,
     PersonAdd24Regular,
     PersonDelete24Regular,
-} from "@fluentui/react-icons";
-import { useRouter } from "next/router";
+} from '@fluentui/react-icons';
+import { useRouter } from 'next/router';
 
 declare type AddRemovePeopleButtonProps = {
     /**
@@ -21,7 +21,7 @@ declare type AddRemovePeopleButtonProps = {
     /**
      * the type of people to add/remove
      */
-    type: "students" | "tas" | "instructors";
+    type: 'students' | 'tas' | 'instructors';
     /**
      * whether to add or remove people. True for add, false for remove
      */
@@ -38,13 +38,13 @@ const AddRemovePeopleButton = ({ courseID, type, add }: AddRemovePeopleButtonPro
         <MenuItem
             onClick={() =>
                 router.push(
-                    `/courses/${courseID}/admin/people/${add ? "add" : "remove"}-${type}`
+                    `/courses/${courseID}/admin/people/${add ? 'add' : 'remove'}-${type}`
                 )
             }
-            aria-label={`${add ? "Add" : "Remove"} ${type === "tas" ? "Teaching Assistants" : type} ${add ? "to" : "from"} course`}
+            aria-label={`${add ? 'Add' : 'Remove'} ${type === 'tas' ? 'Teaching Assistants' : type} ${add ? 'to' : 'from'} course`}
         >
-            {add ? "Add" : "Remove"}{" "}
-            {type === "tas" ? "TAs" : type.charAt(0).toUpperCase() + type.slice(1)}
+            {add ? 'Add' : 'Remove'}{' '}
+            {type === 'tas' ? 'TAs' : type.charAt(0).toUpperCase() + type.slice(1)}
         </MenuItem>
     );
 };
@@ -71,7 +71,7 @@ export const AddRemovePeopleMenu = ({ courseID, add }: AddRemovePeopleMenuProps)
                     appearance="subtle"
                     icon={add ? <PersonAdd24Regular /> : <PersonDelete24Regular />}
                 >
-                    {add ? "Add" : "Remove"} people{" "}
+                    {add ? 'Add' : 'Remove'} people{' '}
                     <ChevronDown16Regular className="m-l-xs" />
                 </ToolbarButton>
             </MenuTrigger>

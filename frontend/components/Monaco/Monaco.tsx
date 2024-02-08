@@ -1,6 +1,6 @@
-import Editor, { EditorProps } from "@monaco-editor/react";
-import { UserContext } from "@/contexts/UserContext";
-import { useContext } from "react";
+import Editor, { EditorProps } from '@monaco-editor/react';
+import { UserContext } from '@/contexts/UserContext';
+import { useContext } from 'react';
 
 /**
  * The Monaco editor is a wrapper around the monaco editor which is
@@ -14,7 +14,7 @@ export const Monaco = (props: EditorProps): JSX.Element => {
     return (
         <Editor
             {...props}
-            theme={userInfo.theme === "DARK" ? "vs-dark" : "vs-light"}
+            theme={userInfo.theme === 'DARK' ? 'vs-dark' : 'vs-light'}
             options={{
                 scrollbar: {
                     alwaysConsumeMouseWheel: false,
@@ -28,7 +28,7 @@ export const Monaco = (props: EditorProps): JSX.Element => {
                 },
                 quickSuggestions: false,
                 screenReaderAnnounceInlineSuggestion: false,
-                snippetSuggestions: "none",
+                snippetSuggestions: 'none',
                 suggest: {
                     showStatusBar: false,
                     showIcons: false,

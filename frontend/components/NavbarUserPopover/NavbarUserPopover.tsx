@@ -1,17 +1,17 @@
-import axios, { handleError } from "@/axios";
-import { GenerateInitalsAvatarProps, generateInitals } from "@/components";
-import { SnackbarContext } from "@/contexts/SnackbarContext";
-import { UserContext } from "@/contexts/UserContext";
-import { Badge, Button, Persona, Switch } from "@fluentui/react-components";
+import axios, { handleError } from '@/axios';
+import { GenerateInitalsAvatarProps, generateInitals } from '@/components';
+import { SnackbarContext } from '@/contexts/SnackbarContext';
+import { UserContext } from '@/contexts/UserContext';
+import { Badge, Button, Persona, Switch } from '@fluentui/react-components';
 import {
     ErrorCircle12Filled,
     SignOut24Regular,
     Trophy24Regular,
-} from "@fluentui/react-icons";
-import { Theme } from "codetierlist-types";
-import { useContext } from "react";
-import { useRouter } from "next/router";
-import styles from "./NavbarUserPopover.module.css";
+} from '@fluentui/react-icons';
+import { Theme } from 'codetierlist-types';
+import { useContext } from 'react';
+import { useRouter } from 'next/router';
+import styles from './NavbarUserPopover.module.css';
 
 /**
  * The user popover content is the content that appears when
@@ -28,7 +28,7 @@ export const NavbarUserPopover = (): JSX.Element => {
      */
     const changeTheme = (theme: Theme) => {
         axios
-            .post("/users/theme", {
+            .post('/users/theme', {
                 theme,
             })
             .catch(handleError(showSnackSev))
@@ -46,7 +46,7 @@ export const NavbarUserPopover = (): JSX.Element => {
                     avatar={GenerateInitalsAvatarProps(generateInitals(userInfo))}
                     primaryText={
                         <>
-                            {`${userInfo.givenName} ${userInfo.surname}` == " "
+                            {`${userInfo.givenName} ${userInfo.surname}` == ' '
                                 ? userInfo.utorid
                                 : `${userInfo.givenName} ${userInfo.surname}`}
                             {userInfo.admin && (
@@ -63,25 +63,25 @@ export const NavbarUserPopover = (): JSX.Element => {
             <div className={`${styles.popoverFooter} p-l`}>
                 <Switch
                     className={styles.popoverRight}
-                    checked={userInfo.theme === "DARK"}
+                    checked={userInfo.theme === 'DARK'}
                     onChange={() =>
-                        changeTheme(userInfo.theme === "DARK" ? "LIGHT" : "DARK")
+                        changeTheme(userInfo.theme === 'DARK' ? 'LIGHT' : 'DARK')
                     }
-                    label={userInfo.theme === "DARK" ? "Dark Mode" : "Light Mode"}
+                    label={userInfo.theme === 'DARK' ? 'Dark Mode' : 'Light Mode'}
                 />
 
                 <Button
                     appearance="subtle"
                     className={`${styles.popoverButton} m-x-none p-r-none`}
                     icon={<Trophy24Regular />}
-                    as={"a"}
+                    as={'a'}
                     href="/achievements"
                     onClick={(e) => {
                         e.preventDefault();
-                        router.push("/achievements");
+                        router.push('/achievements');
                     }}
                 >
-                    Achievements{" "}
+                    Achievements{' '}
                     {userInfo.new_achievements ? (
                         <ErrorCircle12Filled
                             fill="red"
@@ -95,7 +95,7 @@ export const NavbarUserPopover = (): JSX.Element => {
                     appearance="subtle"
                     className={`${styles.popoverButton} m-x-none p-r-none`}
                     icon={<SignOut24Regular />}
-                    as={"a"}
+                    as={'a'}
                     href="https://codetierlist.utm.utoronto.ca/Shibboleth.sso/Logout"
                 >
                     Sign out

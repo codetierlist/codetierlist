@@ -1,6 +1,6 @@
-import axios, { handleError } from "@/axios";
-import { Monaco, TestCaseStatus, promptForFileObject } from "@/components";
-import { SnackbarContext } from "@/contexts/SnackbarContext";
+import axios, { handleError } from '@/axios';
+import { Monaco, TestCaseStatus, promptForFileObject } from '@/components';
+import { SnackbarContext } from '@/contexts/SnackbarContext';
 import {
     Accordion,
     AccordionHeader,
@@ -12,18 +12,18 @@ import {
     Subtitle1,
     Text,
     Tooltip,
-} from "@fluentui/react-components";
-import { Add24Filled, Delete16Filled } from "@fluentui/react-icons";
-import { Commit, UserFetchedAssignment } from "codetierlist-types";
-import { useContext, useEffect, useState, useCallback } from "react";
-import styles from "./AssignmentPageFilesTab.module.css";
-import { useSearchParams } from "next/navigation";
+} from '@fluentui/react-components';
+import { Add24Filled, Delete16Filled } from '@fluentui/react-icons';
+import { Commit, UserFetchedAssignment } from 'codetierlist-types';
+import { useContext, useEffect, useState, useCallback } from 'react';
+import styles from './AssignmentPageFilesTab.module.css';
+import { useSearchParams } from 'next/navigation';
 
 interface ListFilesProps {
     /** the commit to display */
     commit: Commit;
     /** the route to use */
-    route: "testcases" | "submissions";
+    route: 'testcases' | 'submissions';
     /** the assignment to display */
     assignment: UserFetchedAssignment;
     /** the ID of the assignment */
@@ -55,7 +55,7 @@ const ListFiles = ({
                 {
                     skipErrorHandling: true,
                     params: {
-                        utorid: searchParams.get("utorid") ?? undefined,
+                        utorid: searchParams.get('utorid') ?? undefined,
                     },
                 }
             )
@@ -64,7 +64,7 @@ const ListFiles = ({
                 setFiles((prev) => {
                     return {
                         ...prev,
-                        [file]: Buffer.from(res.data).toString("utf-8"),
+                        [file]: Buffer.from(res.data).toString('utf-8'),
                     };
                 });
             })
@@ -81,7 +81,7 @@ const ListFiles = ({
             )
             .then(() => {
                 update && update();
-                showSnackSev("File deleted", "success");
+                showSnackSev('File deleted', 'success');
             })
             .catch(handleError(showSnackSev));
     };
@@ -146,7 +146,7 @@ export declare interface AssignmentPageFilesTabProps {
     /** the name of the route */
     routeName: string;
     /** the route to use */
-    route: "testcases" | "submissions";
+    route: 'testcases' | 'submissions';
 }
 
 /**
@@ -175,7 +175,7 @@ export const AssignmentPageFilesTab = ({
                 {
                     skipErrorHandling: true,
                     params: {
-                        utorid: searchParams.get("utorid") ?? undefined,
+                        utorid: searchParams.get('utorid') ?? undefined,
                     },
                 }
             )
@@ -190,7 +190,7 @@ export const AssignmentPageFilesTab = ({
     const submitTest = async (files: FileList) => {
         const formData = new FormData();
         for (let i = 0; i < files!.length; i++) {
-            formData.append("files", files![i]);
+            formData.append('files', files![i]);
         }
 
         axios
@@ -198,7 +198,7 @@ export const AssignmentPageFilesTab = ({
                 `/courses/${assignment.course_id}/assignments/${assignmentID}/${route}`,
                 formData,
                 {
-                    headers: { "Content-Type": "multipart/form-data" },
+                    headers: { 'Content-Type': 'multipart/form-data' },
                 }
             )
             .then(() => {
@@ -214,10 +214,10 @@ export const AssignmentPageFilesTab = ({
     const POLLING_RATE = 1000;
 
     useEffect(() => {
-        if (content.valid === "PENDING") {
+        if (content.valid === 'PENDING') {
             const interval = setInterval(() => {
                 getTestData().then(() => {
-                    if (content.valid !== "PENDING") {
+                    if (content.valid !== 'PENDING') {
                         clearInterval(interval);
                         void fetchAssignment();
                     }
@@ -241,12 +241,12 @@ export const AssignmentPageFilesTab = ({
                     <TestCaseStatus status={content.valid} />
                 </Subtitle1>
 
-                {!searchParams.has("utorid") && (
+                {!searchParams.has('utorid') && (
                     <Button
                         icon={<Add24Filled />}
                         appearance="subtle"
                         onClick={async () => {
-                            promptForFileObject(".py", true)
+                            promptForFileObject('.py', true)
                                 .then((file) => {
                                     if (file) {
                                         submitTest(file);

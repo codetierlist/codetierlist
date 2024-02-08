@@ -1,21 +1,21 @@
-import axios, { handleError } from "@/axios";
+import axios, { handleError } from '@/axios';
 import {
     AssignmentAdminToolbar,
     AssignmentCard,
     CourseSessionChip,
     checkIfCourseAdmin,
     getSession,
-} from "@/components";
-import { SnackbarContext } from "@/contexts/SnackbarContext";
-import { UserContext } from "@/contexts/UserContext";
-import { Caption1 } from "@fluentui/react-components";
-import { Title2 } from "@fluentui/react-text";
-import { FetchedCourseWithTiers } from "codetierlist-types";
-import { notFound } from "next/navigation";
-import { useRouter } from "next/router";
-import { useContext, useEffect, useState } from "react";
-import { Container } from "react-grid-system";
-import styles from "./page.module.css";
+} from '@/components';
+import { SnackbarContext } from '@/contexts/SnackbarContext';
+import { UserContext } from '@/contexts/UserContext';
+import { Caption1 } from '@fluentui/react-components';
+import { Title2 } from '@fluentui/react-text';
+import { FetchedCourseWithTiers } from 'codetierlist-types';
+import { notFound } from 'next/navigation';
+import { useRouter } from 'next/router';
+import { useContext, useEffect, useState } from 'react';
+import { Container } from 'react-grid-system';
+import styles from './page.module.css';
 
 export default function Page() {
     const { userInfo } = useContext(UserContext);
@@ -64,7 +64,7 @@ export default function Page() {
                                 </CourseSessionChip>
                             )}
                         </Title2>
-                        <Title2>{course?.name || "Course not found"}</Title2>
+                        <Title2>{course?.name || 'Course not found'}</Title2>
                     </div>
                 </header>
 
@@ -100,7 +100,7 @@ export default function Page() {
                                       courseID={courseID as string}
                                   />
                               ))
-                            : "Loading..."}
+                            : 'Loading...'}
                     </div>
                 </section>
             </Container>
