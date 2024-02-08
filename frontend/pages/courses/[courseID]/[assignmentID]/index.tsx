@@ -71,7 +71,6 @@ const ViewTierList = (props: React.HTMLAttributes<HTMLDivElement>) => {
         }, POLLING_RATE);
 
         return () => clearInterval(interval);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     });
 
     useEffect(() => {
@@ -91,8 +90,11 @@ const ViewTierList = (props: React.HTMLAttributes<HTMLDivElement>) => {
  * The files tab for the assignment page
  */
 const ViewFilesTab = ({ fetchAssignment, assignment, assignmentID }: {
+    /** The function to fetch the assignment */
     fetchAssignment: () => Promise<void>,
+    /** The assignment to display */
     assignment: UserFetchedAssignment,
+    /** The assignment ID */
     assignmentID: string
 }) => {
     return (
@@ -147,7 +149,10 @@ const EmptyMessageBar = ({ thing, tab, setStage, stage }: {
  * The view details tab for the assignment page
  */
 const ViewDetailsTab = ({ assignment, setStage }: {
-    assignment: UserFetchedAssignment, setStage: (stage: number) => void
+    /** The assignment to display */
+    assignment: UserFetchedAssignment,
+    /** The function to set the stage */
+    setStage: (stage: number) => void
 }) => {
     return (
         <>
@@ -177,7 +182,8 @@ const ViewDetailsTab = ({ assignment, setStage }: {
                 <EmptyMessageBar thing="test case" tab="Upload" setStage={setStage} stage={1} />
             )}
 
-            <Subtitle1 block className={styles.gutterTop}>Assignment Description</Subtitle1>
+            <Subtitle1 block className={styles.gutterTop} as="h2">Assignment Description</Subtitle1>
+
             <Card className={styles.gutter}>
                 {
                     assignment.description.split("\n").map((line: string, i: Key) => {
@@ -189,6 +195,9 @@ const ViewDetailsTab = ({ assignment, setStage }: {
     );
 };
 
+/**
+ * For when the page is loading
+ */
 const LoadingSkeleton = () => {
     return (
         <>
@@ -233,7 +242,8 @@ const useQueryString = (queryKey: string, excludeStages: number[], currentStage:
             const query = createQueryString();
             void router.replace(`${pathname}${query ? '?' : ''}${query}`);
         }
-    }, [createQueryString, currentStage, excludeStages, pathname, queryKey, router, searchParams]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentStage]);
 };
 
 export default function Page() {
@@ -247,7 +257,9 @@ export default function Page() {
     useQueryString("utorid", [1, 2], stage);
 
     const fetchAssignment = async () => {
-        await axios.get<UserFetchedAssignment>(`/courses/${courseID}/assignments/${assignmentID}`, { skipErrorHandling: true })
+        await axios.get<UserFetchedAssignment>(`/courses/${courseID}/assignments/${assignmentID}`, {
+            skipErrorHandling: true
+        })
             .then((res) => setAssignment(res.data))
             .catch(e => {
                 handleError(showSnackSev)(e);
