@@ -148,7 +148,11 @@ export default function Page({ setStage }: { setStage: (stage: number) => void }
     return (
         <section className="p-b-xxxl">
             <HeaderToolbar>
-                <AdminToolbarDeleteAssignmentButton assignment={assignment} />
+                {
+                    assignment && (
+                        <AdminToolbarDeleteAssignmentButton assignment={assignment} />
+                    )
+                }
             </HeaderToolbar>
 
             <Card className="m-x-l m-t-xxl">
