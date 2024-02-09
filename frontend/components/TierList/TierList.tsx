@@ -18,7 +18,7 @@ const EMPTY_DATA: Tierlist = {
     F: [],
 };
 
-declare interface TierIndicatorProps {
+declare type TierIndicatorProps = {
     /** The tier to display */
     tier: Tier;
 }
@@ -34,7 +34,7 @@ const TierIndicator = ({ tier }: TierIndicatorProps): JSX.Element => {
     );
 };
 
-declare interface TierAvatarsProps {
+declare type TierAvatarsProps = {
     /** The people to display */
     people: TierlistEntry[];
     /** The maximum number of people to display before showing a +x */
@@ -65,8 +65,8 @@ const TierAvatars = forwardRef<HTMLDivElement, TierAvatarsProps>(
         }
 
         return (
-            <Col className={styles.tierAvatars} xs={10}>
-                <AvatarGroup className={styles.avatarGroup} ref={ref}>
+            <Col className={styles.tierAvatars} xs={10} aria-label={`${people.length} people in this tier`}>
+                <AvatarGroup className={styles.avatarGroup} ref={ref} aria-hidden="true">
                     {newInlineItems
                         .filter((person) => person)
                         .map((person, i) => {
@@ -98,7 +98,7 @@ const TierAvatars = forwardRef<HTMLDivElement, TierAvatarsProps>(
 
 TierAvatars.displayName = 'TierAvatars';
 
-declare interface TierRowProps {
+declare type TierRowProps = {
     /** The tier to display */
     tier: string;
     /** The tierlist to display */
