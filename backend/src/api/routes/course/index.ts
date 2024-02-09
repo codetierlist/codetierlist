@@ -237,6 +237,21 @@ router.post("/:courseId/add", fetchCourseMiddleware, errorHandler(async (req, re
         res.send({message: 'utorids must be an array of valid utorids.'});
         return;
     }
+    if(newRole !== RoleType.INSTRUCTOR){
+        const admins = await prisma.user.findFirst({
+            where: {
+                utorid: {
+                    in: utorids
+                },
+                admin: true
+            }
+        });
+        if (admins) {
+            res.statusCode = 400;
+            res.send({message: `${admins.utorid} is an admin and cannot be added as a student or TA.`});
+            return;
+        }
+    }
 
     await prisma.user.createMany({
         data: utorids.map(utorid => ({
