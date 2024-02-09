@@ -62,7 +62,7 @@ export const Navbar = (): JSX.Element => {
                 </Link>
             </h1>
 
-            {userInfo.email !== defaultUser.email && (
+            {userInfo !== defaultUser && (
                 <Popover size="small">
                     <PopoverTrigger>
                         <Button
@@ -80,7 +80,7 @@ export const Navbar = (): JSX.Element => {
                 </Popover>
             )}
 
-            {userInfo.email === defaultUser.email && (
+            {userInfo === defaultUser && (
                 <div className={styles.skeletonPersona}>
                     <div className={`${styles.skeletonName} ${styles.subtext}`}>
                         <SkeletonItem size={12} />

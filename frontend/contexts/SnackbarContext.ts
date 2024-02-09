@@ -2,7 +2,7 @@ import { ToastIntent } from '@fluentui/react-components';
 import { createContext } from 'react';
 
 /**
- * The context for the global snackbar. Just use `enqueue` to display a
+ * The context for the global snackbar. Just use `showSnack` to display a
  * snackbar!
  */
 export const SnackbarContext = createContext({
