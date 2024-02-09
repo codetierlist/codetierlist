@@ -107,7 +107,6 @@ const CourseAdminToolbar = ({
 
             <AddRemovePeopleMenu courseID={courseID} add={true} />
 
-            {/* <AddRemovePeopleMenu courseID={courseID} add={false} /> */}
             <ToolbarButton
                 appearance="subtle"
                 icon={<PersonDelete24Regular />}

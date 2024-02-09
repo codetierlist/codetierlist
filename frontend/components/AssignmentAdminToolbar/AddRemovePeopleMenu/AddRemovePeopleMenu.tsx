@@ -75,7 +75,10 @@ export const AddRemovePeopleMenu = ({ courseID, add }: AddRemovePeopleMenuProps)
                         type="students"
                         add={add}
                     />
-                    <AddRemovePeopleButton courseID={courseID} type="tas" add={add} />
+                    <AddRemovePeopleButton
+                        courseID={courseID}
+                        type="tas"
+                        add={add} />
                     <AddRemovePeopleButton
                         courseID={courseID}
                         type="instructors"
