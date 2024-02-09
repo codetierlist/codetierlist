@@ -69,7 +69,7 @@ const HighlightSubstring = ({
  * @param courseID the course ID
  * @param assignmentID the assignment ID
  */
-const useAssignment = (courseID: string, assignmentID: string) => {
+const useAssignmentAdmin = (courseID: string, assignmentID: string) => {
     const [assignment, setAssignment] = useState<FetchedAssignmentWithTier | null>(null);
     const [studentData, setStudentData] = useState<AssignmentStudentStats | null>(null);
     const { showSnackSev } = useContext(SnackbarContext);
@@ -213,7 +213,7 @@ const ViewTierlistLink = ({
 
 export default function Page({ setStage }: { setStage: (stage: Stage) => void }) {
     const { courseID, assignmentID } = useRouter().query;
-    const { assignment, studentData } = useAssignment(
+    const { assignment, studentData } = useAssignmentAdmin(
         courseID as string,
         assignmentID as string
     );
