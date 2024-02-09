@@ -45,7 +45,7 @@ const AddRemovePeopleButton = ({
     );
 };
 
-export declare type AddRemovePeopleMenuProps = {
+export declare type EnrollRemovePeopleMenuProps = {
     /** the course ID of the course */
     courseID: string;
     /** whether to add or remove people. True for add, false for remove  */
@@ -55,7 +55,7 @@ export declare type AddRemovePeopleMenuProps = {
 /**
  * Menu for adding/removing people
  */
-export const AddRemovePeopleMenu = ({ courseID, add }: AddRemovePeopleMenuProps) => {
+export const EnrollRemovePeopleMenu = ({ courseID, add }: EnrollRemovePeopleMenuProps) => {
     return (
         <Menu>
             <MenuTrigger>
@@ -75,10 +75,7 @@ export const AddRemovePeopleMenu = ({ courseID, add }: AddRemovePeopleMenuProps)
                         type="students"
                         add={add}
                     />
-                    <AddRemovePeopleButton
-                        courseID={courseID}
-                        type="tas"
-                        add={add} />
+                    <AddRemovePeopleButton courseID={courseID} type="tas" add={add} />
                     <AddRemovePeopleButton
                         courseID={courseID}
                         type="instructors"

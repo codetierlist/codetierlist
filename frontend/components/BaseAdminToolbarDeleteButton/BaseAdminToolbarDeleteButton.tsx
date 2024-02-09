@@ -10,9 +10,9 @@ import {
     ToolbarButton,
 } from '@fluentui/react-components';
 import { BinRecycle24Regular } from '@fluentui/react-icons';
-import styles from './BaseToolbarDeleteButton.module.css';
+import styles from './BaseAdminToolbarDeleteButton.module.css';
 
-export declare type BaseToolbarDeleteButtonProps = {
+export declare type BaseAdminToolbarDeleteButtonProps = {
     /**
      * The function to call when the delete button is clicked
      * @returns {Promise<void>} a promise that resolves when the delete is complete
@@ -29,10 +29,10 @@ export declare type BaseToolbarDeleteButtonProps = {
 /**
  * A button that deletes an object
  */
-export const BaseToolbarDeleteButton = ({
+export const BaseAdminToolbarDeleteButton = ({
     deleteFunction,
     noun,
-}: BaseToolbarDeleteButtonProps) => {
+}: BaseAdminToolbarDeleteButtonProps) => {
     return (
         <Dialog>
             <DialogTrigger disableButtonEnhancement>

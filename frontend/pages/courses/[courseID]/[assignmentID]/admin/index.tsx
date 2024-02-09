@@ -1,6 +1,6 @@
 import axios, { handleError } from '@/axios';
 import {
-    AdminToolbarDeleteAssignmentButton,
+    BaseAdminToolbarDeleteButton,
     HeaderToolbar,
     checkIfCourseAdmin,
     getTierClass,
@@ -23,7 +23,7 @@ import {
     Tooltip,
 } from '@fluentui/react-components';
 import { Dismiss24Regular, Search24Regular } from '@fluentui/react-icons';
-import { AssignmentStudentStats, FetchedAssignmentWithTier } from 'codetierlist-types';
+import { AssignmentStudentStats, FetchedAssignmentWithTier, FetchedAssignment } from 'codetierlist-types';
 import Error from 'next/error';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/router';
@@ -95,6 +95,32 @@ const useAssignment = (courseID: string, assignmentID: string) => {
     }, [courseID, assignmentID]);
 
     return { assignment, studentData };
+};
+
+/**
+ * A button that deletes an assignment
+ */
+export const AdminToolbarDeleteAssignmentButton = ({
+    assignment,
+}: {
+    assignment: FetchedAssignment;
+}) => {
+    const { showSnackSev } = useContext(SnackbarContext);
+    const { fetchUserInfo } = useContext(UserContext);
+
+    const router = useRouter();
+
+    const deleteAssignment = async () => {
+        await axios
+            .delete(`/courses/${assignment.course_id}/assignments/${assignment.title}`)
+            .then(() => router.push('/'))
+            .catch(handleError(showSnackSev))
+            .finally(() => fetchUserInfo());
+    };
+
+    return (
+        <BaseAdminToolbarDeleteButton noun="assignment" deleteFunction={deleteAssignment} />
+    );
 };
 
 export default function Page({ setStage }: { setStage: (stage: number) => void }) {

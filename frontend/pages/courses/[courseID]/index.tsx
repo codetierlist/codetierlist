@@ -1,8 +1,8 @@
 import axios, { handleError } from '@/axios';
 import {
-    AddRemovePeopleMenu,
-    AdminToolbarDeleteCourseButton,
+    EnrollRemovePeopleMenu,
     AssignmentCard,
+    BaseAdminToolbarDeleteButton,
     CourseSessionChip,
     HeaderToolbar,
     checkIfCourseAdmin,
@@ -13,9 +13,9 @@ import { SnackbarContext } from '@/contexts/SnackbarContext';
 import { UserContext } from '@/contexts/UserContext';
 import { Caption1, ToolbarButton } from '@fluentui/react-components';
 import {
-    PersonDelete24Regular,
     Add24Filled,
     ImageAdd20Regular,
+    PersonDelete24Regular,
 } from '@fluentui/react-icons';
 import { Title2 } from '@fluentui/react-text';
 import { FetchedCourseWithTiers } from 'codetierlist-types';
@@ -68,6 +68,27 @@ const useCourse = (courseID: string) => {
 };
 
 /**
+ * A button that deletes a course
+ * @property {string} courseID the course ID of the course
+ */
+export const AdminToolbarDeleteCourseButton = ({ courseID }: { courseID: string }) => {
+    const { showSnackSev } = useContext(SnackbarContext);
+    const { fetchUserInfo } = useContext(UserContext);
+
+    const router = useRouter();
+
+    const deleteCourse = async () => {
+        await axios
+            .delete(`/courses/${courseID}`)
+            .then(() => router.push('/'))
+            .catch(handleError(showSnackSev))
+            .finally(() => fetchUserInfo());
+    };
+
+    return <BaseAdminToolbarDeleteButton noun="course" deleteFunction={deleteCourse} />;
+};
+
+/**
  * Toolbar for admin page
  * @property {string} courseID the course ID of the course
  * @returns {JSX.Element} the toolbar
@@ -105,7 +126,7 @@ const CourseAdminToolbar = ({
                 Add assignment
             </ToolbarButton>
 
-            <AddRemovePeopleMenu courseID={courseID} add={true} />
+            <EnrollRemovePeopleMenu courseID={courseID} add={true} />
 
             <ToolbarButton
                 appearance="subtle"
