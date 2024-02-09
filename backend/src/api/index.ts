@@ -53,10 +53,12 @@ app.use(errorHandler(async (req, res, next) => {
         return;
     }
 
+    const admin = (process.env.ADMIN_UTORIDS ?? '').split(',').includes(utorid);
+
     const user = await prisma.user.upsert({
         where: {utorid},
-        create: {utorid, email, surname, givenName},
-        update: {utorid, email, surname, givenName},
+        create: {utorid, email, surname, givenName, admin},
+        update: {utorid, email, surname, givenName, admin},
         ...fetchedUserArgs
     });
 
