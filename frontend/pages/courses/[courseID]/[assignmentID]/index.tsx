@@ -33,6 +33,8 @@ import { Col, Container } from 'react-grid-system';
 import ViewAdminTab from './admin/index';
 import styles from './page.module.css';
 
+export declare type Stage = 'details' | 'upload' | 'tierlist' | 'admin' | '404';
+
 /**
  * Displays the tierlist
  * @param tierlist
@@ -139,9 +141,9 @@ const EmptyMessageBar = ({
     /** The tab that the user has to click to submit the thing */
     tab: string;
     /** The function to set the stage */
-    setStage: (stage: number) => void;
+    setStage: (stage: Stage) => void;
     /** The stage to set */
-    stage: number;
+    stage: Stage;
 }) => {
     return (
         <MessageBar intent="warning" className={styles.messageBar} layout="auto">
@@ -167,7 +169,7 @@ const ViewDetailsTab = ({
     /** The assignment to display */
     assignment: UserFetchedAssignment;
     /** The function to set the stage */
-    setStage: (stage: number) => void;
+    setStage: (stage: Stage) => void;
 }) => {
     return (
         <>
@@ -193,7 +195,7 @@ const ViewDetailsTab = ({
                     thing="solution"
                     tab="Upload"
                     setStage={setStage}
-                    stage={1}
+                    stage={'upload'}
                 />
             )}
 
@@ -202,7 +204,7 @@ const ViewDetailsTab = ({
                     thing="test case"
                     tab="Upload"
                     setStage={setStage}
-                    stage={1}
+                    stage={'upload'}
                 />
             )}
 
@@ -228,14 +230,14 @@ const LoadingSkeleton = () => {
             <Head>
                 <title>Codetierlist</title>
             </Head>
-            <TabList className={styles.tabList} size="large" selectedValue={`tab0`}>
-                <Tab value="tab0" disabled>
+            <TabList className={styles.tabList} size="large" selectedValue={`details`}>
+                <Tab value="details" disabled>
                     Assignment details
                 </Tab>
-                <Tab value="tab1" disabled>
+                <Tab value="upload" disabled>
                     Upload
                 </Tab>
-                <Tab value="tab2" disabled>
+                <Tab value="tierlist" disabled>
                     View tierlist
                 </Tab>
             </TabList>
@@ -255,8 +257,8 @@ const LoadingSkeleton = () => {
  */
 const useQueryString = (
     queryKey: string,
-    excludeStages: number[],
-    currentStage: number
+    excludeStages: Stage[],
+    currentStage: Stage
 ) => {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -278,15 +280,12 @@ const useQueryString = (
     }, [currentStage]);
 };
 
-export default function Page() {
-    const router = useRouter();
-    const [stage, setStage] = useState(0);
+/**
+ * A hook that fetches the assignment and tierlist for the assignment page
+ */
+const useAssignment = (courseID: string, assignmentID: string) => {
     const [assignment, setAssignment] = useState<UserFetchedAssignment | null>(null);
     const { showSnackSev } = useContext(SnackbarContext);
-    const { courseID, assignmentID } = router.query;
-    const { userInfo } = useContext(UserContext);
-
-    useQueryString('utorid', [1, 2], stage);
 
     const fetchAssignment = async () => {
         await axios
@@ -299,7 +298,6 @@ export default function Page() {
             .then((res) => setAssignment(res.data))
             .catch((e) => {
                 handleError(showSnackSev)(e);
-                setStage(-404);
             });
     };
 
@@ -311,7 +309,29 @@ export default function Page() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [courseID, assignmentID]);
 
-    if (stage === -404) {
+    return { assignment, fetchAssignment };
+};
+
+export default function Page() {
+    const router = useRouter();
+    const [stage, setStage] = useState<Stage>('details');
+    const { assignment, fetchAssignment } = useAssignment(
+        router.query.courseID as string,
+        router.query.assignmentID as string
+    );
+    const { courseID, assignmentID } = router.query;
+    const { userInfo } = useContext(UserContext);
+
+    useQueryString('utorid', ['upload', 'tierlist'], stage);
+
+    useEffect(() => {
+        if (!courseID || !assignmentID) {
+            return;
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [courseID, assignmentID]);
+
+    if (stage === '404') {
         return <Error statusCode={404} />;
     } else if (!assignment || !courseID || !assignmentID) {
         return <LoadingSkeleton />;
@@ -323,20 +343,16 @@ export default function Page() {
                 <title>{assignment.title} - Codetierlist</title>
             </Head>
 
-            <TabList
-                className={styles.tabList}
-                size="large"
-                selectedValue={`tab${stage}`}
-            >
-                <Tab value="tab0" onClick={() => setStage(0)}>
+            <TabList className={styles.tabList} size="large" selectedValue={stage}>
+                <Tab value="details" onClick={() => setStage('details')}>
                     Assignment details
                 </Tab>
-                <Tab value="tab1" onClick={() => setStage(1)}>
+                <Tab value="upload" onClick={() => setStage('upload')}>
                     Upload
                 </Tab>
                 <Tab
-                    value="tab2"
-                    onClick={() => setStage(2)}
+                    value="tierlist"
+                    onClick={() => setStage('tierlist')}
                     disabled={
                         !assignment.view_tierlist &&
                         !checkIfCourseAdmin(userInfo, assignment.course_id)
@@ -346,27 +362,28 @@ export default function Page() {
                 </Tab>
 
                 {checkIfCourseAdmin(userInfo, assignment.course_id) && (
-                    <Tab value="tab3" onClick={() => setStage(3)}>
+                    <Tab value="admin" onClick={() => setStage('admin')}>
                         Admin
                     </Tab>
                 )}
             </TabList>
 
             <Container component="main" className="m-t-xxxl">
-                {stage === 0 && (
+                {stage === 'details' && (
                     <ViewDetailsTab assignment={assignment} setStage={setStage} />
                 )}
-                {stage === 1 && (
+                {stage === 'upload' && (
                     <ViewFilesTab
                         fetchAssignment={fetchAssignment}
                         assignment={assignment}
                         assignmentID={assignmentID as string}
                     />
                 )}
-                {stage === 2 && <ViewTierList className="m-t-xxxl" />}
-                {stage === 3 && checkIfCourseAdmin(userInfo, assignment.course_id) && (
-                    <ViewAdminTab setStage={setStage} />
-                )}
+                {stage === 'tierlist' && <ViewTierList className="m-t-xxxl" />}
+                {stage === 'admin' &&
+                    checkIfCourseAdmin(userInfo, assignment.course_id) && (
+                        <ViewAdminTab setStage={setStage} />
+                    )}
             </Container>
         </>
     );

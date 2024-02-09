@@ -30,14 +30,18 @@ import { UserContext } from '@/contexts/UserContext';
 /**
  * Get the role name from the role type
  */
-export const getRoleName = (roleName: RoleType | string): string =>
-    roleName === 'TA' ? roleName : roleName.toLocaleLowerCase();
+export const getRoleName = (roleName: RoleType | string | undefined): string =>
+    roleName ? (roleName === 'TA' ? roleName : roleName.toLocaleLowerCase()) : 'user';
 
 /**
  * Like getRoleName, but returns teaching assistant instead of ta
  */
-export const getLongRoleName = (roleName: RoleType | string): string =>
-    roleName === 'TA' ? 'Teaching Assistant' : getRoleName(roleName);
+export const getLongRoleName = (roleName: RoleType | string | undefined): string =>
+    roleName
+        ? roleName === 'TA'
+            ? 'Teaching Assistant'
+            : getRoleName(roleName)
+        : 'user';
 
 /**
  * given a csv of students, enroll them in or remove them from the course
@@ -81,7 +85,7 @@ export default function Page(): JSX.Element {
     const router = useRouter();
     const { courseID, type } = useRouter().query;
     const [add, isAdd] = useState(true);
-    const [role, setRole] = useState('');
+    const [role, setRole] = useState(undefined as RoleType | undefined | 'invalid');
     const [editorValue, setEditorValue] = useState('');
     const { showSnackSev } = useContext(SnackbarContext);
     const { userInfo } = useContext(UserContext);
@@ -110,6 +114,10 @@ export default function Page(): JSX.Element {
                 break;
             case 'remove-instructors':
                 setRole('INSTRUCTOR');
+                isAdd(false);
+                break;
+            case 'remove':
+                setRole(undefined);
                 isAdd(false);
                 break;
             default:
@@ -159,8 +167,8 @@ export default function Page(): JSX.Element {
                         <Body2 block as="p">
                             The only valid types are <code>add-students</code>,{' '}
                             <code>add-tas</code>, <code>add-instructors</code>,{' '}
-                            <code>remove-students</code>, <code>remove-tas</code>, and{' '}
-                            <code>remove-instructors</code>.
+                            <code>remove</code>, <code>remove-students</code>,{' '}
+                            <code>remove-tas</code>, and <code>remove-instructors</code>.
                         </Body2>
                     </>
                 )}
@@ -211,7 +219,7 @@ export default function Page(): JSX.Element {
                                     router.query.courseID as string,
                                     editorValue,
                                     add ? 'add' : 'remove',
-                                    role as RoleType,
+                                    (role as RoleType) || undefined,
                                     showSnackSev
                                 ).catch((e) => handleError(showSnackSev, e.message));
                             }}

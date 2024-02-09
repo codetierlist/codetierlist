@@ -1,8 +1,8 @@
 import axios, { handleError } from '@/axios';
 import {
-    AddRemovePeopleMenu,
-    AdminToolbarDeleteCourseButton,
+    EnrollRemovePeopleMenu,
     AssignmentCard,
+    BaseAdminToolbarDeleteButton,
     CourseSessionChip,
     HeaderToolbar,
     checkIfCourseAdmin,
@@ -12,7 +12,11 @@ import {
 import { SnackbarContext } from '@/contexts/SnackbarContext';
 import { UserContext } from '@/contexts/UserContext';
 import { Caption1, ToolbarButton } from '@fluentui/react-components';
-import { Add24Filled, ImageAdd20Regular } from '@fluentui/react-icons';
+import {
+    Add24Filled,
+    ImageAdd20Regular,
+    PersonDelete24Regular,
+} from '@fluentui/react-icons';
 import { Title2 } from '@fluentui/react-text';
 import { FetchedCourseWithTiers } from 'codetierlist-types';
 import { notFound } from 'next/navigation';
@@ -64,9 +68,34 @@ const useCourse = (courseID: string) => {
 };
 
 /**
+ * A button that deletes a course
+ */
+export const AdminToolbarDeleteCourseButton = ({
+    courseID,
+}: {
+    /** the course ID of the course */
+    courseID: string;
+}) => {
+    const { showSnackSev } = useContext(SnackbarContext);
+    const { fetchUserInfo } = useContext(UserContext);
+
+    const router = useRouter();
+
+    const deleteCourse = async () => {
+        await axios
+            .delete(`/courses/${courseID}`)
+            .then(() => router.push('/'))
+            .catch((e) => {
+                handleError(showSnackSev)(e);
+            })
+            .finally(() => fetchUserInfo());
+    };
+
+    return <BaseAdminToolbarDeleteButton noun="course" deleteFunction={deleteCourse} />;
+};
+
+/**
  * Toolbar for admin page
- * @property {string} courseID the course ID of the course
- * @returns {JSX.Element} the toolbar
  */
 const CourseAdminToolbar = ({
     courseID,
@@ -101,9 +130,15 @@ const CourseAdminToolbar = ({
                 Add assignment
             </ToolbarButton>
 
-            <AddRemovePeopleMenu courseID={courseID} add={true} />
+            <EnrollRemovePeopleMenu courseID={courseID} add={true} />
 
-            <AddRemovePeopleMenu courseID={courseID} add={false} />
+            <ToolbarButton
+                appearance="subtle"
+                icon={<PersonDelete24Regular />}
+                onClick={() => router.push(`/courses/${courseID}/admin/people/remove`)}
+            >
+                Remove people
+            </ToolbarButton>
 
             <ToolbarButton
                 appearance="subtle"
@@ -128,7 +163,9 @@ const CourseAdminToolbar = ({
                             void fetchCourse();
                         })
                         .then(updateSeed)
-                        .catch(handleError(showSnackSev));
+                        .catch((e) => {
+                            handleError(showSnackSev)(e);
+                        });
                 }}
             >
                 Change cover image
@@ -161,7 +198,6 @@ export default function Page() {
                         url("${process.env.NEXT_PUBLIC_API_URL}/courses/${courseID as string}/cover?seed=${seed}")`,
                     }}
                     className={`${styles.banner} m-b-xxxl m-x-l`}
-                    aria-hidden="true"
                 >
                     <div className={styles.header}>
                         <Title2 className={styles.courseTitle}>

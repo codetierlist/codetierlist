@@ -1,5 +1,5 @@
 import {
-    GenerateInitalsAvatarProps,
+    generateInitalsAvatarProps,
     NavbarUserPopover,
     generateInitals,
 } from '@/components';
@@ -27,7 +27,7 @@ const UserAvatar = (): JSX.Element => {
     return (
         <Persona
             textPosition="before"
-            avatar={GenerateInitalsAvatarProps(generateInitals(userInfo), {
+            avatar={generateInitalsAvatarProps(generateInitals(userInfo), {
                 badge: userInfo.new_achievements ? { status: 'busy' } : undefined,
             })}
             primaryText={
@@ -50,7 +50,6 @@ const UserAvatar = (): JSX.Element => {
 /**
  * The navbar component is the top bar of the website. It contains the
  * logo and the user's name and role.
- * @returns {JSX.Element} the navbar
  */
 export const Navbar = (): JSX.Element => {
     const { userInfo } = useContext(UserContext);
@@ -63,7 +62,7 @@ export const Navbar = (): JSX.Element => {
                 </Link>
             </h1>
 
-            {userInfo.email !== defaultUser.email && (
+            {userInfo !== defaultUser && (
                 <Popover size="small">
                     <PopoverTrigger>
                         <Button
@@ -81,7 +80,7 @@ export const Navbar = (): JSX.Element => {
                 </Popover>
             )}
 
-            {userInfo.email === defaultUser.email && (
+            {userInfo === defaultUser && (
                 <div className={styles.skeletonPersona}>
                     <div className={`${styles.skeletonName} ${styles.subtext}`}>
                         <SkeletonItem size={12} />

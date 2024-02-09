@@ -1,5 +1,6 @@
 import { darkTheme, lightTheme, Navbar } from '@/components';
 import '@/styles/globals.css';
+import '@/styles/spacing.css';
 import {
     createDOMRenderer,
     Field,
@@ -60,7 +61,9 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
             .then(({ data }) => {
                 setUserInfo(data as FetchedUser);
             })
-            .catch(handleError(showSnackSev));
+            .catch((e) => {
+                handleError(showSnackSev)(e);
+            });
     };
 
     useEffect(() => {

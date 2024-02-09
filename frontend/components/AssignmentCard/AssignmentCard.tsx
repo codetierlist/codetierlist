@@ -3,7 +3,7 @@ import styles from './AssignmentCard.module.css';
 import { TierChip } from '@/components';
 import { type Tier, type UserTier } from 'codetierlist-types';
 import { convertDate } from '../utils/TimeUtils/TimeUtils';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export declare type AssignmentCardProps = {
     /** The ID of the assignment */
@@ -30,24 +30,23 @@ export const AssignmentCard = ({
     courseID,
 }: AssignmentCardProps): JSX.Element => {
     const formattedDueDate = dueDate ? convertDate(dueDate) : null;
+    const router = useRouter();
 
     return (
-        <Link
-            href={`${courseID}/${id}`}
-            className={styles.cardLink}
+        <Card
+            className={`${styles.card} ${styles.cardLink}`}
+            onClick={() => router.push(`/courses/${courseID}/${id}`)}
             aria-label={`View assignment ${name}, due ${formattedDueDate}. ${tier == '?' ? 'Tier not set.' : `You are in ${tier} tier.`}`}
         >
-            <Card className={styles.card} selected={false}>
-                <CardHeader header={<TierChip tier={tier as UserTier} />} />
-                <div className={styles.cardContent}>
-                    {dueDate && (
-                        <Caption1 className={styles.cardText}>
-                            <strong>Due</strong> {formattedDueDate}
-                        </Caption1>
-                    )}
-                    <Title3 className={styles.cardText}>{name}</Title3>
-                </div>
-            </Card>
-        </Link>
+            <CardHeader header={<TierChip tier={tier as UserTier} />} />
+            <div className={styles.cardContent}>
+                {dueDate && (
+                    <Caption1 className={styles.cardText}>
+                        <strong>Due</strong> {formattedDueDate}
+                    </Caption1>
+                )}
+                <Title3 className={styles.cardText}>{name}</Title3>
+            </div>
+        </Card>
     );
 };

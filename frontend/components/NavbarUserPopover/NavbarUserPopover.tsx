@@ -1,5 +1,5 @@
 import axios, { handleError } from '@/axios';
-import { GenerateInitalsAvatarProps, generateInitals } from '@/components';
+import { generateInitalsAvatarProps, generateInitals } from '@/components';
 import { SnackbarContext } from '@/contexts/SnackbarContext';
 import { UserContext } from '@/contexts/UserContext';
 import { Badge, Button, Persona, Switch } from '@fluentui/react-components';
@@ -31,7 +31,9 @@ export const NavbarUserPopover = (): JSX.Element => {
             .post('/users/theme', {
                 theme,
             })
-            .catch(handleError(showSnackSev))
+            .catch((e) => {
+                handleError(showSnackSev)(e);
+            })
             .finally(() => {
                 fetchUserInfo();
             });
@@ -43,7 +45,7 @@ export const NavbarUserPopover = (): JSX.Element => {
                 <Persona
                     size="huge"
                     className={styles.popoverPersona}
-                    avatar={GenerateInitalsAvatarProps(generateInitals(userInfo))}
+                    avatar={generateInitalsAvatarProps(generateInitals(userInfo))}
                     primaryText={
                         <>
                             {`${userInfo.givenName} ${userInfo.surname}` == ' '

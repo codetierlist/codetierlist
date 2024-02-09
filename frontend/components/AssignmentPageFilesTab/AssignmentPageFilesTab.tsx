@@ -21,8 +21,6 @@ import { useSearchParams } from 'next/navigation';
 
 /**
  * A list of files for a commit
- *
- * @returns {JSX.Element} the list of files
  */
 const ListFiles = ({
     commit,
@@ -67,7 +65,9 @@ const ListFiles = ({
                     };
                 });
             })
-            .catch(handleError(showSnackSev));
+            .catch((e) => {
+                handleError(showSnackSev)(e);
+            });
     };
 
     const deleteFile = async (file: string) => {
@@ -82,7 +82,9 @@ const ListFiles = ({
                 update && update();
                 showSnackSev('File deleted', 'success');
             })
-            .catch(handleError(showSnackSev));
+            .catch((e) => {
+                handleError(showSnackSev)(e);
+            });
     };
 
     useEffect(() => {
@@ -150,8 +152,6 @@ export declare type AssignmentPageFilesTabProps = {
 
 /**
  * A tab that displays the files for an assignment
- *
- * @returns {JSX.Element} the files tab
  */
 export const AssignmentPageFilesTab = ({
     fetchAssignment,
@@ -203,7 +203,9 @@ export const AssignmentPageFilesTab = ({
             .then(() => {
                 fetchAssignment();
             })
-            .catch(handleError(showSnackSev));
+            .catch((e) => {
+                handleError(showSnackSev)(e);
+            });
     };
 
     /**
@@ -251,7 +253,9 @@ export const AssignmentPageFilesTab = ({
                                         submitTest(file);
                                     }
                                 })
-                                .catch(handleError(showSnackSev));
+                                .catch((e) => {
+                                    handleError(showSnackSev)(e);
+                                });
                         }}
                     >
                         Upload a {routeName}

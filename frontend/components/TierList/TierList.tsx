@@ -5,7 +5,7 @@ import {
 } from '@fluentui/react-components';
 import { Tier, Tierlist, TierlistEntry } from 'codetierlist-types';
 import { Col, Row } from 'react-grid-system';
-import { GenerateInitalsAvatarProps, TierChip, getTierClass } from '@/components';
+import { generateInitalsAvatarProps, TierChip, getTierClass } from '@/components';
 import { useState, forwardRef, useRef, useEffect } from 'react';
 import styles from './TierList.module.css';
 
@@ -18,10 +18,10 @@ const EMPTY_DATA: Tierlist = {
     F: [],
 };
 
-declare interface TierIndicatorProps {
+declare type TierIndicatorProps = {
     /** The tier to display */
     tier: Tier;
-}
+};
 
 /**
  * A tier indicator displays the tier of the tier list.
@@ -34,12 +34,12 @@ const TierIndicator = ({ tier }: TierIndicatorProps): JSX.Element => {
     );
 };
 
-declare interface TierAvatarsProps {
+declare type TierAvatarsProps = {
     /** The people to display */
     people: TierlistEntry[];
     /** The maximum number of people to display before showing a +x */
     maxInlineItems: number;
-}
+};
 
 /**
  * A tier avatars displays the avatars of the people in the tier.
@@ -59,14 +59,21 @@ const TierAvatars = forwardRef<HTMLDivElement, TierAvatarsProps>(
         // remove any potential undefined or null values
         const newInlineItems = inlineItems.filter((person) => person);
 
+        // whether or not you are in this tier
+        const youInTier = people.some((person) => person.you);
+
         // partitionAvatarGroupItems splices the last items for inline .. ?
         if (youIndex !== -1 && overflowItems) {
             newInlineItems.push(overflowItems[youIndex]);
         }
 
         return (
-            <Col className={styles.tierAvatars} xs={10}>
-                <AvatarGroup className={styles.avatarGroup} ref={ref}>
+            <Col
+                className={styles.tierAvatars}
+                xs={10}
+                aria-label={`${people.length} people in this tier. ${youInTier ? 'You are in this tier.' : ''}`}
+            >
+                <AvatarGroup className={styles.avatarGroup} ref={ref} aria-hidden="true">
                     {newInlineItems
                         .filter((person) => person)
                         .map((person, i) => {
@@ -78,7 +85,7 @@ const TierAvatars = forwardRef<HTMLDivElement, TierAvatarsProps>(
                                             ? `${styles.you} ${styles.avatar}`
                                             : styles.avatar
                                     }
-                                    {...GenerateInitalsAvatarProps(person.name)}
+                                    {...generateInitalsAvatarProps(person.name)}
                                 />
                             );
                         })}
@@ -98,12 +105,12 @@ const TierAvatars = forwardRef<HTMLDivElement, TierAvatarsProps>(
 
 TierAvatars.displayName = 'TierAvatars';
 
-declare interface TierRowProps {
+declare type TierRowProps = {
     /** The tier to display */
     tier: string;
     /** The tierlist to display */
     tierlist: Tierlist;
-}
+};
 
 /**
  * A tier displays a tier and the people in the tier.
@@ -168,7 +175,6 @@ export declare type TierListProps = {
 
 /**
  * A tier list displays a list of people in a tier list format.
- * @returns {JSX.Element} the tier list
  */
 export const TierList = ({ tierlist = EMPTY_DATA }: TierListProps): JSX.Element => {
     return (

@@ -8,10 +8,15 @@ import { notFound } from 'next/navigation';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { Col, Container, Row } from 'react-grid-system';
 
-export default function Page() {
+/**
+ * Fetches the achievements from the server and returns them
+ * along with the count of hidden achievements.
+ */
+const useAchievements = () => {
     const [achievements, setAchievements] = useState<AchievementConfig[] | null>(null);
     const { showSnackSev } = useContext(SnackbarContext);
     const { userInfo, setUserInfo } = useContext(UserContext);
+
     const hiddenAchievementCount = useMemo(() => {
         if (!achievements) return 0;
 
@@ -33,9 +38,17 @@ export default function Page() {
 
     useEffect(() => {
         void fetchAchievements();
-
-        document.title = `Achievements - Codetierlist`;
         // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    return { achievements, hiddenAchievementCount };
+};
+
+export default function Page() {
+    const { achievements, hiddenAchievementCount } = useAchievements();
+
+    useEffect(() => {
+        document.title = `Achievements - Codetierlist`;
     }, []);
 
     return (

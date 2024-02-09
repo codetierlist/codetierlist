@@ -23,7 +23,8 @@ export declare type CourseSessionChipProps = {
 };
 
 /**
- * @returns a generic div so it's easier to style
+ * A chip that represents the session of a course. It is
+ * a generic div so it's easier to style.
  */
 export const CourseSessionChip = ({
     session,
