@@ -45,24 +45,7 @@ export function isProf(course: Course, user: FetchedUser) {
  * @param commit the commit to reset to
  */
 const softResetRepo = async (repoPath: string, commit: string) => {
-    // https://github.com/isomorphic-git/isomorphic-git/issues/129
-    // Status Matrix Row Indexes
-    const FILEPATH = 0;
-    const WORKDIR = 2;
-    const STAGE = 3;
-
-    // Status Matrix State
-    const UNCHANGED = 1;
-
-    const allFiles = await git.statusMatrix({ dir:repoPath, fs });
-    // Get all files which have been modified or staged - does not include new untracked files or deleted files
-    const modifiedFiles = allFiles
-        .filter((row) => row[WORKDIR] > UNCHANGED && row[STAGE] > UNCHANGED)
-        .map((row) => row[FILEPATH]);
-
-    // Delete modified/staged files
-    await Promise.all(modifiedFiles.map((x) => fs.rm(x)));
-
+    await fs.rm(repoPath, { recursive: true, force: true });
     await git.checkout({ dir:repoPath, fs, ref: commit, force: true });
 };
 
