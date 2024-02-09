@@ -55,7 +55,10 @@ export declare type EnrollRemovePeopleMenuProps = {
 /**
  * Menu for adding/removing people
  */
-export const EnrollRemovePeopleMenu = ({ courseID, add }: EnrollRemovePeopleMenuProps) => {
+export const EnrollRemovePeopleMenu = ({
+    courseID,
+    add,
+}: EnrollRemovePeopleMenuProps) => {
     return (
         <Menu>
             <MenuTrigger>

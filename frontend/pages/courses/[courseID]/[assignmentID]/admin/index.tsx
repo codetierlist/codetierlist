@@ -23,7 +23,11 @@ import {
     Tooltip,
 } from '@fluentui/react-components';
 import { Dismiss24Regular, Search24Regular } from '@fluentui/react-icons';
-import { AssignmentStudentStats, FetchedAssignmentWithTier, FetchedAssignment } from 'codetierlist-types';
+import {
+    AssignmentStudentStats,
+    FetchedAssignmentWithTier,
+    FetchedAssignment,
+} from 'codetierlist-types';
 import Error from 'next/error';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/router';
@@ -119,7 +123,10 @@ export const AdminToolbarDeleteAssignmentButton = ({
     };
 
     return (
-        <BaseAdminToolbarDeleteButton noun="assignment" deleteFunction={deleteAssignment} />
+        <BaseAdminToolbarDeleteButton
+            noun="assignment"
+            deleteFunction={deleteAssignment}
+        />
     );
 };
 

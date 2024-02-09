@@ -1,5 +1,6 @@
 import { darkTheme, lightTheme, Navbar } from '@/components';
 import '@/styles/globals.css';
+import '@/styles/spacing.css';
 import {
     createDOMRenderer,
     Field,
