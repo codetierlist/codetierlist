@@ -30,8 +30,6 @@ export const getTierClass = (tier: UserTier | Tier): string => {
 /**
  * A tier chip displays a single tier inside of a div. This makes it easy
  * to extend and change the styling of this component.
- * @property {UserTier | Tier} tier the tier of the course
- * @returns {JSX.Element} the tier chip
  */
 export const RawTierChip = ({
     tier,
@@ -49,8 +47,6 @@ export const RawTierChip = ({
 /**
  * A tier chip displays a single tier inside of a div. This makes it easy
  * to extend and change the styling of this component.
- * @property {UserTier | Tier} tier the tier of the course
- * @returns {JSX.Element} the tier chip
  */
 export const TierChip = ({ tier, className, ...props }: TierChipProps): JSX.Element => {
     return (

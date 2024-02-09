@@ -69,9 +69,13 @@ const useCourse = (courseID: string) => {
 
 /**
  * A button that deletes a course
- * @property {string} courseID the course ID of the course
  */
-export const AdminToolbarDeleteCourseButton = ({ courseID }: { courseID: string }) => {
+export const AdminToolbarDeleteCourseButton = ({
+    courseID,
+}: {
+    /** the course ID of the course */
+    courseID: string;
+}) => {
     const { showSnackSev } = useContext(SnackbarContext);
     const { fetchUserInfo } = useContext(UserContext);
 
@@ -90,8 +94,6 @@ export const AdminToolbarDeleteCourseButton = ({ courseID }: { courseID: string 
 
 /**
  * Toolbar for admin page
- * @property {string} courseID the course ID of the course
- * @returns {JSX.Element} the toolbar
  */
 const CourseAdminToolbar = ({
     courseID,

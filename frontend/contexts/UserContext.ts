@@ -27,7 +27,7 @@ export const UserContext = createContext({
     userInfo: defaultUser,
     /**
      * Sets the user's information to the global state.
-     * @property user the user's information to set
+     * @param user the user's information to set
      */
     setUserInfo: (user: FetchedUser) => {},
     /**

@@ -9,7 +9,7 @@ export const generateInitals = (user: FetchedUser): string =>
  * Given a name get the initials of the name up to 2 characters into an avatar
  * @returns {AvatarProps} the props to pass to the avatar
  */
-export const GenerateInitalsAvatarProps = (
+export const generateInitalsAvatarProps = (
     initials: string,
     props?: AvatarProps
 ): AvatarProps => {
@@ -30,12 +30,11 @@ export declare type InitialsAvatarProps = AvatarProps & {
 };
 
 /**
- * Given a name get the initials of the name up to 2 characters into an avatar
- * @returns {JSX.Element} the avatar with the initials
+ * Given a name get the initials of the name up to 2 characters into an Avatar
  */
 export const InitialsAvatar = ({
     name = '',
     ...props
 }: InitialsAvatarProps): JSX.Element => {
-    return <Avatar {...GenerateInitalsAvatarProps(name, props)} />;
+    return <Avatar {...generateInitalsAvatarProps(name, props)} />;
 };

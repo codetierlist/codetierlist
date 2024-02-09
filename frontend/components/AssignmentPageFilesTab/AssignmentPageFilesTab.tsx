@@ -21,8 +21,6 @@ import { useSearchParams } from 'next/navigation';
 
 /**
  * A list of files for a commit
- *
- * @returns {JSX.Element} the list of files
  */
 const ListFiles = ({
     commit,
@@ -150,8 +148,6 @@ export declare type AssignmentPageFilesTabProps = {
 
 /**
  * A tab that displays the files for an assignment
- *
- * @returns {JSX.Element} the files tab
  */
 export const AssignmentPageFilesTab = ({
     fetchAssignment,

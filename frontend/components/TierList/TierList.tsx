@@ -5,7 +5,7 @@ import {
 } from '@fluentui/react-components';
 import { Tier, Tierlist, TierlistEntry } from 'codetierlist-types';
 import { Col, Row } from 'react-grid-system';
-import { GenerateInitalsAvatarProps, TierChip, getTierClass } from '@/components';
+import { generateInitalsAvatarProps, TierChip, getTierClass } from '@/components';
 import { useState, forwardRef, useRef, useEffect } from 'react';
 import styles from './TierList.module.css';
 
@@ -78,7 +78,7 @@ const TierAvatars = forwardRef<HTMLDivElement, TierAvatarsProps>(
                                             ? `${styles.you} ${styles.avatar}`
                                             : styles.avatar
                                     }
-                                    {...GenerateInitalsAvatarProps(person.name)}
+                                    {...generateInitalsAvatarProps(person.name)}
                                 />
                             );
                         })}
@@ -168,7 +168,6 @@ export declare type TierListProps = {
 
 /**
  * A tier list displays a list of people in a tier list format.
- * @returns {JSX.Element} the tier list
  */
 export const TierList = ({ tierlist = EMPTY_DATA }: TierListProps): JSX.Element => {
     return (
