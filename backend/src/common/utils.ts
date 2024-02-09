@@ -6,13 +6,13 @@ import {
     Solution,
     TestCase
 } from "@prisma/client";
-import { Commit, FetchedUser } from "codetierlist-types";
-import { NextFunction, Request, Response } from "express";
-import { PathLike, promises as fs } from "fs";
-import { isUTORid } from "is-utorid";
-import git, { ReadBlobResult } from "isomorphic-git";
+import {Commit, FetchedUser} from "codetierlist-types";
+import {NextFunction, Request, Response} from "express";
+import {PathLike, promises as fs} from "fs";
+import {isUTORid} from "is-utorid";
+import git, {ReadBlobResult} from "isomorphic-git";
 import path from "path";
-import prisma, { fetchedAssignmentArgs, fetchedCourseArgs } from "./prisma";
+import prisma, {fetchedAssignmentArgs, fetchedCourseArgs} from "./prisma";
 import {
     onNewProfSubmission,
     onNewSubmission,
@@ -45,8 +45,10 @@ export function isProf(course: Course, user: FetchedUser) {
  * @param commit the commit to reset to
  */
 const softResetRepo = async (repoPath: string, commit: string) => {
-    await fs.rm(repoPath, { recursive: true, force: true });
-    await git.checkout({ dir:repoPath, fs, ref: commit, force: true });
+    const dir = await fs.readdir(repoPath);
+    dir.filter(x => !["..", ".", ".git"].includes(x)).map(x => path.resolve(repoPath, x));
+    await Promise.all(dir.map(x => fs.rm(x, {recursive: true, force: true})));
+    await git.checkout({dir: repoPath, fs, ref: commit, force: true});
 };
 
 /**
@@ -57,19 +59,19 @@ const softResetRepo = async (repoPath: string, commit: string) => {
  */
 const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'datetime' | 'id'>, table: "solution" | "testCase") => {
     const repoPath = path.resolve(`/repos/${object.course_id}/${object.assignment_title}/${object.author_id}_${table}`);
-    const status = await git.statusMatrix({ fs, dir: repoPath });
+    const status = await git.statusMatrix({fs, dir: repoPath});
 
     // no unstaged changes
-    if (status.every(x=>x[2]==1)) {
+    if (status.every(x => x[2] == 1)) {
         return {error: "No changes"};
     }
     // too many files added
-    if(status.filter(x=>x[2]!==0).length > config.max_file_count
-    && status.some(x=>x[1]===0)){
+    if (status.filter(x => x[2] !== 0).length > config.max_file_count
+        && status.some(x => x[1] === 0)) {
         await softResetRepo(repoPath, object.git_id);
-        return {error : "Too many files added"};
+        return {error: "Too many files added"};
     }
-    await git.add({ fs, dir: repoPath, filepath: '.' });
+    await git.add({fs, dir: repoPath, filepath: '.'});
     try {
         const commit = await git.commit({
             fs,
@@ -90,14 +92,14 @@ const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'date
             group_number: object.group_number === -1 ? null : object.group_number
         };
         if (table === "solution") {
-            const solution = await prisma.solution.create({ data });
+            const solution = await prisma.solution.create({data});
             if (isProf(req.course!, req.user)) {
                 await onNewProfSubmission(solution, req.assignment!);
             } else {
                 await onNewSubmission(solution, req.assignment!);
             }
         } else {
-            const testCase = await prisma.testCase.create({ data });
+            const testCase = await prisma.testCase.create({data});
             await onNewTestCase(testCase, req.assignment!);
         }
         return commit;
@@ -171,12 +173,12 @@ export const exists = async (p: PathLike): Promise<boolean> => {
 export const processSubmission = async (req: Request, res: Response, table: "solution" | "testCase") => {
     if (!req.user.roles.some(role => role.course_id === req.course!.id)) {
         res.statusCode = 403;
-        res.send({ message: 'You are not enrolled in this course.' });
+        res.send({message: 'You are not enrolled in this course.'});
         return;
     }
     if (req.assignment!.strict_deadline && req.assignment!.due_date && Date.now() > new Date(req.assignment!.due_date).getTime()) {
         res.statusCode = 403;
-        res.send({ message: 'The deadline has passed.' });
+        res.send({message: 'The deadline has passed.'});
         return;
     }
     // upload files
@@ -184,7 +186,7 @@ export const processSubmission = async (req: Request, res: Response, table: "sol
 
     // check if git repo exists
     let submission = await getObjectFromRequest(req, table);
-    if(submission && submission.author_id !== req.user.utorid){
+    if (submission && submission.author_id !== req.user.utorid) {
         res.statusCode = 403;
         res.send({message: 'Cannot make a submission for other users.'});
         return;
@@ -201,14 +203,14 @@ export const processSubmission = async (req: Request, res: Response, table: "sol
             submission = null;
         }
         // create folder if it doesnt exist
-        await fs.mkdir(repoPath, { recursive: true });
-        await git.init({ fs, dir: repoPath });
+        await fs.mkdir(repoPath, {recursive: true});
+        await git.init({fs, dir: repoPath});
     }
     if (submission && !isProf(req.course!, req.user)) {
         const delay = process.env.SUBMISSION_DELAY_TIME !== undefined ? parseInt(process.env.SUBMISSION_DELAY_TIME) : 0;
         if (Date.now() < submission.datetime.getTime() + delay) {
             res.statusCode = 429;
-            res.send({ message: `Submission too soon, please wait ${Math.ceil(submission.datetime.getTime() + delay - Date.now()) / 60000} minute(s).` });
+            res.send({message: `Submission too soon, please wait ${Math.ceil(submission.datetime.getTime() + delay - Date.now()) / 60000} minute(s).`});
             return;
         }
     }
@@ -258,13 +260,13 @@ export const processSubmission = async (req: Request, res: Response, table: "sol
                         }
                     },
                     update: {
-                        members: { connect: { utorid: req.user.utorid } }
+                        members: {connect: {utorid: req.user.utorid}}
                     },
                     create: {
                         number: group,
                         course_id: req.course!.id,
                         assignment_title: req.assignment!.title,
-                        members: { connect: { utorid: req.user.utorid } }
+                        members: {connect: {utorid: req.user.utorid}}
                     }
                 });
             }
@@ -282,15 +284,15 @@ export const processSubmission = async (req: Request, res: Response, table: "sol
 
     if (commit === null) {
         res.statusCode = 500;
-        res.send({ message: 'Failed to commit.' });
+        res.send({message: 'Failed to commit.'});
         return;
     }
-    if(typeof commit === "object" && "error" in commit){
+    if (typeof commit === "object" && "error" in commit) {
         res.statusCode = 400;
         res.send({message: commit.error});
         return;
     }
-    res.send({ commit });
+    res.send({commit});
 };
 
 /**
@@ -324,7 +326,7 @@ export const getCommit = async (submission: Omit<Solution | TestCase, "group_num
             dir: submission.git_url,
             ref: commit.oid
         });
-        const log = await git.log({ fs, dir: submission.git_url });
+        const log = await git.log({fs, dir: submission.git_url});
         const res: Commit = {
             files,
             log: log.map(commitIterator => commitIterator.oid)
@@ -371,7 +373,7 @@ export const getFileFromRequest = async (req: Request, res: Response, table: "so
     const object = await getObjectFromRequest(req, table);
     if (object === null) {
         res.statusCode = 404;
-        res.send({ message: 'Submission not found.' });
+        res.send({message: 'Submission not found.'});
         return;
     }
     let file: ReadBlobResult | null = null;
@@ -381,7 +383,7 @@ export const getFileFromRequest = async (req: Request, res: Response, table: "so
     }
     if (file === null) {
         res.statusCode = 404;
-        res.send({ message: 'Commit not found.' });
+        res.send({message: 'Commit not found.'});
         return;
     }
     res.send(Buffer.from(file.blob));
@@ -397,16 +399,16 @@ export const deleteFile = async (req: Request, res: Response, table: "solution" 
     const object = await getObjectFromRequest(req, table);
     if (object === null) {
         res.statusCode = 404;
-        res.send({ message: 'Submission not found.' });
+        res.send({message: 'Submission not found.'});
         return;
     }
-    if(object.author_id !== req.user.utorid) {
+    if (object.author_id !== req.user.utorid) {
         res.statusCode = 403;
         res.send({message: 'Cannot delete files from other users.'});
         return;
     }
     try {
-        await git.remove({ fs, dir: object.git_url, filepath: req.params.file });
+        await git.remove({fs, dir: object.git_url, filepath: req.params.file});
         await fs.unlink(`${object!.git_url}/${req.params.file}`);
     } catch (_) {
         /* if the file doesn't exist then continue */
@@ -415,15 +417,15 @@ export const deleteFile = async (req: Request, res: Response, table: "solution" 
     const commit = await commitFiles(req, object, table);
     if (commit === null) {
         res.statusCode = 500;
-        res.send({ message: 'Failed to commit.' });
+        res.send({message: 'Failed to commit.'});
         return;
     }
-    if(typeof commit === "object" && "error" in commit){
+    if (typeof commit === "object" && "error" in commit) {
         res.statusCode = 400;
         res.send({message: commit.error});
         return;
     }
-    res.send({ commit });
+    res.send({commit});
 };
 
 /**
@@ -451,7 +453,7 @@ export const fetchCourseMiddleware = async (req: Request, res: Response, next: N
         where: {
             id: req.params.courseId,
             hidden: false,
-            roles: req.user.admin ? undefined : { some: { user: { utorid: req.user.utorid } } }
+            roles: req.user.admin ? undefined : {some: {user: {utorid: req.user.utorid}}}
         },
         ...fetchedCourseArgs
     });
@@ -472,7 +474,7 @@ export const fetchCourseMiddleware = async (req: Request, res: Response, next: N
  */
 export const serializeAssignment = <T extends PrismaAssignment>(assignment: T): Omit<T, "due_date"> & {
     due_date?: string
-} => ({ ...assignment, due_date: assignment.due_date?.toISOString() });
+} => ({...assignment, due_date: assignment.due_date?.toISOString()});
 
 /**
  * Middleware to fetch an assignment and add it to the request.
@@ -485,11 +487,11 @@ export const fetchAssignmentMiddleware = async (req: Request, res: Response, nex
                 course_id: req.params.courseId,
             },
             course: {
-                roles: req.user.admin ? {} : { some: { user: { utorid: req.user.utorid } } }
+                roles: req.user.admin ? {} : {some: {user: {utorid: req.user.utorid}}}
             },
             hidden: false
         },
-        include: { ...fetchedAssignmentArgs.include, course: fetchedCourseArgs }
+        include: {...fetchedAssignmentArgs.include, course: fetchedCourseArgs}
     });
     if (assignment === null) {
         res.statusCode = 404;
