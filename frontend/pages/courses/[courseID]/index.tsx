@@ -85,7 +85,7 @@ export const AdminToolbarDeleteCourseButton = ({
         await axios
             .delete(`/courses/${courseID}`)
             .then(() => router.push('/'))
-            .catch(handleError(showSnackSev))
+            .catch((e) => { handleError(showSnackSev)(e); })
             .finally(() => fetchUserInfo());
     };
 
@@ -161,7 +161,7 @@ const CourseAdminToolbar = ({
                             void fetchCourse();
                         })
                         .then(updateSeed)
-                        .catch(handleError(showSnackSev));
+                        .catch((e) => { handleError(showSnackSev)(e); });
                 }}
             >
                 Change cover image

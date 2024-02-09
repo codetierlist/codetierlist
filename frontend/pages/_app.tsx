@@ -61,7 +61,7 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
             .then(({ data }) => {
                 setUserInfo(data as FetchedUser);
             })
-            .catch(handleError(showSnackSev));
+            .catch((e) => { handleError(showSnackSev)(e); });
     };
 
     useEffect(() => {

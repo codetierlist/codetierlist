@@ -36,13 +36,13 @@ export const CreateCourseDialogSurface = ({
     return (
         <DialogSurface>
             <form
-                onSubmit={(e) => {
-                    e.preventDefault();
+                onSubmit={(event) => {
+                    event.preventDefault();
 
                     axios
                         .post('/courses', { code, name })
                         .then(closeDialog)
-                        .catch(handleError(showSnackSev))
+                        .catch((e) => { handleError(showSnackSev)(e); })
                         .finally(fetchUserInfo);
                 }}
             >
