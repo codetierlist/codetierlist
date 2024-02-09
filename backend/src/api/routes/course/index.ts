@@ -262,6 +262,9 @@ router.post("/:courseId/add", fetchCourseMiddleware, errorHandler(async (req, re
 
 /**
  * remove a user from a course
+ * @param {string[]} utorids - the utorids of the users to remove
+ * @param {string} role - the role to remove the users from (optional)
+ *
  * @adminonly
  */
 router.post("/:courseId/remove", fetchCourseMiddleware, errorHandler(async (req, res) => {
@@ -278,12 +281,13 @@ router.post("/:courseId/remove", fetchCourseMiddleware, errorHandler(async (req,
         res.send({message: 'Invalid role.'});
         return;
     }
-    const newRole = role as RoleType | undefined ?? RoleType.STUDENT;
+    const newRole = role as RoleType | undefined;
     if (!utorids || !Array.isArray(utorids) || utorids.some(utorid => typeof utorid !== 'string' || !isUTORid(utorid))) {
         res.statusCode = 400;
         res.send({message: 'utorids must be an array of valid utorids.'});
         return;
     }
+
     await prisma.role.deleteMany({
         where: {
             user_id: {
@@ -294,7 +298,6 @@ router.post("/:courseId/remove", fetchCourseMiddleware, errorHandler(async (req,
     });
 
     res.send({});
-
 }));
 
 /**

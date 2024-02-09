@@ -12,7 +12,11 @@ import {
 import { SnackbarContext } from '@/contexts/SnackbarContext';
 import { UserContext } from '@/contexts/UserContext';
 import { Caption1, ToolbarButton } from '@fluentui/react-components';
-import { Add24Filled, ImageAdd20Regular } from '@fluentui/react-icons';
+import {
+    PersonDelete24Regular,
+    Add24Filled,
+    ImageAdd20Regular,
+} from '@fluentui/react-icons';
 import { Title2 } from '@fluentui/react-text';
 import { FetchedCourseWithTiers } from 'codetierlist-types';
 import { notFound } from 'next/navigation';
@@ -103,7 +107,14 @@ const CourseAdminToolbar = ({
 
             <AddRemovePeopleMenu courseID={courseID} add={true} />
 
-            <AddRemovePeopleMenu courseID={courseID} add={false} />
+            {/* <AddRemovePeopleMenu courseID={courseID} add={false} /> */}
+            <ToolbarButton
+                appearance="subtle"
+                icon={<PersonDelete24Regular />}
+                onClick={() => router.push(`/courses/${courseID}/admin/people/remove`)}
+            >
+                Remove people
+            </ToolbarButton>
 
             <ToolbarButton
                 appearance="subtle"
