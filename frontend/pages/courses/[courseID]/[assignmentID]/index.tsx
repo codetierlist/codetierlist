@@ -376,7 +376,7 @@ export default function Page() {
                         assignmentID={assignmentID as string}
                     />
                 )}
-                {stage === 'upload' && <ViewTierList className="m-t-xxxl" />}
+                {stage === 'tierlist' && <ViewTierList className="m-t-xxxl" />}
                 {stage === 'admin' &&
                     checkIfCourseAdmin(userInfo, assignment.course_id) && (
                         <ViewAdminTab setStage={setStage} />
