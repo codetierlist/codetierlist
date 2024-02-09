@@ -328,7 +328,7 @@ export default function Page() {
             <TabList
                 className={styles.tabList}
                 size="large"
-                selectedValue={`tab${stage}`}
+                selectedValue={stage}
             >
                 <Tab value="details" onClick={() => setStage('details')}>
                     Assignment details
