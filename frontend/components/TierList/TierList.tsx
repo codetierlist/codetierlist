@@ -21,7 +21,7 @@ const EMPTY_DATA: Tierlist = {
 declare type TierIndicatorProps = {
     /** The tier to display */
     tier: Tier;
-}
+};
 
 /**
  * A tier indicator displays the tier of the tier list.
@@ -39,7 +39,7 @@ declare type TierAvatarsProps = {
     people: TierlistEntry[];
     /** The maximum number of people to display before showing a +x */
     maxInlineItems: number;
-}
+};
 
 /**
  * A tier avatars displays the avatars of the people in the tier.
@@ -59,13 +59,20 @@ const TierAvatars = forwardRef<HTMLDivElement, TierAvatarsProps>(
         // remove any potential undefined or null values
         const newInlineItems = inlineItems.filter((person) => person);
 
+        // whether or not you are in this tier
+        const youInTier = people.some((person) => person.you);
+
         // partitionAvatarGroupItems splices the last items for inline .. ?
         if (youIndex !== -1 && overflowItems) {
             newInlineItems.push(overflowItems[youIndex]);
         }
 
         return (
-            <Col className={styles.tierAvatars} xs={10} aria-label={`${people.length} people in this tier`}>
+            <Col
+                className={styles.tierAvatars}
+                xs={10}
+                aria-label={`${people.length} people in this tier. ${youInTier ? 'You are in this tier.' : ''}`}
+            >
                 <AvatarGroup className={styles.avatarGroup} ref={ref} aria-hidden="true">
                     {newInlineItems
                         .filter((person) => person)
@@ -103,7 +110,7 @@ declare type TierRowProps = {
     tier: string;
     /** The tierlist to display */
     tierlist: Tierlist;
-}
+};
 
 /**
  * A tier displays a tier and the people in the tier.

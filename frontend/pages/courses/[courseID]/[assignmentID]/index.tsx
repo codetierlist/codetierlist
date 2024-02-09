@@ -310,12 +310,15 @@ const useAssignment = (courseID: string, assignmentID: string) => {
     }, [courseID, assignmentID]);
 
     return { assignment, fetchAssignment };
-}
+};
 
 export default function Page() {
     const router = useRouter();
     const [stage, setStage] = useState<Stage>('details');
-    const { assignment, fetchAssignment } = useAssignment(router.query.courseID as string, router.query.assignmentID as string);
+    const { assignment, fetchAssignment } = useAssignment(
+        router.query.courseID as string,
+        router.query.assignmentID as string
+    );
     const { courseID, assignmentID } = router.query;
     const { userInfo } = useContext(UserContext);
 

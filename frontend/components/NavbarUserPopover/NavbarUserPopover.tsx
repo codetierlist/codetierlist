@@ -31,7 +31,9 @@ export const NavbarUserPopover = (): JSX.Element => {
             .post('/users/theme', {
                 theme,
             })
-            .catch((e) => { handleError(showSnackSev)(e); })
+            .catch((e) => {
+                handleError(showSnackSev)(e);
+            })
             .finally(() => {
                 fetchUserInfo();
             });

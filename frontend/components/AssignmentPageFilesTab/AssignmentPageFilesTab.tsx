@@ -65,8 +65,10 @@ const ListFiles = ({
                     };
                 });
             })
-            .catch((e) => { handleError(showSnackSev)(e); });
-        };
+            .catch((e) => {
+                handleError(showSnackSev)(e);
+            });
+    };
 
     const deleteFile = async (file: string) => {
         await axios
@@ -80,7 +82,9 @@ const ListFiles = ({
                 update && update();
                 showSnackSev('File deleted', 'success');
             })
-            .catch((e) => { handleError(showSnackSev)(e); });
+            .catch((e) => {
+                handleError(showSnackSev)(e);
+            });
     };
 
     useEffect(() => {
@@ -199,7 +203,9 @@ export const AssignmentPageFilesTab = ({
             .then(() => {
                 fetchAssignment();
             })
-            .catch((e) => { handleError(showSnackSev)(e); });
+            .catch((e) => {
+                handleError(showSnackSev)(e);
+            });
     };
 
     /**
@@ -247,8 +253,10 @@ export const AssignmentPageFilesTab = ({
                                         submitTest(file);
                                     }
                                 })
-                                .catch((e) => { handleError(showSnackSev)(e); });
-                            }}
+                                .catch((e) => {
+                                    handleError(showSnackSev)(e);
+                                });
+                        }}
                     >
                         Upload a {routeName}
                     </Button>

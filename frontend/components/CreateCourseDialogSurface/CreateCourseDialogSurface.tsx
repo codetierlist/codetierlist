@@ -42,7 +42,9 @@ export const CreateCourseDialogSurface = ({
                     axios
                         .post('/courses', { code, name })
                         .then(closeDialog)
-                        .catch((e) => { handleError(showSnackSev)(e); })
+                        .catch((e) => {
+                            handleError(showSnackSev)(e);
+                        })
                         .finally(fetchUserInfo);
                 }}
             >

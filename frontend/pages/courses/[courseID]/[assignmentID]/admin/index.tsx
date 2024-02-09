@@ -83,7 +83,9 @@ const useAssignment = (courseID: string, assignmentID: string) => {
                 }
             )
             .then((res) => setAssignment(res.data))
-            .catch((e) => { handleError(showSnackSev)(e); });
+            .catch((e) => {
+                handleError(showSnackSev)(e);
+            });
     };
 
     const fetchAssignmentStats = async () => {
@@ -95,7 +97,9 @@ const useAssignment = (courseID: string, assignmentID: string) => {
                 }
             )
             .then((res) => setStudentData(res.data))
-            .catch((e) => { handleError(showSnackSev)(e); });
+            .catch((e) => {
+                handleError(showSnackSev)(e);
+            });
     };
 
     useEffect(() => {
@@ -127,7 +131,9 @@ export const AdminToolbarDeleteAssignmentButton = ({
         await axios
             .delete(`/courses/${assignment.course_id}/assignments/${assignment.title}`)
             .then(() => router.push('/'))
-            .catch((e) => { handleError(showSnackSev)(e); })
+            .catch((e) => {
+                handleError(showSnackSev)(e);
+            })
             .finally(() => fetchUserInfo());
     };
 

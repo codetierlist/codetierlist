@@ -42,7 +42,7 @@ const useAchievements = () => {
     }, []);
 
     return { achievements, hiddenAchievementCount };
-}
+};
 
 export default function Page() {
     const { achievements, hiddenAchievementCount } = useAchievements();

@@ -52,9 +52,9 @@ const useRunners = () => {
 
     useEffect(() => {
         const fetchRunners = async () => {
-            const res = await axios
-                .get<RunnerImage[]>('/runner/images')
-                .catch((e) => { handleError(showSnackSev)(e); });
+            const res = await axios.get<RunnerImage[]>('/runner/images').catch((e) => {
+                handleError(showSnackSev)(e);
+            });
             if (!res) {
                 return;
             }
@@ -172,7 +172,9 @@ export default function Page(): JSX.Element {
             })
             .then(fetchUserInfo)
             .then(() => router.push(`/courses/${courseID}`))
-            .catch((e) => { handleError(showSnackSev)(e); });
+            .catch((e) => {
+                handleError(showSnackSev)(e);
+            });
     };
 
     // If the user is not an admin, error 403
