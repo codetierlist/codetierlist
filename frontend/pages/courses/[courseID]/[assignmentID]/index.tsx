@@ -325,11 +325,7 @@ export default function Page() {
                 <title>{assignment.title} - Codetierlist</title>
             </Head>
 
-            <TabList
-                className={styles.tabList}
-                size="large"
-                selectedValue={stage}
-            >
+            <TabList className={styles.tabList} size="large" selectedValue={stage}>
                 <Tab value="details" onClick={() => setStage('details')}>
                     Assignment details
                 </Tab>

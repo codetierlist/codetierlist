@@ -27,6 +27,8 @@ import {
     AssignmentStudentStats,
     FetchedAssignmentWithTier,
     FetchedAssignment,
+    UserTier,
+    Tier,
 } from 'codetierlist-types';
 import Error from 'next/error';
 import { usePathname, useSearchParams } from 'next/navigation';
@@ -36,10 +38,16 @@ import { Stage } from '..';
 
 /**
  * Highlights the substring in the string
- * @param str the string to highlight
- * @param substr the substring to highlight
  */
-const highlightSubstring = (str: string, substr: string) => {
+const HighlightSubstring = ({
+    str,
+    substr,
+}: {
+    /** the string to highlight */
+    str: string;
+    /** the substring to highlight */
+    substr: string;
+}) => {
     const index = str.toLowerCase().indexOf(substr.toLowerCase());
     if (index === -1) {
         return str;
@@ -131,6 +139,72 @@ export const AdminToolbarDeleteAssignmentButton = ({
     );
 };
 
+/**
+ * A button that views the submission of a student
+ */
+const ViewSubmissionLink = ({
+    utorid,
+    setStage,
+}: {
+    /** the utorid of the student to view the submission of */
+    utorid: string;
+    /** the function to set the stage */
+    setStage: (stage: Stage) => void;
+}) => {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const pathname = usePathname();
+
+    const loadSubmission = () => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('utorid', utorid);
+        router.push(`${pathname}?${params.toString()}`).then(() => setStage('upload'));
+    };
+
+    return (
+        <Link appearance="subtle" onClick={loadSubmission}>
+            View Submission
+        </Link>
+    );
+};
+
+/**
+ * A button that views the tierlist of a student
+ */
+const ViewTierlistLink = ({
+    utorid,
+    setStage,
+    tier,
+}: {
+    /** the utorid of the student to view the tierlist of */
+    utorid: string;
+    /** the function to set the stage */
+    setStage: (stage: Stage) => void;
+    /** the tier of the student */
+    tier: UserTier | Tier;
+}) => {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const pathname = usePathname();
+
+    const loadTierlist = () => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('utorid', utorid);
+        router.push(`${pathname}?${params.toString()}`).then(() => setStage('tierlist'));
+    };
+
+    return (
+        <Button
+            appearance="subtle"
+            className={getTierClass(tier)}
+            onClick={loadTierlist}
+            icon={tier}
+        >
+            View Tierlist
+        </Button>
+    );
+};
+
 export default function Page({ setStage }: { setStage: (stage: Stage) => void }) {
     const { courseID, assignmentID } = useRouter().query;
     const { assignment, studentData } = useAssignment(
@@ -138,22 +212,7 @@ export default function Page({ setStage }: { setStage: (stage: Stage) => void })
         assignmentID as string
     );
     const [filterValue, setFilterValue] = useState<string>('');
-    const searchParams = useSearchParams();
-    const router = useRouter();
-    const pathname = usePathname();
     const { userInfo } = useContext(UserContext);
-
-    const loadSubmission = (utorid: string) => {
-        const params = new URLSearchParams(searchParams.toString());
-        params.set('utorid', utorid);
-        router.push(`${pathname}?${params.toString()}`).then(() => setStage('upload'));
-    };
-
-    const loadTierlist = (utorid: string) => {
-        const params = new URLSearchParams(searchParams.toString());
-        params.set('utorid', utorid);
-        router.push(`${pathname}?${params.toString()}`).then(() => setStage('tierlist'));
-    };
 
     useEffect(() => {
         document.title = `${assignment?.title || assignmentID} - Codetierlist`;
@@ -215,7 +274,7 @@ export default function Page({ setStage }: { setStage: (stage: Stage) => void })
                     </Field>
                 </div>
 
-                <Table arial-label="Default table" className="m-xs m-t-s">
+                <Table arial-label="Admin table" className="m-xs m-t-s">
                     <TableHeader>
                         <TableRow>
                             {columns.map((column) => (
@@ -243,35 +302,33 @@ export default function Page({ setStage }: { setStage: (stage: Stage) => void })
                                     }}
                                 >
                                     <TableCell>
-                                        <Button
-                                            appearance="subtle"
-                                            className={getTierClass(item.tier)}
-                                            onClick={() => loadTierlist(item.utorid)}
-                                            icon={item.tier}
-                                        >
-                                            View Tierlist
-                                        </Button>
+                                        <ViewTierlistLink
+                                            utorid={item.utorid}
+                                            setStage={setStage}
+                                            tier={item.tier}
+                                        />
                                     </TableCell>
 
                                     <TableCell>
-                                        {highlightSubstring(item.utorid, filterValue)}
+                                        <HighlightSubstring
+                                            str={item.utorid}
+                                            substr={filterValue}
+                                        />
                                     </TableCell>
                                     <TableCell>
-                                        {highlightSubstring(
-                                            `${item.givenName} ${item.surname}`,
-                                            filterValue
-                                        )}
+                                        <HighlightSubstring
+                                            str={`${item.givenName} ${item.surname}`}
+                                            substr={filterValue}
+                                        />
                                     </TableCell>
                                     <TableCell>
                                         {item.testsPassed}/{item.totalTests}
                                     </TableCell>
                                     <TableCell>
-                                        <Link
-                                            appearance="subtle"
-                                            onClick={() => loadSubmission(item.utorid)}
-                                        >
-                                            View Submission
-                                        </Link>
+                                        <ViewSubmissionLink
+                                            utorid={item.utorid}
+                                            setStage={setStage}
+                                        />
                                     </TableCell>
                                 </TableRow>
                             ))}
