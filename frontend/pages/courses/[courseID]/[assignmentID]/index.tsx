@@ -280,15 +280,12 @@ const useQueryString = (
     }, [currentStage]);
 };
 
-export default function Page() {
-    const router = useRouter();
-    const [stage, setStage] = useState<Stage>('details');
+/**
+ * A hook that fetches the assignment and tierlist for the assignment page
+ */
+const useAssignment = (courseID: string, assignmentID: string) => {
     const [assignment, setAssignment] = useState<UserFetchedAssignment | null>(null);
     const { showSnackSev } = useContext(SnackbarContext);
-    const { courseID, assignmentID } = router.query;
-    const { userInfo } = useContext(UserContext);
-
-    useQueryString('utorid', ['upload', 'tierlist'], stage);
 
     const fetchAssignment = async () => {
         await axios
@@ -301,7 +298,6 @@ export default function Page() {
             .then((res) => setAssignment(res.data))
             .catch((e) => {
                 handleError(showSnackSev)(e);
-                setStage('404');
             });
     };
 
@@ -310,6 +306,25 @@ export default function Page() {
             return;
         }
         void fetchAssignment();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [courseID, assignmentID]);
+
+    return { assignment, fetchAssignment };
+}
+
+export default function Page() {
+    const router = useRouter();
+    const [stage, setStage] = useState<Stage>('details');
+    const { assignment, fetchAssignment } = useAssignment(router.query.courseID as string, router.query.assignmentID as string);
+    const { courseID, assignmentID } = router.query;
+    const { userInfo } = useContext(UserContext);
+
+    useQueryString('utorid', ['upload', 'tierlist'], stage);
+
+    useEffect(() => {
+        if (!courseID || !assignmentID) {
+            return;
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [courseID, assignmentID]);
 
