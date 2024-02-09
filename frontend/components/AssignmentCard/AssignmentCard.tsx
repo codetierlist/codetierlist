@@ -37,9 +37,11 @@ export const AssignmentCard = ({
             className={`${styles.card} ${styles.cardLink}`}
             selected={false}
             onClick={() => router.push(`/courses/${courseID}/${id}`)}
-            aria-label={`View assignment ${name}, due ${formattedDueDate}. ${tier == '?' ? 'Tier not set.' : `You are in ${tier} tier.`}`}
         >
-            <CardHeader header={<TierChip tier={tier as UserTier} />} />
+            <CardHeader
+                header={<TierChip tier={tier as UserTier} />}
+                aria-label={`View assignment ${name}, due ${formattedDueDate}. ${tier == '?' ? 'Tier not set.' : `You are in ${tier} tier.`}`}
+            />
             <div className={styles.cardContent}>
                 {dueDate && (
                     <Caption1 className={styles.cardText}>
