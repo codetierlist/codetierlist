@@ -81,7 +81,8 @@ const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'date
         return {error: "No changes"};
     }
     // too many files added
-    if(status.filter(x=>x[2]!==1).length > config.max_file_count){
+    if(status.filter(x=>x[2]!==0).length > config.max_file_count
+    && status.some(x=>x[1]===0)){
         await softResetRepo(repoPath, object.git_id);
         return {error : "Too many files added"};
     }
