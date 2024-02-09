@@ -32,6 +32,7 @@ import Error from 'next/error';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
+import { Stage } from '..';
 
 /**
  * Highlights the substring in the string
@@ -130,7 +131,7 @@ export const AdminToolbarDeleteAssignmentButton = ({
     );
 };
 
-export default function Page({ setStage }: { setStage: (stage: number) => void }) {
+export default function Page({ setStage }: { setStage: (stage: Stage) => void }) {
     const { courseID, assignmentID } = useRouter().query;
     const { assignment, studentData } = useAssignment(
         courseID as string,
@@ -145,13 +146,13 @@ export default function Page({ setStage }: { setStage: (stage: number) => void }
     const loadSubmission = (utorid: string) => {
         const params = new URLSearchParams(searchParams.toString());
         params.set('utorid', utorid);
-        router.push(`${pathname}?${params.toString()}`).then(() => setStage(1));
+        router.push(`${pathname}?${params.toString()}`).then(() => setStage('upload'));
     };
 
     const loadTierlist = (utorid: string) => {
         const params = new URLSearchParams(searchParams.toString());
         params.set('utorid', utorid);
-        router.push(`${pathname}?${params.toString()}`).then(() => setStage(2));
+        router.push(`${pathname}?${params.toString()}`).then(() => setStage('tierlist'));
     };
 
     useEffect(() => {

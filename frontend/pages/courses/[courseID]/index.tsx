@@ -194,7 +194,6 @@ export default function Page() {
                         url("${process.env.NEXT_PUBLIC_API_URL}/courses/${courseID as string}/cover?seed=${seed}")`,
                     }}
                     className={`${styles.banner} m-b-xxxl m-x-l`}
-                    aria-hidden="true"
                 >
                     <div className={styles.header}>
                         <Title2 className={styles.courseTitle}>
