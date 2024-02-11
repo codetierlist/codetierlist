@@ -45,8 +45,8 @@ export function isProf(course: Course, user: FetchedUser) {
  * @param commit the commit to reset to
  */
 const softResetRepo = async (repoPath: string, commit: string) => {
-    const dir = await fs.readdir(repoPath);
-    dir.filter(x => !["..", ".", ".git"].includes(x)).map(x => path.resolve(repoPath, x));
+    let dir = await fs.readdir(repoPath);
+    dir = dir.filter(x => x!==".git").map(x => path.resolve(repoPath, x));
     await Promise.all(dir.map(x => fs.rm(x, {recursive: true, force: true})));
     await git.checkout({dir: repoPath, fs, ref: commit, force: true});
 };

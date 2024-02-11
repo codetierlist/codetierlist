@@ -58,7 +58,7 @@ app.use(errorHandler(async (req, res, next) => {
     const user = await prisma.user.upsert({
         where: {utorid},
         create: {utorid, email, surname, givenName, admin},
-        update: {utorid, email, surname, givenName, admin},
+        update: {utorid, email, surname, givenName},
         ...fetchedUserArgs
     });
 
