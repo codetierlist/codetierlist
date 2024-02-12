@@ -18,6 +18,7 @@ import { Commit, UserFetchedAssignment } from 'codetierlist-types';
 import { useContext, useEffect, useState, useCallback } from 'react';
 import styles from './AssignmentPageFilesTab.module.css';
 import { useSearchParams } from 'next/navigation';
+import {useDropzone} from "react-dropzone";
 
 /**
  * A list of files for a commit
