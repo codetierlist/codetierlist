@@ -42,3 +42,23 @@
     align-items: center;
     width: 100%;
 }
+
+.dropZoneOverlay {
+    background-color: var(--colorNeutralBackgroundInverted);
+    opacity: 0.3;
+    z-index: 100;
+    grid-area: 1 / 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: var(--colorNeutralForegroundInverted);
+}
+
+.dropZoneChild {
+    grid-area: 1 / 1;
+}
+
+.dropZone {
+    display: grid;
+}

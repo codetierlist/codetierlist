@@ -186,7 +186,7 @@ export const AssignmentPageFilesTab = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [assignment.course_id, assignmentID, route]);
 
-    const submitTest = async (files: FileList) => {
+    const submitTest = async (files: File[]) => {
         const formData = new FormData();
         for (let i = 0; i < files!.length; i++) {
             formData.append('files', files![i]);
@@ -234,6 +234,17 @@ export const AssignmentPageFilesTab = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [assignmentID, fetchAssignment, route, routeName, assignment.submissions]);
 
+    const {
+        getRootProps,
+        getInputProps,
+        isDragActive
+    } = useDropzone({
+        onDrop: submitTest,
+        noClick: true,
+        noKeyboard: true,
+        multiple: true,
+        autoFocus: false
+    })
     return (
         <div className="m-y-xxxl">
             <div className={styles.uploadHeader}>
@@ -250,7 +261,7 @@ export const AssignmentPageFilesTab = ({
                             promptForFileObject('.py', true)
                                 .then((file) => {
                                     if (file) {
-                                        submitTest(file);
+                                        submitTest(Array.from(file));
                                     }
                                 })
                                 .catch((e) => {
@@ -266,16 +277,23 @@ export const AssignmentPageFilesTab = ({
             <Text block className={styles.commitId} font="numeric">
                 {content.log[0]}
             </Text>
+            <div
+                style={{display: "grid"}} {...getRootProps({className: styles.dropZone})}>
+                {isDragActive ? <div className={styles.dropZoneOverlay}>
+                    <p>Drop the files here ...</p>
+                </div> : null}
 
-            <Card>
-                <ListFiles
-                    commit={content}
-                    route={route}
-                    assignment={assignment}
-                    assignmentID={assignmentID}
-                    update={getTestData}
-                />
-            </Card>
+                <Card className={styles.dropZoneChild}>
+                    <input {...getInputProps()}/>
+                    <ListFiles
+                        commit={content}
+                        route={route}
+                        assignment={assignment}
+                        assignmentID={assignmentID}
+                        update={getTestData}
+                    />
+                </Card>
+            </div>
         </div>
     );
 };
