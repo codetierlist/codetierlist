@@ -18,7 +18,7 @@ import { Commit, UserFetchedAssignment } from 'codetierlist-types';
 import { useContext, useEffect, useState, useCallback } from 'react';
 import styles from './AssignmentPageFilesTab.module.css';
 import { useSearchParams } from 'next/navigation';
-import {useDropzone} from "react-dropzone";
+import { useDropzone } from 'react-dropzone';
 
 /**
  * A list of files for a commit
@@ -100,7 +100,9 @@ const ListFiles = ({
     }, [commit, assignment, route]);
 
     return commit.files && Object.keys(commit.files).length === 0 ? (
-        <Caption1>No files uploaded yet</Caption1>
+        <Caption1>
+            No files uploaded yet. Drag and drop files here or click the button above.
+        </Caption1>
     ) : (
         <Accordion collapsible>
             {Object.keys(commit.files).map((key, index) => (
@@ -235,65 +237,67 @@ export const AssignmentPageFilesTab = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [assignmentID, fetchAssignment, route, routeName, assignment.submissions]);
 
-    const {
-        getRootProps,
-        getInputProps,
-        isDragActive
-    } = useDropzone({
+    // create a dropzone for the user to upload files
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop: submitTest,
         noClick: true,
         noKeyboard: true,
         multiple: true,
-        autoFocus: false
-    })
+        autoFocus: false,
+    });
+
     return (
-        <div className="m-y-xxxl">
-            <div className={styles.uploadHeader}>
-                <Subtitle1 className={styles.testCaseHeader} block>
-                    Uploaded {routeName}s
-                    <TestCaseStatus status={content.valid} />
-                </Subtitle1>
+        <div {...getRootProps({ className: styles.dropZone })}>
+            {isDragActive ? (
+                <div className={styles.dropZoneOverlay}>
+                    <Subtitle1 block as="p" className={styles.dropZoneText}>
+                        Drop files to upload as a {routeName}
+                    </Subtitle1>
+                </div>
+            ) : null}
+            <div className={styles.dropZoneChild}>
+                <div className="m-y-xxxl">
+                    <div className={styles.uploadHeader}>
+                        <Subtitle1 className={styles.testCaseHeader} block>
+                            Uploaded {routeName}s
+                            <TestCaseStatus status={content.valid} />
+                        </Subtitle1>
 
-                {!searchParams.has('utorid') && (
-                    <Button
-                        icon={<Add24Filled />}
-                        appearance="subtle"
-                        onClick={async () => {
-                            promptForFileObject('.py', true)
-                                .then((file) => {
-                                    if (file) {
-                                        submitTest(Array.from(file));
-                                    }
-                                })
-                                .catch((e) => {
-                                    handleError(showSnackSev)(e);
-                                });
-                        }}
-                    >
-                        Upload a {routeName}
-                    </Button>
-                )}
-            </div>
+                        {!searchParams.has('utorid') && (
+                            <Button
+                                icon={<Add24Filled />}
+                                appearance="subtle"
+                                onClick={async () => {
+                                    promptForFileObject('.py', true)
+                                        .then((file) => {
+                                            if (file) {
+                                                submitTest(Array.from(file));
+                                            }
+                                        })
+                                        .catch((e) => {
+                                            handleError(showSnackSev)(e);
+                                        });
+                                }}
+                            >
+                                Upload a {routeName}
+                            </Button>
+                        )}
+                    </div>
 
-            <Text block className={styles.commitId} font="numeric">
-                {content.log[0]}
-            </Text>
-            <div
-                style={{display: "grid"}} {...getRootProps({className: styles.dropZone})}>
-                {isDragActive ? <div className={styles.dropZoneOverlay}>
-                    <p>Drop the files here ...</p>
-                </div> : null}
-
-                <Card className={styles.dropZoneChild}>
-                    <input {...getInputProps()}/>
-                    <ListFiles
-                        commit={content}
-                        route={route}
-                        assignment={assignment}
-                        assignmentID={assignmentID}
-                        update={getTestData}
-                    />
-                </Card>
+                    <Text block className={styles.commitId} font="numeric">
+                        {content.log[0]}
+                    </Text>
+                    <Card>
+                        <input {...getInputProps()} />
+                        <ListFiles
+                            commit={content}
+                            route={route}
+                            assignment={assignment}
+                            assignmentID={assignmentID}
+                            update={getTestData}
+                        />
+                    </Card>
+                </div>
             </div>
         </div>
     );
