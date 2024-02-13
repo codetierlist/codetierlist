@@ -54,6 +54,7 @@ services:
 
   redis:
     restart: always
+    image: redis
     command:
       - /bin/sh
       - -c
