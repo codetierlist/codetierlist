@@ -54,13 +54,15 @@ services:
 
   redis:
     restart: always
+    command:
+      - redis-server --requirepass $${REDIS_PASSWORD:?password} /usr/local/etc/redis/redis.conf
     build:
       context: ./redis
-      dockerfile: Dockerfile
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
     env_file:
       - ./redis/.env
 
