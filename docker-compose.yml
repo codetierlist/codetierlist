@@ -55,7 +55,9 @@ services:
   redis:
     restart: always
     command:
-      - redis-server --requirepass $${REDIS_PASSWORD:?password} /usr/local/etc/redis/redis.conf
+      - /bin/sh
+      - -c
+      - redis-server --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
     build:
       context: ./redis
     ports:
