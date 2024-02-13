@@ -15,10 +15,10 @@ jobs:
           echo "${{ secrets.REDIS_HOSTPORT }}" > ./runner/.env;
 
       - name: pull docker image
-        run: bash -c "docker rmi docker:dind; docker pull docker:dind"
+        run: sh -c "docker rmi docker:dind; docker pull docker:dind"
 
       - name: compose build runners
-        run: bash -c "docker compose -f docker-compose-runner.yml build"
+        run: sh -c "docker compose -f docker-compose-runner.yml build"
 
       - name: compose up runners
-        run: bash -c "docker compose -f docker-compose-runner.yml up -d"
+        run: sh -c "docker compose -f docker-compose-runner.yml up -d"
