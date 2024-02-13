@@ -9,10 +9,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: create env files
-        run: |
-          echo "${{ secrets.REDIS_PASSWORD }}" > ./redis/.env;
-          echo "${{ secrets.BACKEND_ENV }}" > ./backend/.env;
+      - name: create redis env files
+        run: echo "${{ secrets.REDIS_PASSWORD }}" > ./redis/.env;
+
+      - name: create backend env files
+        run: echo "${{ secrets.BACKEND_ENV }}" > ./backend/.env;
 
       - name: compose build
         run: docker compose build

@@ -9,10 +9,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: create env files
-        run: |
-          echo "${{ secrets.REDIS_PASSWORD }}" > ./redis/.env;
-          echo "${{ secrets.REDIS_HOSTPORT }}" > ./runner/.env;
+      - name: create redis env files
+        run: echo "${{ secrets.REDIS_PASSWORD }}" > ./redis/.env;
+
+      - name: create runner env files
+        run: echo "${{ secrets.REDIS_HOSTPORT }}" > ./runner/.env;
 
       - name: prepare docker
         run: docker rmi docker:dind
