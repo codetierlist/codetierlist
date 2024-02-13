@@ -9,6 +9,7 @@ import requests
 import uuid
 
 from multiprocessing import Pool
+from datetime import date
 
 base_url='http://localhost:3555/api'
 course=''
@@ -16,8 +17,9 @@ assignment = ''
 admin_utorid = "liutmich"
 admin_headers = {"utorid": admin_utorid, "http_mail": "ido.benhaim@mail.utoronto.ca", "sn": "Liut",
                  "givenName": "Michael"}
-n = 100
-group_size = 50
+
+n = 1000
+group_size = 999999
 
 
 def create_course(course_name: str, course_code: str) -> str:
@@ -177,7 +179,8 @@ def main():
     print("Creating course")
     create_course("Introduction to Computer Science", course)
     print("Creating assignment")
-    create_assignment(course, assignment, "2024-11-30")
+    # a year from now
+    create_assignment(course, assignment, str(date.today().replace(year=date.today().year + 1)))
     students = get_students()
     print("Enrolling students")
     enroll_students(students)
