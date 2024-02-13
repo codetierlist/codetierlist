@@ -244,6 +244,7 @@ export const AssignmentPageFilesTab = ({
         noKeyboard: true,
         multiple: true,
         autoFocus: false,
+        disabled: searchParams.has('utorid'),
     });
 
     return (
