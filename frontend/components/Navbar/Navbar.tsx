@@ -68,7 +68,7 @@ export const Navbar = (): JSX.Element => {
                         <Button
                             appearance="subtle"
                             size="small"
-                            className={styles.userButton}
+                            className="m-none p-none"
                             aria-label={`Account manager for ${userInfo.givenName} ${userInfo.surname}`}
                         >
                             <UserAvatar />

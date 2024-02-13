@@ -1,5 +1,5 @@
 .sessionChip {
-    margin: 0 5px 5px 0;
+    margin: var(--spacingVerticalNone) var(--spacingVerticalXS) var(--spacingHorizontalXS) var(--spacingHorizontalNone);
     color: var(--colorNeutralForegroundInverted);
     text-transform: uppercase;
     font-weight: var(--fontWeightBold);
@@ -18,10 +18,11 @@
 
 .courseCard {
     text-decoration: none;
+    --card-width: 300px;
 }
 
 .coursePreview {
-    max-width: 300px;
+    max-width: var(--card-width);
 }
 
 .courseTitle {
@@ -29,7 +30,7 @@
     word-wrap: break-word;
     hyphens: auto;
     margin-bottom: var(--spacingVerticalXS);
-    max-width: calc(300px - var(--spacingHorizontalM) * 2);
+    max-width: calc(var(--card-width) - var(--spacingHorizontalM) * 2);
 }
 
 .badges {
