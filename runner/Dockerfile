@@ -1,5 +1,5 @@
 FROM docker:dind
-RUN apk add --no-cache bash nodejs npm
+RUN apk add --no-cache nodejs npm
 RUN npm install -g typescript
 
 # npm install types
@@ -20,4 +20,4 @@ COPY ./runner ./
 RUN npm run build
 
 # run
-CMD ["bash", "prod.sh"]
+CMD ["sh", "prod.sh"]

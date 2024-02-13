@@ -20,4 +20,4 @@ COPY ./backend ./
 RUN npm run build
 
 # run
-CMD ["bash", "prod.sh"]
+CMD ["sh", "prod.sh"]

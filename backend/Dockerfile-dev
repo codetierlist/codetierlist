@@ -18,4 +18,4 @@ RUN npm run prisma
 COPY ../backend_config.json ./backend_config.json
 COPY ./backend ./
 
-CMD ["bash", "dev.sh"]
+CMD ["sh", "dev.sh"]
