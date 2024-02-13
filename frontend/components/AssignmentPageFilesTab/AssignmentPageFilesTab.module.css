@@ -46,7 +46,7 @@
 .dropZoneOverlay {
     background-color: color-mix(
         in srgb,
-        var(--colorBrandBackgroundInvertedPressed) 25%,
+        var(--colorBrandBackground) 25%,
         transparent
     );
     z-index: 100;
@@ -56,19 +56,19 @@
     align-items: center;
     border-radius: var(--borderRadiusLarge);
     text-align: center;
-    border: 2px solid var(--colorBrandBackgroundInvertedSelected);
+    border: 2px solid var(--colorBrandBackground);
 }
 
 .dropZoneText {
-    background-color: var(--colorBrandBackgroundInvertedPressed);
+    background-color: var(--colorBrandBackground);
     border-radius: var(--borderRadiusCircular);
-    color: var(--colorNeutralForeground1);
+    color: var(--colorNeutralForegroundOnBrand);
     font-size: var(--fontSizeL);
     font-weight: var(--fontWeightMedium) !important;
     padding: var(--spacingVerticalM) var(--spacingHorizontalL);
     animation:
         in 0.3s var(--curveDecelerateMax),
-        burst 2s var(--curveEasyEaseMax) infinite;
+        burst 2s ease-in-out infinite;
 }
 
 @keyframes in {
