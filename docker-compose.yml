@@ -54,7 +54,6 @@ services:
 
   redis:
     restart: always
-    image: redis
     build:
       context: ./redis
       dockerfile: Dockerfile
