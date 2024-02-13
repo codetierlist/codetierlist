@@ -28,8 +28,12 @@ services:
       - NODE_ENV=development
       - MAX_RUNNING_TASKS=10
     env_file:
-      - ./redis/.env
-      - ./runner/.env
+      - path: ./redis/.env
+        required: true
+      - path: ./runner/.env
+        required: true
+      - path: ./backend/.env
+        required: false
 
   frontend:
     restart: always
