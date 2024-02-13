@@ -66,9 +66,8 @@
     font-size: var(--fontSizeL);
     font-weight: var(--fontWeightMedium) !important;
     padding: var(--spacingVerticalM) var(--spacingHorizontalL);
-    animation:
-        in 0.3s var(--curveDecelerateMax),
-        burst 2s ease-in-out infinite;
+    animation: in 0.3s var(--curveDecelerateMax);
+    box-shadow: var(--shadow28Brand);
 }
 
 @keyframes in {
@@ -79,15 +78,6 @@
     100% {
         opacity: 1;
         transform: scale(1);
-    }
-}
-
-@keyframes burst {
-    0% {
-        box-shadow: 0 0 0 0 var(--colorNeutralForeground1);
-    }
-    100% {
-        box-shadow: 0 0 0 20px transparent;
     }
 }
 

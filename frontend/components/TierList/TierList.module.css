@@ -4,7 +4,7 @@
 
 @keyframes shadowBurst {
     0% {
-        box-shadow: 0 0 0 0 var(--colorScrollbarOverlay);
+        box-shadow: 0 0 0 0 var(--colorNeutralShadowKeyDarker);
     }
     100% {
         box-shadow: 0 0 0 20px transparent;
