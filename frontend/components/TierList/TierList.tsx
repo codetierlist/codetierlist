@@ -29,7 +29,7 @@ declare type TierIndicatorProps = {
 const TierIndicator = ({ tier }: TierIndicatorProps): JSX.Element => {
     return (
         <Col xs={2} className={`${getTierClass(tier)} ${styles.tierIndicator}`}>
-            <TierChip tier={tier} className="py-2 px-0" />
+            <TierChip tier={tier} className="p-y-2 p-x-0" />
         </Col>
     );
 };

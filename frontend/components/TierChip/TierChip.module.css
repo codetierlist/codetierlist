@@ -1,5 +1,5 @@
 .tier {
-    border-radius: 0.5rem;
+    border-radius: var(--borderRadiusXLarge);
     padding: var(--spacingHorizontalL) var(--spacingVerticalL);
     font-size: var(--fontSizeHero800);
     font-weight: var(--fontWeightSemibold);

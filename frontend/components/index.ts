@@ -8,7 +8,6 @@ export * from './AssignmentPageFilesTab/AssignmentPageFilesTab';
 export * from './AssignmentPageTestCaseIcon/AssignmentPageTestCaseIcon';
 export * from './BaseAdminToolbarDeleteButton/BaseAdminToolbarDeleteButton';
 export * from './ControlCard/ControlCard';
-export * from './CourseBlock/CourseBlock';
 export * from './CourseOverviewCard/CourseOverviewCard';
 export * from './CreateCourseDialogSurface/CreateCourseDialogSurface';
 export * from './EnrollRemovePeopleMenu/EnrollRemovePeopleMenu';

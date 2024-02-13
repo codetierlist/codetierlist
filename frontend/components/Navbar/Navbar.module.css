@@ -28,11 +28,6 @@
     gap: var(--spacingVerticalS);
 }
 
-.adminBadge {
-    margin-right: var(--spacingHorizontalXS);
-    margin-left: var(--spacingHorizontalXS);
-}
-
 .userButton {
     margin: 0 !important;
     padding: 0 !important;

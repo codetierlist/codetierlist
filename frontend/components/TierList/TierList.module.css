@@ -13,7 +13,7 @@
 
 .tierAvatars {
     background-color: var(--colorNeutralBackground1Hover);
-    border-bottom: 1px solid var(--colorNeutralBackground1Pressed);
+    border-bottom: var(--strokeWidthThin) solid var(--colorNeutralBackground1Pressed);
 }
 
 .tierIndicator {
