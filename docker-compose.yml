@@ -30,6 +30,8 @@ services:
     env_file:
       - ./redis/.env
       - ./runner/.env
+      - path: ./backend/.env
+        required: false
 
   frontend:
     restart: always
