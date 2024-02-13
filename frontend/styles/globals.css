@@ -5,14 +5,9 @@
     background: transparent;
 }
 
-:root {
-    --accent-hue: 120;
-}
-
 html,
 body {
     max-width: 100vw;
-    accent-color: hsl(var(--accent-hue), 100%, 50%);
 
     &.dark {
         color-scheme: dark;

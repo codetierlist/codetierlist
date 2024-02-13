@@ -4,23 +4,23 @@ import type { BrandVariants, Theme } from '@fluentui/react-components';
 
 import { Space_Grotesk, Inter, Space_Mono } from 'next/font/google';
 
-const greenTheme: BrandVariants = {
-    10: `hsl(var(--accent-hue), 33.33%, 1.18%)`,
-    20: `hsl(var(--accent-hue), 22.73%, 8.63%)`,
-    30: `hsl(var(--accent-hue), 25%, 14.12%)`,
-    40: `hsl(var(--accent-hue), 27.47%, 17.84%)`,
-    50: `hsl(var(--accent-hue), 28.57%, 21.96%)`,
-    60: `hsl(var(--accent-hue), 30.3%, 25.88%)`,
-    70: `hsl(var(--accent-hue), 31.17%, 30.2%)`,
-    80: `hsl(var(--accent-hue), 31.43%, 34.31%)`,
-    90: `hsl(var(--accent-hue), 32.32%, 38.82%)`,
-    100: `hsl(var(--accent-hue), 32.73%, 43.14%)`,
-    110: `hsl(var(--accent-hue), 33.33%, 47.65%)`,
-    120: `hsl(var(--accent-hue), 36.89%, 52.16%)`,
-    130: `hsl(var(--accent-hue), 45.45%, 56.86%)`,
-    140: `hsl(var(--accent-hue), 55.1%, 61.57%)`,
-    150: `hsl(var(--accent-hue), 68.6%, 66.27%)`,
-    160: `hsl(var(--accent-hue), 86.49%, 70.98%)`,
+const brandTheme: BrandVariants = {
+    10: "#010405",
+    20: "#081C1E",
+    30: "#022F32",
+    40: "#003D3F",
+    50: "#004A4C",
+    60: "#005958",
+    70: "#006765",
+    80: "#007671",
+    90: "#00867D",
+    100: "#009589",
+    110: "#16A594",
+    120: "#2DB49F",
+    130: "#41C4AA",
+    140: "#55D4B5",
+    150: "#69E3C0",
+    160: "#86F1CD"
 };
 
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--spaceGrotesk' });
@@ -32,11 +32,11 @@ const spaceMono = Space_Mono({
 });
 
 export const lightTheme: Theme = {
-    ...createLightTheme(greenTheme),
+    ...createLightTheme(brandTheme),
 };
 
 export const darkTheme: Theme = {
-    ...createDarkTheme(greenTheme),
+    ...createDarkTheme(brandTheme),
 };
 
 lightTheme.fontFamilyNumeric = spaceGrotesk.style.fontFamily;
