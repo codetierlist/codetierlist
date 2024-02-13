@@ -28,12 +28,9 @@ services:
       - NODE_ENV=production
       - MAX_RUNNING_TASKS=10
     env_file:
-      - path: ./redis/.env
-        required: true
-      - path: ./runner/.env
-        required: true
-      - path: ./backend/.env
-        required: false
+      - ./redis/.env
+      - ./runner/.env
+      - ./backend/.env
 
   frontend:
     restart: always
