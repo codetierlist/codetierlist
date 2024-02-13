@@ -37,8 +37,7 @@ export const runJob = async (job: ReadyJobData): Promise<JobResult> => {
     const img_ver = job.image.image_version;
     const max_seconds = 1;
     const promise =  new Promise<JobResult>((resolve) => {
-        // TODO: change to using volumes or stdin for data passing
-        const runner = spawn("bash",
+        const runner = spawn("sh",
             ["-c", `docker run --rm -i --ulimit cpu=${max_seconds} --network=none codetl-runner-${img}-${img_ver}`],
             {timeout: (max_seconds+1) * 1000});
 
@@ -84,7 +83,7 @@ export const runJob = async (job: ReadyJobData): Promise<JobResult> => {
 
 
 const createImage = (img: string, img_ver: string) => {
-    const ret = spawnSync("bash",
+    const ret = spawnSync("sh",
         ["-c",
             `docker build . -t codetl-runner-${img}-${img_ver}; ` +
             `docker push codetl-runner-${img}-${img_ver}`
@@ -135,4 +134,3 @@ new Worker<ReadyJobData, JobResult>("job_queue",
         },
         concurrency: mtask
     });
-
