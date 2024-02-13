@@ -58,8 +58,6 @@ services:
       - /bin/sh
       - -c
       - redis-server --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
-    build:
-      context: ./redis
     ports:
       - "6379:6379"
     volumes:
