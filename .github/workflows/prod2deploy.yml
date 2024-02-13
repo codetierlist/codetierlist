@@ -15,14 +15,8 @@ jobs:
       - name: create runner env files
         run: echo "${{ secrets.REDIS_HOSTPORT }}" > ./runner/.env;
 
-      - name: prepare docker
-        run: docker rmi docker:dind
-
-      - name: pull docker
-        run: docker pull docker:dind
-
       - name: compose build runners
-        run: docker compose -f docker-compose-runner.yml build
+        run: docker compose -f docker-compose-runner.yml build --pull
 
       - name: compose up runners
         run: docker compose -f docker-compose-runner.yml up -d
