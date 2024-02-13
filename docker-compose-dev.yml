@@ -63,13 +63,16 @@ services:
 
   redis:
     restart: always
-    build:
-      context: ./redis
-      dockerfile: Dockerfile
+    image: redis
+    command:
+      - /bin/sh
+      - -c
+      - redis-server --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
     env_file:
       - ./redis/.env
 
