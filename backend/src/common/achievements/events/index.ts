@@ -1,7 +1,7 @@
+import { subscribe } from "@/common/achievements/eventHandler";
+import prisma from "@/common/prisma";
 import { Prisma, TestCase } from "@prisma/client";
 import { AchievementConfig, Submission } from "codetierlist-types";
-import prisma from "../../prisma";
-import { subscribe } from "../eventHandler";
 
 /**
  * Return the number modulo m (positive)

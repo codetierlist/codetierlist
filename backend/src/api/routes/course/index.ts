@@ -1,3 +1,13 @@
+import assignmentsRoute from "@/api/routes/course/assignments";
+import prisma from "@/common/prisma";
+import {
+    QueriedSubmission,
+    generateTierFromQueriedData
+} from "@/common/tierlist";
+import {
+    errorHandler,
+    fetchCourseMiddleware, isProf
+} from "@/common/utils";
 import { RoleType } from "@prisma/client";
 import {
     AssignmentWithTier,
@@ -9,16 +19,6 @@ import { promises as fs } from "fs";
 import { isUTORid } from "is-utorid";
 import multer from "multer";
 import path from "path";
-import prisma from "../../../common/prisma";
-import {
-    QueriedSubmission,
-    generateTierFromQueriedData
-} from "../../../common/tierlist";
-import {
-    errorHandler,
-    fetchCourseMiddleware, isProf
-} from "../../../common/utils";
-import assignmentsRoute from "./assignments";
 
 const storage = multer.diskStorage({
     filename: function (_, file, callback) {

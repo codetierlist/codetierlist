@@ -1,11 +1,11 @@
-import {
-    RunnerImage
-} from "codetierlist-types";
-import { images } from "../../../common/config";
-import express from "express";
+import { images } from "@/common/config";
 import {
     RoleType
 } from "@prisma/client";
+import {
+    RunnerImage
+} from "codetierlist-types";
+import express from "express";
 const router = express.Router();
 
 /**

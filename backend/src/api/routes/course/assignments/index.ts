@@ -1,23 +1,12 @@
-import {PrismaClientKnownRequestError} from "@prisma/client/runtime/library";
-import {
-    AssignmentStudentStats,
-    Commit,
-    FetchedAssignment,
-    Submission, TestCase, Tier,
-    Tierlist,
-    UserFetchedAssignment
-} from "codetierlist-types";
-import express, {NextFunction, Request, Response} from "express";
-import multer from 'multer';
-import {images} from "../../../../common/config";
+import { config, images } from "@/common/config";
 import prisma, {
     fetchedAssignmentArgs
-} from "../../../../common/prisma";
+} from "@/common/prisma";
 import {
     QueriedSubmission,
     generateList, generateTierFromQueriedData,
     generateYourTier
-} from "../../../../common/tierlist";
+} from "@/common/tierlist";
 import {
     deleteFile, errorHandler,
     fetchAssignmentMiddleware,
@@ -27,8 +16,18 @@ import {
     isProf,
     processSubmission,
     serializeAssignment
-} from "../../../../common/utils";
-import {config} from "../../../../common/config";
+} from "@/common/utils";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import {
+    AssignmentStudentStats,
+    Commit,
+    FetchedAssignment,
+    Submission, TestCase, Tier,
+    Tierlist,
+    UserFetchedAssignment
+} from "codetierlist-types";
+import express, { NextFunction, Request, Response } from "express";
+import multer from 'multer';
 
 const storage = multer.diskStorage({
     filename: function (_, file, callback) {

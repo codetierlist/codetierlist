@@ -1,3 +1,7 @@
+import { publish } from "@/common/achievements/eventHandler";
+import prisma from "@/common/prisma";
+import { runTestcase, updateScore } from "@/common/updateScores";
+import { getCommit, getFile } from "@/common/utils";
 import { TestCase } from "@prisma/client";
 import {
     FlowProducer,
@@ -20,10 +24,6 @@ import {
     Submission,
     TestCaseStatus,
 } from "codetierlist-types";
-import { publish } from "./achievements/eventHandler";
-import prisma from "./prisma";
-import { runTestcase, updateScore } from "./updateScores";
-import { getCommit, getFile } from "./utils";
 
 /**
  * The job types that can be queued
