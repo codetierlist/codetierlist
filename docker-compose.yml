@@ -55,10 +55,9 @@ services:
   redis:
     restart: always
     image: redis
-    command:
-      - redis-server
-      - --requirepass
-      - "${REDIS_PASSWORD?you forgot to add redis security}"
+    build:
+      context: ./redis
+      dockerfile: Dockerfile
     ports:
       - "6379:6379"
     volumes:

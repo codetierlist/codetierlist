@@ -64,10 +64,9 @@ services:
   redis:
     restart: always
     image: redis
-    command:
-      - redis-server
-      - --requirepass
-      - "${REDIS_PASSWORD?you need to set REDIS_PASSWORD}"
+    build:
+      context: ./redis
+      dockerfile: Dockerfile
     ports:
       - "6379:6379"
     volumes:
