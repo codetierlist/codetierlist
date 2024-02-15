@@ -19,11 +19,12 @@ import {
     onNewTestCase
 } from "@/common/updateScores";
 import {config} from "@/common/config";
+import logger from "./logger";
 
 export const errorHandler = (cb: (req: Request, res: Response, next: NextFunction) => Promise<unknown>) => {
     return (req: Request, res: Response, next: NextFunction) => {
         cb(req, res, next).catch(e => {
-            console.error(e);
+            logger.error(e);
             next(e);
         });
     };
@@ -104,7 +105,7 @@ const commitFiles = async (req: Request, object: Omit<TestCase | Solution, 'date
         }
         return commit;
     } catch (e) {
-        console.error(e);
+        logger.error(e);
         return null;
     }
 };

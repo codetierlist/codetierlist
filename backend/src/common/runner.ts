@@ -12,7 +12,7 @@ import {
     WaitingChildrenError,
     Worker
 } from "bullmq";
-import { QueueOptions } from "bullmq/dist/esm/interfaces";
+import {QueueOptions} from "bullmq/dist/esm/interfaces";
 import {
     Assignment,
     JobFiles,
@@ -24,6 +24,26 @@ import {
     Submission,
     TestCaseStatus,
 } from "codetierlist-types";
+
+import {createLogger, format, transports, Logger} from 'winston';
+import logger, {consoleFormat} from "./logger";
+
+const logLevels = {
+    error: 0,
+    info: 1
+};
+
+const runnerLogger: Logger = createLogger({
+    levels: logLevels,
+    format: format.combine(format.timestamp(), format.json()),
+    transports: [
+        new transports.File({filename: './logs/runners.log'}),
+        new transports.Console({
+            level: 'info',
+            format: format.combine(format.label({label: 'RUNNERS:'}), consoleFormat)
+        }),
+    ],
+});
 
 /**
  * The job types that can be queued
@@ -44,12 +64,12 @@ if (process.env.REDIS_PORT === undefined) {
 }
 
 if (process.env.REDIS_PASSWORD === undefined) {
-    console.warn("REDIS_PASSWORD is undefined, connection might fail");
+    logger.warn("REDIS_PASSWORD is undefined, connection might fail");
 }
 
 let max_fetched = parseInt(process.env.MAX_FETCHED_JOBS ?? '1000');
 if (isNaN(max_fetched)) {
-    console.warn("MAX_FETCHED_JOBS is not a number, defaulting to 1000");
+    logger.warn("MAX_FETCHED_JOBS is not a number, defaulting to 1000");
     max_fetched = 1000;
 }
 
@@ -61,11 +81,16 @@ const queue_conf: QueueOptions = {
     }
 };
 const job_queue: Queue<ReadyJobData, JobResult, JobType> =
-    new Queue<ReadyJobData, JobResult, JobType>("job_queue", {...queue_conf,
-        defaultJobOptions: {backoff: {type: "fixed", delay: 1000}}});
+    new Queue<ReadyJobData, JobResult, JobType>("job_queue", {
+        ...queue_conf,
+        defaultJobOptions: {backoff: {type: "fixed", delay: 1000}}
+    });
 
 const pending_queue: Queue<PendingJobData, undefined, JobType> =
-    new Queue<PendingJobData, undefined, JobType>("pending_queue", {...queue_conf, defaultJobOptions: {removeOnComplete:true}});
+    new Queue<PendingJobData, undefined, JobType>("pending_queue", {
+        ...queue_conf,
+        defaultJobOptions: {removeOnComplete: true}
+    });
 
 const job_events: QueueEvents = new QueueEvents(job_queue.name, queue_conf);
 
@@ -94,7 +119,8 @@ export const getFiles = async (submission: Submission | TestCase): Promise<JobFi
  * Bulk queue test cases for a submission
  */
 export const bulkQueueTestCases = async <T extends Submission | TestCase>(image: RunnerImage, item: T, queue: (T extends TestCase ? Submission : TestCase)[]) => {
-    console.info(`Bulk queueing ${queue.length} test cases for ${item.author_id} submission/test case`);
+    runnerLogger.info(`Bulk queueing ${queue.length} test cases for ${item.author_id} submission/test case`);
+    runnerLogger.info(`Bulk queueing ${queue.length} test cases for ${item.author_id} submission/test case`);
     await flowProducer.add({
         name: JobType.parentJob,
         queueName: parent_job_queue,
@@ -172,7 +198,7 @@ export const queueJob = async (job: {
         submissionAuthorId: job.submission.author_id,
         image: job.image,
     }, {priority});
-    console.info(`job ${redis_job.id} added to queue`);
+    runnerLogger.info(`job ${redis_job.id} added to queue`);
     return redis_job.id;
 };
 
@@ -182,10 +208,10 @@ job_events.on("completed", async ({jobId}) => {
     const data = job.data;
     const result = job.returnvalue;
     if (!data || "status" in data || !result) {
-        console.error(`job ${job.id} completed with no data or result`);
+        runnerLogger.error(`job ${job.id} completed with no data or result`);
         return;
     }
-    console.info(`job ${job.id} completed with status ${result.status} with data ${JSON.stringify(result)}`);
+    runnerLogger.info(`job ${job.id} completed with status ${result.status} with data ${JSON.stringify(result)}`);
     const submission = data.submission;
     const testCase = data.testCase;
     const pass = result.status === "PASS";
@@ -196,7 +222,7 @@ job_events.on("completed", async ({jobId}) => {
         let status: TestCaseStatus = "VALID";
         if (["ERROR", "FAIL"].includes(result.status)) {
             status = "INVALID";
-        } else if (result.status === "TESTCASE_EMPTY" || (result.status==="PASS" && result.amount <= 0) ) {
+        } else if (result.status === "TESTCASE_EMPTY" || (result.status === "PASS" && result.amount <= 0)) {
             status = "EMPTY";
         }
         await prisma.testCase.update({
@@ -214,7 +240,8 @@ job_events.on("completed", async ({jobId}) => {
     await updateScore(submission, testCase, pass);
     try {
         await job.updateData({status: "COMPLETED"});
-    } catch { /* empty */ }
+    } catch { /* empty */
+    }
 });
 
 /** Remove all pending jobs for a user */
@@ -269,7 +296,7 @@ new Worker<ParentJobData, undefined, JobType>(parent_job_queue, async (job, toke
             number: passedOrFailed.map(x => "amount" in x ? x.amount : 0).reduce((a, b) => a + b, 0) / passedOrFailed.length
         });
     }
-    console.info(`Parent job ${job.id} completed with ${passed.length} passed out of ${children.length}. Finished processing at ${Date.now()}`);
+    runnerLogger.info(`Parent job ${job.id} completed with ${passed.length} passed out of ${children.length}`);
 }, queue_conf);
 
 /** Fetches jobs from the pending queue and adds them to the job queue */
@@ -296,15 +323,20 @@ const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue
             id: data.testcaseId
         }
     });
-    if(!submission || !testCase) {
-        console.error(`Submission or test case not found for job ${job.id}`);
+    if (!submission || !testCase) {
+        runnerLogger.error(`Submission or test case not found for job ${job.id}`);
         throw new UnrecoverableError("Submission or test case not found");
     }
     const query = {
         'solution_files': await getFiles(submission),
         'test_case_files': await getFiles(testCase),
     };
-    const newData : ReadyJobData ={query, submission, testCase, image: data.image};
+    const newData: ReadyJobData = {
+        query,
+        submission,
+        testCase,
+        image: data.image
+    };
     if (!job.parent) {
         await job_queue.add(job.name, newData, {priority: 5});
         return;

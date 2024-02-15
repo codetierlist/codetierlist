@@ -2,6 +2,7 @@ import { subscribe } from "@/common/achievements/eventHandler";
 import prisma from "@/common/prisma";
 import { Prisma, TestCase } from "@prisma/client";
 import { AchievementConfig, Submission } from "codetierlist-types";
+import logger from "../../logger";
 
 /**
  * Return the number modulo m (positive)
@@ -80,12 +81,12 @@ subscribe("first:testcase", "testcase:submit", firstHandler("testcase"));
 
 const processedDataValidator = (data: unknown): { passed: number, total: number, number?: number } | undefined => {
     if (!data || typeof data !== "object") {
-        console.warn("No data provided for event");
+        logger.warn("No data provided for event");
         return undefined;
     }
     const {passed, total, number} = data as { passed: unknown, total: unknown, number?: unknown };
     if (typeof passed !== "number" || typeof total !== "number" || (number !== undefined && typeof number !== "number")) {
-        console.warn("Invalid data provided for event");
+        logger.warn("Invalid data provided for event");
         return undefined;
     }
     return {passed, total, number};

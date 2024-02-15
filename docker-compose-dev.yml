@@ -23,6 +23,7 @@ services:
       - repo_data:/repos
       - uploads:/uploads
       - ./backend/src:/backend/src:ro
+      - ./logs:/logs
     environment:
       - DATABASE_URL=postgres://postgres:example@db:5432/postgres
       - NODE_ENV=development

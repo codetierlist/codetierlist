@@ -23,6 +23,7 @@ services:
     volumes:
       - repo_data:/repos
       - uploads:/uploads
+      - logs:/logs
     environment:
       - DATABASE_URL=postgres://postgres:example@db:5432/postgres
       - NODE_ENV=production
@@ -71,3 +72,4 @@ volumes:
   repo_data:
   uploads:
   redis_data:
+  logs:

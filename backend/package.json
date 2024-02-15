@@ -36,7 +36,8 @@
     "is-utorid": "1.2.2",
     "isomorphic-git": "^1.25.3",
     "multer": "^1.4.5-lts.1",
-    "socket.io": "^4.7.4"
+    "socket.io": "^4.7.4",
+    "winston": "^3.11.0"
   },
   "eslintConfig": {
     "extends": [
@@ -53,7 +54,7 @@
         4
       ],
       "no-console": [
-        "off"
+        "error"
       ],
       "semi": [
         "error",
@@ -74,13 +75,6 @@
           "argsIgnorePattern": "^_",
           "varsIgnorePattern": "^_",
           "caughtErrorsIgnorePattern": "^_"
-        }
-      ],
-      "no-restricted-syntax": [
-        "warn",
-        {
-          "selector": "CallExpression[callee.object.name='console'][callee.property.name=/^(log|trace)$/]",
-          "message": "No console.log, use console.info|warn|err"
         }
       ]
     },
