@@ -1,4 +1,3 @@
-import "@/common/achievements/events";
 import prisma from "./common/prisma";
 
 process.on("unhandledRejection", e=>{
