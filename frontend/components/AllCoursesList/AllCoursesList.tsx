@@ -41,7 +41,7 @@ const useAllCourses = () => {
     }, []);
 
     return allCourses;
-}
+};
 
 /**
  * Show all courses if admin
