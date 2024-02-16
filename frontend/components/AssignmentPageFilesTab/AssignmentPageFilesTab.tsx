@@ -80,11 +80,13 @@ const ListFiles = ({
                 }
             )
             .then(() => {
-                update && update();
                 showSnackSev('File deleted', 'success');
             })
             .catch((e) => {
                 handleError(showSnackSev)(e);
+            })
+            .finally(() => {
+                update && update();
             });
     };
 
