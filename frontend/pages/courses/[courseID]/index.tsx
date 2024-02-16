@@ -224,7 +224,7 @@ export default function Page() {
 
             <section className="m-y-xxxl m-x-l">
                 <div className="flex-wrap">
-                    {course !== null && course.assignments.length === 0 && (
+                    {course !== null && course !== undefined && course.assignments.length === 0 && (
                         <Caption1>
                             This course has no assignments yet. If your believe that this
                             message you are receiving is incorrect, please contact your
