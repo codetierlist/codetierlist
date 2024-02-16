@@ -156,12 +156,12 @@ const CourseAdminToolbar = ({
                                 'Content-Type': 'multipart/form-data',
                             },
                         })
-                        .then(() => {
-                            void fetchCourse();
-                        })
                         .then(updateSeed)
                         .catch((e) => {
                             handleError(showSnackSev)(e);
+                        })
+                        .finally(() => {
+                            void fetchCourse();
                         });
                 }}
             >

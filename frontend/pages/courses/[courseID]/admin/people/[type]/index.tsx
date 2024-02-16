@@ -75,8 +75,7 @@ async function modifyEnrollment(
                 )
             )
             .catch((e) => {
-                showSnackSev(e.message, 'error');
-                throw e;
+                handleError(showSnackSev)(e);
             });
     }
 }
