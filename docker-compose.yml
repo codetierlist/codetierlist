@@ -30,7 +30,6 @@ services:
       - MAX_RUNNING_TASKS=10
     env_file:
       - ./redis/.env
-      - ./runner/.env
       - ./backend/.env
 
   frontend:

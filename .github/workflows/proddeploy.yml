@@ -16,7 +16,7 @@ jobs:
         run: echo "${{ secrets.BACKEND_ENV }}" > ./backend/.env;
 
       - name: create runner env files
-        run: echo "${{ secrets.REDIS_HOSTPORT }}" > ./runner/.env;
+        run: echo "${{ secrets.BACKEND_ENV }}" > ./runner/.env;
 
       - name: compose build
         run: docker compose build --pull
