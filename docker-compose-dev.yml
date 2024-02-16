@@ -22,7 +22,7 @@ services:
     volumes:
       - repo_data:/repos
       - uploads:/uploads
-      - ./backend/src:/backend/src:ro
+      - ./backend/src:/backend/src
       - ./logs:/logs
     environment:
       - DATABASE_URL=postgres://postgres:example@db:5432/postgres
@@ -45,13 +45,13 @@ services:
       - NEXT_PUBLIC_API_URL=/api
       - WATCHPACK_POLLING true
     volumes:
-      - ./frontend/src:/frontend/src:ro
-      - ./frontend/components:/frontend/components:ro
-      - ./frontend/contexts:/frontend/contexts:ro
-      - ./frontend/pages:/frontend/pages:ro
-      - ./frontend/public:/frontend/public:ro
-      - ./frontend/styles:/frontend/styles:ro
-      - ./frontend/axios.ts:/frontend/axios.ts:ro
+      - ./frontend/src:/frontend/src
+      - ./frontend/components:/frontend/components
+      - ./frontend/contexts:/frontend/contexts
+      - ./frontend/pages:/frontend/pages
+      - ./frontend/public:/frontend/public
+      - ./frontend/styles:/frontend/styles
+      - ./frontend/axios.ts:/frontend/axios.ts
 
   db:
     image: postgres
