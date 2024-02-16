@@ -23,7 +23,11 @@ export const ToolTipIcon = (
         return undefined;
     }
     return (
-        <span aria-owns={visible ? contentId : undefined} className={props.className}>
+        <span
+            aria-owns={visible ? contentId : undefined}
+            className={props.className}
+            style={{ display: 'flex' }}
+        >
             <Tooltip
                 content={
                     typeof props.tooltip === 'string'
