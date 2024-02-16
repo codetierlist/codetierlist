@@ -79,8 +79,10 @@ const ListFiles = ({
                     skipErrorHandling: true,
                 }
             )
-            .then(() => {
-                showSnackSev('File deleted', 'success');
+            .then((res) => {
+                if (res.status === 200) {
+                    showSnackSev('File deleted', 'success');
+                }
             })
             .catch((e) => {
                 handleError(showSnackSev)(e);
@@ -191,7 +193,11 @@ export const AssignmentPageFilesTab = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [assignment.course_id, assignmentID, route]);
 
-    const submitTest = async (files: File[]) => {
+    /**
+     * submit files to the server
+     * @param files the files to submit
+     */
+    const submitFiles = async (files: File[]) => {
         const formData = new FormData();
         for (let i = 0; i < files!.length; i++) {
             formData.append('files', files![i]);
@@ -205,6 +211,11 @@ export const AssignmentPageFilesTab = ({
                     headers: { 'Content-Type': 'multipart/form-data' },
                 }
             )
+            .then((res) => {
+                if (res.status === 200) {
+                    showSnackSev('Files uploaded', 'success');
+                }
+            })
             .catch((e) => {
                 handleError(showSnackSev)(e);
             })
@@ -241,7 +252,7 @@ export const AssignmentPageFilesTab = ({
 
     // create a dropzone for the user to upload files
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
-        onDrop: submitTest,
+        onDrop: submitFiles,
         noClick: true,
         noKeyboard: true,
         multiple: true,
@@ -274,7 +285,7 @@ export const AssignmentPageFilesTab = ({
                                     promptForFileObject('.py', true)
                                         .then((file) => {
                                             if (file) {
-                                                submitTest(Array.from(file));
+                                                submitFiles(Array.from(file));
                                             }
                                         })
                                         .catch((e) => {

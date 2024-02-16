@@ -1,5 +1,6 @@
 .sessionChip {
-    margin: var(--spacingVerticalNone) var(--spacingVerticalXS) var(--spacingHorizontalXS) var(--spacingHorizontalNone);
+    margin: var(--spacingVerticalNone) var(--spacingVerticalXS) var(--spacingHorizontalXS)
+        var(--spacingHorizontalNone);
     color: var(--colorNeutralForegroundInverted);
     text-transform: uppercase;
     font-weight: var(--fontWeightBold);
