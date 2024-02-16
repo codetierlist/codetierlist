@@ -1,10 +1,10 @@
+import { achievementsConfig } from "@/common/config";
+import prisma from "@/common/prisma";
 import {
     AchievementConfig,
     Submission,
     TestCase
 } from "codetierlist-types";
-import { achievementsConfig } from "../config";
-import prisma from "../prisma";
 
 type EventType = "testcase:submit" |
     "testcase:processed" |

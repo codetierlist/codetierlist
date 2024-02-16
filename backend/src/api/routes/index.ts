@@ -1,7 +1,7 @@
+import courseRoute from "@/api/routes/course";
+import runnerRoute from "@/api/routes/runner";
+import userRoute from "@/api/routes/users";
 import express from "express";
-import courseRoute from "./course";
-import runnerRoute from "./runner";
-import userRoute from "./users";
 
 const router = express.Router();
 

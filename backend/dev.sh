@@ -3,4 +3,4 @@
 set -e
 
 npm run migrate
-exec nodemon --legacy-watch ./src/index.ts
+exec ./node_modules/.bin/nodemon

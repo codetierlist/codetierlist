@@ -1,10 +1,10 @@
-import {Group, User} from "@prisma/client";
+import prisma from "@/common/prisma";
+import { Group, User } from "@prisma/client";
 import {
     Tier,
     Tierlist,
     UserTier
 } from "codetierlist-types";
-import prisma from "./prisma";
 
 /** @return a two letter hash of the string */
 export const twoLetterHash = (str: string) => {
