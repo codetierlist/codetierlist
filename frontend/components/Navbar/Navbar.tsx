@@ -51,44 +51,72 @@ const UserAvatar = (): JSX.Element => {
  * The navbar component is the top bar of the website. It contains the
  * logo and the user's name and role.
  */
+const NavbarUserPopoverButton = (): JSX.Element => {
+    const { userInfo } = useContext(UserContext);
+
+    return (
+        <Popover size="small">
+            <PopoverTrigger>
+                <Button
+                    appearance="subtle"
+                    size="small"
+                    className="m-none p-none"
+                    aria-label={`Account manager for ${userInfo.givenName} ${userInfo.surname}`}
+                >
+                    <UserAvatar />
+                </Button>
+            </PopoverTrigger>
+            <PopoverSurface className="p-none m-none">
+                <NavbarUserPopover />
+            </PopoverSurface>
+        </Popover>
+    );
+};
+
+/**
+ * Skeleton for the user avatar in the navbar. It is used when the user
+ * is not logged in.
+ */
+const NavbarUserPopoverSkeleton = (): JSX.Element => {
+    return (
+        <div className={styles.skeletonPersona}>
+            <div className={`${styles.skeletonName} ${styles.subtext}`}>
+                <SkeletonItem size={12} />
+                <SkeletonItem size={12} />
+            </div>
+            <SkeletonItem shape="circle" size={36} />
+        </div>
+    );
+};
+
+/**
+ * The brand button is the button that contains the logo and the name of the
+ * website. It is a link to the home page.
+ */
+const BrandButton = (): JSX.Element => {
+    return (
+        <h1 className={styles.title}>
+            <Link className={styles.brand} href="/" aria-label="Code tier list">
+                Codetierlist
+            </Link>
+        </h1>
+    );
+};
+
+/**
+ * The navbar component is the top bar of the website. It contains the
+ * logo and the user's name and role.
+ */
 export const Navbar = (): JSX.Element => {
     const { userInfo } = useContext(UserContext);
 
     return (
         <header className={styles.navbar}>
-            <h1 className={styles.title}>
-                <Link className={styles.brand} href="/" aria-label="Code tier list">
-                    Codetierlist
-                </Link>
-            </h1>
+            <BrandButton />
 
-            {userInfo !== defaultUser && (
-                <Popover size="small">
-                    <PopoverTrigger>
-                        <Button
-                            appearance="subtle"
-                            size="small"
-                            className="m-none p-none"
-                            aria-label={`Account manager for ${userInfo.givenName} ${userInfo.surname}`}
-                        >
-                            <UserAvatar />
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverSurface className="p-none m-none">
-                        <NavbarUserPopover />
-                    </PopoverSurface>
-                </Popover>
-            )}
+            {userInfo !== defaultUser && <NavbarUserPopoverButton />}
 
-            {userInfo === defaultUser && (
-                <div className={styles.skeletonPersona}>
-                    <div className={`${styles.skeletonName} ${styles.subtext}`}>
-                        <SkeletonItem size={12} />
-                        <SkeletonItem size={12} />
-                    </div>
-                    <SkeletonItem shape="circle" size={36} />
-                </div>
-            )}
+            {userInfo === defaultUser && <NavbarUserPopoverSkeleton />}
         </header>
     );
 };
