@@ -7,9 +7,9 @@ import { notFound } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 
 /**
- * Show all courses if admin
+ * Returns all courses that an admin is not enrolled in
  */
-export const AllCoursesList = () => {
+const useAllCourses = () => {
     const { userInfo } = useContext(UserContext);
     const { showSnackSev } = useContext(SnackbarContext);
     const [allCourses, setAllCourses] = useState<FetchedCourse[] | null>([]);
@@ -35,9 +35,20 @@ export const AllCoursesList = () => {
         if (!userInfo.admin) {
             return;
         }
+
         void fetchAllCourses();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    return allCourses;
+}
+
+/**
+ * Show all courses if admin
+ */
+export const AllCoursesList = () => {
+    const { userInfo } = useContext(UserContext);
+    const allCourses = useAllCourses();
 
     if (!userInfo.admin) {
         return <></>;
