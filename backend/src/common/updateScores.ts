@@ -12,6 +12,7 @@ import {
     removeSubmission,
     removeTestcases
 } from "./runner";
+import logger from "./logger";
 
 /**
  * Log the score of a submission vs a testcase
@@ -63,7 +64,8 @@ export const updateScore = async (submission: Submission, testCase: TestCase, pa
  */
 export const onNewSubmission = async (submission: Submission, image: Assignment) => {
     publish("solution:submit", submission);
-    await removeSubmission(submission.author_id);
+
+    removeSubmission(submission.author_id).catch(e => logger.warning(e));
 
     const testCases = await prisma.testCase.findMany({
         where: {
@@ -89,7 +91,8 @@ export const onNewSubmission = async (submission: Submission, image: Assignment)
  * @param image
  */
 export const onNewProfSubmission = async (submission: Submission, image: Assignment | RunnerImage) => {
-    await removeSubmission(submission.author_id);
+    removeSubmission(submission.author_id).catch(e => logger.warning(e));
+
 
     const testCases = await prisma.testCase.findMany({
         where: {
