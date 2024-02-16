@@ -11,8 +11,8 @@ import {
     queueJob,
     removeSubmission,
     removeTestcases
-} from "./runner";
-import logger from "./logger";
+} from "@/common/runner";
+import logger from "@/common/logger";
 
 /**
  * Log the score of a submission vs a testcase

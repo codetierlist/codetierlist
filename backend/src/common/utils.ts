@@ -19,7 +19,7 @@ import {
     onNewTestCase
 } from "@/common/updateScores";
 import {config} from "@/common/config";
-import logger from "./logger";
+import logger from "@/common/logger";
 
 export const errorHandler = (cb: (req: Request, res: Response, next: NextFunction) => Promise<unknown>) => {
     return (req: Request, res: Response, next: NextFunction) => {
