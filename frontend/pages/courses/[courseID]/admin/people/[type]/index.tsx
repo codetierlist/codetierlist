@@ -14,6 +14,7 @@ import {
     MessageBar,
     MessageBarBody,
     MessageBarTitle,
+    ToastIntent,
     ToolbarButton,
 } from '@fluentui/react-components';
 import { Add24Filled, ArrowLeft24Regular } from '@fluentui/react-icons';
@@ -57,7 +58,7 @@ async function modifyEnrollment(
     csv: string,
     action: 'add' | 'remove',
     role: RoleType,
-    showSnackSev: (message: string, severity: 'success' | 'error') => void
+    showSnackSev: (message?: string, severity?: ToastIntent) => void
 ): Promise<void> {
     const utorids = csv.split('\n').map((utorid) => utorid.trim());
 
