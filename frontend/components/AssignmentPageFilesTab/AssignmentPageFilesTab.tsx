@@ -205,11 +205,11 @@ export const AssignmentPageFilesTab = ({
                     headers: { 'Content-Type': 'multipart/form-data' },
                 }
             )
-            .then(() => {
-                fetchAssignment();
-            })
             .catch((e) => {
                 handleError(showSnackSev)(e);
+            })
+            .finally(() => {
+                fetchAssignment();
             });
     };
 
