@@ -9,7 +9,6 @@ import {
     Button,
     Caption1,
     Card,
-    Link,
     Subtitle1,
     Text,
     Tooltip,
@@ -20,10 +19,10 @@ import {
     DocumentMultiple24Regular,
 } from '@fluentui/react-icons';
 import { Commit, UserFetchedAssignment } from 'codetierlist-types';
-import { useContext, useEffect, useState, useCallback } from 'react';
-import styles from './AssignmentPageFilesTab.module.css';
 import { useSearchParams } from 'next/navigation';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
+import styles from './AssignmentPageFilesTab.module.css';
 
 /**
  * A list of files for a commit
