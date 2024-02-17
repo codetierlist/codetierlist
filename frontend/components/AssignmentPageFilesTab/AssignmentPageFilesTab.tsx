@@ -9,11 +9,16 @@ import {
     Button,
     Caption1,
     Card,
+    Link,
     Subtitle1,
     Text,
     Tooltip,
 } from '@fluentui/react-components';
-import { Add24Filled, Delete16Filled } from '@fluentui/react-icons';
+import {
+    Add24Filled,
+    Delete16Filled,
+    DocumentMultiple24Regular,
+} from '@fluentui/react-icons';
 import { Commit, UserFetchedAssignment } from 'codetierlist-types';
 import { useContext, useEffect, useState, useCallback } from 'react';
 import styles from './AssignmentPageFilesTab.module.css';
@@ -104,9 +109,13 @@ const ListFiles = ({
     }, [commit, assignment, route]);
 
     return commit.files && Object.keys(commit.files).length === 0 ? (
-        <Caption1>
-            No files uploaded yet. Drag and drop files here or click the button above.
-        </Caption1>
+        <div className={styles.noFiles}>
+            <DocumentMultiple24Regular />
+            <Caption1>
+                No files uploaded yet. Drag and drop files here or click the button above
+                to upload.
+            </Caption1>
+        </div>
     ) : (
         <Accordion collapsible>
             {Object.keys(commit.files).map((key, index) => (
@@ -271,7 +280,7 @@ export const AssignmentPageFilesTab = ({
             ) : null}
             <div className={styles.dropZoneChild}>
                 <div className="m-y-xxxl">
-                    <div className={styles.uploadHeader}>
+                    <div className={`${styles.uploadHeader} m-b-xl`}>
                         <Subtitle1 className={styles.testCaseHeader} block>
                             Uploaded {routeName}s
                             <TestCaseStatus status={content.valid} />
@@ -298,10 +307,13 @@ export const AssignmentPageFilesTab = ({
                         )}
                     </div>
 
-                    <Text block className={styles.commitId} font="numeric">
-                        {content.log[0]}
-                    </Text>
-                    <Card>
+                    {content.log[0] && (
+                        <Text block className={styles.commitId} font="numeric">
+                            {content.log[0]}
+                        </Text>
+                    )}
+
+                    <Card className="m-t-xl">
                         <input {...getInputProps()} />
                         <ListFiles
                             commit={content}
