@@ -11,7 +11,7 @@ import {
 } from '@/components';
 import { SnackbarContext } from '@/contexts/SnackbarContext';
 import { UserContext } from '@/contexts/UserContext';
-import { Caption1, ToolbarButton } from '@fluentui/react-components';
+import { Caption1, Spinner, ToolbarButton } from '@fluentui/react-components';
 import {
     Add24Filled,
     ImageAdd20Regular,
@@ -198,13 +198,15 @@ export default function Page() {
             >
                 <div className={styles.header}>
                     <Title2 className={styles.courseTitle}>
-                        {course && (
-                            <CourseSessionChip
-                                session={getSession(new Date(course.createdAt))}
-                            >
-                                {courseID}
-                            </CourseSessionChip>
-                        )}
+                        <CourseSessionChip
+                            session={
+                                course
+                                    ? getSession(new Date(course.createdAt))
+                                    : getSession(new Date())
+                            }
+                        >
+                            {courseID}
+                        </CourseSessionChip>
                     </Title2>
                     {course === null && <Title2>Course not found</Title2>}
                     {course === undefined && <Title2>Loading...</Title2>}
@@ -234,23 +236,23 @@ export default function Page() {
                             </Caption1>
                         )}
 
-                    {course
-                        ? course.assignments.map((assignment) => (
-                              <AssignmentCard
-                                  key={assignment.title}
-                                  id={assignment.title}
-                                  name={assignment.title}
-                                  dueDate={
-                                      assignment.due_date
-                                          ? new Date(assignment.due_date)
-                                          : undefined
-                                  }
-                                  tier={assignment.tier}
-                                  courseID={courseID as string}
-                              />
-                          ))
-                        : 'Loading...'}
+                    {course &&
+                        course.assignments.map((assignment) => (
+                            <AssignmentCard
+                                key={assignment.title}
+                                id={assignment.title}
+                                name={assignment.title}
+                                dueDate={
+                                    assignment.due_date
+                                        ? new Date(assignment.due_date)
+                                        : undefined
+                                }
+                                tier={assignment.tier}
+                                courseID={courseID as string}
+                            />
+                        ))}
                 </div>
+                {course === undefined && <Spinner />}
             </section>
         </Container>
     );
