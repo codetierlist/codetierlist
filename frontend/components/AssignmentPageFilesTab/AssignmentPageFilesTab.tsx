@@ -13,12 +13,16 @@ import {
     Text,
     Tooltip,
 } from '@fluentui/react-components';
-import { Add24Filled, Delete16Filled } from '@fluentui/react-icons';
+import {
+    Add24Filled,
+    Delete16Filled,
+    DocumentMultiple24Regular,
+} from '@fluentui/react-icons';
 import { Commit, UserFetchedAssignment } from 'codetierlist-types';
-import { useContext, useEffect, useState, useCallback } from 'react';
-import styles from './AssignmentPageFilesTab.module.css';
 import { useSearchParams } from 'next/navigation';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
+import styles from './AssignmentPageFilesTab.module.css';
 
 /**
  * A list of files for a commit
@@ -79,12 +83,16 @@ const ListFiles = ({
                     skipErrorHandling: true,
                 }
             )
-            .then(() => {
-                update && update();
-                showSnackSev('File deleted', 'success');
+            .then((res) => {
+                if (res.status === 200) {
+                    showSnackSev('File deleted', 'success');
+                }
             })
             .catch((e) => {
                 handleError(showSnackSev)(e);
+            })
+            .finally(() => {
+                update && update();
             });
     };
 
@@ -100,9 +108,13 @@ const ListFiles = ({
     }, [commit, assignment, route]);
 
     return commit.files && Object.keys(commit.files).length === 0 ? (
-        <Caption1>
-            No files uploaded yet. Drag and drop files here or click the button above.
-        </Caption1>
+        <div className={styles.noFiles}>
+            <DocumentMultiple24Regular />
+            <Caption1>
+                No files uploaded yet. Drag and drop files here or click the button above
+                to upload.
+            </Caption1>
+        </div>
     ) : (
         <Accordion collapsible>
             {Object.keys(commit.files).map((key, index) => (
@@ -189,7 +201,11 @@ export const AssignmentPageFilesTab = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [assignment.course_id, assignmentID, route]);
 
-    const submitTest = async (files: File[]) => {
+    /**
+     * submit files to the server
+     * @param files the files to submit
+     */
+    const submitFiles = async (files: File[]) => {
         const formData = new FormData();
         for (let i = 0; i < files!.length; i++) {
             formData.append('files', files![i]);
@@ -203,11 +219,16 @@ export const AssignmentPageFilesTab = ({
                     headers: { 'Content-Type': 'multipart/form-data' },
                 }
             )
-            .then(() => {
-                fetchAssignment();
+            .then((res) => {
+                if (res.status === 200) {
+                    showSnackSev('Files uploaded', 'success');
+                }
             })
             .catch((e) => {
                 handleError(showSnackSev)(e);
+            })
+            .finally(() => {
+                fetchAssignment();
             });
     };
 
@@ -239,7 +260,7 @@ export const AssignmentPageFilesTab = ({
 
     // create a dropzone for the user to upload files
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
-        onDrop: submitTest,
+        onDrop: submitFiles,
         noClick: true,
         noKeyboard: true,
         multiple: true,
@@ -258,7 +279,7 @@ export const AssignmentPageFilesTab = ({
             ) : null}
             <div className={styles.dropZoneChild}>
                 <div className="m-y-xxxl">
-                    <div className={styles.uploadHeader}>
+                    <div className={`${styles.uploadHeader} m-b-xl`}>
                         <Subtitle1 className={styles.testCaseHeader} block>
                             Uploaded {routeName}s
                             <TestCaseStatus status={content.valid} />
@@ -272,7 +293,7 @@ export const AssignmentPageFilesTab = ({
                                     promptForFileObject('.py', true)
                                         .then((file) => {
                                             if (file) {
-                                                submitTest(Array.from(file));
+                                                submitFiles(Array.from(file));
                                             }
                                         })
                                         .catch((e) => {
@@ -285,10 +306,13 @@ export const AssignmentPageFilesTab = ({
                         )}
                     </div>
 
-                    <Text block className={styles.commitId} font="numeric">
-                        {content.log[0]}
-                    </Text>
-                    <Card>
+                    {content.log[0] && (
+                        <Text block className={styles.commitId} font="numeric">
+                            {content.log[0]}
+                        </Text>
+                    )}
+
+                    <Card className="m-t-xl">
                         <input {...getInputProps()} />
                         <ListFiles
                             commit={content}

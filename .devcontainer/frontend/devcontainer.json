@@ -1,0 +1,10 @@
+{
+    "name": "codetl frontend",
+    "dockerComposeFile": [
+        "../../docker-compose-dev.yml",
+        "../../docker-compose-runner.yml"
+    ],
+    "service": "frontend",
+    "workspaceFolder": "/frontend",
+    "shutdownAction": "stopCompose"
+}

@@ -1,5 +1,5 @@
 FROM node
-RUN npm install -g typescript nodemon ts-node
+RUN npm install -g typescript ts-node
 
 # npm install types
 WORKDIR /types

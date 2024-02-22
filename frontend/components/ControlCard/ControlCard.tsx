@@ -40,6 +40,7 @@ export const ControlCard = (props: ControlCardProps): JSX.Element => {
                 }
                 action={<div className={styles.showOnDesktop}>{props.children}</div>}
             />
+
             <div className={styles.showOnMobile}>{props.children}</div>
         </Card>
     );

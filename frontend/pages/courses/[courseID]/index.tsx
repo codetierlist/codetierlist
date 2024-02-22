@@ -1,9 +1,9 @@
 import axios, { handleError } from '@/axios';
 import {
-    EnrollRemovePeopleMenu,
     AssignmentCard,
     BaseAdminToolbarDeleteButton,
     CourseSessionChip,
+    EnrollRemovePeopleMenu,
     HeaderToolbar,
     checkIfCourseAdmin,
     getSession,
@@ -11,7 +11,7 @@ import {
 } from '@/components';
 import { SnackbarContext } from '@/contexts/SnackbarContext';
 import { UserContext } from '@/contexts/UserContext';
-import { Caption1, ToolbarButton } from '@fluentui/react-components';
+import { Caption1, Spinner, ToolbarButton } from '@fluentui/react-components';
 import {
     Add24Filled,
     ImageAdd20Regular,
@@ -43,7 +43,9 @@ const useSeed = () => {
  * @param courseID The courseID to fetch
  */
 const useCourse = (courseID: string) => {
-    const [course, setCourse] = useState<FetchedCourseWithTiers | null>(null);
+    const [course, setCourse] = useState<FetchedCourseWithTiers | null | undefined>(
+        undefined
+    );
     const { showSnackSev } = useContext(SnackbarContext);
 
     const fetchCourse = async () => {
@@ -54,6 +56,7 @@ const useCourse = (courseID: string) => {
             })
             .then((res) => setCourse(res.data))
             .catch((e) => {
+                setCourse(null);
                 handleError(showSnackSev)(e);
                 notFound();
             });
@@ -102,17 +105,11 @@ const CourseAdminToolbar = ({
     fetchCourse,
     updateSeed,
 }: {
-    /**
-     * the course ID of the course
-     */
+    /** the course ID of the course */
     courseID: string;
-    /**
-     * fetches the course
-     */
+    /** fetches the course */
     fetchCourse: () => Promise<void>;
-    /**
-     * updates the seed
-     */
+    /** updates the seed */
     updateSeed: () => void;
 }): JSX.Element => {
     const router = useRouter();
@@ -159,12 +156,12 @@ const CourseAdminToolbar = ({
                                 'Content-Type': 'multipart/form-data',
                             },
                         })
-                        .then(() => {
-                            void fetchCourse();
-                        })
                         .then(updateSeed)
                         .catch((e) => {
                             handleError(showSnackSev)(e);
+                        })
+                        .finally(() => {
+                            void fetchCourse();
                         });
                 }}
             >
@@ -189,41 +186,49 @@ export default function Page() {
     }, [courseID]);
 
     return (
-        <>
-            <Container component="main" className="m-t-xxxl">
-                <header
-                    style={{
-                        backgroundImage: `
-                        linear-gradient(color-mix(in srgb, var(--colorNeutralBackground3) 60%, transparent), color-mix(in srgb, var(--colorNeutralBackground3) 80%, transparent)),
+        <Container component="main" className="m-t-xxxl">
+            <header
+                style={{
+                    backgroundImage: `
+                        linear-gradient(color-mix(in srgb, var(--colorNeutralBackground3) 60%, transparent),
+                                        color-mix(in srgb, var(--colorNeutralBackground3) 80%, transparent)),
                         url("${process.env.NEXT_PUBLIC_API_URL}/courses/${courseID as string}/cover?seed=${seed}")`,
-                    }}
-                    className={`${styles.banner} m-b-xxxl m-x-l`}
-                >
-                    <div className={styles.header}>
-                        <Title2 className={styles.courseTitle}>
-                            {course && (
-                                <CourseSessionChip
-                                    session={getSession(new Date(course.createdAt))}
-                                >
-                                    {courseID}
-                                </CourseSessionChip>
-                            )}
-                        </Title2>
-                        <Title2>{course?.name || 'Course not found'}</Title2>
-                    </div>
-                </header>
+                }}
+                className={`${styles.banner} m-b-xxxl m-x-l`}
+            >
+                <div className={styles.header}>
+                    <Title2 className={styles.courseTitle}>
+                        <CourseSessionChip
+                            session={
+                                course
+                                    ? getSession(new Date(course.createdAt))
+                                    : getSession(new Date())
+                            }
+                        >
+                            {courseID}
+                        </CourseSessionChip>
+                    </Title2>
+                    {course === null && <Title2>Course not found</Title2>}
+                    {course === undefined && <Title2>Loading...</Title2>}
+                    {course !== null && course !== undefined && (
+                        <Title2>{course?.name}</Title2>
+                    )}
+                </div>
+            </header>
 
-                {checkIfCourseAdmin(userInfo, courseID as string) ? (
-                    <CourseAdminToolbar
-                        courseID={courseID as string}
-                        fetchCourse={fetchCourse}
-                        updateSeed={setSeed}
-                    />
-                ) : undefined}
+            {checkIfCourseAdmin(userInfo, courseID as string) ? (
+                <CourseAdminToolbar
+                    courseID={courseID as string}
+                    fetchCourse={fetchCourse}
+                    updateSeed={setSeed}
+                />
+            ) : undefined}
 
-                <section className="m-y-xxxl m-x-l">
-                    <div className="flex-wrap">
-                        {course !== null && course.assignments.length === 0 && (
+            <section className="m-y-xxxl m-x-l">
+                <div className="flex-wrap">
+                    {course !== null &&
+                        course !== undefined &&
+                        course.assignments.length === 0 && (
                             <Caption1>
                                 This course has no assignments yet. If your believe that
                                 this message you are receiving is incorrect, please
@@ -231,25 +236,24 @@ export default function Page() {
                             </Caption1>
                         )}
 
-                        {course
-                            ? course.assignments.map((assignment) => (
-                                  <AssignmentCard
-                                      key={assignment.title}
-                                      id={assignment.title}
-                                      name={assignment.title}
-                                      dueDate={
-                                          assignment.due_date
-                                              ? new Date(assignment.due_date)
-                                              : undefined
-                                      }
-                                      tier={assignment.tier}
-                                      courseID={courseID as string}
-                                  />
-                              ))
-                            : 'Loading...'}
-                    </div>
-                </section>
-            </Container>
-        </>
+                    {course &&
+                        course.assignments.map((assignment) => (
+                            <AssignmentCard
+                                key={assignment.title}
+                                id={assignment.title}
+                                name={assignment.title}
+                                dueDate={
+                                    assignment.due_date
+                                        ? new Date(assignment.due_date)
+                                        : undefined
+                                }
+                                tier={assignment.tier}
+                                courseID={courseID as string}
+                            />
+                        ))}
+                </div>
+                {course === undefined && <Spinner />}
+            </section>
+        </Container>
     );
 }

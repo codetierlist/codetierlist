@@ -5,22 +5,22 @@ import type { BrandVariants, Theme } from '@fluentui/react-components';
 import { Space_Grotesk, Inter, Space_Mono } from 'next/font/google';
 
 const brandTheme: BrandVariants = {
-    10: "#010405",
-    20: "#081C1E",
-    30: "#022F32",
-    40: "#003D3F",
-    50: "#004A4C",
-    60: "#005958",
-    70: "#006765",
-    80: "#007671",
-    90: "#00867D",
-    100: "#009589",
-    110: "#16A594",
-    120: "#2DB49F",
-    130: "#41C4AA",
-    140: "#55D4B5",
-    150: "#69E3C0",
-    160: "#86F1CD"
+    10: '#010405',
+    20: '#081C1E',
+    30: '#022F32',
+    40: '#003D3F',
+    50: '#004A4C',
+    60: '#005958',
+    70: '#006765',
+    80: '#007671',
+    90: '#00867D',
+    100: '#009589',
+    110: '#16A594',
+    120: '#2DB49F',
+    130: '#41C4AA',
+    140: '#55D4B5',
+    150: '#69E3C0',
+    160: '#86F1CD',
 };
 
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--spaceGrotesk' });

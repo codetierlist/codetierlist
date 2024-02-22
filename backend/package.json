@@ -5,11 +5,12 @@
   "license": "LGPL-3.0-or-later",
   "main": "index.js",
   "scripts": {
-    "build": "prisma generate && tsc",
+    "build": "prisma generate && tsc && tsc-alias -p tsconfig.json",
     "migrate": "prisma migrate deploy",
     "start": "node out/index.js",
     "prisma": "prisma generate --schema ./prisma/schema.prisma",
-    "eslint": "eslint src"
+    "eslint": "eslint src",
+    "dev": "nodemon"
   },
   "keywords": [],
   "author": "",
@@ -24,20 +25,35 @@
     "eslint": "^8.52.0",
     "nodemon": "^3.0.3",
     "prisma": "^5.9.1",
-    "ts-node": "^10.9.1",
+    "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.8",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.2.2"
   },
   "dependencies": {
     "@prisma/client": "^5.9.1",
     "body-parser": "^1.20.2",
-    "bullmq": "^5.1.10",
+    "bullmq": "^5.2.1",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "is-utorid": "1.2.2",
-    "isomorphic-git": "^1.25.3",
+    "isomorphic-git": "^1.25.6",
     "multer": "^1.4.5-lts.1",
     "socket.io": "^4.7.4",
     "winston": "^3.11.0"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "**/*.test.ts",
+      "**/*.spec.ts",
+      ".git",
+      "node_modules"
+    ],
+    "watch": [
+      "src"
+    ],
+    "exec": "node -r tsconfig-paths/register -r ts-node/register ./src/index.ts",
+    "ext": "ts, js"
   },
   "eslintConfig": {
     "extends": [

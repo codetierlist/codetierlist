@@ -9,8 +9,7 @@ export const HeaderToolbar = (props: ToolbarProps) => {
     return (
         <Card className="p-y-xxs p-x-none m-y-none m-x-l">
             <Toolbar className={style.toolbarContainer} {...props}>
-                {' '}
-                {props.children}{' '}
+                {props.children}
             </Toolbar>
         </Card>
     );

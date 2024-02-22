@@ -269,6 +269,8 @@ export default function Page(): JSX.Element {
                     >
                         <Switch
                             id="strictDeadlines"
+                            label={strictDeadlines ? 'On' : 'Off'}
+                            labelPosition="before"
                             checked={strictDeadlines}
                             onChange={(_, data) =>
                                 setStrictDeadlines(data.checked ?? false)

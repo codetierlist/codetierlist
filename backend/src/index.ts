@@ -1,6 +1,6 @@
-import prisma from "./common/prisma";
-import "./common/achievements/events";
-import logger from "./common/logger";
+import prisma from "@/common/prisma";
+import "@/common/achievements/events";
+import logger from "@/common/logger";
 
 process.on("unhandledRejection", e=>{
     logger.error(e);

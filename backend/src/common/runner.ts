@@ -26,7 +26,7 @@ import {
 } from "codetierlist-types";
 
 import {createLogger, format, transports, Logger} from 'winston';
-import logger, {consoleFormat} from "./logger";
+import logger, {consoleFormat} from "@/common/logger";
 
 const logLevels = {
     error: 0,
