@@ -41,8 +41,8 @@ Instructors and TAs have to be enrolled in a course to view it. They can create 
 ### Admin
 Admins have the same permissions as instructors and TAs, but they can also create and manage courses and view every course and assignment on the platform. They can also delete any courses and assignments regardless of whether they are enrolled in it or not.
 
-[!NOTE]
-Admins are not able to submit the instructor's solution for an assignment unless they are an instructor/TA for the course.
+> [!NOTE]
+> Admins are not able to submit the instructor's solution for an assignment unless they are an instructor/TA for the course.
 
 ## Creating a Course
 To create a course, click on the plus button on the home page (note that only [admins](#admin) can create courses). You will be prompted to enter the course code, course name, and a cover image. Once you have entered the information, click "Create Course" to create the course. You will be automatically enrolled in the course as an instructor when you create it.
@@ -76,8 +76,8 @@ To delete the course, click on the "Delete Course" button on the course page. Yo
 ## Creating an Assignment
 To create an assignment, click on the "Add assignment" button on the course page. You will be prompted to enter the assignment's details. Once you have entered the information, click "Create Assignment" to create the assignment.
 
-[!CAUTION]
-**Assignment names must be unique within a course.**
+> [!CAUTION]
+> **Assignment names must be unique within a course.**
 
 ![creating an assignment](creating_an_assignment.png)
 
@@ -101,8 +101,8 @@ You can submit the instructor's solution for the assignment. The instructor's so
 
 Any instructor or TA can submit the instructor's solution for the assignment. To submit the instructor's solution, click on the "Upload a Solution" button on the assignment page (under the "upload" tab). You will be prompted to upload the instructor's solution. 
 
-[!CAUTION]
-*Uploading the instructor's solution will overwrite any previously submitted instructor's solution.*
+> [!CAUTION]
+> *Uploading the instructor's solution will overwrite any previously submitted instructor's solution.*
 
 After updating the instructor's solution, every testcase will be revalidated using the new solution to make sure the tier list shows the latest results.
 
