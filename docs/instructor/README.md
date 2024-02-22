@@ -40,7 +40,9 @@ They can also view the anonymized tier list for each assignment.
 Instructors and TAs have to be enrolled in a course to view it. They can create and manage assignments, view the de-anonymized tier list, and view every student's submissions, testcases, and tier for each assignment. They can also submit the instructor's solution for each assignment.
 ### Admin
 Admins have the same permissions as instructors and TAs, but they can also create and manage courses and view every course and assignment on the platform. They can also delete any courses and assignments regardless of whether they are enrolled in it or not.
-Note that the admins are not able to submit the instructor's solution for an assignment unless they are an instructor/TA for the course.
+
+[!NOTE]
+Admins are not able to submit the instructor's solution for an assignment unless they are an instructor/TA for the course.
 
 ## Creating a Course
 To create a course, click on the plus button on the home page (note that only [admins](#admin) can create courses). You will be prompted to enter the course code, course name, and a cover image. Once you have entered the information, click "Create Course" to create the course. You will be automatically enrolled in the course as an instructor when you create it.
@@ -73,7 +75,9 @@ To delete the course, click on the "Delete Course" button on the course page. Yo
 
 ## Creating an Assignment
 To create an assignment, click on the "Add assignment" button on the course page. You will be prompted to enter the assignment's details. Once you have entered the information, click "Create Assignment" to create the assignment.
-**Note that assignment names must be unique within a course.**
+
+[!CAUTION]
+**Assignment names must be unique within a course.**
 
 ![creating an assignment](creating_an_assignment.png)
 
@@ -87,14 +91,18 @@ By default, due dates don't mean much and are only displayed to students for inf
 ### Grouping
 You can group student's into tier list groups. This makes sure the students are only compared to other students in the same group. This makes the tier list more fun and less "grade like" as students will only be competing with a handful of other students. 
 
-Another reason to use grouping is to make sure submissions are processed faster. If you have a large class, it might take a long time to process all the submissions (as every submission will have to be individually run against 1000 testcases in a course of 1000 students). By grouping students, you can ensure that every submission is only run against a maximum of N testcases (where N is the group size).
+Another reason to use grouping is to make sure submissions are processed faster. Since students in groups will be tested against each other, submissions are ensured to only be run against the maximum number of students that can be in a group. When compared to running a submission against the entire class, this can provide a great deal of time savings.
 
+Students are assigned to groups based on the order they submit their first solution or testcase. Students are assigned to groups until the group reached `Group Size` (set on assignment creation). Once the group is full, the next student will be assigned to the next group. This might cause some groups to have more students than others, early bird gets the warm in this case.
+
+Furthermore, smaller grouping size decreases the accuracy of the tier list, as students are compared to fewer students. This might be a good thing depending on the context of the assignment and the learning environment.
 ### Admin Solutions
 You can submit the instructor's solution for the assignment. The instructor's solution is used to validate the students' testcases. If the instructor's solution is not submitted, the students' testcases will not be validated which might cause wrong tier list results.
 
 Any instructor or TA can submit the instructor's solution for the assignment. To submit the instructor's solution, click on the "Upload a Solution" button on the assignment page (under the "upload" tab). You will be prompted to upload the instructor's solution. 
 
-*Note that uploading the instructor's solution will overwrite any previously submitted instructor's solution.*
+[!CAUTION]
+*Uploading the instructor's solution will overwrite any previously submitted instructor's solution.*
 
 After updating the instructor's solution, every testcase will be revalidated using the new solution to make sure the tier list shows the latest results.
 
