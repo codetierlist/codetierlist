@@ -6,14 +6,14 @@ WORKDIR /types
 COPY ./types/package.json ./types/package-lock.json ./
 RUN npm ci
 COPY ./types ./
-RUN npm run prisma
+RUN ./node_modules/prisma/build/index.js generate
 
 # npm install backend
 WORKDIR /backend
 COPY ./backend/package.json ./backend/package-lock.json ./
 RUN npm ci
 RUN cp -r ../types/prisma .
-RUN npm run prisma
+RUN  ./node_modules/prisma/build/index.js generate --schema ./prisma/schema.prisma
 
 COPY ./backend_config.json ./backend_config.json
 COPY ./backend ./

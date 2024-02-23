@@ -8,7 +8,7 @@ COPY ./types/package.json ./types/package-lock.json ./
 RUN npm ci
 COPY ./types ./
 
-RUN npm run prisma
+RUN ./node_modules/prisma/build/index.js generate
 
 # npm install backend
 WORKDIR /runner
