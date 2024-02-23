@@ -8,7 +8,7 @@ RUN npm ci
 COPY ./types ./
 
 SHELL ["/usr/bin/env", "node"]
-RUN node ./node_modules/prisma/build/index.js generate
+RUN ./node_modules/prisma/build/index.js generate
 SHELL ["/bin/sh", "-c"]
 
 WORKDIR /frontend
