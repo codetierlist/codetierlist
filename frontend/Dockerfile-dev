@@ -6,7 +6,7 @@ WORKDIR /types
 COPY ./types/package.json ./types/package-lock.json ./
 RUN npm ci
 COPY ./types ./
-RUN node ./node_modules/prisma/build/index.js generate
+RUN ./node_modules/prisma/build/index.js generate
 
 WORKDIR /frontend
 COPY ./frontend/package.json ./frontend/package-lock.json ./
