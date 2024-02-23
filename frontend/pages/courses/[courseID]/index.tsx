@@ -197,17 +197,19 @@ export default function Page() {
                 className={`${styles.banner} m-b-xxxl m-x-l`}
             >
                 <div className={styles.header}>
-                    <Title2 className={styles.courseTitle}>
-                        <CourseSessionChip
-                            session={
-                                course
-                                    ? getSession(new Date(course.createdAt))
-                                    : getSession(new Date())
-                            }
-                        >
-                            {courseID}
-                        </CourseSessionChip>
-                    </Title2>
+                    {course !== null &&
+                        <Title2 className={styles.courseTitle}>
+                            <CourseSessionChip
+                                session={
+                                    course
+                                        ? getSession(new Date(course.createdAt))
+                                        : getSession(new Date())
+                                }
+                            >
+                                {courseID}
+                            </CourseSessionChip>
+                        </Title2>
+                    }
                     {course === null && <Title2>Course not found</Title2>}
                     {course === undefined && <Title2>Loading...</Title2>}
                     {course !== null && course !== undefined && (
