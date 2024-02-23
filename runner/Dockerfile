@@ -8,7 +8,7 @@ COPY ./types/package.json ./types/package-lock.json ./
 RUN npm ci
 COPY ./types ./
 
-SHELL ["node"]
+SHELL ["/usr/bin/env", "node"]
 RUN ./node_modules/prisma/build/index.js generate
 SHELL ["/bin/sh", "-c"]
 
