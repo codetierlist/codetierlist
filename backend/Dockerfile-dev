@@ -7,7 +7,7 @@ COPY ./types/package.json ./types/package-lock.json ./
 RUN npm ci
 COPY ./types ./
 
-SHELL ["/usr/bin/env", "node"]
+SHELL ["node"]
 RUN node ./node_modules/prisma/build/index.js generate
 SHELL ["/bin/sh", "-c"]
 
@@ -17,7 +17,7 @@ COPY ./backend/package.json ./backend/package-lock.json ./
 RUN npm ci
 RUN cp -r ../types/prisma .
 
-SHELL ["/usr/bin/env", "node"]
+SHELL ["node"]
 RUN  node ./node_modules/prisma/build/index.js generate --schema ./prisma/schema.prisma
 SHELL ["/bin/sh", "-c"]
 
