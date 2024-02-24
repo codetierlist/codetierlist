@@ -1,7 +1,7 @@
 import {
-    generateInitalsAvatarProps,
     NavbarUserPopover,
     generateInitals,
+    generateInitalsAvatarProps,
 } from '@/components';
 import { UserContext, defaultUser } from '@/contexts/UserContext';
 import {
@@ -12,8 +12,11 @@ import {
     PopoverSurface,
     PopoverTrigger,
     SkeletonItem,
+    Tooltip,
 } from '@fluentui/react-components';
+import { Question24Regular, Settings24Regular } from '@fluentui/react-icons';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useContext } from 'react';
 import styles from './Navbar.module.css';
 
@@ -103,6 +106,31 @@ const BrandButton = (): JSX.Element => {
     );
 };
 
+const NavbarButtonIconLink = ({
+    icon,
+    href,
+    label,
+}: {
+    icon: JSX.Element;
+    href: string;
+    label: string;
+}): JSX.Element => {
+    const router = useRouter();
+
+    return (
+        <Tooltip content={label} relationship="label">
+            <Button
+                appearance="subtle"
+                size="large"
+                className="m-none m-r-m"
+                aria-label={label}
+                icon={icon}
+                onClick={() => router.push(href)}
+            />
+        </Tooltip>
+    );
+};
+
 /**
  * The navbar component is the top bar of the website. It contains the
  * logo and the user's name and role.
@@ -114,9 +142,15 @@ export const Navbar = (): JSX.Element => {
         <header className={styles.navbar}>
             <BrandButton />
 
-            {userInfo !== defaultUser && <NavbarUserPopoverButton />}
+            <div>
+                <NavbarButtonIconLink icon={<Question24Regular />} href="/help" label="Help" />
 
-            {userInfo === defaultUser && <NavbarUserPopoverSkeleton />}
+                <NavbarButtonIconLink icon={<Settings24Regular />} href="/settings" label="Settings" />
+
+                {userInfo !== defaultUser && <NavbarUserPopoverButton />}
+
+                {userInfo === defaultUser && <NavbarUserPopoverSkeleton />}
+            </div>
         </header>
     );
 };

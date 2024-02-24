@@ -1,5 +1,5 @@
 import { createDarkTheme, createLightTheme } from '@fluentui/react-components';
-
+import { Theme as ThemeTypes } from 'codetierlist-types';
 import type { BrandVariants, Theme } from '@fluentui/react-components';
 
 import { Space_Grotesk, Inter, Space_Mono } from 'next/font/google';
@@ -37,6 +37,11 @@ export const lightTheme: Theme = {
 
 export const darkTheme: Theme = {
     ...createDarkTheme(brandTheme),
+};
+
+export const themes: Record<ThemeTypes, Theme> = {
+    LIGHT: lightTheme,
+    DARK: darkTheme,
 };
 
 lightTheme.fontFamilyNumeric = spaceGrotesk.style.fontFamily;

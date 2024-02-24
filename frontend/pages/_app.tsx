@@ -1,4 +1,4 @@
-import { darkTheme, lightTheme, Navbar } from '@/components';
+import { themes, Navbar } from '@/components';
 import '@/styles/globals.css';
 import '@/styles/spacing.css';
 import {
@@ -86,9 +86,7 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
         <RendererProvider renderer={renderer || createDOMRenderer()}>
             <SSRProvider>
                 <UserContext.Provider value={{ userInfo, setUserInfo, fetchUserInfo }}>
-                    <FluentProvider
-                        theme={userInfo.theme === 'DARK' ? darkTheme : lightTheme}
-                    >
+                    <FluentProvider theme={themes[userInfo.theme]}>
                         <SnackbarContext.Provider value={{ showSnack, showSnackSev }}>
                             <Field validationState="none" id="axios-loading-backdrop">
                                 <ProgressBar />
