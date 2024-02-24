@@ -143,9 +143,17 @@ export const Navbar = (): JSX.Element => {
             <BrandButton />
 
             <div>
-                <NavbarButtonIconLink icon={<Question24Regular />} href="/help" label="Help" />
+                <NavbarButtonIconLink
+                    icon={<Question24Regular />}
+                    href="/help"
+                    label="Help"
+                />
 
-                <NavbarButtonIconLink icon={<Settings24Regular />} href="/settings" label="Settings" />
+                <NavbarButtonIconLink
+                    icon={<Settings24Regular />}
+                    href="/settings"
+                    label="Settings"
+                />
 
                 {userInfo !== defaultUser && <NavbarUserPopoverButton />}
 
