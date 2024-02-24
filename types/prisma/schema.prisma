@@ -148,6 +148,7 @@ enum RoleType {
 enum Theme {
   LIGHT
   DARK
+  CONTRAST
 }
 
 model Role {

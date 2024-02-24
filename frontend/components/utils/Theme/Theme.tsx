@@ -1,4 +1,4 @@
-import { createDarkTheme, createLightTheme } from '@fluentui/react-components';
+import { createDarkTheme, createLightTheme, createHighContrastTheme } from '@fluentui/react-components';
 import { Theme as ThemeTypes } from 'codetierlist-types';
 import type { BrandVariants, Theme } from '@fluentui/react-components';
 
@@ -39,9 +39,14 @@ export const darkTheme: Theme = {
     ...createDarkTheme(brandTheme),
 };
 
+export const highContrastTheme: Theme = {
+    ...createHighContrastTheme(),
+};
+
 export const themes: Record<ThemeTypes, Theme> = {
     LIGHT: lightTheme,
     DARK: darkTheme,
+    CONTRAST: highContrastTheme,
 };
 
 lightTheme.fontFamilyNumeric = spaceGrotesk.style.fontFamily;
