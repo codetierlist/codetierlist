@@ -6,7 +6,7 @@ export declare type ControlCardProps = {
     /** The title of the card. */
     title: string;
     /** The description of the card, or any additional information. */
-    description?: string;
+    description?: string | JSX.Element;
     /** The icon to display on the left side of the card. */
     icon: JSX.Element;
     /** The id of the control, for labeling purposes. */
@@ -36,7 +36,12 @@ export const ControlCard = (props: ControlCardProps): JSX.Element => {
                     </Label>
                 }
                 description={
-                    props.description && <Caption1>{props.description}</Caption1>
+                    props.description &&
+                    (typeof props.description === 'string' ? (
+                        <Caption1>{props.description}</Caption1>
+                    ) : (
+                        props.description
+                    ))
                 }
                 action={<div className={styles.showOnDesktop}>{props.children}</div>}
             />
