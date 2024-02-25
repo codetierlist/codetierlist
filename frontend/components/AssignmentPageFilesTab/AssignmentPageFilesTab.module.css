@@ -104,3 +104,17 @@
     padding: var(--spacingVerticalXL) var(--spacingHorizontalL);
     text-align: center;
 }
+
+.currentFile {
+    background-color: var(--colorBrandBackgroundSelected);
+    color: var(--colorNeutralForegroundOnBrand) !important;
+    border-radius: var(--borderRadiusLarge);
+}
+
+.currentFile:hover, .currentFile:focus-visible {
+    background-color: var(--colorBrandBackgroundHover) !important;
+}
+
+.currentFile:active {
+    background-color: var(--colorBrandBackgroundPressed) !important;
+}

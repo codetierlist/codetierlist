@@ -20,6 +20,7 @@ import {
 import {
     Add24Filled,
     Delete16Filled,
+    Delete20Regular,
     DocumentMultiple24Regular,
 } from '@fluentui/react-icons';
 import { Commit, UserFetchedAssignment } from 'codetierlist-types';
@@ -89,6 +90,8 @@ const FileListing = ({
     fullRoute,
     update,
     path,
+    changeFile,
+    currentFile
 }: {
     /** the full path of the file to display */
     path: string;
@@ -96,6 +99,10 @@ const FileListing = ({
     update?: () => void;
     /** the full route to the file */
     fullRoute: string;
+    /** a function to call when the file is changed */
+    changeFile?: (file: string) => void;
+    /** the current file */
+    currentFile?: string;
 }) => {
     const { showSnackSev } = useContext(SnackbarContext);
     const searchParams = useSearchParams();
@@ -122,8 +129,33 @@ const FileListing = ({
     };
 
     return (
-        <TreeItem itemType="leaf" actions={<></>}>
-            <TreeItemLayout> {path} </TreeItemLayout>
+        <TreeItem itemType="leaf">
+            <TreeItemLayout
+                className={`${currentFile === path ? styles.currentFile : ''}`}
+                actions={
+                    <>
+                        <Button
+                            aria-label="Delete"
+                            appearance="subtle"
+                            icon={<Delete20Regular />}
+                            onClick={() => deleteFile(path)}
+                        />
+                    </>
+                }
+            >
+                {/* todo: make this span the whole width */}
+                <div onClick={() => changeFile && changeFile(path)}>
+                    {
+                        currentFile === path && (
+                            <strong>{path}</strong>
+                        )
+                    }{
+                        currentFile !== path && (
+                            <>{path}</>
+                        )
+                    }
+                </div>
+            </TreeItemLayout>
         </TreeItem>
     );
 };
@@ -132,7 +164,9 @@ const FolderListing = ({
     fullRoute,
     update,
     path,
+    changeFile,
     subtree,
+    currentFile
 }: {
     /** the full path of the file to display */
     path: string;
@@ -142,6 +176,10 @@ const FolderListing = ({
     fullRoute: string;
     /** the subtree to display */
     subtree: TreeType;
+    /** a function to call when the file is changed */
+    changeFile?: (file: string) => void;
+    /** the current file */
+    currentFile?: string;
 }) => {
     const { showSnackSev } = useContext(SnackbarContext);
     const searchParams = useSearchParams();
@@ -179,17 +217,21 @@ const FolderListing = ({
                         return file.children.length === 0 ? (
                             <FileListing
                                 key={key}
+                                changeFile={changeFile}
+                                currentFile={currentFile}
                                 fullRoute={fullRoute}
-                                update={update}
                                 path={file.name}
+                                update={update}
                             />
                         ) : (
                             <FolderListing
                                 key={key}
+                                changeFile={changeFile}
+                                currentFile={currentFile}
                                 fullRoute={fullRoute}
-                                update={update}
                                 path={file.name}
                                 subtree={file}
+                                update={update}
                             />
                         );
                     })}
@@ -211,6 +253,8 @@ const ListFiles = ({
 }: ListFilesProps) => {
     const { showSnackSev } = useContext(SnackbarContext);
     const searchParams = useSearchParams();
+    const [currentFile, setCurrentFile] = useState<string>("");
+    const [currentFileContent, setCurrentFileContent] = useState<string | null>(null);
 
     // turn the files into a tree
     const files = convertPathsToTree(dummy.files);
@@ -234,43 +278,63 @@ const ListFiles = ({
             )
             .then((res) => {
                 // read the file contents from buffer
-                setFiles((prev) => {
-                    return {
-                        ...prev,
-                        [file]: Buffer.from(res.data).toString('utf-8'),
-                    };
-                });
+                setCurrentFileContent(Buffer.from(res.data).toString('utf-8'));
             })
             .catch((e) => {
                 handleError(showSnackSev)(e);
             });
     };
 
+    useEffect(() => {
+        console.log('currentFile', currentFile);
+
+        if (currentFile) {
+            void getFileContents(currentFile);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentFile]);
+
     return (
-        commit.files &&
-        // for each folder in the first level of the tree (the root) create a folder
-        <Tree aria-label={route}>
+        <>
             {
-                Object.entries(files.children).map(([key, file]) => {
-                    return file.children.length === 0 ? (
-                        <FileListing
-                            key={key}
-                            fullRoute={FULL_ROUTE}
-                            update={update}
-                            path={file.name}
-                        />
-                    ) : (
-                        <FolderListing
-                            key={key}
-                            fullRoute={FULL_ROUTE}
-                            update={update}
-                            path={file.name}
-                            subtree={file}
-                        />
-                    );
-                })
+                // for each folder in the first level of the tree (the root) create a folder
+                commit.files &&
+                <Tree aria-label={route}>
+                    {
+                        Object.entries(files.children).map(([key, file]) => {
+                            return file.children.length === 0 ? (
+                                <FileListing
+                                    key={key}
+                                    fullRoute={FULL_ROUTE}
+                                    update={update}
+                                    changeFile={setCurrentFile}
+                                    path={file.name}
+                                    currentFile={currentFile}
+                                />
+                            ) : (
+                                <FolderListing
+                                    key={key}
+                                    fullRoute={FULL_ROUTE}
+                                    update={update}
+                                    path={file.name}
+                                    changeFile={setCurrentFile}
+                                    subtree={file}
+                                    currentFile={currentFile}
+                                />
+                            );
+                        })
+                    }
+                </Tree>
             }
-        </Tree>
+
+            {currentFile !== "" && (
+                <Monaco
+                    height="50vh"
+                    language="python"
+                    value={currentFileContent ?? ''}
+                />
+            )}
+        </>
     );
 };
 
