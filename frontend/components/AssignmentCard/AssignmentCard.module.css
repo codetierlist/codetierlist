@@ -1,12 +1,3 @@
-.cardContent {
-    display: flex;
-    flex-direction: column;
-}
-
-.cardLink {
-    text-decoration: none;
-}
-
 .card {
     --maxWidth: 24rem;
     display: flex;
