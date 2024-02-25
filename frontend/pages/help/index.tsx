@@ -22,11 +22,11 @@ export const HelpPage = (): JSX.Element => {
                 <Subtitle2 block className="p-t-xl p-b-m">FAQ</Subtitle2>
 
                 <Accordion multiple className={styles.accordion}>
-                    <AccordionItem value="faq1">
+                    <AccordionItem value="faq1" className={styles.accordionItem}>
                         <AccordionHeader as="h2" expandIconPosition="end">
                             What is Codetierist?
                         </AccordionHeader>
-                        <AccordionPanel>
+                        <AccordionPanel className={styles.accordionPanel}>
                             <p>
                                 Codetierlist to encourage you to start early and to test often. We’re hoping
                                 that being able to compare your code and tests with others will help motivate
@@ -36,11 +36,11 @@ export const HelpPage = (): JSX.Element => {
                         </AccordionPanel>
                     </AccordionItem>
 
-                    <AccordionItem value="faq2">
+                    <AccordionItem value="faq2" className={styles.accordionItem}>
                         <AccordionHeader as="h2" expandIconPosition="end">
                             Why can&apos;t I access the tierlist?
                         </AccordionHeader>
-                        <AccordionPanel>
+                        <AccordionPanel className={styles.accordionPanel}>
                             <p>
                                 If you are unable to access the tierlist, it is possible that you have not uploaded
                                 your code or tests yet. Please ensure that you have uploaded your code and tests
@@ -54,11 +54,11 @@ export const HelpPage = (): JSX.Element => {
                         </AccordionPanel>
                     </AccordionItem>
 
-                    <AccordionItem value="faq3">
+                    <AccordionItem value="faq3" className={styles.accordionItem}>
                         <AccordionHeader as="h2" expandIconPosition="end">
                             Why should I use Codetierlist?
                         </AccordionHeader>
-                        <AccordionPanel>
+                        <AccordionPanel className={styles.accordionPanel}>
                             <p>
                                 Codetierlist provides an advantage to students by allowing them to compare their
                                 code and tests with others without revealing their identity or committing an
