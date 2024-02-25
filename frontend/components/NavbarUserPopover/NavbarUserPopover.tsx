@@ -1,16 +1,13 @@
-import axios, { handleError } from '@/axios';
-import { generateInitalsAvatarProps, generateInitals } from '@/components';
-import { SnackbarContext } from '@/contexts/SnackbarContext';
+import { generateInitals, generateInitalsAvatarProps } from '@/components';
 import { UserContext } from '@/contexts/UserContext';
-import { Badge, Button, Persona, Switch } from '@fluentui/react-components';
+import { Badge, Button, Persona } from '@fluentui/react-components';
 import {
     ErrorCircle12Filled,
     SignOut24Regular,
     Trophy24Regular,
 } from '@fluentui/react-icons';
-import { Theme } from 'codetierlist-types';
-import { useContext } from 'react';
 import { useRouter } from 'next/router';
+import { useContext } from 'react';
 import styles from './NavbarUserPopover.module.css';
 
 /**
@@ -18,26 +15,8 @@ import styles from './NavbarUserPopover.module.css';
  * the user clicks on their avatar.
  */
 export const NavbarUserPopover = (): JSX.Element => {
-    const { userInfo, fetchUserInfo } = useContext(UserContext);
-    const { showSnackSev } = useContext(SnackbarContext);
+    const { userInfo } = useContext(UserContext);
     const router = useRouter();
-
-    /**
-     * Change the user's theme.
-     * @param theme the theme to change to
-     */
-    const changeTheme = (theme: Theme) => {
-        axios
-            .post('/users/theme', {
-                theme,
-            })
-            .catch((e) => {
-                handleError(showSnackSev)(e);
-            })
-            .finally(() => {
-                fetchUserInfo();
-            });
-    };
 
     return (
         <>
@@ -63,15 +42,6 @@ export const NavbarUserPopover = (): JSX.Element => {
                 />
             </div>
             <div className={`${styles.popoverFooter} p-l`}>
-                <Switch
-                    className={styles.popoverRight}
-                    checked={userInfo.theme === 'DARK'}
-                    onChange={() =>
-                        changeTheme(userInfo.theme === 'DARK' ? 'LIGHT' : 'DARK')
-                    }
-                    label={userInfo.theme === 'DARK' ? 'Dark Mode' : 'Light Mode'}
-                />
-
                 <Button
                     appearance="subtle"
                     className={`${styles.popoverButton} m-x-none p-r-none`}

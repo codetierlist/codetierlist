@@ -251,13 +251,13 @@ export default function Page({ setStage }: { setStage: (stage: Stage) => void })
                     <Field>
                         <Input
                             size="large"
-                            placeholder="Search"
+                            placeholder="Filter by UTORid or name"
                             contentBefore={<Search24Regular />}
                             contentAfter={
                                 <>
                                     {filterValue !== '' && (
                                         <Tooltip
-                                            content="Clear search"
+                                            content="Clear filter"
                                             relationship="label"
                                             showDelay={0}
                                             hideDelay={300}

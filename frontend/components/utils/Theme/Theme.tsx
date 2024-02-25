@@ -1,4 +1,8 @@
-import { createDarkTheme, createLightTheme, createHighContrastTheme } from '@fluentui/react-components';
+import {
+    createDarkTheme,
+    createLightTheme,
+    createHighContrastTheme,
+} from '@fluentui/react-components';
 import { Theme as ThemeTypes } from 'codetierlist-types';
 import type { BrandVariants, Theme } from '@fluentui/react-components';
 

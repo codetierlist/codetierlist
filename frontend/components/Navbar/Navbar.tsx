@@ -122,7 +122,7 @@ const NavbarButtonIconLink = ({
             <Button
                 appearance="subtle"
                 size="large"
-                className="m-none m-r-m"
+                className="m-none"
                 aria-label={label}
                 icon={icon}
                 onClick={() => router.push(href)}
@@ -142,7 +142,7 @@ export const Navbar = (): JSX.Element => {
         <header className={styles.navbar}>
             <BrandButton />
 
-            <div>
+            <div className={styles.navbarButtons}>
                 <NavbarButtonIconLink
                     icon={<Question24Regular />}
                     href="/help"
