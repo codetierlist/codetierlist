@@ -13,6 +13,8 @@
     flex-direction: row !important;
     height: 75px;
     max-width: var(--maxWidth);
+    box-shadow: var(--shadow4);
+    border: none !important;
 }
 
 .cardText {

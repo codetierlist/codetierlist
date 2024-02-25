@@ -1,9 +1,9 @@
-import { Caption1, Card, CardHeader, Title3 } from '@fluentui/react-components';
-import styles from './AssignmentCard.module.css';
 import { TierChip } from '@/components';
+import { CompoundButton, Subtitle1 } from '@fluentui/react-components';
 import { type Tier, type UserTier } from 'codetierlist-types';
-import { convertDate } from '../utils/TimeUtils/TimeUtils';
 import { useRouter } from 'next/navigation';
+import { convertDate } from '../utils/TimeUtils/TimeUtils';
+import styles from './AssignmentCard.module.css';
 
 export declare type AssignmentCardProps = {
     /** The ID of the assignment */
@@ -33,20 +33,29 @@ export const AssignmentCard = ({
     const router = useRouter();
 
     return (
-        <Card
-            className={`${styles.card} ${styles.cardLink}`}
-            onClick={() => router.push(`/courses/${courseID}/${id}`)}
+        <CompoundButton
+            className={`${styles.card} p-0`}
+            size="medium"
             aria-label={`View assignment ${name}, due ${formattedDueDate}. ${tier == '?' ? 'Tier not set.' : `You are in ${tier} tier.`}`}
+            appearance="secondary"
+            icon={
+                <TierChip
+                    tier={tier as UserTier}
+                    className="p-m"
+                />
+            }
+            secondaryContent={
+                dueDate && (
+                    <><strong>Due</strong> {formattedDueDate}</>
+                )
+            }
+            onClick={() => {
+                router.push(`/courses/${courseID}/${id}`);
+            }}
         >
-            <CardHeader header={<TierChip tier={tier as UserTier} />} />
-            <div className={styles.cardContent}>
-                {dueDate && (
-                    <Caption1 className={styles.cardText}>
-                        <strong>Due</strong> {formattedDueDate}
-                    </Caption1>
-                )}
-                <Title3 className={styles.cardText}>{name}</Title3>
-            </div>
-        </Card>
+            <Subtitle1 className={styles.cardText}>
+                {name}
+            </Subtitle1>
+        </CompoundButton>
     );
 };
