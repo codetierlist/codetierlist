@@ -81,8 +81,8 @@ const backgrounds = [
     },
     {
         name: 'FirstLoginAnim',
-        url: 'url("https://logonoff.co/assets/FirstLogonAnim.svg")'
-    }
+        url: 'url("https://logonoff.co/assets/FirstLogonAnim.svg")',
+    },
 ];
 
 const BackgroundSelector = () => {

@@ -11,8 +11,11 @@ import {
     Card,
     Subtitle1,
     Text,
+    Tree,
+    TreeItem,
     Tooltip,
     Link,
+    TreeItemLayout,
 } from '@fluentui/react-components';
 import {
     Add24Filled,
@@ -25,16 +28,22 @@ import { useCallback, useContext, useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import styles from './AssignmentPageFilesTab.module.css';
 
-/**
- * A list of files for a commit
- */
-const ListFiles = ({
-    commit,
-    route,
-    assignment,
-    assignmentID,
-    update,
-}: {
+const dummy: UserFetchedAssignment = {
+    files: [
+        'e.py',
+        'subfolder/asdfsaf.py',
+        'subfolder/lab10.py',
+        'subfolder/subsubfolder/lab10_tests.py',
+    ],
+    log: [
+        '64ab39e9cadef44c03b2624bd32221bd42f13e1f',
+        '0e0706aa37b1d16b6350bd1a0832544c8a712082',
+        'b2e858144bba8903417ba3cbe5915d2b5197f98d',
+    ],
+    valid: 'VALID',
+};
+
+declare type ListFilesProps = {
     /** the commit to display */
     commit: Commit;
     /** the route to use */
@@ -45,11 +54,176 @@ const ListFiles = ({
     assignmentID: string;
     /** a function to call when the files are updated */
     update?: () => void;
+};
+
+declare type TreeType = {
+    name: string;
+    children: TreeType[];
+};
+
+declare type FileListingProps = {
+    /** the full path of the file to display */
+    path: string;
+    /** a function to call when the files are updated */
+    update?: () => void;
+};
+
+/**
+ * Given a list of file paths, construct a tree
+ * @see https://stackoverflow.com/a/57344759
+ */
+const convertPathsToTree = (paths: string[]): TreeType => {
+    return {
+        name: '',
+        children: paths.reduce<TreeType>((acc, path) => {
+            const names = path.split('/');
+            names.reduce((acc, name, _i) => {
+                let temp = acc.find((o) => o.name === name);
+                if (!temp) acc.push((temp = { name, children: [] }));
+                return temp.children;
+            }, acc);
+            return acc;
+        }, [] as TreeType[]) as TreeType['children'],
+    };
+};
+
+const FileListing = ({
+    fullRoute,
+    update,
+    path,
+}: {
+    /** the full path of the file to display */
+    path: string;
+    /** a function to call when the files are updated */
+    update?: () => void;
+    /** the full route to the file */
+    fullRoute: string;
 }) => {
     const { showSnackSev } = useContext(SnackbarContext);
-    const [files, setFiles] = useState<{ [key: string]: string }>({});
     const searchParams = useSearchParams();
 
+    /** delete a file from the server
+     * @param file the file to delete
+     */
+    const deleteFile = async (file: string) => {
+        await axios
+            .delete(`${fullRoute}${file}`, {
+                skipErrorHandling: true,
+            })
+            .then((res) => {
+                if (res.status === 200) {
+                    showSnackSev('File deleted', 'success');
+                }
+            })
+            .catch((e) => {
+                handleError(showSnackSev)(e);
+            })
+            .finally(() => {
+                update && update();
+            });
+    };
+
+    return (
+        <TreeItem itemType="leaf" actions={<></>}>
+            <TreeItemLayout> {path} </TreeItemLayout>
+        </TreeItem>
+    );
+};
+
+const FolderListing = ({
+    fullRoute,
+    update,
+    path,
+    subtree,
+}: {
+    /** the full path of the file to display */
+    path: string;
+    /** a function to call when the files are updated */
+    update?: () => void;
+    /** the full route to the file */
+    fullRoute: string;
+    /** the subtree to display */
+    subtree: TreeType;
+}) => {
+    const { showSnackSev } = useContext(SnackbarContext);
+    const searchParams = useSearchParams();
+    const FULL_ROUTE = `${fullRoute}${path}/`;
+
+    /** delete a file from the server
+     * @param file the file to delete
+     */
+    const deleteFile = async (file: string) => {
+        await axios
+            .delete(`${FULL_ROUTE}${file}`, {
+                skipErrorHandling: true,
+            })
+            .then((res) => {
+                if (res.status === 200) {
+                    showSnackSev('File deleted', 'success');
+                }
+            })
+            .catch((e) => {
+                handleError(showSnackSev)(e);
+            })
+            .finally(() => {
+                update && update();
+            });
+    };
+
+    return (
+        <TreeItem itemType="branch" actions={<></>}>
+            <TreeItemLayout>
+                {path}
+            </TreeItemLayout>
+            {
+                <Tree>
+                    {Object.entries(subtree.children).map(([key, file]) => {
+                        return file.children.length === 0 ? (
+                            <FileListing
+                                key={key}
+                                fullRoute={fullRoute}
+                                update={update}
+                                path={file.name}
+                            />
+                        ) : (
+                            <FolderListing
+                                key={key}
+                                fullRoute={fullRoute}
+                                update={update}
+                                path={file.name}
+                                subtree={file}
+                            />
+                        );
+                    })}
+                </Tree>
+            }
+        </TreeItem>
+    );
+};
+
+/**
+ * A list of files for a commit
+ */
+const ListFiles = ({
+    commit,
+    route,
+    assignment,
+    assignmentID,
+    update,
+}: ListFilesProps) => {
+    const { showSnackSev } = useContext(SnackbarContext);
+    const searchParams = useSearchParams();
+
+    // turn the files into a tree
+    const files = convertPathsToTree(dummy.files);
+
+    console.log(files);
+
+    const FULL_ROUTE = `/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/`;
+
+    /** get the contents of a file and set it in the state
+     * @param file the file to get the contents of
+     */
     const getFileContents = async (file: string) => {
         await axios
             .get<string>(
@@ -76,75 +250,31 @@ const ListFiles = ({
             });
     };
 
-    const deleteFile = async (file: string) => {
-        await axios
-            .delete(
-                `/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/${file}`,
-                {
-                    skipErrorHandling: true,
-                }
-            )
-            .then((res) => {
-                if (res.status === 200) {
-                    showSnackSev('File deleted', 'success');
-                }
-            })
-            .catch((e) => {
-                handleError(showSnackSev)(e);
-            })
-            .finally(() => {
-                update && update();
-            });
-    };
-
-    useEffect(() => {
-        if (commit.files) {
-            setFiles({});
-
-            Object.keys(commit.files).forEach((_, file) => {
-                void getFileContents(commit.files[file]);
-            });
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [commit, assignment, route]);
-
     return (
         commit.files &&
-        Object.keys(commit.files).length !== 0 && (
-            <Accordion collapsible>
-                {Object.keys(commit.files).map((key, index) => (
-                    <AccordionItem value={index} key={key}>
-                        <div className={styles.accordionHeaderContainer}>
-                            <AccordionHeader className={styles.accordionHeader}>
-                                <div className={styles.accordionHeaderContent}>
-                                    <span>{commit.files[index]}</span>
-                                </div>
-                            </AccordionHeader>
-
-                            <Tooltip content="Delete file" relationship="label">
-                                <Button
-                                    icon={<Delete16Filled />}
-                                    onClick={() => deleteFile(commit.files[index])}
-                                />
-                            </Tooltip>
-                        </div>
-
-                        <AccordionPanel>
-                            <pre>
-                                <Monaco
-                                    height="50vh"
-                                    language="python"
-                                    value={files[commit.files[index]]}
-                                    options={{
-                                        readOnly: true,
-                                    }}
-                                />
-                            </pre>
-                        </AccordionPanel>
-                    </AccordionItem>
-                ))}
-            </Accordion>
-        )
+        // for each folder in the first level of the tree (the root) create a folder
+        <Tree aria-label={route}>
+            {
+                Object.entries(files.children).map(([key, file]) => {
+                    return file.children.length === 0 ? (
+                        <FileListing
+                            key={key}
+                            fullRoute={FULL_ROUTE}
+                            update={update}
+                            path={file.name}
+                        />
+                    ) : (
+                        <FolderListing
+                            key={key}
+                            fullRoute={FULL_ROUTE}
+                            update={update}
+                            path={file.name}
+                            subtree={file}
+                        />
+                    );
+                })
+            }
+        </Tree>
     );
 };
 

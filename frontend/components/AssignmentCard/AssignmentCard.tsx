@@ -38,24 +38,19 @@ export const AssignmentCard = ({
             size="medium"
             aria-label={`View assignment ${name}, due ${formattedDueDate}. ${tier == '?' ? 'Tier not set.' : `You are in ${tier} tier.`}`}
             appearance="secondary"
-            icon={
-                <TierChip
-                    tier={tier as UserTier}
-                    className="p-m"
-                />
-            }
+            icon={<TierChip tier={tier as UserTier} className="p-m" />}
             secondaryContent={
                 dueDate && (
-                    <><strong>Due</strong> {formattedDueDate}</>
+                    <>
+                        <strong>Due</strong> {formattedDueDate}
+                    </>
                 )
             }
             onClick={() => {
                 router.push(`/courses/${courseID}/${id}`);
             }}
         >
-            <Subtitle1 className={styles.cardText}>
-                {name}
-            </Subtitle1>
+            <Subtitle1 className={styles.cardText}>{name}</Subtitle1>
         </CompoundButton>
     );
 };
