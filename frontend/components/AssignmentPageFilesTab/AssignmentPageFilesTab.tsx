@@ -28,7 +28,7 @@ import { useCallback, useContext, useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import styles from './AssignmentPageFilesTab.module.css';
 
-const dummy: UserFetchedAssignment = {
+const dummy: Commit = {
     files: [
         'e.py',
         'subfolder/asdfsaf.py',
