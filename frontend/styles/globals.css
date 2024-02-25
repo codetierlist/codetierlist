@@ -56,6 +56,12 @@ body {
     }
 }
 
+@media (prefers-reduced-motion: reduce) {
+    .fui-FluentProvider main {
+        animation: none !important;
+    }
+}
+
 @keyframes slide-up {
     0% {
         opacity: 0;
