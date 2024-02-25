@@ -51,7 +51,19 @@ body {
     background-position: center;
 
     & main {
-        min-height: calc(100vh - var(--spacingVerticalM) * 2 - 32px);
+        animation: slide-up 0.5s var(--curveDecelerateMax);
+        min-height: calc(100vh - 60px);
+    }
+}
+
+@keyframes slide-up {
+    0% {
+        opacity: 0;
+        transform: translateY(5%);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 

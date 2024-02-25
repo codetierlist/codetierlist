@@ -79,6 +79,10 @@ const backgrounds = [
         name: 'Daksh',
         url: 'url("https://avatars.githubusercontent.com/u/47948188")',
     },
+    {
+        name: 'FirstLoginAnim',
+        url: 'url("https://logonoff.co/assets/FirstLogonAnim.svg")'
+    }
 ];
 
 const BackgroundSelector = () => {
