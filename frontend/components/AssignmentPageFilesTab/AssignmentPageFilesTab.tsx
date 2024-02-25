@@ -12,6 +12,7 @@ import {
     Subtitle1,
     Text,
     Tooltip,
+    Link,
 } from '@fluentui/react-components';
 import {
     Add24Filled,
@@ -107,48 +108,43 @@ const ListFiles = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [commit, assignment, route]);
 
-    return commit.files && Object.keys(commit.files).length === 0 ? (
-        <div className={styles.noFiles}>
-            <DocumentMultiple24Regular />
-            <Caption1>
-                No files uploaded yet. Drag and drop files here or click the button above
-                to upload.
-            </Caption1>
-        </div>
-    ) : (
-        <Accordion collapsible>
-            {Object.keys(commit.files).map((key, index) => (
-                <AccordionItem value={index} key={key}>
-                    <div className={styles.accordionHeaderContainer}>
-                        <AccordionHeader className={styles.accordionHeader}>
-                            <div className={styles.accordionHeaderContent}>
-                                <span>{commit.files[index]}</span>
-                            </div>
-                        </AccordionHeader>
+    return (
+        commit.files &&
+        Object.keys(commit.files).length !== 0 && (
+            <Accordion collapsible>
+                {Object.keys(commit.files).map((key, index) => (
+                    <AccordionItem value={index} key={key}>
+                        <div className={styles.accordionHeaderContainer}>
+                            <AccordionHeader className={styles.accordionHeader}>
+                                <div className={styles.accordionHeaderContent}>
+                                    <span>{commit.files[index]}</span>
+                                </div>
+                            </AccordionHeader>
 
-                        <Tooltip content="Delete file" relationship="label">
-                            <Button
-                                icon={<Delete16Filled />}
-                                onClick={() => deleteFile(commit.files[index])}
-                            />
-                        </Tooltip>
-                    </div>
+                            <Tooltip content="Delete file" relationship="label">
+                                <Button
+                                    icon={<Delete16Filled />}
+                                    onClick={() => deleteFile(commit.files[index])}
+                                />
+                            </Tooltip>
+                        </div>
 
-                    <AccordionPanel>
-                        <pre>
-                            <Monaco
-                                height="50vh"
-                                language="python"
-                                value={files[commit.files[index]]}
-                                options={{
-                                    readOnly: true,
-                                }}
-                            />
-                        </pre>
-                    </AccordionPanel>
-                </AccordionItem>
-            ))}
-        </Accordion>
+                        <AccordionPanel>
+                            <pre>
+                                <Monaco
+                                    height="50vh"
+                                    language="python"
+                                    value={files[commit.files[index]]}
+                                    options={{
+                                        readOnly: true,
+                                    }}
+                                />
+                            </pre>
+                        </AccordionPanel>
+                    </AccordionItem>
+                ))}
+            </Accordion>
+        )
     );
 };
 
@@ -268,6 +264,22 @@ export const AssignmentPageFilesTab = ({
         disabled: searchParams.has('utorid'),
     });
 
+    /**
+     * upload a file to the server
+     */
+    const uploadFile = async () => {
+        // todo: make the language based on the runner
+        promptForFileObject('.py', true)
+            .then((file) => {
+                if (file) {
+                    submitFiles(Array.from(file));
+                }
+            })
+            .catch((e) => {
+                handleError(showSnackSev)(e);
+            });
+    };
+
     return (
         <div {...getRootProps({ className: styles.dropZone })}>
             {isDragActive ? (
@@ -289,17 +301,7 @@ export const AssignmentPageFilesTab = ({
                             <Button
                                 icon={<Add24Filled />}
                                 appearance="subtle"
-                                onClick={async () => {
-                                    promptForFileObject('.py', true)
-                                        .then((file) => {
-                                            if (file) {
-                                                submitFiles(Array.from(file));
-                                            }
-                                        })
-                                        .catch((e) => {
-                                            handleError(showSnackSev)(e);
-                                        });
-                                }}
+                                onClick={uploadFile}
                             >
                                 Upload a {routeName}
                             </Button>
@@ -314,6 +316,18 @@ export const AssignmentPageFilesTab = ({
 
                     <Card className="m-t-xl">
                         <input {...getInputProps()} />
+                        {!content.files || content.files.length === 0 ? (
+                            <div className={styles.noFiles}>
+                                <DocumentMultiple24Regular />
+                                <Caption1>
+                                    No files uploaded yet. Drag and drop files here or{' '}
+                                    <Link inline={true} onClick={uploadFile}>
+                                        choose files
+                                    </Link>{' '}
+                                    to upload.
+                                </Caption1>
+                            </div>
+                        ) : null}
                         <ListFiles
                             commit={content}
                             route={route}

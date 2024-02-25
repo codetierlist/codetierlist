@@ -1,18 +1,11 @@
-.cardContent {
-    display: flex;
-    flex-direction: column;
-}
-
-.cardLink {
-    text-decoration: none;
-}
-
 .card {
     --maxWidth: 24rem;
     display: flex;
     flex-direction: row !important;
     height: 75px;
     max-width: var(--maxWidth);
+    box-shadow: var(--shadow4);
+    border: none !important;
 }
 
 .cardText {

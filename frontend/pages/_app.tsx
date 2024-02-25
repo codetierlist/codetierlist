@@ -1,4 +1,4 @@
-import { darkTheme, lightTheme, Navbar } from '@/components';
+import { themes, Navbar } from '@/components';
 import '@/styles/globals.css';
 import '@/styles/spacing.css';
 import {
@@ -23,6 +23,7 @@ import { FetchedUser } from 'codetierlist-types';
 import { useEffect, useState } from 'react';
 import axios, { handleError } from '@/axios';
 import { SnackbarContext } from '@/contexts/SnackbarContext';
+import useLocalStorage from 'use-local-storage';
 
 type EnhancedAppProps = AppProps & { renderer?: GriffelRenderer };
 
@@ -80,6 +81,18 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
         }
     }, [userInfo.theme]);
 
+    // custom background image
+    const [background, _] = useLocalStorage('background', undefined);
+
+    // avoid hydration mismatch
+    const [backgroundProps, setBackgroundProps] = useState<React.CSSProperties>({});
+
+    useEffect(() => {
+        setBackgroundProps({
+            '--background': background,
+        } as React.CSSProperties);
+    }, [background]);
+
     return (
         // 👇 Accepts a renderer from <Document /> or creates a default one
         //    Also triggers rehydration a client
@@ -87,7 +100,8 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
             <SSRProvider>
                 <UserContext.Provider value={{ userInfo, setUserInfo, fetchUserInfo }}>
                     <FluentProvider
-                        theme={userInfo.theme === 'DARK' ? darkTheme : lightTheme}
+                        theme={themes[userInfo.theme]}
+                        style={backgroundProps}
                     >
                         <SnackbarContext.Provider value={{ showSnack, showSnackSev }}>
                             <Field validationState="none" id="axios-loading-backdrop">

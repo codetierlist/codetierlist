@@ -1,8 +1,14 @@
 .navbar {
     display: flex;
     justify-content: space-between;
-    padding: var(--spacingVerticalL) var(--spacingHorizontalXL);
+    padding: var(--spacingVerticalM) var(--spacingHorizontalXL);
     align-items: center;
+}
+
+.navbarButtons {
+    display: flex;
+    gap: var(--spacingHorizontalXL);
+    align-items: flex-end;
 }
 
 .title {
