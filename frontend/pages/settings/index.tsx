@@ -9,7 +9,7 @@ import {
     Option,
     Subtitle2,
     Title3,
-    Link
+    Link,
 } from '@fluentui/react-components';
 import { Color24Regular, Image24Regular } from '@fluentui/react-icons';
 import { Theme } from 'codetierlist-types';
@@ -78,14 +78,17 @@ const backgrounds = [
     {
         name: 'Daksh',
         url: 'url("https://avatars.githubusercontent.com/u/47948188")',
-    }
-]
+    },
+];
 
 const BackgroundSelector = () => {
-    const [background, setBackground] = useLocalStorage<string | undefined>('background', undefined);
+    const [background, setBackground] = useLocalStorage<string | undefined>(
+        'background',
+        undefined
+    );
 
     // avoid hydration mismatch
-    const [dropdownValue, setDropdownValue] = useState<string>("");
+    const [dropdownValue, setDropdownValue] = useState<string>('');
 
     useEffect(() => {
         const value = backgrounds.find((bg) => bg.url === background)?.name;
@@ -97,23 +100,20 @@ const BackgroundSelector = () => {
 
     return (
         <Dropdown value={dropdownValue} appearance="filled-darker">
-            {
-                backgrounds.map((bg: Background) => (
-                    <Option
-                        key={bg.name}
-                        value={bg.url}
-                        onClick={() => setBackground(bg.url)}
-                    >
-                        {bg.name}
-                    </Option>
-                ))
-            }
+            {backgrounds.map((bg: Background) => (
+                <Option
+                    key={bg.name}
+                    value={bg.url}
+                    onClick={() => setBackground(bg.url)}
+                >
+                    {bg.name}
+                </Option>
+            ))}
         </Dropdown>
     );
-}
+};
 
 export const Settings = () => {
-
     return (
         <>
             <Head>
@@ -149,20 +149,35 @@ export const Settings = () => {
                         description={
                             <Caption1>
                                 &copy; 2024{' '}
-                                <Link as="a" href="https://www.linkedin.com/in/idobenhaim/">Ido</Link>,{' '}
+                                <Link
+                                    as="a"
+                                    href="https://www.linkedin.com/in/idobenhaim/"
+                                >
+                                    Ido
+                                </Link>
+                                ,{' '}
                                 <Link as="a" href="https://www.linkedin.com/in/leejacks/">
                                     Jackson
                                 </Link>
                                 ,{' '}
-                                <Link as="a" href="https://www.linkedin.com/in/daksh-malhotra/">
+                                <Link
+                                    as="a"
+                                    href="https://www.linkedin.com/in/daksh-malhotra/"
+                                >
                                     Daksh
                                 </Link>
                                 ,{' '}
-                                <Link as="a" href="https://www.linkedin.com/in/yousef-bulbulia/">
+                                <Link
+                                    as="a"
+                                    href="https://www.linkedin.com/in/yousef-bulbulia/"
+                                >
                                     Yousef
                                 </Link>
                                 ,{' '}
-                                <Link as="a" href="https://www.linkedin.com/in/brianzhang/">
+                                <Link
+                                    as="a"
+                                    href="https://www.linkedin.com/in/brianzhang/"
+                                >
                                     Brian
                                 </Link>
                                 .

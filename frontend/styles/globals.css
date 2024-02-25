@@ -44,12 +44,8 @@ body {
 
     --background: var(--background-gradient);
 
-    background: linear-gradient(
-        0deg,
-        var(--background-85) 0%,
-        var(--background-85) 100%
-    ),
-    var(--background), var(--colorNeutralBackground3);
+    background: linear-gradient(0deg, var(--background-85) 0%, var(--background-85) 100%),
+        var(--background), var(--colorNeutralBackground3);
 
     background-size: cover;
     background-position: center;
