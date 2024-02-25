@@ -60,3 +60,7 @@ lightTheme.fontFamilyMonospace = spaceMono.style.fontFamily;
 darkTheme.fontFamilyNumeric = spaceGrotesk.style.fontFamily;
 darkTheme.fontFamilyBase = inter.style.fontFamily;
 darkTheme.fontFamilyMonospace = spaceMono.style.fontFamily;
+
+highContrastTheme.fontFamilyNumeric = spaceGrotesk.style.fontFamily;
+highContrastTheme.fontFamilyBase = inter.style.fontFamily;
+highContrastTheme.fontFamilyMonospace = spaceMono.style.fontFamily;
