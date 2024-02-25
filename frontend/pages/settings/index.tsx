@@ -9,12 +9,13 @@ import {
     Option,
     Subtitle2,
     Title3,
+    Link
 } from '@fluentui/react-components';
 import { Color24Regular, Image24Regular } from '@fluentui/react-icons';
 import { Theme } from 'codetierlist-types';
 import Head from 'next/head';
 import Image from 'next/image';
-import { useContext } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { Container } from 'react-grid-system';
 import pkg from '../../package.json';
 import useLocalStorage from 'use-local-storage';
@@ -83,8 +84,19 @@ const backgrounds = [
 const BackgroundSelector = () => {
     const [background, setBackground] = useLocalStorage<string | undefined>('background', undefined);
 
+    // avoid hydration mismatch
+    const [dropdownValue, setDropdownValue] = useState<string>("");
+
+    useEffect(() => {
+        const value = backgrounds.find((bg) => bg.url === background)?.name;
+
+        if (value) {
+            setDropdownValue(value);
+        }
+    }, [background]);
+
     return (
-        <Dropdown value={backgrounds.find((bg) => bg.url === background)?.name} appearance="filled-darker">
+        <Dropdown value={dropdownValue} appearance="filled-darker">
             {
                 backgrounds.map((bg: Background) => (
                     <Option
@@ -137,22 +149,22 @@ export const Settings = () => {
                         description={
                             <Caption1>
                                 &copy; 2024{' '}
-                                <a href="https://www.linkedin.com/in/idobenhaim/">Ido</a>,{' '}
-                                <a href="https://www.linkedin.com/in/leejacks/">
+                                <Link as="a" href="https://www.linkedin.com/in/idobenhaim/">Ido</Link>,{' '}
+                                <Link as="a" href="https://www.linkedin.com/in/leejacks/">
                                     Jackson
-                                </a>
+                                </Link>
                                 ,{' '}
-                                <a href="https://www.linkedin.com/in/daksh-malhotra/">
+                                <Link as="a" href="https://www.linkedin.com/in/daksh-malhotra/">
                                     Daksh
-                                </a>
+                                </Link>
                                 ,{' '}
-                                <a href="https://www.linkedin.com/in/yousef-bulbulia/">
+                                <Link as="a" href="https://www.linkedin.com/in/yousef-bulbulia/">
                                     Yousef
-                                </a>
+                                </Link>
                                 ,{' '}
-                                <a href="https://www.linkedin.com/in/brianzhang/">
+                                <Link as="a" href="https://www.linkedin.com/in/brianzhang/">
                                     Brian
-                                </a>
+                                </Link>
                                 .
                             </Caption1>
                         }
