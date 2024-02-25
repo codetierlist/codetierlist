@@ -59,7 +59,7 @@ body {
 @keyframes slide-up {
     0% {
         opacity: 0;
-        transform: translateY(5%);
+        transform: translateY(5vh);
     }
     100% {
         opacity: 1;
