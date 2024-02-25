@@ -61,30 +61,28 @@ declare type TreeType = {
     children: TreeType[];
 };
 
-declare type FileListingProps = {
-    /** the full path of the file to display */
-    path: string;
-    /** a function to call when the files are updated */
-    update?: () => void;
-};
-
 /**
  * Given a list of file paths, construct a tree
  * @see https://stackoverflow.com/a/57344759
  */
 const convertPathsToTree = (paths: string[]): TreeType => {
-    return {
-        name: '',
-        children: paths.reduce<TreeType>((acc, path) => {
-            const names = path.split('/');
-            names.reduce((acc, name, _i) => {
-                let temp = acc.find((o) => o.name === name);
-                if (!temp) acc.push((temp = { name, children: [] }));
-                return temp.children;
-            }, acc);
-            return acc;
-        }, [] as TreeType[]) as TreeType['children'],
-    };
+    const root: TreeType = { name: '', children: [] };
+
+    paths.forEach(path => {
+        let currentNode = root;
+        const names = path.split('/');
+
+        names.forEach(name => {
+            let childNode = currentNode.children.find(child => child.name === name);
+            if (!childNode) {
+                childNode = { name, children: [] };
+                currentNode.children.push(childNode);
+            }
+            currentNode = childNode;
+        });
+    });
+
+    return root;
 };
 
 const FileListing = ({
@@ -216,8 +214,6 @@ const ListFiles = ({
 
     // turn the files into a tree
     const files = convertPathsToTree(dummy.files);
-
-    console.log(files);
 
     const FULL_ROUTE = `/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/`;
 
