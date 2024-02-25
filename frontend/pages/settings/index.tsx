@@ -121,7 +121,7 @@ export const Settings = () => {
     return (
         <>
             <Head>
-                <title>Settings | Codetierlist</title>
+                <title>Settings - Codetierlist</title>
             </Head>
             <Container component="main" className="m-t-xxxl">
                 <Title3 block className="m-b-xl">
