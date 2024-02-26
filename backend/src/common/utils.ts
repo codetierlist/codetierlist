@@ -12,7 +12,10 @@ import {PathLike, promises as fs} from "fs";
 import {isUTORid} from "is-utorid";
 import git, {ReadBlobResult} from "isomorphic-git";
 import path from "path";
-import prisma, {fetchedAssignmentArgs, fetchedCourseArgs} from "@/common/prisma";
+import prisma, {
+    fetchedAssignmentArgs,
+    fetchedCourseArgs
+} from "@/common/prisma";
 import {
     onNewProfSubmission,
     onNewSubmission,
@@ -47,7 +50,7 @@ export function isProf(course: Course, user: FetchedUser) {
  */
 const softResetRepo = async (repoPath: string, commit: string) => {
     let dir = await fs.readdir(repoPath);
-    dir = dir.filter(x => x!==".git").map(x => path.resolve(repoPath, x));
+    dir = dir.filter(x => x !== ".git").map(x => path.resolve(repoPath, x));
     await Promise.all(dir.map(x => fs.rm(x, {recursive: true, force: true})));
     await git.checkout({dir: repoPath, fs, ref: commit, force: true});
 };
@@ -147,6 +150,9 @@ const getObjectFromRequest = async (req: Request, table: "solution" | "testCase"
         object = await prisma.solution.findFirst(query as Prisma.SolutionFindFirstArgs);
     } else {
         object = await prisma.testCase.findFirst(query as Prisma.TestCaseFindFirstArgs);
+    }
+    if (!isProf(req.course!, req.user) && object?.author_id !== req.user.utorid) {
+        return null;
     }
     return object;
 };
@@ -356,7 +362,7 @@ export const getFile = async (file: string, dir: string, commitId: string) => {
             fs,
             dir: dir,
             oid: commitId,
-            filepath: file
+            filepath: `.${path.normalize(`/${file}`)}`
         });
     } catch (e) {
         return null;
