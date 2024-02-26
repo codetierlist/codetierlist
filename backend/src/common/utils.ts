@@ -38,8 +38,8 @@ export const errorHandler = (cb: (req: Request, res: Response, next: NextFunctio
  * @param course course object
  * @param user user object
  */
-export function isProf(course: Course, user: FetchedUser) {
-    return user.admin || user.roles.some(role => course.id === role.course_id && ([RoleType.INSTRUCTOR, RoleType.TA] as RoleType[]).includes(role.type));
+export function isProf(course: Course | string, user: FetchedUser) {
+    return user.admin || user.roles.some(role => (typeof course === "string" ? course : course.id) === role.course_id && ([RoleType.INSTRUCTOR, RoleType.TA] as RoleType[]).includes(role.type));
 }
 
 
@@ -151,7 +151,7 @@ const getObjectFromRequest = async (req: Request, table: "solution" | "testCase"
     } else {
         object = await prisma.testCase.findFirst(query as Prisma.TestCaseFindFirstArgs);
     }
-    if (!isProf(req.course!, req.user) && object?.author_id !== req.user.utorid) {
+    if (object && !isProf(object.course_id, req.user) && object?.author_id !== req.user.utorid) {
         return null;
     }
     return object;
