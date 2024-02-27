@@ -62,7 +62,7 @@ export const updateScore = async (submission: Submission, testCase: TestCase, pa
  * @param submission
  * @param image
  */
-export const onNewSubmission = async (submission: Submission, image: Assignment) => {
+export const onNewSubmission = async (submission: Submission, image: Assignment | RunnerImage) => {
     publish("solution:submit", submission);
 
     try {

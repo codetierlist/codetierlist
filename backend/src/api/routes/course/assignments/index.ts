@@ -8,13 +8,7 @@ import {
     generateYourTier
 } from "@/common/tierlist";
 import {
-    deleteFile, errorHandler,
-    fetchAssignmentMiddleware,
-    fetchCourseMiddleware,
-    getCommitFromRequest,
-    getFileFromRequest,
     isProf,
-    processSubmission,
     serializeAssignment
 } from "@/common/utils";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
@@ -28,6 +22,15 @@ import {
 } from "codetierlist-types";
 import express, { NextFunction, Request, Response } from "express";
 import multer from 'multer';
+import {
+    deleteFile,
+    errorHandler,
+    fetchAssignmentMiddleware,
+    fetchCourseMiddleware,
+    getCommitFromRequest,
+    getFileFromRequest,
+    processSubmission
+} from "@/common/utils/api";
 
 const storage = multer.diskStorage({
     filename: function (_, file, callback) {

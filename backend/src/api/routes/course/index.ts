@@ -5,8 +5,7 @@ import {
     generateTierFromQueriedData
 } from "@/common/tierlist";
 import {
-    errorHandler,
-    fetchCourseMiddleware, isProf
+    isProf
 } from "@/common/utils";
 import { RoleType } from "@prisma/client";
 import {
@@ -19,6 +18,7 @@ import { promises as fs } from "fs";
 import { isUTORid } from "is-utorid";
 import multer from "multer";
 import path from "path";
+import {errorHandler, fetchCourseMiddleware} from "@/common/utils/api";
 
 const storage = multer.diskStorage({
     filename: function (_, file, callback) {

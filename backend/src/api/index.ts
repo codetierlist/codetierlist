@@ -4,7 +4,7 @@ import express, { ErrorRequestHandler } from 'express';
 import * as http from "http";
 import { isUofTEmail, isUTORid } from "is-utorid";
 import prisma, { fetchedUserArgs } from "@/common/prisma";
-import { errorHandler } from "@/common/utils";
+import { errorHandler } from "@/common/utils/api";
 import routes from "@/api/routes";
 
 const port = process.env.PORT || 3000;

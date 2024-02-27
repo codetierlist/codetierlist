@@ -1,6 +1,6 @@
 import { achievementsConfig } from "@/common/config";
 import prisma from "@/common/prisma";
-import { errorHandler } from "@/common/utils";
+import { errorHandler } from "@/common/utils/api";
 import { AchievementConfig, FetchedUser, Theme } from "codetierlist-types";
 import express from "express";
 

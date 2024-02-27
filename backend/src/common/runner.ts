@@ -1,7 +1,7 @@
 import { publish } from "@/common/achievements/eventHandler";
 import prisma from "@/common/prisma";
 import { runTestcase, updateScore } from "@/common/updateScores";
-import { getCommit, getFile } from "@/common/utils";
+import { getCommit, getFile } from "@/common/utils/git";
 import { TestCase } from "@prisma/client";
 import {
     FlowProducer,

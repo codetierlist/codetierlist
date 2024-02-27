@@ -14,3 +14,7 @@ declare module "express-serve-static-core" {
         files?: File[];
     }
 }
+
+declare global {
+    type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+}
