@@ -24,6 +24,10 @@ import {
 import {config} from "@/common/config";
 import logger from "@/common/logger";
 
+
+export const securePath = (p: string) => {
+    return `.${path.normalize(`/${p}`)}`;
+};
 export const errorHandler = (cb: (req: Request, res: Response, next: NextFunction) => Promise<unknown>) => {
     return (req: Request, res: Response, next: NextFunction) => {
         cb(req, res, next).catch(e => {
@@ -362,7 +366,7 @@ export const getFile = async (file: string, dir: string, commitId: string) => {
             fs,
             dir: dir,
             oid: commitId,
-            filepath: `.${path.normalize(`/${file}`)}`
+            filepath: securePath(file)
         });
     } catch (e) {
         return null;
@@ -415,8 +419,8 @@ export const deleteFile = async (req: Request, res: Response, table: "solution" 
         return;
     }
     try {
-        await git.remove({fs, dir: object.git_url, filepath: req.params.file});
-        await fs.unlink(`${object!.git_url}/${req.params.file}`);
+        await git.remove({fs, dir: object.git_url, filepath: securePath(req.params.file)});
+        await fs.unlink(`${object!.git_url}/${securePath(req.params.file)}`);
     } catch (_) {
         /* if the file doesn't exist then continue */
     }
