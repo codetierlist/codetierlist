@@ -14,7 +14,7 @@ import {
     OptionGroup,
     Switch,
     Title3,
-    ToolbarButton
+    ToolbarButton,
 } from '@fluentui/react-components';
 import {
     ArrowLeft24Regular,

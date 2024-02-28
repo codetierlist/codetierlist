@@ -77,11 +77,11 @@ const backgrounds = [
     },
     {
         name: 'UTM Deer 1',
-        url: 'url("https://i.imgur.com/WsYfjnZ.jpeg")'
+        url: 'url("https://i.imgur.com/WsYfjnZ.jpeg")',
     },
     {
         name: 'UTM Deer 2',
-        url: 'url("https://i.imgur.com/YccJwOS.jpg")'
+        url: 'url("https://i.imgur.com/YccJwOS.jpg")',
     },
     {
         name: 'Daksh',
@@ -90,7 +90,7 @@ const backgrounds = [
     {
         name: 'FirstLoginAnim',
         url: 'url("https://logonoff.co/assets/FirstLogonAnim.svg")',
-    }
+    },
 ];
 
 const BackgroundSelector = () => {

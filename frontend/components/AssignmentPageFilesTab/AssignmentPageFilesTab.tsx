@@ -69,12 +69,12 @@ declare type TreeType = {
 const convertPathsToTree = (paths: string[]): TreeType => {
     const root: TreeType = { name: '', children: [] };
 
-    paths.forEach(path => {
+    paths.forEach((path) => {
         let currentNode = root;
         const names = path.split('/');
 
-        names.forEach(name => {
-            let childNode = currentNode.children.find(child => child.name === name);
+        names.forEach((name) => {
+            let childNode = currentNode.children.find((child) => child.name === name);
             if (!childNode) {
                 childNode = { name, children: [] };
                 currentNode.children.push(childNode);
@@ -91,7 +91,7 @@ const FileListing = ({
     update,
     path,
     changeFile,
-    currentFile
+    currentFile,
 }: {
     /** the full path of the file to display */
     path: string;
@@ -145,15 +145,8 @@ const FileListing = ({
             >
                 {/* todo: make this span the whole width */}
                 <div onClick={() => changeFile && changeFile(path)}>
-                    {
-                        currentFile === path && (
-                            <strong>{path}</strong>
-                        )
-                    }{
-                        currentFile !== path && (
-                            <>{path}</>
-                        )
-                    }
+                    {currentFile === path && <strong>{path}</strong>}
+                    {currentFile !== path && <>{path}</>}
                 </div>
             </TreeItemLayout>
         </TreeItem>
@@ -166,7 +159,7 @@ const FolderListing = ({
     path,
     changeFile,
     subtree,
-    currentFile
+    currentFile,
 }: {
     /** the full path of the file to display */
     path: string;
@@ -208,9 +201,7 @@ const FolderListing = ({
 
     return (
         <TreeItem itemType="branch" actions={<></>}>
-            <TreeItemLayout>
-                {path}
-            </TreeItemLayout>
+            <TreeItemLayout>{path}</TreeItemLayout>
             {
                 <Tree>
                     {Object.entries(subtree.children).map(([key, file]) => {
@@ -253,7 +244,7 @@ const ListFiles = ({
 }: ListFilesProps) => {
     const { showSnackSev } = useContext(SnackbarContext);
     const searchParams = useSearchParams();
-    const [currentFile, setCurrentFile] = useState<string>("");
+    const [currentFile, setCurrentFile] = useState<string>('');
     const [currentFileContent, setCurrentFileContent] = useState<string | null>(null);
 
     // turn the files into a tree
@@ -298,10 +289,9 @@ const ListFiles = ({
         <>
             {
                 // for each folder in the first level of the tree (the root) create a folder
-                commit.files &&
-                <Tree aria-label={route}>
-                    {
-                        Object.entries(files.children).map(([key, file]) => {
+                commit.files && (
+                    <Tree aria-label={route}>
+                        {Object.entries(files.children).map(([key, file]) => {
                             return file.children.length === 0 ? (
                                 <FileListing
                                     key={key}
@@ -322,12 +312,12 @@ const ListFiles = ({
                                     currentFile={currentFile}
                                 />
                             );
-                        })
-                    }
-                </Tree>
+                        })}
+                    </Tree>
+                )
             }
 
-            {currentFile !== "" && (
+            {currentFile !== '' && (
                 <Monaco
                     height="50vh"
                     language="python"

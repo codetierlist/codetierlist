@@ -111,7 +111,8 @@
     border-radius: var(--borderRadiusLarge);
 }
 
-.currentFile:hover, .currentFile:focus-visible {
+.currentFile:hover,
+.currentFile:focus-visible {
     background-color: var(--colorBrandBackgroundHover) !important;
 }
 
