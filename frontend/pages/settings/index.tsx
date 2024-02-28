@@ -1,5 +1,5 @@
 import axios, { handleError } from '@/axios';
-import { ControlCard, themes } from '@/components';
+import { ControlCard, defaultAccentColor, getThemes } from '@/components';
 import { SnackbarContext } from '@/contexts/SnackbarContext';
 import { UserContext } from '@/contexts/UserContext';
 import favicon from '@/public/favicon.svg';
@@ -48,7 +48,10 @@ const ThemeSelector = () => {
 
     return (
         <Dropdown value={toSentenceCase(userInfo.theme)} appearance="filled-darker">
-            {['SYSTEM', ...Object.keys(themes)].map((theme) => (
+            {[
+                'SYSTEM',
+                ...Object.keys(getThemes(userInfo.accent_color || defaultAccentColor)),
+            ].map((theme) => (
                 <Option
                     key={theme}
                     value={theme}
@@ -125,6 +128,48 @@ const BackgroundSelector = () => {
     );
 };
 
+const AccentSelector = () => {
+    const { userInfo, setUserInfo, fetchUserInfo } = useContext(UserContext);
+    const { showSnackSev } = useContext(SnackbarContext);
+    const [accentColor, setAccentColor] = useState(
+        userInfo.accent_color || defaultAccentColor
+    );
+    const [accentTimeout, setAccentTimeout] = useState<NodeJS.Timeout | undefined>(
+        undefined
+    );
+    const [lastResolvedAccent, setLastResolvedAccent] = useState(0);
+
+    return (
+        <input
+            type={'color'}
+            value={accentColor}
+            onChange={(e) => {
+                setAccentColor(e.target.value);
+                if (accentTimeout && lastResolvedAccent < Date.now() - 10) {
+                    clearTimeout(accentTimeout);
+                }
+                setAccentTimeout(
+                    setTimeout(() => {
+                        setLastResolvedAccent(Date.now());
+                        setUserInfo({ ...userInfo, accent_color: e.target.value });
+                    }, 10)
+                );
+            }}
+            onBlur={(e) => {
+                // save the accent color
+                axios
+                    .post('/users/accent', { accent_color: e.target.value })
+                    .then(async () => {
+                        await fetchUserInfo();
+                        showSnackSev('Accent color updated', 'success');
+                    })
+                    .catch((err) => {
+                        handleError(showSnackSev)(err);
+                    });
+            }}
+        />
+    );
+};
 export const Settings = () => {
     return (
         <>
@@ -151,6 +196,16 @@ export const Settings = () => {
                         icon={<Image24Regular />}
                     >
                         <BackgroundSelector />
+                    </ControlCard>
+
+                    <ControlCard
+                        title={'Accent Color'}
+                        icon={<Color24Regular />}
+                        description={
+                            'Enter your prefered accent color for the system (hex only)'
+                        }
+                    >
+                        <AccentSelector />
                     </ControlCard>
                 </form>
 

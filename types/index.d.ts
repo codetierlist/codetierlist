@@ -210,7 +210,7 @@ export type JobResult =
 }
 
 
-export type AssignmentStudentStats = (Omit<User, "admin" | "theme" | "new_achievements"> & {
+export type AssignmentStudentStats = (Omit<User, "admin" | "theme" | "new_achievements" | "accent_color"> & {
     tier: Tier,
     testsPassed: number,
     totalTests: number,

@@ -1,4 +1,4 @@
-import { themes, Navbar } from '@/components';
+import { defaultAccentColor, getThemes, Navbar } from '@/components';
 import '@/styles/globals.css';
 import '@/styles/spacing.css';
 import {
@@ -117,6 +117,14 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
             '--background': background,
         } as React.CSSProperties);
     }, [background]);
+
+    const [themes, setThemes] = useState(
+        getThemes(userInfo.accent_color || defaultAccentColor)
+    );
+
+    useEffect(() => {
+        setThemes(getThemes(userInfo.accent_color || defaultAccentColor));
+    }, [userInfo]);
 
     return (
         // 👇 Accepts a renderer from <Document /> or creates a default one

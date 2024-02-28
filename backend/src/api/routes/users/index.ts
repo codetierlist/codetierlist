@@ -47,7 +47,23 @@ router.post("/theme", errorHandler(async (req, res) => {
     res.status(200).send({ message: `Set theme to ${req.body.theme}.` });
 
 }));
+router.post("/accent", errorHandler(async (req, res) => {
+    if (!req.body.accent_color) {
+        res.status(400).send({ message: "No accent color specified." });
+        return;
+    }
+    if (req.body.accent_color !== null && (typeof req.body.accent_color !== "string" || !req.body.accent_color.match(/^#[0-9a-fA-F]{6}$/))) {
+        res.status(400).send({message: `Invalid accent color: ${req.body.accent_color}.`});
+        return;
+    }
 
+    await prisma.user.update({
+        where: { utorid: req.user.utorid },
+        data: { accent_color: req.body.accent_color }
+    });
+
+    res.status(200).send({ message: `Set accent color to ${req.body.accent_color}.` });
+}));
 /**
  * get the achievements of the user
  * @public

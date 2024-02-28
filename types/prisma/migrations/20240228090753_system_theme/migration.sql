@@ -1,5 +1,5 @@
 -- AlterEnum
 ALTER TYPE "Theme" ADD VALUE 'SYSTEM';
-
+COMMIT;
 -- AlterTable
 ALTER TABLE "Users" ALTER COLUMN "theme" SET DEFAULT 'SYSTEM';
