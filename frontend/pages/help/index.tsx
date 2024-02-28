@@ -186,12 +186,18 @@ const Quote = ({ children }: { children: ReactNode }) => {
         children = clearedIntent(children);
         return (
             <MessageBar className={'m-y-m'} layout={'multiline'} intent={intents[intent]}>
-                <MessageBarTitle>
-                    {intent.length > 0
-                        ? intent.charAt(0).toUpperCase() + intent.slice(1).toLowerCase()
-                        : ''}
-                </MessageBarTitle>
-                <MessageBarBody>{children}</MessageBarBody>
+                <MessageBarBody>
+                    {' '}
+                    <MessageBarTitle>
+                        {intent.length > 0
+                            ? intent.charAt(0).toUpperCase() +
+                              intent.slice(1).toLowerCase() +
+                              ':'
+                            : ''}
+                    </MessageBarTitle>
+                    <br />
+                    {children}
+                </MessageBarBody>
             </MessageBar>
         );
     }
