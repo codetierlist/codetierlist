@@ -10,7 +10,7 @@ import { Space_Grotesk, Inter, Space_Mono } from 'next/font/google';
 import { Palette } from './types';
 import { hexColorsFromPalette, hex_to_LCH } from './palettes';
 
-export const defaultAccentColor = '#004A4C';
+export const defaultAccentColor = '#004c20';
 
 type Options = {
     darkCp?: number;
@@ -44,22 +44,23 @@ const spaceMono = Space_Mono({
     weight: '400',
 });
 
+const highContrastTheme: Theme = {
+    ...createHighContrastTheme(),
+};
+
 export const getThemes = (accentColor: string) => {
     const brandTheme = getBrandTokensFromPalette(accentColor, {
         darkCp: 2 / 3,
         lightCp: 1 / 3,
         hueTorsion: 0,
     });
+
     const lightTheme: Theme = {
         ...createLightTheme(brandTheme),
     };
 
     const darkTheme: Theme = {
         ...createDarkTheme(brandTheme),
-    };
-
-    const highContrastTheme: Theme = {
-        ...createHighContrastTheme(),
     };
 
     const themes: Record<Exclude<ThemeTypes, 'SYSTEM'>, Theme> = {

@@ -11,7 +11,7 @@ import {
     Title3,
     Link,
 } from '@fluentui/react-components';
-import { Color24Regular, Image24Regular } from '@fluentui/react-icons';
+import { Color24Regular, Image24Regular, PaintBrush24Regular } from '@fluentui/react-icons';
 import { Theme } from 'codetierlist-types';
 import Head from 'next/head';
 import Image from 'next/image';
@@ -91,7 +91,7 @@ const backgrounds = [
         url: 'url("https://avatars.githubusercontent.com/u/47948188")',
     },
     {
-        name: 'FirstLoginAnim',
+        name: 'Glow',
         url: 'url("https://logonoff.co/assets/FirstLogonAnim.svg")',
     },
 ];
@@ -185,25 +185,23 @@ export const Settings = () => {
                     <ControlCard
                         title="Theme"
                         description="Select which app theme to display"
-                        icon={<Color24Regular />}
+                        icon={<PaintBrush24Regular />}
                     >
                         <ThemeSelector />
                     </ControlCard>
 
                     <ControlCard
                         title="Background image"
-                        description="Set a background image for the app."
+                        description="A picture background that will be displayed behind the app."
                         icon={<Image24Regular />}
                     >
                         <BackgroundSelector />
                     </ControlCard>
 
                     <ControlCard
-                        title={'Accent Color'}
+                        title="Accent Colour"
+                        description="Select the accent colour for the app"
                         icon={<Color24Regular />}
-                        description={
-                            'Enter your prefered accent color for the system (hex only)'
-                        }
                     >
                         <AccentSelector />
                     </ControlCard>
