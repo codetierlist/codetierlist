@@ -120,7 +120,7 @@ export const HelpPage = (): JSX.Element => {
                             </p>
                             <p>
                                 For students, the lack of testing may not be as
-                                life-threating, but it can be the difference between
+                                life-threatening, but it can be the difference between
                                 passing and failing an assignment, which can impact job
                                 prospects and future opportunities.
                             </p>
