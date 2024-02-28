@@ -110,12 +110,13 @@ export const HelpPage = (): JSX.Element => {
                                 >
                                     Therac-25
                                 </Link>
-                                . Its lack of independent code review, complete disregard
-                                for testing, and engineering issues led to six known cases
-                                of severe radiation overdoses, some of which were{' '}
+                                , a Canadian radiation therapy machine. Its lack of
+                                independent code review, complete disregard for testing,
+                                and engineering issues led to six known cases of severe
+                                radiation overdoses, some of which were{' '}
                                 <strong>fatal</strong>. The Therac-25 is a sobering
-                                reminder of the importance of testing and code review,
-                                and its consequences when improperly done.
+                                reminder of the importance of testing and code review, and
+                                its consequences when improperly done.
                             </p>
                             <p>
                                 For students, the lack of testing may not be as
