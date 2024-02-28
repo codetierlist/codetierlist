@@ -14,6 +14,10 @@ body {
     }
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 .flex-wrap {
     display: flex;
     gap: var(--spacingVerticalL);
