@@ -3,6 +3,9 @@ import prisma from "@/common/prisma";
 import { errorHandler } from "@/common/utils/api";
 import { AchievementConfig, FetchedUser, Theme } from "codetierlist-types";
 import express from "express";
+import {
+    PrismaClientUnknownRequestError,
+} from "@prisma/client/runtime/library";
 
 const router = express.Router();
 
@@ -34,7 +37,10 @@ router.post("/theme", errorHandler(async (req, res) => {
         });
     }
     catch (e) {
-        res.status(400).send({ message: `Invalid theme: ${req.body.theme}.` });
+        if (e instanceof  PrismaClientUnknownRequestError){
+            res.status(400).send({ message: `Invalid theme: ${req.body.theme}.` });
+        }
+        else throw e;
         return;
     }
 

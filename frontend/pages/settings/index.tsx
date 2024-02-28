@@ -48,7 +48,7 @@ const ThemeSelector = () => {
 
     return (
         <Dropdown value={toSentenceCase(userInfo.theme)} appearance="filled-darker">
-            {Object.keys(themes).map((theme) => (
+            {['SYSTEM', ...Object.keys(themes)].map((theme) => (
                 <Option
                     key={theme}
                     value={theme}

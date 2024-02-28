@@ -120,7 +120,7 @@ model User {
   testcases        TestCase[]
   surname          String
   givenName        String
-  theme            Theme         @default(LIGHT)
+  theme            Theme         @default(SYSTEM)
   groups           Group[]
   achievements     Achievement[]
   new_achievements Boolean       @default(false)
@@ -146,6 +146,7 @@ enum RoleType {
 }
 
 enum Theme {
+  SYSTEM
   LIGHT
   DARK
   CONTRAST

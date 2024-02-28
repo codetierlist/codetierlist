@@ -19,7 +19,7 @@ import {
 } from '@fluentui/react-components';
 import type { AppProps } from 'next/app';
 import { defaultUser, UserContext } from '@/contexts/UserContext';
-import { FetchedUser } from 'codetierlist-types';
+import { FetchedUser, Theme } from 'codetierlist-types';
 import { useEffect, useState } from 'react';
 import axios, { handleError } from '@/axios';
 import { SnackbarContext } from '@/contexts/SnackbarContext';
@@ -71,10 +71,35 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
         void fetchUserInfo();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+    const computeTheme = (newTheme: Theme) => {
+        if (newTheme === 'SYSTEM') {
+            return window.matchMedia &&
+                window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'DARK'
+                : 'LIGHT';
+        }
+        return newTheme;
+    };
+    const [theme, setTheme] = useState(computeTheme(userInfo.theme));
 
+    useEffect(() => {
+        window
+            .matchMedia('(prefers-color-scheme: dark)')
+            .addEventListener('change', (e) => {
+                if (userInfo.theme === 'SYSTEM') {
+                    setTheme(e.matches ? 'DARK' : 'LIGHT');
+                } else {
+                    setTheme(computeTheme(userInfo.theme));
+                }
+            });
+    }, [userInfo.theme]);
+
+    useEffect(() => {
+        setTheme(computeTheme(userInfo.theme));
+    }, [userInfo.theme]);
     // change system colour scheme based on current user theme
     useEffect(() => {
-        if (userInfo.theme === 'DARK') {
+        if (theme === 'DARK') {
             document.documentElement.style.colorScheme = 'dark';
         } else {
             document.documentElement.style.colorScheme = 'light';
@@ -99,10 +124,7 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
         <RendererProvider renderer={renderer || createDOMRenderer()}>
             <SSRProvider>
                 <UserContext.Provider value={{ userInfo, setUserInfo, fetchUserInfo }}>
-                    <FluentProvider
-                        theme={themes[userInfo.theme]}
-                        style={backgroundProps}
-                    >
+                    <FluentProvider theme={themes[theme]} style={backgroundProps}>
                         <SnackbarContext.Provider value={{ showSnack, showSnackSev }}>
                             <Field validationState="none" id="axios-loading-backdrop">
                                 <ProgressBar />

@@ -47,7 +47,7 @@ export const highContrastTheme: Theme = {
     ...createHighContrastTheme(),
 };
 
-export const themes: Record<ThemeTypes, Theme> = {
+export const themes: Record<Exclude<ThemeTypes, 'SYSTEM'>, Theme> = {
     LIGHT: lightTheme,
     DARK: darkTheme,
     CONTRAST: highContrastTheme,
