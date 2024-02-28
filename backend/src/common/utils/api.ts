@@ -2,7 +2,7 @@ import {NextFunction, Request, Response} from "express";
 import logger from "../logger";
 import {isUTORid} from "is-utorid";
 import {Prisma, Solution, TestCase} from "@prisma/client";
-import prisma, {fetchedAssignmentArgs} from "../prisma";
+import prisma, {fetchedAssignmentArgs, fetchedCourseArgs} from "../prisma";
 import {
     exists,
     isProf,
@@ -10,7 +10,7 @@ import {
     serializeAssignment
 } from "./index";
 import {commitFiles, getCommit, getFile} from "./git";
-import {Commit, fetchedCourseArgs} from "codetierlist-types";
+import {Commit} from "codetierlist-types";
 import git, {ReadBlobResult} from "isomorphic-git";
 import {promises as fs} from "fs";
 import path from "path";
