@@ -11,7 +11,7 @@ import {
     MessageBarIntent,
     MessageBarTitle,
     Text,
-    Link
+    Link,
 } from '@fluentui/react-components';
 import { Container } from 'react-grid-system';
 import Head from 'next/head';
@@ -114,7 +114,8 @@ const getNodeText = (node: React.ReactNode): string => {
 
 const HeaderWrapper =
     (component: FunctionComponent, hr = false) =>
-    ({ children }: { children: ReactNode[] }) => (
+    // eslint-disable-next-line react/display-name
+    ({ children }: { children?: ReactNode }): JSX.Element => (
         <>
             <div className={'box-flex p-y-m'}>
                 {React.createElement(
@@ -320,8 +321,9 @@ export const HelpPage = (): JSX.Element => {
                             h2: HeaderWrapper(Subtitle1),
                             h3: HeaderWrapper(Subtitle2),
                             h4: HeaderWrapper(Subtitle2),
-                            blockquote: Quote,
-                            p: Text,
+                            blockquote: ({ children }) => <Quote>{children}</Quote>,
+                            p: ({ children }) => <Text>{children}</Text>,
+                            div: ({ children }) => <div>{children}</div>,
                             ul: ({ children }) => (
                                 <ul className={'p-l-xl'}>{children}</ul>
                             ),
