@@ -1,5 +1,5 @@
 import { Caption1, Title3 } from '@fluentui/react-text';
-import { Accordion, AccordionItem, AccordionHeader, AccordionPanel, Subtitle2 } from '@fluentui/react-components';
+import { Accordion, AccordionItem, Link, AccordionHeader, AccordionPanel, Subtitle2 } from '@fluentui/react-components';
 import { Container } from 'react-grid-system';
 import Head from 'next/head';
 import styles from './help.module.css';
@@ -28,10 +28,10 @@ export const HelpPage = (): JSX.Element => {
                         </AccordionHeader>
                         <AccordionPanel className={styles.accordionPanel}>
                             <p>
-                                Codetierlist to encourage you to start early and to test often. We’re hoping
-                                that being able to compare your code and tests with others will help motivate
-                                you to build good tests and will provide some feedback on how effective your
-                                testing is.
+                                Codetierlist is a tool that allows students to compare their code and tests
+                                with others without revealing their identity or committing an academic offense.
+                                This allows students to see how their code and tests compare to others and to
+                                learn from their peers.
                             </p>
                         </AccordionPanel>
                     </AccordionItem>
@@ -64,6 +64,40 @@ export const HelpPage = (): JSX.Element => {
                                 code and tests with others without revealing their identity or committing an
                                 academic offense. This allows students to see how their code and tests compare to
                                 others and to learn from their peers.
+                            </p>
+                        </AccordionPanel>
+                    </AccordionItem>
+
+                    <AccordionItem value="faq4" className={styles.accordionItem}>
+                        <AccordionHeader as="h2" expandIconPosition="end">
+                            Why is testing important?
+                        </AccordionHeader>
+                        <AccordionPanel className={styles.accordionPanel}>
+                            <p>
+                                Programs are often complex and can have many different inputs and outputs. By
+                                testing your code across a variety of inputs, you can be more confident that
+                                your code is working as expected.
+                            </p>
+                            <p>
+                                For example, in a safety-critical system, such as a medical device or a
+                                self-driving car, one would hope that the software has been thoroughly tested
+                                to ensure that it works as expected. In these cases, testing is not only
+                                important, it is critical and can be a matter of life and death.
+                            </p>
+                            <p>
+                                To learn more about safety-critical systems and the importance of testing,
+                                there is a great example of a software bug that caused a radiation overdose
+                                in cancer patients in a Canadian radiation therapy machine, the
+                                <Link inline href="https://en.wikipedia.org/wiki/Therac-25">Therac-25</Link>.
+                                {' '}Its lack of independent code review, complete disregard for testing, and
+                                engineering issues led to six known cases of severe radiation overdoses, some of
+                                which were <strong>fatal</strong>. The Therac-25 is a sobering reminder of the
+                                importance of testing and the consequences of inadequate testing.
+                            </p>
+                            <p>
+                                For students, the lack of testing may not be as life-threating, but it
+                                can be the difference between passing and failing a course, which can
+                                impact job prospects and future opportunities.
                             </p>
                         </AccordionPanel>
                     </AccordionItem>
