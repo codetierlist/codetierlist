@@ -145,7 +145,7 @@ const AccentSelector = () => {
 
     return (
         <input
-            type={'color'}
+            type="color"
             value={accentColor}
             onChange={(e) => {
                 setAccentColor(e.target.value);
