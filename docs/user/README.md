@@ -63,7 +63,7 @@ The tierlist is dynamic and will update if your classmates update their code and
 ### Due Dates
 Each assignment will have a due date. The due date will be displayed on the assignment page. Make sure to submit your code and test cases before the due date. Late submissions will not be accepted unless stated otherwise.
 > [!NOTE]
-> Some instructors may choose to allow late submissions. If you are unsure of the late submission policy, please contact your instructor.
+> Instructors may choose to allow late submissions. If you are unsure of the late submission policy, please contact your instructor.
 
 ## Data Privacy
 Anything you upload to Codetierlist will be visible to the instructors and TAs of the course, however, your uploads will not be used for grading the assignment. 
