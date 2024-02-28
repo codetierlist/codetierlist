@@ -76,11 +76,19 @@ const backgrounds = [
         url: 'unset',
     },
     {
+        name: 'UTM Deer 1',
+        url: 'url("https://i.imgur.com/WsYfjnZ.jpeg")'
+    },
+    {
+        name: 'UTM Deer 2',
+        url: 'url("https://i.imgur.com/YccJwOS.jpg")'
+    },
+    {
         name: 'Daksh',
         url: 'url("https://avatars.githubusercontent.com/u/47948188")',
     },
     {
-        name: 'FirstLoginAnim',
+        name: 'Glow',
         url: 'url("https://logonoff.co/assets/FirstLogonAnim.svg")'
     }
 ];
