@@ -78,7 +78,7 @@ const isFirstText = (text: React.ReactNode): boolean => {
 };
 
 const clearedIntent = (children: React.ReactNode): React.ReactNode => {
-    if (typeof children === 'string') return children.replace(/^\[!\w+]\n/gi, '');
+    if (typeof children === 'string') return children.replace(/^\[!\w+]/gi, '');
     if (Array.isArray(children)) {
         const firstText = children.findIndex(isFirstText);
         if (firstText === -1) return children;
@@ -102,7 +102,7 @@ const clearedIntent = (children: React.ReactNode): React.ReactNode => {
 const Quote = ({ children }: { children: ReactNode }) => {
     const text = getNodeText(children);
     const intent = Object.keys(intents).find((key) =>
-        text.trimStart().toLowerCase().startsWith(`[!${key}]\n`.toLowerCase())
+        text.trimStart().toLowerCase().startsWith(`[!${key}]`.toLowerCase())
     );
     if (intent) {
         children = clearedIntent(children);
