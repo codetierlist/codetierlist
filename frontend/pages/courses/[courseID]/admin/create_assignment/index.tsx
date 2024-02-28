@@ -13,8 +13,8 @@ import {
     Option,
     OptionGroup,
     Switch,
-    Title2,
-    ToolbarButton,
+    Title3,
+    ToolbarButton
 } from '@fluentui/react-components';
 import {
     ArrowLeft24Regular,
@@ -218,9 +218,9 @@ export default function Page(): JSX.Element {
                         void submitAssignment();
                     }}
                 >
-                    <Title2 className={styles.title} block>
+                    <Title3 className={styles.title} block>
                         Create Assignment
-                    </Title2>
+                    </Title3>
 
                     <ControlCard
                         required

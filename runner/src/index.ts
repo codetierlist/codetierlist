@@ -37,8 +37,8 @@ export const runJob = async (job: ReadyJobData): Promise<JobResult> => {
     const img_ver = job.image.image_version;
     const max_seconds = 1;
     const promise =  new Promise<JobResult>((resolve) => {
-        const runner = spawn("sh",
-            ["-c", `docker run --rm -i --ulimit cpu=${max_seconds} --network=none codetl-runner-${img}-${img_ver}`],
+        const runner = spawn("docker",
+            ["run", "--rm", "-i", "--ulimit", `cpu=${max_seconds}`, "--network=none", `codetl-runner-${img}-${img_ver}`],
             {timeout: (max_seconds+1) * 1000});
 
         let buffer = "";
