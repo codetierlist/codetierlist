@@ -1,4 +1,4 @@
-import {Caption1, Title1, Title2, Title3} from '@fluentui/react-text';
+import { Caption1, Title1, Title2, Title3 } from '@fluentui/react-text';
 import {
     Accordion,
     AccordionItem,
@@ -22,7 +22,8 @@ import React, {
     Attributes,
     FunctionComponent,
     ReactNode,
-    useEffect, useState
+    useEffect,
+    useState,
 } from 'react';
 
 const getNodeText = (node: React.ReactNode): string => {
