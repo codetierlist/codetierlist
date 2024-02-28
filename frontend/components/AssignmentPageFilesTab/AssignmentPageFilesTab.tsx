@@ -498,11 +498,11 @@ export const AssignmentPageFilesTab = ({
                         )}
                     </div>
 
-                    {content.log[0] && (
+                    {/* {content.log[0] && (
                         <Text block className={styles.commitId} font="numeric">
                             {content.log[0]}
                         </Text>
-                    )}
+                    )} */}
 
                     <Card className="m-t-xl">
                         <input {...getInputProps()} />
