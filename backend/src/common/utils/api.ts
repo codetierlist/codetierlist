@@ -192,7 +192,7 @@ export const processSubmission = async (req: Request, res: Response, table: "sol
 
     if (commit === null) {
         res.statusCode = 500;
-        res.send({message: 'Failed to commit.'});
+        res.send({message: 'Failed to process submission.'});
         return;
     }
     if (typeof commit === "object" && "error" in commit) {
@@ -258,7 +258,7 @@ export const deleteFile = async (req: Request, res: Response, table: "solution" 
     const commit = await commitFiles(object, table, isProf(object.course_id, req.user));
     if (commit === null) {
         res.statusCode = 500;
-        res.send({message: 'Failed to commit.'});
+        res.send({message: 'Failed to delete.'});
         return;
     }
     if (typeof commit === "object" && "error" in commit) {
