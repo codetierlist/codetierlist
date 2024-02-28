@@ -1,4 +1,4 @@
-import { Caption1, Title3 } from '@fluentui/react-text';
+import { Caption1, Title2, Title3 } from '@fluentui/react-text';
 import {
     Accordion,
     AccordionItem,
@@ -222,7 +222,7 @@ export const HelpPage = (): JSX.Element => {
                     FAQ
                 </Subtitle2>
 
-                <Accordion multiple className={styles.accordion}>
+                <Accordion multiple collapsible className={styles.accordion}>
                     <AccordionItem value="faq1" className={styles.accordionItem}>
                         <AccordionHeader as="h2" expandIconPosition="end">
                             What is Codetierist?
@@ -320,12 +320,12 @@ export const HelpPage = (): JSX.Element => {
                     </AccordionItem>
                 </Accordion>
 
-                <div>
+                <div className={'p-y-xl'}>
                     <Markdown
                         components={{
-                            h1: HeaderWrapper(Title3),
-                            h2: HeaderWrapper(Subtitle1),
-                            h3: HeaderWrapper(Subtitle2),
+                            h1: HeaderWrapper(Title2),
+                            h2: HeaderWrapper(Title3, true),
+                            h3: HeaderWrapper(Subtitle1),
                             h4: HeaderWrapper(Subtitle2),
                             blockquote: ({ children }) => <Quote>{children}</Quote>,
                             p: ({ children }) => <Text>{children}</Text>,
@@ -334,6 +334,9 @@ export const HelpPage = (): JSX.Element => {
                                 <ul className={'p-l-xl'}>{children}</ul>
                             ),
                             li: ({ children }) => <li>{children}</li>,
+                            a: ({ children, href }) => (
+                                <Link href={href || '#'}>{children}</Link>
+                            ),
                         }}
                         remarkPlugins={[remarkGfm]}
                     >
