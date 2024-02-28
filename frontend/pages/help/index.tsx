@@ -331,7 +331,6 @@ export const HelpPage = (): JSX.Element => {
                             ul: ({ children }) => (
                                 <ul className={'p-l-xl'}>{children}</ul>
                             ),
-                            li: ({ children }) => <li>{children}</li>,
                             a: ({ children, href }) => (
                                 <Link href={href || '#'}>{children}</Link>
                             ),
