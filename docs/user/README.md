@@ -1,4 +1,4 @@
-# Codetierlist Student Quick Start Guide
+# Codetierlist Full Student Guide
 This guide will help you get started with the Codetierlist as a student.
 ## Table of Contents
 - [Testing in Software Development](#testing-in-software-development)

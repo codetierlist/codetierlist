@@ -25,6 +25,8 @@
         "react-dom": "^18.2.0",
         "react-dropzone": "^14.2.3",
         "react-grid-system": "^8.1.9",
+        "react-markdown": "^9.0.1",
+        "remark-gfm": "^4.0.0",
         "use-local-storage": "^3.0.0"
     },
     "devDependencies": {
