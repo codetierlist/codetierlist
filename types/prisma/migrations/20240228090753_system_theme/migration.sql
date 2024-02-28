@@ -1,0 +1,5 @@
+-- AlterEnum
+ALTER TYPE "Theme" ADD VALUE 'SYSTEM';
+
+-- AlterTable
+ALTER TABLE "Users" ALTER COLUMN "theme" SET DEFAULT 'SYSTEM';
