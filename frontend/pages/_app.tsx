@@ -27,6 +27,72 @@ import useLocalStorage from 'use-local-storage';
 
 type EnhancedAppProps = AppProps & { renderer?: GriffelRenderer };
 
+/**
+ * Media query hook
+ */
+const useMediaQuery = (query: string) => {
+    const [matches, setMatches] = useState(false);
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia(query);
+        if (mediaQuery.matches !== matches) {
+            setMatches(mediaQuery.matches);
+        }
+
+        const listener = () => setMatches(mediaQuery.matches);
+        mediaQuery.addEventListener('change', listener);
+
+        return () => mediaQuery.removeEventListener('change', listener);
+    }, [matches, query]);
+
+    return matches;
+};
+
+/**
+ * Conditionally sets the theme based on the system theme
+ */
+const useSystemTheme = (theme: Theme) => {
+    const query = useMediaQuery('(prefers-color-scheme: dark)');
+
+    return useMemo(() => {
+        // set scrollbar color
+        document.documentElement.style.colorScheme =
+            theme === 'SYSTEM' ? (query ? 'dark' : 'light') : theme;
+
+        if (theme === 'SYSTEM') {
+            return query ? 'DARK' : 'LIGHT';
+        } else {
+            return theme;
+        }
+    }, [query, theme]);
+};
+
+/**
+ * Fetches user info
+ */
+const useUserInfo = (
+    showSnackSev: (message?: string, severity?: ToastIntent) => void
+) => {
+    const [userInfo, setUserInfo] = useState<FetchedUser>(defaultUser);
+
+    const fetchUserInfo = async () => {
+        await axios('/users')
+            .then(({ data }) => {
+                setUserInfo(data as FetchedUser);
+            })
+            .catch((e) => {
+                handleError(showSnackSev)(e);
+            });
+    };
+
+    useEffect(() => {
+        void fetchUserInfo();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    return { userInfo, setUserInfo, fetchUserInfo };
+};
+
 function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
     /** snackbar */
     const toasterId = useId('toaster');
@@ -54,73 +120,17 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
             { intent: severity }
         );
 
-    /* user data initialization into context and fetching */
-    const [userInfo, setUserInfo] = useState<FetchedUser>(defaultUser);
-
-    const fetchUserInfo = async () => {
-        await axios('/users')
-            .then(({ data }) => {
-                setUserInfo(data as FetchedUser);
-            })
-            .catch((e) => {
-                handleError(showSnackSev)(e);
-            });
-    };
-
-    useEffect(() => {
-        void fetchUserInfo();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    /** user info */
+    const { userInfo, setUserInfo, fetchUserInfo } = useUserInfo(showSnackSev);
 
     /*
      * themes
      */
-    const computeTheme = (newTheme: Theme) => {
-        if (newTheme === 'SYSTEM') {
-            return window.matchMedia &&
-                window.matchMedia('(prefers-color-scheme: dark)').matches
-                ? 'DARK'
-                : 'LIGHT';
-        }
-        return newTheme;
-    };
+    const themes = useMemo(() => {
+        return getThemes(userInfo.accent_color || defaultAccentColor);
+    }, [userInfo.accent_color]);
 
-    const [theme, setTheme] = useState(computeTheme(userInfo.theme));
-
-    useEffect(() => {
-        setTheme(computeTheme(userInfo.theme));
-    }, [userInfo.theme]);
-
-    // change system colour scheme based on current user theme
-    useEffect(() => {
-        const updateTheme = (e: MediaQueryListEvent) => {
-            if (userInfo.theme === 'SYSTEM') {
-                setTheme(e.matches ? 'DARK' : 'LIGHT');
-            } else {
-                setTheme(computeTheme(userInfo.theme));
-            }
-        }
-
-        window
-            .matchMedia('(prefers-color-scheme: dark)')
-            .addEventListener('change', (e) => {
-                updateTheme(e);
-            });
-
-        if (theme === 'DARK') {
-            document.documentElement.style.colorScheme = 'dark';
-        } else {
-            document.documentElement.style.colorScheme = 'light';
-        }
-
-        return () => {
-            window
-                .matchMedia('(prefers-color-scheme: dark)')
-                .removeEventListener('change', (e) => {
-                    updateTheme(e);
-                });
-        }
-    }, [userInfo.theme, theme]);
+    const theme = useSystemTheme(userInfo.theme);
 
     // custom background image
     const [background, _] = useLocalStorage('background', undefined);
@@ -133,11 +143,6 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
             '--background': background,
         } as React.CSSProperties);
     }, [background]);
-
-    // themes
-    const themes = useMemo(() => getThemes(userInfo.accent_color || defaultAccentColor), [
-        userInfo.accent_color,
-    ]);
 
     return (
         // 👇 Accepts a renderer from <Document /> or creates a default one

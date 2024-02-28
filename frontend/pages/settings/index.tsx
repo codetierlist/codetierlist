@@ -11,7 +11,11 @@ import {
     Title3,
     Link,
 } from '@fluentui/react-components';
-import { Color24Regular, Image24Regular, PaintBrush24Regular } from '@fluentui/react-icons';
+import {
+    Color24Regular,
+    Image24Regular,
+    PaintBrush24Regular,
+} from '@fluentui/react-icons';
 import { Theme } from 'codetierlist-types';
 import Head from 'next/head';
 import Image from 'next/image';
