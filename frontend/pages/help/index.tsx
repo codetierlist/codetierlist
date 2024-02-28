@@ -103,9 +103,7 @@ export const HelpPage = (): JSX.Element => {
                             </p>
                             <p>
                                 To learn more about safety-critical systems and the
-                                importance of testing, there a great example of the
-                                consequences of inadequate testing can be found in a
-                                Canadian radiation therapy machine, the{' '}
+                                importance of testing, consider reading about the{' '}
                                 <Link
                                     inline
                                     href="https://en.wikipedia.org/wiki/Therac-25"
@@ -115,12 +113,14 @@ export const HelpPage = (): JSX.Element => {
                                 . Its lack of independent code review, complete disregard
                                 for testing, and engineering issues led to six known cases
                                 of severe radiation overdoses, some of which were{' '}
-                                <strong>fatal</strong>.
+                                <strong>fatal</strong>. The Therac-25 is a sobering
+                                reminder of the importance of testing and code review,
+                                and its consequences when improperly done.
                             </p>
                             <p>
                                 For students, the lack of testing may not be as
                                 life-threating, but it can be the difference between
-                                passing and failing a course, which can impact job
+                                passing and failing an assignment, which can impact job
                                 prospects and future opportunities.
                             </p>
                         </AccordionPanel>
