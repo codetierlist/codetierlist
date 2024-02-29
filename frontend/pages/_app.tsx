@@ -53,22 +53,23 @@ const useMediaQuery = (query: string) => {
 /**
  * Conditionally sets the theme based on the system theme
  */
-export const useSystemTheme = (theme: Theme) => {
-    const query = useMediaQuery('(prefers-color-scheme: dark)');
+export const useSystemTheme = (theme: Theme): Theme => {
+    const darkQuery = useMediaQuery('(prefers-color-scheme: dark)');
+    const contrastQuery = useMediaQuery('(prefers-contrast: more)');
 
     return useMemo(() => {
         // set scrollbar color
         if (typeof document !== 'undefined') {
             document.documentElement.style.colorScheme =
-                theme === 'SYSTEM' ? (query ? 'dark' : 'light') : theme;
+                theme === 'SYSTEM' ? (darkQuery ? 'dark' : 'light') : theme;
         }
 
         if (theme === 'SYSTEM') {
-            return query ? 'DARK' : 'LIGHT';
+            return contrastQuery ? 'CONTRAST' : darkQuery ? 'DARK' : 'LIGHT';
         } else {
             return theme;
         }
-    }, [query, theme]);
+    }, [darkQuery, contrastQuery, theme]);
 };
 
 /**
