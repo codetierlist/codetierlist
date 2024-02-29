@@ -1,4 +1,7 @@
-import { themes, Navbar } from '@/components';
+import axios, { handleError } from '@/axios';
+import { Navbar } from '@/components';
+import { defaultAccentColor } from "@/components/utils/theme/theme";
+import { defaultUser, SnackbarContext, UserContext, useSystemTheme, useTheme } from '@/hooks';
 import '@/styles/globals.css';
 import '@/styles/spacing.css';
 import {
@@ -17,15 +20,40 @@ import {
     useId,
     useToastController,
 } from '@fluentui/react-components';
-import type { AppProps } from 'next/app';
-import { defaultUser, UserContext } from '@/contexts/UserContext';
 import { FetchedUser } from 'codetierlist-types';
+import type { AppProps } from 'next/app';
 import { useEffect, useState } from 'react';
-import axios, { handleError } from '@/axios';
-import { SnackbarContext } from '@/contexts/SnackbarContext';
 import useLocalStorage from 'use-local-storage';
 
-type EnhancedAppProps = AppProps & { renderer?: GriffelRenderer };
+type EnhancedAppProps = AppProps & {
+    renderer?: GriffelRenderer;
+};
+
+/**
+ * Fetches user info
+ */
+const useUserInfo = (
+    showSnackSev: (message?: string, severity?: ToastIntent) => void
+) => {
+    const [userInfo, setUserInfo] = useState<FetchedUser>(defaultUser);
+
+    const fetchUserInfo = async () => {
+        await axios('/users')
+            .then(({ data }) => {
+                setUserInfo(data as FetchedUser);
+            })
+            .catch((e) => {
+                handleError(showSnackSev)(e);
+            });
+    };
+
+    useEffect(() => {
+        void fetchUserInfo();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    return { userInfo, setUserInfo, fetchUserInfo };
+};
 
 function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
     /** snackbar */
@@ -54,32 +82,15 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
             { intent: severity }
         );
 
-    /* user data initialization into context and fetching */
-    const [userInfo, setUserInfo] = useState<FetchedUser>(defaultUser);
+    /** user info */
+    const { userInfo, setUserInfo, fetchUserInfo } = useUserInfo(showSnackSev);
 
-    const fetchUserInfo = async () => {
-        await axios('/users')
-            .then(({ data }) => {
-                setUserInfo(data as FetchedUser);
-            })
-            .catch((e) => {
-                handleError(showSnackSev)(e);
-            });
-    };
+    /*
+     * themes
+     */
+    const themes = useTheme(userInfo.accent_color || defaultAccentColor);
 
-    useEffect(() => {
-        void fetchUserInfo();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    // change system colour scheme based on current user theme
-    useEffect(() => {
-        if (userInfo.theme === 'DARK') {
-            document.documentElement.style.colorScheme = 'dark';
-        } else {
-            document.documentElement.style.colorScheme = 'light';
-        }
-    }, [userInfo.theme]);
+    const theme = useSystemTheme(userInfo.theme);
 
     // custom background image
     const [background, _] = useLocalStorage('background', undefined);
@@ -99,10 +110,7 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
         <RendererProvider renderer={renderer || createDOMRenderer()}>
             <SSRProvider>
                 <UserContext.Provider value={{ userInfo, setUserInfo, fetchUserInfo }}>
-                    <FluentProvider
-                        theme={themes[userInfo.theme]}
-                        style={backgroundProps}
-                    >
+                    <FluentProvider theme={themes[theme]} style={backgroundProps}>
                         <SnackbarContext.Provider value={{ showSnack, showSnackSev }}>
                             <Field validationState="none" id="axios-loading-backdrop">
                                 <ProgressBar />

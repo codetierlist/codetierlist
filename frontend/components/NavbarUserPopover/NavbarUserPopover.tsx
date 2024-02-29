@@ -1,5 +1,5 @@
-import { generateInitals, generateInitalsAvatarProps } from '@/components';
-import { UserContext } from '@/contexts/UserContext';
+import { generateInitials, generateInitialsAvatarProps } from '@/components';
+import { UserContext } from '@/hooks';
 import { Badge, Button, Persona } from '@fluentui/react-components';
 import {
     ErrorCircle12Filled,
@@ -24,7 +24,7 @@ export const NavbarUserPopover = (): JSX.Element => {
                 <Persona
                     size="huge"
                     className={styles.popoverPersona}
-                    avatar={generateInitalsAvatarProps(generateInitals(userInfo))}
+                    avatar={generateInitialsAvatarProps(generateInitials(userInfo))}
                     primaryText={
                         <>
                             {`${userInfo.givenName} ${userInfo.surname}` == ' '

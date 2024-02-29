@@ -1,7 +1,7 @@
 import axios, { handleError } from '@/axios';
 import { AchievementCard, RawAchievementCard } from '@/components';
-import { SnackbarContext } from '@/contexts/SnackbarContext';
-import { UserContext } from '@/contexts/UserContext';
+import { SnackbarContext } from '@/hooks';
+import { UserContext } from '@/hooks';
 import { Title2 } from '@fluentui/react-text';
 import { AchievementConfig } from 'codetierlist-types';
 import { notFound } from 'next/navigation';

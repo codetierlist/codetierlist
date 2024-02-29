@@ -1,6 +1,5 @@
 import axios, { handleError } from '@/axios';
-import { SnackbarContext } from '@/contexts/SnackbarContext';
-import { UserContext } from '@/contexts/UserContext';
+import { SnackbarContext, UserContext } from '@/hooks';
 import {
     Button,
     Caption1,

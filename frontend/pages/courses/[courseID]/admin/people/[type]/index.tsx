@@ -5,7 +5,7 @@ import {
     checkIfCourseAdmin,
     promptForFileReader,
 } from '@/components';
-import { SnackbarContext } from '@/contexts/SnackbarContext';
+import { SnackbarContext, UserContext } from '@/hooks';
 import {
     Body2,
     Button,
@@ -21,12 +21,11 @@ import { Add24Filled, ArrowLeft24Regular } from '@fluentui/react-icons';
 import { Title2 } from '@fluentui/react-text';
 import { RoleType } from 'codetierlist-types';
 import { isUTORid } from 'is-utorid';
-import Head from 'next/head';
 import Error from 'next/error';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import { Container } from 'react-grid-system';
-import { UserContext } from '@/contexts/UserContext';
 
 /**
  * Get the role name from the role type

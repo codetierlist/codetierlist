@@ -1,8 +1,11 @@
 import { achievementsConfig } from "@/common/config";
 import prisma from "@/common/prisma";
-import { errorHandler } from "@/common/utils";
+import { errorHandler } from "@/common/utils/api";
 import { AchievementConfig, FetchedUser, Theme } from "codetierlist-types";
 import express from "express";
+import {
+    PrismaClientUnknownRequestError,
+} from "@prisma/client/runtime/library";
 
 const router = express.Router();
 
@@ -34,14 +37,33 @@ router.post("/theme", errorHandler(async (req, res) => {
         });
     }
     catch (e) {
-        res.status(400).send({ message: `Invalid theme: ${req.body.theme}.` });
+        if (e instanceof  PrismaClientUnknownRequestError){
+            res.status(400).send({ message: `Invalid theme: ${req.body.theme}.` });
+        }
+        else throw e;
         return;
     }
 
     res.status(200).send({ message: `Set theme to ${req.body.theme}.` });
 
 }));
+router.post("/accent", errorHandler(async (req, res) => {
+    if (!req.body.accent_color) {
+        res.status(400).send({ message: "No accent color specified." });
+        return;
+    }
+    if (req.body.accent_color !== null && (typeof req.body.accent_color !== "string" || !req.body.accent_color.match(/^#[0-9a-fA-F]{6}$/))) {
+        res.status(400).send({message: `Invalid accent color: ${req.body.accent_color}.`});
+        return;
+    }
 
+    await prisma.user.update({
+        where: { utorid: req.user.utorid },
+        data: { accent_color: req.body.accent_color }
+    });
+
+    res.status(200).send({ message: `Set accent color to ${req.body.accent_color}.` });
+}));
 /**
  * get the achievements of the user
  * @public

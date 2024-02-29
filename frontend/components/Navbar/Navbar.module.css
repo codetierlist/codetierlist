@@ -34,8 +34,17 @@
     gap: var(--spacingVerticalS);
 }
 
+.popoverButton {
+    min-width: unset !important;
+}
+
 @media (max-width: 768px) {
     .subtext {
         display: none;
+    }
+
+    .avatar {
+        padding: 0 !important;
+        margin: 0 !important;
     }
 }

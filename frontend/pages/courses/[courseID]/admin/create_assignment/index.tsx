@@ -1,7 +1,6 @@
 import axios, { handleError } from '@/axios';
 import { ControlCard, HeaderToolbar, Monaco, checkIfCourseAdmin } from '@/components';
-import { SnackbarContext } from '@/contexts/SnackbarContext';
-import { UserContext } from '@/contexts/UserContext';
+import { SnackbarContext, UserContext } from '@/hooks';
 import {
     Button,
     Caption1,
@@ -14,7 +13,7 @@ import {
     OptionGroup,
     Switch,
     Title3,
-    ToolbarButton
+    ToolbarButton,
 } from '@fluentui/react-components';
 import {
     ArrowLeft24Regular,
@@ -355,7 +354,8 @@ export default function Page(): JSX.Element {
                             }
                             description={
                                 <Caption1>
-                                    The description is displayed to the students.
+                                    The description is displayed to the students. You can
+                                    use markdown to format the text.
                                 </Caption1>
                             }
                         />
