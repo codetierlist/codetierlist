@@ -223,7 +223,7 @@ const checkFilesMiddleware = (req: Request, res: Response, next: NextFunction) =
  * Processes the submission and sends the result to the client.
  * @public
  */
-router.post("/:assignment/submissions/:path*?", fetchAssignmentMiddleware, uploadMiddleware, checkFilesMiddleware,
+router.post("/:assignment/submissions/*", fetchAssignmentMiddleware, uploadMiddleware, checkFilesMiddleware,
     errorHandler(async (req, res) =>
         processSubmission(req, res, "solution")));
 
@@ -231,7 +231,7 @@ router.post("/:assignment/submissions/:path*?", fetchAssignmentMiddleware, uploa
  * Processes the test case and sends the result to the client.
  * @public
  */
-router.post("/:assignment/testcases/:path*?", fetchAssignmentMiddleware, uploadMiddleware, checkFilesMiddleware,
+router.post("/:assignment/testcases/*", fetchAssignmentMiddleware, uploadMiddleware, checkFilesMiddleware,
     errorHandler(async (req, res) =>
         processSubmission(req, res, "testCase")));
 
@@ -258,7 +258,7 @@ router.get("/:assignment/submissions/:commitId?", fetchAssignmentMiddleware,
  * Gets a file from the submission and sends it to the client.
  * @public
  */
-router.get("/:assignment/submissions/:commitId?/:file*", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
+router.get("/:assignment/submissions/:commitId/*", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     await getFileFromRequest(req, res, "solution");
 }));
 
@@ -266,7 +266,7 @@ router.get("/:assignment/submissions/:commitId?/:file*", fetchAssignmentMiddlewa
  * Deletes a file from the submission.
  * @public
  */
-router.delete("/:assignment/submissions/:file*", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
+router.delete("/:assignment/submissions/*", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     await deleteFile(req, res, "solution");
 }));
 
@@ -293,7 +293,7 @@ router.get("/:assignment/testcases/:commitId?", fetchAssignmentMiddleware, error
  * Deletes a file from the test case.
  * @public
  */
-router.delete("/:assignment/testcases/:file*", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
+router.delete("/:assignment/testcases/*", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     await deleteFile(req, res, "testCase");
 }));
 
@@ -301,7 +301,7 @@ router.delete("/:assignment/testcases/:file*", fetchAssignmentMiddleware, errorH
  * Gets a file from the test case and sends it to the client.
  * @public
  */
-router.get("/:assignment/testcases/:commitId?/:file*", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
+router.get("/:assignment/testcases/:commitId/*", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     await getFileFromRequest(req, res, "testCase");
 }));
 

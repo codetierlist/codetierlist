@@ -8,7 +8,7 @@ import {PathLike, promises as fs} from "fs";
 import path from "path";
 
 export const securePath = (p: string) => {
-    return `.${path.normalize(`/${p}`)}`;
+    return `.${path.normalize(`/${p}`)}`.slice(2);
 };
 
 /**

@@ -79,7 +79,7 @@ const getObjectFromRequest = async (req: Request, table: "solution" | "testCase"
  * @param res
  * @param table the table to process the submission for. Either "solution" or "testCase"
  */
-export const processSubmission = async (req: Request, res: Response, table: "solution" | "testCase", unzip = false) => {
+export const processSubmission = async (req: Request, res: Response, table: "solution" | "testCase") => {
     if (!req.user.roles.some(role => role.course_id === req.course!.id)) {
         res.statusCode = 403;
         res.send({message: 'You are not enrolled in this course.'});
@@ -126,9 +126,9 @@ export const processSubmission = async (req: Request, res: Response, table: "sol
     // get files from form data
     for (const file of req.files!) {
         if (file === null) continue;
-        const dest = path.join(repoPath, securePath(req.params.path ?? "."));
+        const dest = path.join(repoPath, securePath(req.params[0] ?? "."));
         await fs.mkdir(dest, {recursive: true});
-        if (unzip) {
+        if (req.query.unzip && file.mimetype === "application/zip") {
             await extract(file.path, {dir: dest});
             continue;
         }
@@ -226,7 +226,7 @@ export const getFileFromRequest = async (req: Request, res: Response, table: "so
     }
     let file: ReadBlobResult | null = null;
     try {
-        file = await getFile(req.params.file, object.git_url, req.params.commitId ?? object.git_id);
+        file = await getFile(req.params[0], object.git_url, req.params.commitId ?? object.git_id);
     } catch (e) { /* empty */
     }
     if (file === null) {
@@ -256,8 +256,8 @@ export const deleteFile = async (req: Request, res: Response, table: "solution" 
         return;
     }
     try {
-        await git.remove({fs, dir: object.git_url, filepath: securePath(req.params.file)});
-        await fs.unlink(`${object!.git_url}/${securePath(req.params.file)}`);
+        await git.remove({fs, dir: object.git_url, filepath: securePath(req.params[0])});
+        await fs.unlink(`${object!.git_url}/${securePath(req.params[0])}`);
     } catch (_) {
         /* if the file doesn't exist then continue */
     }
