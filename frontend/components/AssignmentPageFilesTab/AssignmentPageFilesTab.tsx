@@ -496,7 +496,7 @@ export const AssignmentPageFilesTab = ({
         if (!content.files.includes(currentFolder)) {
             setCurrentFile('');
         }
-    }, [content.files]);
+    }, [content.files, currentFolder]);
 
     const submitFolder = async (fileslist: File[]) => {
         if (fileslist) {

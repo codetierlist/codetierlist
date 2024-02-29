@@ -5,7 +5,7 @@ import { useMemo } from 'react';
 /**
  * Conditionally sets the theme based on the system theme
  */
-export const useSystemTheme = (theme: Theme): Omit<Theme, 'SYSTEM'> => {
+export const useSystemTheme = (theme: Theme) => {
     const darkQuery = useMediaQuery('(prefers-color-scheme: dark)');
     const contrastQuery = useMediaQuery('(prefers-contrast: more)');
 
