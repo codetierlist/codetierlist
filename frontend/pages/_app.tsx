@@ -1,7 +1,13 @@
 import axios, { handleError } from '@/axios';
 import { Navbar } from '@/components';
-import { defaultAccentColor } from "@/components/utils/theme/theme";
-import { defaultUser, SnackbarContext, UserContext, useSystemTheme, useTheme } from '@/hooks';
+import { defaultAccentColor } from '@/components/utils/theme/theme';
+import {
+    defaultUser,
+    SnackbarContext,
+    UserContext,
+    useSystemTheme,
+    useTheme,
+} from '@/hooks';
 import '@/styles/globals.css';
 import '@/styles/spacing.css';
 import {
@@ -76,7 +82,11 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
     const showSnackSev = (message?: string, severity?: ToastIntent) =>
         dispatchToast(
             <Toast>
-                <ToastTitle>{severity}</ToastTitle>
+                {severity && (
+                    <ToastTitle>
+                        {severity.charAt(0).toUpperCase() + severity.slice(1)}
+                    </ToastTitle>
+                )}
                 <ToastBody>{message}</ToastBody>
             </Toast>,
             { intent: severity }

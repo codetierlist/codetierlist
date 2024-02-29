@@ -61,13 +61,10 @@ export const AssignmentPageFilesTab = ({
                 }
             )
             .then((res) => {
-                if (
-                    res.data.log[0] != content.log[0] ||
-                    res.data.valid != content.valid
-                )
+                if (res.data.log[0] != content.log[0] || res.data.valid != content.valid)
                     setContent(res.data);
-                    // TODO why is this needed on production build?
-                    content = res.data;
+                // TODO why is this needed on production build?
+                content = res.data;
             })
             .catch((e) => {
                 handleError(showSnackSev)(e);

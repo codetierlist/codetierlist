@@ -14,7 +14,7 @@ const useBrandTokens = (accentColor: string) => {
     return useMemo(() => {
         return getBrandTokensFromPalette(accentColor);
     }, [accentColor]);
-}
+};
 
 const spaceGrotesk = Space_Grotesk({
     subsets: ['latin'],
