@@ -39,7 +39,8 @@ export const AssignmentPageFilesTab = ({
     routeName,
     route,
 }: AssignmentPageFilesTabProps): JSX.Element => {
-    const [content, setContent] = useState<Commit>({
+    // eslint-disable-next-line prefer-const
+    let [content, setContent] = useState<Commit>({
         files: [],
         log: [],
     } as Commit);
@@ -61,10 +62,12 @@ export const AssignmentPageFilesTab = ({
             )
             .then((res) => {
                 if (
-                    res.data.log[0] !== content.log[0] ||
-                    res.data.valid !== content.valid
+                    res.data.log[0] != content.log[0] ||
+                    res.data.valid != content.valid
                 )
                     setContent(res.data);
+                    // TODO why is this needed on production build?
+                    content = res.data;
             })
             .catch((e) => {
                 handleError(showSnackSev)(e);
@@ -74,10 +77,13 @@ export const AssignmentPageFilesTab = ({
     }, [assignment.course_id, assignmentID, route]);
 
     useEffect(() => {
-        if (!content.files.includes(currentFolder)) {
+        if (currentFolder && !content.files.includes(currentFolder)) {
+            setCurrentFolder('');
+        }
+        if (currentFile && !content.files.includes(currentFile)) {
             setCurrentFile('');
         }
-    }, [content.files, currentFolder]);
+    }, [content.files, currentFile, currentFolder]);
 
     const submitFolder = async (fileslist: File[], target?: string) => {
         if (target === undefined) target = currentFolder;
