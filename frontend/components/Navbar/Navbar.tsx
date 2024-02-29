@@ -32,7 +32,7 @@ const UserAvatar = (): JSX.Element => {
             textPosition="before"
             avatar={generateInitialsAvatarProps(generateInitials(userInfo), {
                 badge: userInfo.new_achievements ? { status: 'busy' } : undefined,
-                className: styles.avatar
+                className: styles.avatar,
             })}
             primaryText={
                 <span className={styles.subtext}>

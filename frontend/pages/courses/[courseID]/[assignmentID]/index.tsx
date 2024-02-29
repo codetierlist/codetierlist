@@ -5,7 +5,8 @@ import {
     TierList,
     checkIfCourseAdmin,
     convertDate,
-    convertTime, MarkdownRender,
+    convertTime,
+    MarkdownRender,
 } from '@/components';
 import { SnackbarContext } from '@/contexts/SnackbarContext';
 import { UserContext } from '@/contexts/UserContext';

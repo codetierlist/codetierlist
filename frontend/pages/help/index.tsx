@@ -10,7 +10,7 @@ import { Container } from 'react-grid-system';
 import Head from 'next/head';
 import styles from './help.module.css';
 import { useEffect, useState } from 'react';
-import {MarkdownRender} from "@/components";
+import { MarkdownRender } from '@/components';
 
 export const HelpPage = (): JSX.Element => {
     const [markdown, setMarkdown] = useState('');

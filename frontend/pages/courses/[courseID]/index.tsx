@@ -142,7 +142,7 @@ const CourseAdminToolbar = ({
                 icon={<ImageAdd20Regular />}
                 onClick={async (event) => {
                     event.stopPropagation();
-                    const files = await promptForFileObject('image/*');
+                    const files = await promptForFileObject({ type: 'image/*' });
                     if (!files || files.length != 1) {
                         return;
                     }

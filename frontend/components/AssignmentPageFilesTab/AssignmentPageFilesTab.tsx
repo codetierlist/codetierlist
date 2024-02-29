@@ -2,47 +2,28 @@ import axios, { handleError } from '@/axios';
 import { Monaco, TestCaseStatus, promptForFileObject } from '@/components';
 import { SnackbarContext } from '@/contexts/SnackbarContext';
 import {
-    Accordion,
-    AccordionHeader,
-    AccordionItem,
-    AccordionPanel,
     Button,
     Caption1,
     Card,
     Subtitle1,
-    Text,
     Tree,
     TreeItem,
-    Tooltip,
     Link,
     TreeItemLayout,
 } from '@fluentui/react-components';
 import {
     Add24Filled,
-    Delete16Filled,
     Delete20Regular,
     DocumentMultiple24Regular,
+    Folder24Filled,
 } from '@fluentui/react-icons';
 import { Commit, UserFetchedAssignment } from 'codetierlist-types';
 import { useSearchParams } from 'next/navigation';
-import { useCallback, useContext, useEffect, useState } from 'react';
-import { useDropzone } from 'react-dropzone';
+import { ReactNode, useCallback, useContext, useEffect, useState } from 'react';
+import { DropEvent, FileRejection, useDropzone } from 'react-dropzone';
 import styles from './AssignmentPageFilesTab.module.css';
-
-const dummy: Commit = {
-    files: [
-        'e.py',
-        'subfolder/asdfsaf.py',
-        'subfolder/lab10.py',
-        'subfolder/subsubfolder/lab10_tests.py',
-    ],
-    log: [
-        '64ab39e9cadef44c03b2624bd32221bd42f13e1f',
-        '0e0706aa37b1d16b6350bd1a0832544c8a712082',
-        'b2e858144bba8903417ba3cbe5915d2b5197f98d',
-    ],
-    valid: 'VALID',
-};
+import { basename, join, normalize } from 'path';
+import JSZip from 'jszip';
 
 declare type ListFilesProps = {
     /** the commit to display */
@@ -55,6 +36,16 @@ declare type ListFilesProps = {
     assignmentID: string;
     /** a function to call when the files are updated */
     update?: () => void;
+    /** the current folder */
+    currentFolder: string;
+    /** a function to call when the folder is changed */
+    setCurrentFolder: (folder: string) => void;
+    /** the current file */
+    currentFile: string;
+    /** a function to call when the file is changed */
+    setCurrentFile: (file: string) => void;
+    /** a function to submit files */
+    submitFiles: (files: File[]) => void;
 };
 
 declare type TreeType = {
@@ -85,7 +76,45 @@ const convertPathsToTree = (paths: string[]): TreeType => {
 
     return root;
 };
-
+const Dropzone = ({
+    submitFiles,
+    children,
+    routeName,
+}: {
+    submitFiles: <T extends File>(
+        acceptedFiles: T[],
+        fileRejections: FileRejection[],
+        event: DropEvent
+    ) => void;
+    children: ReactNode | ReactNode[];
+    routeName: string;
+}): JSX.Element => {
+    const searchParams = useSearchParams();
+    // create a dropzone for the user to upload files
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({
+        onDrop: submitFiles,
+        noClick: true,
+        noKeyboard: true,
+        multiple: true,
+        disabled: searchParams.has('utorid'),
+        noDragEventsBubbling: true,
+    });
+    return (
+        <div {...getRootProps({ className: styles.dropZone })}>
+            {isDragActive ? (
+                <div className={styles.dropZoneOverlay}>
+                    <Subtitle1 block as="p" className={styles.dropZoneText}>
+                        Drop files to upload as a {routeName}
+                    </Subtitle1>
+                </div>
+            ) : null}
+            <div className={styles.dropZoneChild}>
+                <input {...getInputProps()} />
+                {children}
+            </div>
+        </div>
+    );
+};
 const FileListing = ({
     fullRoute,
     update,
@@ -105,7 +134,94 @@ const FileListing = ({
     currentFile?: string;
 }) => {
     const { showSnackSev } = useContext(SnackbarContext);
-    const searchParams = useSearchParams();
+
+    /** delete a file from the server
+     * @param file the file to delete
+     */
+    const deleteFile = async (file: string) => {
+        await axios
+            .delete(`${fullRoute}${file}`, {
+                skipErrorHandling: true,
+            })
+            .then((res) => {
+                if (res.status === 200) {
+                    showSnackSev('File deleted', 'success');
+                }
+            })
+            .catch((e) => {
+                handleError(showSnackSev)(e);
+            })
+            .finally(() => {
+                if (currentFile === path) {
+                    changeFile && changeFile('');
+                }
+                update && update();
+            });
+    };
+
+    return (
+        <TreeItem itemType="leaf">
+            <TreeItemLayout
+                className={`${currentFile === path ? styles.currentFile : ''}`}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    changeFile && changeFile(path);
+                }}
+                actions={
+                    <>
+                        <Button
+                            aria-label="Delete"
+                            appearance="subtle"
+                            icon={<Delete20Regular />}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                void deleteFile(path);
+                            }}
+                        />
+                    </>
+                }
+            >
+                {currentFile === path && <strong>{basename(path)}</strong>}
+                {currentFile !== path && <>{basename(path)}</>}
+            </TreeItemLayout>
+        </TreeItem>
+    );
+};
+
+const FolderListing = ({
+    fullRoute,
+    update,
+    path,
+    changeFile,
+    subtree,
+    currentFile,
+    changeFolder,
+    currentFolder,
+    submitFiles,
+    routeName,
+}: {
+    /** the full path of the file to display */
+    path: string;
+    /** a function to call when the files are updated */
+    update?: () => void;
+    /** the full route to the file */
+    fullRoute: string;
+    /** the subtree to display */
+    subtree: TreeType;
+    /** a function to call when the file is changed */
+    changeFile?: (file: string) => void;
+    /** a function to call when the folder is changed */
+    changeFolder?: (folder: string) => void;
+    /** the current file */
+    currentFile?: string;
+    /** the current folder */
+    currentFolder?: string;
+    /** a function to submit files */
+    submitFiles: (files: File[], path?: string) => void;
+    /** the name of the route */
+    routeName: string;
+}) => {
+    const { showSnackSev } = useContext(SnackbarContext);
 
     /** delete a file from the server
      * @param file the file to delete
@@ -127,108 +243,75 @@ const FileListing = ({
                 update && update();
             });
     };
+    const [expanded, setExpanded] = useState(false);
 
     return (
-        <TreeItem itemType="leaf">
-            <TreeItemLayout
-                className={`${currentFile === path ? styles.currentFile : ''}`}
-                actions={
+        <Dropzone
+            submitFiles={(files) => {
+                submitFiles(files, path);
+            }}
+            routeName={routeName}
+        >
+            <TreeItem
+                itemType="branch"
+                open={expanded}
+            >
+                <TreeItemLayout
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        changeFolder && changeFolder(path);
+                        setExpanded(!expanded);
+                    }}
+                    className={currentFolder === path ? styles.currentFile : ''}
+                    actions={
                     <>
+                        {' '}
                         <Button
                             aria-label="Delete"
                             appearance="subtle"
                             icon={<Delete20Regular />}
-                            onClick={() => deleteFile(path)}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                void deleteFile(path);
+                            }}
                         />
                     </>
                 }
-            >
-                {/* todo: make this span the whole width */}
-                <div onClick={() => changeFile && changeFile(path)}>
-                    {currentFile === path && <strong>{path}</strong>}
-                    {currentFile !== path && <>{path}</>}
-                </div>
-            </TreeItemLayout>
-        </TreeItem>
-    );
-};
-
-const FolderListing = ({
-    fullRoute,
-    update,
-    path,
-    changeFile,
-    subtree,
-    currentFile,
-}: {
-    /** the full path of the file to display */
-    path: string;
-    /** a function to call when the files are updated */
-    update?: () => void;
-    /** the full route to the file */
-    fullRoute: string;
-    /** the subtree to display */
-    subtree: TreeType;
-    /** a function to call when the file is changed */
-    changeFile?: (file: string) => void;
-    /** the current file */
-    currentFile?: string;
-}) => {
-    const { showSnackSev } = useContext(SnackbarContext);
-    const searchParams = useSearchParams();
-    const FULL_ROUTE = `${fullRoute}${path}/`;
-
-    /** delete a file from the server
-     * @param file the file to delete
-     */
-    const deleteFile = async (file: string) => {
-        await axios
-            .delete(`${FULL_ROUTE}${file}`, {
-                skipErrorHandling: true,
-            })
-            .then((res) => {
-                if (res.status === 200) {
-                    showSnackSev('File deleted', 'success');
+                >
+                    {basename(path)}
+                </TreeItemLayout>
+                {
+                    <Tree>
+                        {Object.entries(subtree.children).map(([key, file]) => {
+                            return file.children.length === 0 ? (
+                                <FileListing
+                                    key={key}
+                                    changeFile={changeFile}
+                                    currentFile={currentFile}
+                                    fullRoute={fullRoute}
+                                    path={join(path, file.name)}
+                                    update={update}
+                                />
+                            ) : (
+                                <FolderListing
+                                    key={key}
+                                    changeFile={changeFile}
+                                    changeFolder={changeFolder}
+                                    currentFile={currentFile}
+                                    fullRoute={fullRoute}
+                                    path={join(path, file.name)}
+                                    subtree={file}
+                                    update={update}
+                                    currentFolder={currentFolder}
+                                    submitFiles={submitFiles}
+                                    routeName={routeName}
+                                />
+                            );
+                        })}
+                    </Tree>
                 }
-            })
-            .catch((e) => {
-                handleError(showSnackSev)(e);
-            })
-            .finally(() => {
-                update && update();
-            });
-    };
-
-    return (
-        <TreeItem itemType="branch" actions={<></>}>
-            <TreeItemLayout>{path}</TreeItemLayout>
-            {
-                <Tree>
-                    {Object.entries(subtree.children).map(([key, file]) => {
-                        return file.children.length === 0 ? (
-                            <FileListing
-                                key={key}
-                                changeFile={changeFile}
-                                currentFile={currentFile}
-                                fullRoute={fullRoute}
-                                path={file.name}
-                                update={update}
-                            />
-                        ) : (
-                            <FolderListing
-                                key={key}
-                                changeFile={changeFile}
-                                currentFile={currentFile}
-                                fullRoute={fullRoute}
-                                path={file.name}
-                                subtree={file}
-                                update={update}
-                            />
-                        );
-                    })}
-                </Tree>
-            }
-        </TreeItem>
+            </TreeItem>
+        </Dropzone>
     );
 };
 
@@ -241,14 +324,18 @@ const ListFiles = ({
     assignment,
     assignmentID,
     update,
+    currentFolder,
+    setCurrentFolder,
+    currentFile,
+    setCurrentFile,
+    submitFiles,
 }: ListFilesProps) => {
     const { showSnackSev } = useContext(SnackbarContext);
     const searchParams = useSearchParams();
-    const [currentFile, setCurrentFile] = useState<string>('');
     const [currentFileContent, setCurrentFileContent] = useState<string | null>(null);
 
     // turn the files into a tree
-    const files = convertPathsToTree(dummy.files);
+    const files = convertPathsToTree(commit.files);
 
     const FULL_ROUTE = `/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/`;
 
@@ -277,8 +364,6 @@ const ListFiles = ({
     };
 
     useEffect(() => {
-        console.log('currentFile', currentFile);
-
         if (currentFile) {
             void getFileContents(currentFile);
         }
@@ -297,7 +382,14 @@ const ListFiles = ({
                                     key={key}
                                     fullRoute={FULL_ROUTE}
                                     update={update}
-                                    changeFile={setCurrentFile}
+                                    changeFile={(val) => {
+                                        setCurrentFile(val);
+                                        setCurrentFolder(
+                                            val
+                                                ? normalize(join('/', val, '..')).slice(1)
+                                                : ''
+                                        );
+                                    }}
                                     path={file.name}
                                     currentFile={currentFile}
                                 />
@@ -307,9 +399,21 @@ const ListFiles = ({
                                     fullRoute={FULL_ROUTE}
                                     update={update}
                                     path={file.name}
-                                    changeFile={setCurrentFile}
+                                    changeFile={(val) => {
+                                        setCurrentFile(val);
+                                        setCurrentFolder(
+                                            val ? normalize(join(val, '..')) : ''
+                                        );
+                                    }}
+                                    changeFolder={(val) => {
+                                        setCurrentFolder && setCurrentFolder(val);
+                                        setCurrentFile('');
+                                    }}
                                     subtree={file}
                                     currentFile={currentFile}
+                                    currentFolder={currentFolder}
+                                    submitFiles={submitFiles}
+                                    routeName={route}
                                 />
                             );
                         })}
@@ -357,6 +461,8 @@ export const AssignmentPageFilesTab = ({
     } as Commit);
     const { showSnackSev } = useContext(SnackbarContext);
     const searchParams = useSearchParams();
+    const [currentFolder, setCurrentFolder] = useState<string>('');
+    const [currentFile, setCurrentFile] = useState<string>('');
 
     const getTestData = useCallback(async () => {
         await axios
@@ -369,7 +475,13 @@ export const AssignmentPageFilesTab = ({
                     },
                 }
             )
-            .then((res) => setContent(res.data))
+            .then((res) => {
+                if (
+                    res.data.log[0] !== content.log[0] ||
+                    res.data.valid !== content.valid
+                )
+                    setContent(res.data);
+            })
             .catch((e) => {
                 handleError(showSnackSev)(e);
                 setContent({ files: [], log: [] } as Commit);
@@ -377,11 +489,76 @@ export const AssignmentPageFilesTab = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [assignment.course_id, assignmentID, route]);
 
+    useEffect(() => {
+        if (!content.files.includes(currentFolder)) {
+            setCurrentFile('');
+        }
+    }, [content.files]);
+
+    const submitFolder = async (fileslist: File[]) => {
+        if (fileslist) {
+            const zip = new JSZip();
+            if (!zip) {
+                throw new Error('Failed to create zip folder');
+            }
+            for (let i = 0; i < fileslist.length; i++) {
+                const file = fileslist[i];
+                const path =
+                    'path' in file && typeof file.path === 'string'
+                        ? file.path
+                        : file.webkitRelativePath;
+                zip.file(normalize(`/${path}`).slice(1), file.arrayBuffer(), {
+                    binary: true,
+                });
+            }
+
+            zip.generateAsync({ type: 'blob' }).then(function (blob) {
+                const formData = new FormData();
+                formData.append('files', blob, 'files.zip');
+
+                axios
+                    .post(
+                        `/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/${currentFolder}`,
+                        formData,
+                        {
+                            params: { unzip: true },
+                            headers: { 'Content-Type': 'multipart/form-data' },
+                        }
+                    )
+                    .then((res) => {
+                        if (res.status === 200) {
+                            showSnackSev('Files uploaded', 'success');
+                        }
+                    })
+                    .catch((e) => {
+                        handleError(showSnackSev)(e);
+                    })
+                    .finally(() => {
+                        fetchAssignment();
+                    });
+            });
+        }
+    };
+
     /**
      * submit files to the server
      * @param files the files to submit
+     * @param target the path to submit the files to
      */
-    const submitFiles = async (files: File[]) => {
+    const submitFiles = async (files: File[], target?: string) => {
+        if (!target) target = currentFolder;
+        if (
+            files.some((file) => {
+                const path =
+                    'path' in file && typeof file.path === 'string'
+                        ? file.path
+                        : file.webkitRelativePath;
+                return path !== basename(path);
+            })
+        ) {
+            await submitFolder(files);
+            return;
+        }
         const formData = new FormData();
         for (let i = 0; i < files!.length; i++) {
             formData.append('files', files![i]);
@@ -389,7 +566,7 @@ export const AssignmentPageFilesTab = ({
 
         axios
             .post(
-                `/courses/${assignment.course_id}/assignments/${assignmentID}/${route}`,
+                `/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/${target}`,
                 formData,
                 {
                     headers: { 'Content-Type': 'multipart/form-data' },
@@ -434,22 +611,12 @@ export const AssignmentPageFilesTab = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [assignmentID, fetchAssignment, route, routeName, assignment.submissions]);
 
-    // create a dropzone for the user to upload files
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({
-        onDrop: submitFiles,
-        noClick: true,
-        noKeyboard: true,
-        multiple: true,
-        autoFocus: false,
-        disabled: searchParams.has('utorid'),
-    });
-
     /**
      * upload a file to the server
      */
     const uploadFile = async () => {
         // todo: make the language based on the runner
-        promptForFileObject('.py', true)
+        promptForFileObject({ folders: false, multiple: true })
             .then((file) => {
                 if (file) {
                     submitFiles(Array.from(file));
@@ -460,63 +627,88 @@ export const AssignmentPageFilesTab = ({
             });
     };
 
+    const uploadFolder = async () => {
+        promptForFileObject({ folders: true, multiple: false })
+            .then((files) => submitFolder(Array.from(files)))
+            .catch((e) => {
+                handleError(showSnackSev)(e);
+            });
+    };
+
     return (
-        <div {...getRootProps({ className: styles.dropZone })}>
-            {isDragActive ? (
-                <div className={styles.dropZoneOverlay}>
-                    <Subtitle1 block as="p" className={styles.dropZoneText}>
-                        Drop files to upload as a {routeName}
-                    </Subtitle1>
-                </div>
-            ) : null}
-            <div className={styles.dropZoneChild}>
-                <div className="m-y-xxxl">
-                    <div className={`${styles.uploadHeader} m-b-xl`}>
-                        <Subtitle1 className={styles.testCaseHeader} block>
-                            Uploaded {routeName}s
-                            <TestCaseStatus status={content.valid} />
-                        </Subtitle1>
+        <div className="m-y-xxxl">
+            <div className={`${styles.uploadHeader} m-b-xl`}>
+                <Subtitle1 className={styles.testCaseHeader} block>
+                    Uploaded {routeName}s
+                    <TestCaseStatus status={content.valid} />
+                </Subtitle1>
 
-                        {!searchParams.has('utorid') && (
-                            <Button
-                                icon={<Add24Filled />}
-                                appearance="subtle"
-                                onClick={uploadFile}
-                            >
-                                Upload a {routeName}
-                            </Button>
-                        )}
+                {!searchParams.has('utorid') && (
+                    <div>
+                        <Button
+                            icon={<Folder24Filled />}
+                            appearance="subtle"
+                            onClick={uploadFolder}
+                        >
+                            Upload a folder
+                            {currentFolder && ` to ${basename(currentFolder)}`}
+                        </Button>
+                        <Button
+                            icon={<Add24Filled />}
+                            appearance="subtle"
+                            onClick={uploadFile}
+                        >
+                            Upload a {routeName}{' '}
+                            {currentFolder ? ` to ${basename(currentFolder)}` : null}
+                        </Button>
                     </div>
+                )}
+            </div>
 
-                    {/* {content.log[0] && (
+            {/* {content.log[0] && (
                         <Text block className={styles.commitId} font="numeric">
                             {content.log[0]}
                         </Text>
                     )} */}
-
-                    <Card className="m-t-xl">
-                        <input {...getInputProps()} />
-                        {!content.files || content.files.length === 0 ? (
-                            <div className={styles.noFiles}>
-                                <DocumentMultiple24Regular />
-                                <Caption1>
-                                    No files uploaded yet. Drag and drop files here or{' '}
-                                    <Link inline={true} onClick={uploadFile}>
-                                        choose files
-                                    </Link>{' '}
-                                    to upload.
-                                </Caption1>
-                            </div>
-                        ) : null}
+            <div
+                onClick={() => {
+                    setCurrentFolder('');
+                    setCurrentFile('');
+                }}
+            >
+                <Card className="m-t-xl">
+                    {!content.files || content.files.length === 0 ? (
+                        <div className={styles.noFiles}>
+                            <DocumentMultiple24Regular />
+                            <Caption1>
+                                No files uploaded yet. Drag and drop files here or{' '}
+                                <Link inline={true} onClick={uploadFile}>
+                                    choose files
+                                </Link>{' '}
+                                to upload.
+                            </Caption1>
+                        </div>
+                    ) : null}
+                    <Dropzone
+                        submitFiles={(files) => {
+                            void submitFiles(files, '');
+                        }}
+                        routeName={routeName}
+                    >
                         <ListFiles
                             commit={content}
                             route={route}
                             assignment={assignment}
                             assignmentID={assignmentID}
                             update={getTestData}
+                            currentFolder={currentFolder}
+                            setCurrentFolder={setCurrentFolder}
+                            currentFile={currentFile}
+                            setCurrentFile={setCurrentFile}
+                            submitFiles={submitFiles}
                         />
-                    </Card>
-                </div>
+                    </Dropzone>
+                </Card>
             </div>
         </div>
     );

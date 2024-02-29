@@ -120,7 +120,7 @@ export const MarkdownRender = ({
 }: {
     markdown: string;
     imagePath?: string;
-}) : JSX.Element => (
+}): JSX.Element => (
     <Markdown
         components={{
             h1: HeaderWrapper(Title2),
