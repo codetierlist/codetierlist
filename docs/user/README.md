@@ -12,6 +12,10 @@ This guide will help you get started with the Codetierlist as a student.
     - [Test Cases](#test-cases) 
   - [Tierlist](#tierlist)
   - [Due Dates](#due-dates)
+- [Customization and Accessibility](#customization-and-accessibility)
+  - [Themes](#themes)
+  - [Backgrounds](#backgrounds)
+  - [Colors](#colors)
 - [Data Privacy](#data-privacy)
 - [Contact and Support](#contact-and-support)
 
@@ -65,6 +69,19 @@ Each assignment will have a due date. The due date will be displayed on the assi
 > [!NOTE]
 > Instructors may choose to allow late submissions. If you are unsure of the late submission policy, please contact your instructor.
 
+## Customization and Accessibility
+Codetierlist is designed to be accessible for all students to use. If you have any accessibility concerns, please contact us and we will do our best to accommodate your needs (see [Contact and Support](#contact-and-support)).
+
+### Themes
+Codetierlist has a light, dark, and high contrast theme. By default, Codetierlist will use the system theme. You can change the theme by clicking the settings icon in the top right corner of the page and selecting the theme you want to use from the dropdown.
+
+### Backgrounds
+Codetierlist has a variety of backgrounds to choose from. You can change the background by clicking the settings icon in the top right corner of the page and selecting the background you want to use from the dropdown.
+If you have any suggestions for backgrounds, please send the image to us and we will do our best to add it (see [Contact and Support](#contact-and-support)).
+
+### Colors
+Codetierlist lets you customize the primary accent color of the site. You can change the accent color by clicking the settings icon in the top right corner of the page and selecting the color you want to use.
+
 ## Data Privacy
 Anything you upload to Codetierlist will be visible to the instructors and TAs of the course, however, your uploads will not be used for grading the assignment. 
 The tierlist will be anonymized to students, so your peers will not be able to see who submitted what code and test cases.
@@ -73,7 +90,7 @@ The tierlist will be anonymized to students, so your peers will not be able to s
 > If you are unsure of what is considered academic dishonesty, please contact your instructor.
 
 ## Contact and Support
-If you have any questions about Codetierlist, please contact any of the following people:
+If you have any questions, suggestions, or just want to chat about Codetierlist, please contact any of the following people:
 - Ido Ben Haim ([ido.benhaim@mail.utoronto.ca](mailto:ido.benhaim@mail.utoronto.ca))
 - Daksh Malhotra ([d.malhotra@utoronto.ca](mailto:d.malhotra@utoronto.ca))
 - Jackson Lee ([jacks.lee@utoronto.ca](mailto:jacks.lee@utoronto.ca))
