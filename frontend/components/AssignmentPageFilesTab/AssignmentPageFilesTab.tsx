@@ -139,6 +139,9 @@ const FileListing = ({
      * @param file the file to delete
      */
     const deleteFile = async (file: string) => {
+        if(currentFile === file) {
+            changeFile && changeFile('');
+        }
         await axios
             .delete(`${fullRoute}${file}`, {
                 skipErrorHandling: true,
@@ -227,6 +230,9 @@ const FolderListing = ({
      * @param file the file to delete
      */
     const deleteFile = async (file: string) => {
+        if(currentFolder === file) {
+            changeFolder && changeFolder('');
+        }
         await axios
             .delete(`${fullRoute}${file}`, {
                 skipErrorHandling: true,
@@ -252,10 +258,7 @@ const FolderListing = ({
             }}
             routeName={routeName}
         >
-            <TreeItem
-                itemType="branch"
-                open={expanded}
-            >
+            <TreeItem itemType="branch" open={expanded}>
                 <TreeItemLayout
                     onClick={(e) => {
                         e.stopPropagation();
@@ -264,19 +267,19 @@ const FolderListing = ({
                     }}
                     className={currentFolder === path ? styles.currentFile : ''}
                     actions={
-                    <>
-                        {' '}
-                        <Button
-                            aria-label="Delete"
-                            appearance="subtle"
-                            icon={<Delete20Regular />}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                void deleteFile(path);
-                            }}
-                        />
-                    </>
-                }
+                        <>
+                            {' '}
+                            <Button
+                                aria-label="Delete"
+                                appearance="subtle"
+                                icon={<Delete20Regular />}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    void deleteFile(path);
+                                }}
+                            />
+                        </>
+                    }
                 >
                     {basename(path)}
                 </TreeItemLayout>
@@ -676,25 +679,25 @@ export const AssignmentPageFilesTab = ({
                     setCurrentFile('');
                 }}
             >
-                <Card className="m-t-xl">
-                    {!content.files || content.files.length === 0 ? (
-                        <div className={styles.noFiles}>
-                            <DocumentMultiple24Regular />
-                            <Caption1>
-                                No files uploaded yet. Drag and drop files here or{' '}
-                                <Link inline={true} onClick={uploadFile}>
-                                    choose files
-                                </Link>{' '}
-                                to upload.
-                            </Caption1>
-                        </div>
-                    ) : null}
-                    <Dropzone
-                        submitFiles={(files) => {
-                            void submitFiles(files, '');
-                        }}
-                        routeName={routeName}
-                    >
+                <Dropzone
+                    submitFiles={(files) => {
+                        void submitFiles(files, '');
+                    }}
+                    routeName={routeName}
+                >
+                    <Card className="m-t-xl">
+                        {!content.files || content.files.length === 0 ? (
+                            <div className={styles.noFiles}>
+                                <DocumentMultiple24Regular />
+                                <Caption1>
+                                    No files uploaded yet. Drag and drop files here or{' '}
+                                    <Link inline={true} onClick={uploadFile}>
+                                        choose files
+                                    </Link>{' '}
+                                    to upload.
+                                </Caption1>
+                            </div>
+                        ) : null}
                         <ListFiles
                             commit={content}
                             route={route}
@@ -707,8 +710,8 @@ export const AssignmentPageFilesTab = ({
                             setCurrentFile={setCurrentFile}
                             submitFiles={submitFiles}
                         />
-                    </Dropzone>
-                </Card>
+                    </Card>
+                </Dropzone>
             </div>
         </div>
     );
