@@ -320,7 +320,7 @@ const ListFiles = ({
             {currentFile !== '' && (
                 <Monaco
                     height="50vh"
-                    language="python"
+                    language={assignment.runner_image.split('/', 2)[0]}
                     value={currentFileContent ?? ''}
                 />
             )}
