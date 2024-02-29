@@ -77,13 +77,14 @@ export const AssignmentPageFilesTab = ({
     }, [assignment.course_id, assignmentID, route]);
 
     useEffect(() => {
-        if (currentFolder && !content.files.includes(currentFolder)) {
+        if (currentFolder && !content.files.includes(currentFile)) {
             setCurrentFolder('');
         }
         if (currentFile && !content.files.includes(currentFile)) {
             setCurrentFile('');
         }
-    }, [content.files, currentFile, currentFolder]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [content.files]);
 
     const submitFolder = async (fileslist: File[], target?: string) => {
         if (target === undefined) target = currentFolder;
