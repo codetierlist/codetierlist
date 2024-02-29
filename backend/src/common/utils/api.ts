@@ -9,7 +9,7 @@ import {
     securePath,
     serializeAssignment
 } from "./index";
-import {commitFiles, getCommit, getFile} from "./git";
+import {commitFiles, getCommit, getFile, softResetRepo} from "./git";
 import {Commit} from "codetierlist-types";
 import git, {ReadBlobResult} from "isomorphic-git";
 import {promises as fs} from "fs";
@@ -131,6 +131,15 @@ export const processSubmission = async (req: Request, res: Response, table: "sol
         if (req.query.unzip && file.mimetype === "application/zip") {
             await extract(file.path, {dir: dest});
             continue;
+        }
+        if ((await fs.lstat(file.path)).isDirectory()) {
+            if (submission)
+                await softResetRepo(repoPath, submission.git_id);
+            else
+                await fs.unlink(repoPath);
+            res.statusCode = 400;
+            res.send({message: "Cannot upload a folder, upload a zip and use query parameter unzip=true instead."});
+            return;
         }
         await fs.copyFile(file.path, path.join(dest, securePath(file.originalname)));
     }
@@ -257,8 +266,8 @@ export const deleteFile = async (req: Request, res: Response, table: "solution" 
     }
     try {
         await git.remove({fs, dir: object.git_url, filepath: securePath(req.params[0])});
-        await fs.unlink(`${object!.git_url}/${securePath(req.params[0])}`);
-    } catch (_) {
+        await fs.rm(`${object!.git_url}/${securePath(req.params[0])}`, {recursive: true, force: true});
+    } catch (e) {
         /* if the file doesn't exist then continue */
     }
 

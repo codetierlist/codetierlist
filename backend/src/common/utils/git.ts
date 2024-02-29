@@ -18,7 +18,7 @@ import {securePath} from "./index";
  * @param repoPath the path to the repository
  * @param commit the commit to reset to
  */
-const softResetRepo = async (repoPath: string, commit: string) => {
+export const softResetRepo = async (repoPath: string, commit: string) => {
     let dir = await fs.readdir(repoPath);
     dir = dir.filter(x => x !== ".git").map(x => path.resolve(repoPath, x));
     await Promise.all(dir.map(x => fs.rm(x, {recursive: true, force: true})));
@@ -120,9 +120,10 @@ export const getCommit = async (submission: Omit<Solution | TestCase, "group_num
             dir: submission.git_url,
             ref: commit.oid
         });
-        const log = await git.log({fs, dir: submission.git_url});
+        const log = [commit];
         const res: Commit = {
             files,
+            // TODO cant get all logs after a lot of commits, this only returns latest commit
             log: log.map(commitIterator => commitIterator.oid)
         };
         if ((submission as TestCase).valid) {
