@@ -20,14 +20,81 @@ import {
 import type { AppProps } from 'next/app';
 import { defaultUser, UserContext } from '@/contexts/UserContext';
 import { FetchedUser, Theme } from 'codetierlist-types';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import axios, { handleError } from '@/axios';
 import { SnackbarContext } from '@/contexts/SnackbarContext';
 import useLocalStorage from 'use-local-storage';
-import { ThemeContext } from '@/contexts/ThemeContext';
 
 type EnhancedAppProps = AppProps & {
     renderer?: GriffelRenderer;
+};
+
+/**
+ * Media query hook
+ */
+const useMediaQuery = (query: string) => {
+    const [matches, setMatches] = useState(false);
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia(query);
+        if (mediaQuery.matches !== matches) {
+            setMatches(mediaQuery.matches);
+        }
+
+        const listener = () => setMatches(mediaQuery.matches);
+        mediaQuery.addEventListener('change', listener);
+
+        return () => mediaQuery.removeEventListener('change', listener);
+    }, [matches, query]);
+
+    return matches;
+};
+
+/**
+ * Conditionally sets the theme based on the system theme
+ */
+const useSystemTheme = (theme: Theme) => {
+    const query = useMediaQuery('(prefers-color-scheme: dark)');
+
+    return useMemo(() => {
+        // set scrollbar color
+        if (typeof document !== 'undefined') {
+            document.documentElement.style.colorScheme =
+                theme === 'SYSTEM' ? (query ? 'dark' : 'light') : theme;
+        }
+
+        if (theme === 'SYSTEM') {
+            return query ? 'DARK' : 'LIGHT';
+        } else {
+            return theme;
+        }
+    }, [query, theme]);
+};
+
+/**
+ * Fetches user info
+ */
+const useUserInfo = (
+    showSnackSev: (message?: string, severity?: ToastIntent) => void
+) => {
+    const [userInfo, setUserInfo] = useState<FetchedUser>(defaultUser);
+
+    const fetchUserInfo = async () => {
+        await axios('/users')
+            .then(({ data }) => {
+                setUserInfo(data as FetchedUser);
+            })
+            .catch((e) => {
+                handleError(showSnackSev)(e);
+            });
+    };
+
+    useEffect(() => {
+        void fetchUserInfo();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    return { userInfo, setUserInfo, fetchUserInfo };
 };
 
 function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
@@ -57,57 +124,17 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
             { intent: severity }
         );
 
-    /* user data initialization into context and fetching */
-    const [userInfo, setUserInfo] = useState<FetchedUser>(defaultUser);
+    /** user info */
+    const { userInfo, setUserInfo, fetchUserInfo } = useUserInfo(showSnackSev);
 
-    const fetchUserInfo = async () => {
-        await axios('/users')
-            .then(({ data }) => {
-                setUserInfo(data as FetchedUser);
-            })
-            .catch((e) => {
-                handleError(showSnackSev)(e);
-            });
-    };
+    /*
+     * themes
+     */
+    const themes = useMemo(() => {
+        return getThemes(userInfo.accent_color || defaultAccentColor);
+    }, [userInfo.accent_color]);
 
-    useEffect(() => {
-        void fetchUserInfo();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-    const computeTheme = (newTheme: Theme) => {
-        if (newTheme === 'SYSTEM') {
-            return window.matchMedia &&
-                window.matchMedia('(prefers-color-scheme: dark)').matches
-                ? 'DARK'
-                : 'LIGHT';
-        }
-        return newTheme;
-    };
-    const [theme, setTheme] = useState(computeTheme(userInfo.theme));
-
-    useEffect(() => {
-        window
-            .matchMedia('(prefers-color-scheme: dark)')
-            .addEventListener('change', (e) => {
-                if (userInfo.theme === 'SYSTEM') {
-                    setTheme(e.matches ? 'DARK' : 'LIGHT');
-                } else {
-                    setTheme(computeTheme(userInfo.theme));
-                }
-            });
-    }, [userInfo.theme]);
-
-    useEffect(() => {
-        setTheme(computeTheme(userInfo.theme));
-    }, [userInfo.theme]);
-    // change system colour scheme based on current user theme
-    useEffect(() => {
-        if (theme === 'DARK') {
-            document.documentElement.style.colorScheme = 'dark';
-        } else {
-            document.documentElement.style.colorScheme = 'light';
-        }
-    }, [theme, userInfo.theme]);
+    const theme = useSystemTheme(userInfo.theme);
 
     // custom background image
     const [background, _] = useLocalStorage('background', undefined);
@@ -120,14 +147,6 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
             '--background': background,
         } as React.CSSProperties);
     }, [background]);
-
-    const [themes, setThemes] = useState(
-        getThemes(userInfo.accent_color || defaultAccentColor)
-    );
-
-    useEffect(() => {
-        setThemes(getThemes(userInfo.accent_color || defaultAccentColor));
-    }, [userInfo]);
 
     return (
         // 👇 Accepts a renderer from <Document /> or creates a default one

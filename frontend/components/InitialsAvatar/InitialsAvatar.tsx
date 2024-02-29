@@ -2,14 +2,14 @@ import { Avatar } from '@fluentui/react-components';
 import type { AvatarProps } from '@fluentui/react-components';
 import { FetchedUser } from 'codetierlist-types';
 
-export const generateInitals = (user: FetchedUser): string =>
+export const generateInitials = (user: FetchedUser): string =>
     `${user.givenName.substring(0, 1)}${user.surname.substring(0, 1)}`;
 
 /**
  * Given a name get the initials of the name up to 2 characters into an avatar
  * @returns {AvatarProps} the props to pass to the avatar
  */
-export const generateInitalsAvatarProps = (
+export const generateInitialsAvatarProps = (
     initials: string,
     props?: AvatarProps
 ): AvatarProps => {
@@ -36,5 +36,5 @@ export const InitialsAvatar = ({
     name = '',
     ...props
 }: InitialsAvatarProps): JSX.Element => {
-    return <Avatar {...generateInitalsAvatarProps(name, props)} />;
+    return <Avatar {...generateInitialsAvatarProps(name, props)} />;
 };

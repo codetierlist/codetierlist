@@ -5,7 +5,7 @@ import {
 } from '@fluentui/react-components';
 import { Tier, Tierlist, TierlistEntry } from 'codetierlist-types';
 import { Col, Row } from 'react-grid-system';
-import { generateInitalsAvatarProps, TierChip, getTierClass } from '@/components';
+import { generateInitialsAvatarProps, TierChip, getTierClass } from '@/components';
 import { useState, forwardRef, useRef, useEffect } from 'react';
 import styles from './TierList.module.css';
 
@@ -85,7 +85,7 @@ const TierAvatars = forwardRef<HTMLDivElement, TierAvatarsProps>(
                                             ? `${styles.you} ${styles.avatar}`
                                             : styles.avatar
                                     }
-                                    {...generateInitalsAvatarProps(person.name)}
+                                    {...generateInitialsAvatarProps(person.name)}
                                 />
                             );
                         })}

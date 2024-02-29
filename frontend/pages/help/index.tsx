@@ -248,11 +248,11 @@ export const HelpPage = (): JSX.Element => {
                     </AccordionItem>
                 </Accordion>
 
-                <div className={'p-y-xl'}>
+                <div className={`${styles.accordionPanel} p-y-xl`}>
                     <Markdown
                         components={{
                             h1: HeaderWrapper(Title2),
-                            h2: HeaderWrapper(Title3, true),
+                            h2: HeaderWrapper(Title3),
                             h3: HeaderWrapper(Subtitle1),
                             h4: HeaderWrapper(Subtitle2),
                             blockquote: ({ children }) => <Quote>{children}</Quote>,
