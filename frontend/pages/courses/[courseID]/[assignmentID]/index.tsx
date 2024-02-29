@@ -5,7 +5,7 @@ import {
     TierList,
     checkIfCourseAdmin,
     convertDate,
-    convertTime,
+    convertTime, MarkdownRender,
 } from '@/components';
 import { SnackbarContext } from '@/contexts/SnackbarContext';
 import { UserContext } from '@/contexts/UserContext';
@@ -20,7 +20,6 @@ import {
     Subtitle1,
     Tab,
     TabList,
-    Text,
 } from '@fluentui/react-components';
 import { Subtitle2, Title2 } from '@fluentui/react-text';
 import { Tierlist, UserFetchedAssignment } from 'codetierlist-types';
@@ -28,7 +27,7 @@ import Error from 'next/error';
 import Head from 'next/head';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/router';
-import { Key, useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { Col, Container } from 'react-grid-system';
 import ViewAdminTab from './admin/index';
 import styles from './page.module.css';
@@ -213,9 +212,7 @@ const ViewDetailsTab = ({
             </Subtitle1>
 
             <Card className={styles.gutter}>
-                {assignment.description.split('\n').map((line: string, i: Key) => {
-                    return <Text key={i}>{line}</Text>;
-                })}
+                <MarkdownRender markdown={assignment.description} />
             </Card>
         </>
     );

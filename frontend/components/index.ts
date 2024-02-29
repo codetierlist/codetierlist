@@ -14,6 +14,7 @@ export * from './EnrollRemovePeopleMenu/EnrollRemovePeopleMenu';
 export * from './HeaderToolbar/HeaderToolbar';
 export * from './InitialsAvatar/InitialsAvatar';
 export * from './Monaco/Monaco';
+export * from './MarkdownRender/MarkdownRender';
 export * from './Navbar/Navbar';
 export * from './NavbarUserPopover/NavbarUserPopover';
 export * from './SessionBlock/SessionBlock';
