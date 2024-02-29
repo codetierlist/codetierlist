@@ -14,6 +14,7 @@ import {Commit} from "codetierlist-types";
 import git, {ReadBlobResult} from "isomorphic-git";
 import {promises as fs} from "fs";
 import path from "path";
+import extract from "extract-zip";
 
 /**
  * Wraps an async api handler to catch any errors and pass them to the next middleware
@@ -78,7 +79,7 @@ const getObjectFromRequest = async (req: Request, table: "solution" | "testCase"
  * @param res
  * @param table the table to process the submission for. Either "solution" or "testCase"
  */
-export const processSubmission = async (req: Request, res: Response, table: "solution" | "testCase") => {
+export const processSubmission = async (req: Request, res: Response, table: "solution" | "testCase", unzip = false) => {
     if (!req.user.roles.some(role => role.course_id === req.course!.id)) {
         res.statusCode = 403;
         res.send({message: 'You are not enrolled in this course.'});
@@ -125,7 +126,13 @@ export const processSubmission = async (req: Request, res: Response, table: "sol
     // get files from form data
     for (const file of req.files!) {
         if (file === null) continue;
-        await fs.copyFile(file.path, `${repoPath}/${file.filename}`);
+        const dest = path.join(repoPath, securePath(req.params.path ?? "."));
+        await fs.mkdir(dest, {recursive: true});
+        if (unzip) {
+            await extract(file.path, {dir: dest});
+            continue;
+        }
+        await fs.copyFile(file.path, path.join(dest, securePath(file.originalname)));
     }
 
     let group: number = -1;
@@ -224,7 +231,7 @@ export const getFileFromRequest = async (req: Request, res: Response, table: "so
     }
     if (file === null) {
         res.statusCode = 404;
-        res.send({message: 'Commit not found.'});
+        res.send({message: 'File or commit not found.'});
         return;
     }
     res.send(Buffer.from(file.blob));
