@@ -20,8 +20,21 @@ export const handleError =
         if (message) {
             res = message;
         } else if (error.response) {
-            if ((error.response.data as { message: string } | undefined)?.message) {
-                res = (error.response.data as { message: string })?.message;
+            console.log(typeof error.response.data);
+            if (typeof error.response.data === 'string') {
+                try {
+                    error.response.data = JSON.parse(error.response.data);
+                } catch (_) {
+                    /*not a json*/
+                }
+            }
+
+            if (
+                typeof error.response.data === 'object' &&
+                error.response.data &&
+                'message' in error.response.data
+            ) {
+                res = error.response.data.message?.toString() || error.message;
             } else {
                 res = error.message;
             }
