@@ -23,13 +23,10 @@ import { Container } from 'react-grid-system';
 import useLocalStorage from 'use-local-storage';
 import pkg from '../../package.json';
 import styles from './settings.module.css';
-import { defaultAccentColor } from "@/components/utils/theme/theme";
+import {defaultAccentColor, getThemes} from "@/utils/theme";
 
-const themes: Record<Theme, string> = {
-    SYSTEM: 'System',
-    DARK: 'Dark',
-    LIGHT: 'Light',
-    CONTRAST: 'High Contrast',
+const toSentenceCase = (str: string) => {
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 };
 
 const ThemeSelector = () => {
@@ -54,20 +51,19 @@ const ThemeSelector = () => {
     };
 
     return (
-        <Dropdown value={
-            themes[userInfo.theme]
-        } appearance="filled-darker">
-            {
-                Object.keys(themes).map((theme) => (
-                    <Option
-                        key={theme}
-                        value={theme}
-                        onClick={() => changeTheme(theme as Theme)}
-                    >
-                        {themes[theme as Theme]}
-                    </Option>
-                ))
-            }
+        <Dropdown value={toSentenceCase(userInfo.theme)} appearance="filled-darker">
+            {[
+                'SYSTEM',
+                ...Object.keys(getThemes(userInfo.accent_color || defaultAccentColor)),
+            ].map((theme) => (
+                <Option
+                    key={theme}
+                    value={theme}
+                    onClick={() => changeTheme(theme as Theme)}
+                >
+                    {toSentenceCase(theme)}
+                </Option>
+            ))}
         </Dropdown>
     );
 };

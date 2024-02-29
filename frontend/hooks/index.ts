@@ -4,6 +4,3 @@ export * from './contexts/UserContext';
 export * from './custom/useMediaQuery';
 export * from './custom/useSeed';
 export * from './custom/useSystemTheme';
-
-export * from './theme/useTheme';
-export * from './theme/useAccentColour';
