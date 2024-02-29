@@ -355,7 +355,7 @@ export default function Page(): JSX.Element {
                             }
                             description={
                                 <Caption1>
-                                    The description is displayed to the students.
+                                    The description is displayed to the students. You can use markdown to format the text.
                                 </Caption1>
                             }
                         />
