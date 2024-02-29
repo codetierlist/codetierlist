@@ -53,7 +53,7 @@ const useMediaQuery = (query: string) => {
 /**
  * Conditionally sets the theme based on the system theme
  */
-const useSystemTheme = (theme: Theme) => {
+export const useSystemTheme = (theme: Theme) => {
     const query = useMediaQuery('(prefers-color-scheme: dark)');
 
     return useMemo(() => {
@@ -154,18 +154,16 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
         <RendererProvider renderer={renderer || createDOMRenderer()}>
             <SSRProvider>
                 <UserContext.Provider value={{ userInfo, setUserInfo, fetchUserInfo }}>
-                    <ThemeContext.Provider value={{ theme, setTheme }}>
-                        <FluentProvider theme={themes[theme]} style={backgroundProps}>
-                            <SnackbarContext.Provider value={{ showSnack, showSnackSev }}>
-                                <Field validationState="none" id="axios-loading-backdrop">
-                                    <ProgressBar />
-                                </Field>
-                                <Navbar />
-                                <Component {...pageProps} />
-                                <Toaster toasterId={toasterId} />
-                            </SnackbarContext.Provider>
-                        </FluentProvider>
-                    </ThemeContext.Provider>
+                    <FluentProvider theme={themes[theme]} style={backgroundProps}>
+                        <SnackbarContext.Provider value={{ showSnack, showSnackSev }}>
+                            <Field validationState="none" id="axios-loading-backdrop">
+                                <ProgressBar />
+                            </Field>
+                            <Navbar />
+                            <Component {...pageProps} />
+                            <Toaster toasterId={toasterId} />
+                        </SnackbarContext.Provider>
+                    </FluentProvider>
                 </UserContext.Provider>
             </SSRProvider>
         </RendererProvider>

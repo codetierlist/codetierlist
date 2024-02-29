@@ -1,7 +1,8 @@
 import Editor, { EditorProps } from '@monaco-editor/react';
 import { useContext } from 'react';
-import { ThemeContext } from '@/contexts/ThemeContext';
 import { Theme } from 'codetierlist-types';
+import { useSystemTheme } from '@/pages/_app';
+import { UserContext } from '@/contexts/UserContext';
 
 const editorThemes: Record<Exclude<Theme, 'SYSTEM'>, string> = {
     CONTRAST: 'hc-black',
@@ -16,7 +17,8 @@ const editorThemes: Record<Exclude<Theme, 'SYSTEM'>, string> = {
  * @param props the props to pass to the editor
  */
 export const Monaco = (props: EditorProps): JSX.Element => {
-    const { theme } = useContext(ThemeContext);
+    const { userInfo } = useContext(UserContext);
+    const theme = useSystemTheme(userInfo.theme);
 
     return (
         <Editor
