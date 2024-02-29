@@ -64,7 +64,7 @@ const NavbarUserPopoverButton = (): JSX.Element => {
                 <Button
                     appearance="subtle"
                     size="small"
-                    className={`m-none ${styles.popoverButton}`}
+                    className={`m-none p-x-none ${styles.popoverButton}`}
                     aria-label={`Account manager for ${userInfo.givenName} ${userInfo.surname}`}
                 >
                     <UserAvatar />
