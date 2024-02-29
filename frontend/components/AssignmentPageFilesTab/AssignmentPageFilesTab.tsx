@@ -1,17 +1,11 @@
 import axios, { handleError } from '@/axios';
 import { TestCaseStatus, promptForFileObject } from '@/components';
 import { SnackbarContext } from '@/hooks';
-import {
-    Button,
-    Caption1,
-    Card,
-    Link,
-    Subtitle1
-} from '@fluentui/react-components';
+import { Button, Caption1, Card, Link, Subtitle1 } from '@fluentui/react-components';
 import {
     Add24Filled,
     DocumentMultiple24Regular,
-    Folder24Filled
+    Folder24Filled,
 } from '@fluentui/react-icons';
 import { Commit, UserFetchedAssignment } from 'codetierlist-types';
 import JSZip from 'jszip';

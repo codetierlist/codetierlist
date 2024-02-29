@@ -1,16 +1,10 @@
-import axios, { handleError } from '@/axios';
 import { SnackbarContext } from '@/hooks';
-import {
-    Button,
-    TreeItem,
-    TreeItemLayout
-} from '@fluentui/react-components';
-import {
-    Delete20Regular
-} from '@fluentui/react-icons';
+import { Button, TreeItem, TreeItemLayout } from '@fluentui/react-components';
+import { Delete20Regular } from '@fluentui/react-icons';
 import { basename } from 'path';
 import { useContext } from 'react';
 import styles from './AssignmentPageFilesTab.module.css';
+import { deletePath } from '@/components/AssignmentPageFilesTab/helpers';
 
 export declare type FileListingProps = {
     /** the full path of the file to display */
@@ -23,7 +17,7 @@ export declare type FileListingProps = {
     changeFile?: (file: string) => void;
     /** the current file */
     currentFile?: string;
-}
+};
 
 export const FileListing = ({
     fullRoute,
@@ -33,33 +27,6 @@ export const FileListing = ({
     currentFile,
 }: FileListingProps) => {
     const { showSnackSev } = useContext(SnackbarContext);
-
-    /** delete a file from the server
-     * @param file the file to delete
-     */
-    const deleteFile = async (file: string) => {
-        if (currentFile === file) {
-            changeFile && changeFile('');
-        }
-        await axios
-            .delete(`${fullRoute}${file}`, {
-                skipErrorHandling: true,
-            })
-            .then((res) => {
-                if (res.status === 200) {
-                    showSnackSev('File deleted', 'success');
-                }
-            })
-            .catch((e) => {
-                handleError(showSnackSev)(e);
-            })
-            .finally(() => {
-                if (currentFile === path) {
-                    changeFile && changeFile('');
-                }
-                update && update();
-            });
-    };
 
     return (
         <TreeItem itemType="leaf">
@@ -77,7 +44,14 @@ export const FileListing = ({
                             icon={<Delete20Regular />}
                             onClick={(e) => {
                                 e.stopPropagation();
-                                void deleteFile(path);
+                                void deletePath({
+                                    changePath: changeFile,
+                                    currentPath: currentFile,
+                                    fullRoute,
+                                    path,
+                                    showSnackSev,
+                                    update,
+                                });
                             }}
                         />
                     </>

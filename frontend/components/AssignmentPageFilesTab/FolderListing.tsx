@@ -1,20 +1,13 @@
-import axios, { handleError } from '@/axios';
 import { SnackbarContext } from '@/hooks';
-import {
-    Button,
-    Tree,
-    TreeItem,
-    TreeItemLayout
-} from '@fluentui/react-components';
-import {
-    Delete20Regular
-} from '@fluentui/react-icons';
+import { Button, Tree, TreeItem, TreeItemLayout } from '@fluentui/react-components';
+import { Delete20Regular } from '@fluentui/react-icons';
 import { basename, join } from 'path';
 import { useContext, useState } from 'react';
 import { Dropzone } from './Dropzone';
 import { TreeType } from './ListFiles';
 import styles from './AssignmentPageFilesTab.module.css';
 import { FileListing, FileListingProps } from './FileListing';
+import { deletePath } from '@/components/AssignmentPageFilesTab/helpers';
 
 export declare type FolderListingProps = FileListingProps & {
     /** the subtree to display */
@@ -27,7 +20,7 @@ export declare type FolderListingProps = FileListingProps & {
     submitFiles: (files: File[], path?: string) => void;
     /** the name of the route */
     routeName: string;
-}
+};
 
 export const FolderListing = ({
     fullRoute,
@@ -43,29 +36,6 @@ export const FolderListing = ({
 }: FolderListingProps) => {
     const { showSnackSev } = useContext(SnackbarContext);
 
-    /** delete a file from the server
-     * @param file the file to delete
-     */
-    const deleteFile = async (file: string) => {
-        if (currentFolder === file) {
-            changeFolder && changeFolder('');
-        }
-        await axios
-            .delete(`${fullRoute}${file}`, {
-                skipErrorHandling: true,
-            })
-            .then((res) => {
-                if (res.status === 200) {
-                    showSnackSev('File deleted', 'success');
-                }
-            })
-            .catch((e) => {
-                handleError(showSnackSev)(e);
-            })
-            .finally(() => {
-                update && update();
-            });
-    };
     const [expanded, setExpanded] = useState(false);
 
     return (
@@ -92,7 +62,16 @@ export const FolderListing = ({
                                 icon={<Delete20Regular />}
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    void deleteFile(path);
+                                    void deletePath({
+                                        changePath: changeFolder,
+                                        currentPath: changeFolder
+                                            ? currentFolder
+                                            : undefined,
+                                        fullRoute,
+                                        path,
+                                        showSnackSev,
+                                        update,
+                                    });
                                 }}
                             />
                         </>

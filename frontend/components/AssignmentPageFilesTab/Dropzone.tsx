@@ -1,6 +1,4 @@
-import {
-    Subtitle1
-} from '@fluentui/react-components';
+import { Subtitle1 } from '@fluentui/react-components';
 import { useSearchParams } from 'next/navigation';
 import { ReactNode } from 'react';
 import { DropEvent, FileRejection, useDropzone } from 'react-dropzone';

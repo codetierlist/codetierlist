@@ -1,9 +1,7 @@
 import axios, { handleError } from '@/axios';
 import { Monaco } from '@/components';
 import { SnackbarContext } from '@/hooks';
-import {
-    Tree
-} from '@fluentui/react-components';
+import { Tree } from '@fluentui/react-components';
 import { Commit, UserFetchedAssignment } from 'codetierlist-types';
 import { useSearchParams } from 'next/navigation';
 import { join, normalize } from 'path';
