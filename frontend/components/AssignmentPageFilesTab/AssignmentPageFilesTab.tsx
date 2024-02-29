@@ -83,8 +83,7 @@ export const AssignmentPageFilesTab = ({
         if (currentFile && !content.files.includes(currentFile)) {
             setCurrentFile('');
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [content.files]);
+    }, [content.files, currentFile, currentFolder]);
 
     const submitFolder = async (fileslist: File[], target?: string) => {
         if (target === undefined) target = currentFolder;
