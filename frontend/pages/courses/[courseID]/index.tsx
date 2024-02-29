@@ -9,7 +9,7 @@ import {
     getSession,
     promptForFileObject,
 } from '@/components';
-import { SnackbarContext, UserContext } from '@/hooks';
+import { SnackbarContext, UserContext, useSeed } from '@/hooks';
 import { Caption1, Spinner, ToolbarButton } from '@fluentui/react-components';
 import {
     Add24Filled,
@@ -23,19 +23,6 @@ import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import { Container } from 'react-grid-system';
 import styles from './page.module.css';
-
-/**
- * random seed to update the cover image
- */
-const useSeed = () => {
-    const [seed, updateSeed] = useState(Math.random());
-
-    const setSeed = () => {
-        updateSeed(Math.random());
-    };
-
-    return { seed, setSeed };
-};
 
 /**
  * Fetches the course with the given courseID
