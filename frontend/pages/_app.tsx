@@ -1,10 +1,9 @@
 import axios, { handleError } from '@/axios';
 import { Navbar } from '@/components';
-import { useAccentColour, defaultUser, SnackbarContext, UserContext, useSystemTheme, useTheme } from '@/hooks';
+import { SnackbarContext, UserContext, defaultUser, useSystemTheme, useTheme } from '@/hooks';
 import '@/styles/globals.css';
 import '@/styles/spacing.css';
 import {
-    createDOMRenderer,
     Field,
     FluentProvider,
     GriffelRenderer,
@@ -13,9 +12,10 @@ import {
     SSRProvider,
     Toast,
     ToastBody,
-    Toaster,
     ToastIntent,
     ToastTitle,
+    Toaster,
+    createDOMRenderer,
     useId,
     useToastController,
 } from '@fluentui/react-components';
@@ -87,8 +87,7 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
     /*
      * themes
      */
-    const { accent } = useAccentColour();
-    const themes = useTheme(accent);
+    const themes = useTheme(userInfo.accent_color || defaultUser.accent_color as string);
 
     const theme = useSystemTheme(userInfo.theme);
 
