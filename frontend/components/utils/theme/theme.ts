@@ -3,6 +3,8 @@ import type { BrandVariants } from '@fluentui/react-components';
 import { hexColorsFromPalette, hex_to_LCH } from './palettes';
 import { Palette } from './types';
 
+export const defaultAccentColor = '#004c20';
+
 type Options = {
     darkCp?: number;
     lightCp?: number;

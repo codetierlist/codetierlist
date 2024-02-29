@@ -1,6 +1,6 @@
 import axios, { handleError } from '@/axios';
 import { ControlCard } from '@/components';
-import { SnackbarContext, UserContext, defaultUser } from '@/hooks';
+import { SnackbarContext, UserContext } from '@/hooks';
 import favicon from '@/public/favicon.svg';
 import {
     Caption1,
@@ -23,6 +23,7 @@ import { Container } from 'react-grid-system';
 import useLocalStorage from 'use-local-storage';
 import pkg from '../../package.json';
 import styles from './settings.module.css';
+import { defaultAccentColor } from "@/components/utils/theme/theme";
 
 const themes: Record<Theme, string> = {
     SYSTEM: 'System',
@@ -135,33 +136,23 @@ const BackgroundSelector = () => {
     );
 };
 
-
 const AccentSelector = () => {
     const { userInfo, setUserInfo, fetchUserInfo } = useContext(UserContext);
     const { showSnackSev } = useContext(SnackbarContext);
+    const [accentColor, setAccentColor] = useState(
+        userInfo.accent_color || defaultAccentColor
+    );
     const [accentTimeout, setAccentTimeout] = useState<NodeJS.Timeout | undefined>(
         undefined
     );
     const [lastResolvedAccent, setLastResolvedAccent] = useState(0);
 
-    const updateAccent = () => {
-        axios
-            .post('/users/accent', { accent_color: userInfo.accent_color })
-            .then(async () => {
-                await fetchUserInfo();
-                showSnackSev('Accent color updated', 'success');
-            })
-            .catch((err) => {
-                handleError(showSnackSev)(err);
-            });
-    };
-
     return (
         <input
             type="color"
-            value={userInfo.accent_color || (defaultUser.accent_color as string)}
+            value={accentColor}
             onChange={(e) => {
-                setUserInfo({ ...userInfo, accent_color: e.target.value });
+                setAccentColor(e.target.value);
                 if (accentTimeout) {
                     clearTimeout(accentTimeout);
                 }
@@ -172,15 +163,22 @@ const AccentSelector = () => {
                     setAccentTimeout(
                         setTimeout(() => {
                             setLastResolvedAccent(Date.now());
-                            setAccentTimeout(undefined);
+                            setUserInfo({ ...userInfo, accent_color: e.target.value });
                         }, 100)
                     );
                 }
             }}
             onBlur={(e) => {
                 // save the accent color
-                setUserInfo({ ...userInfo, accent_color: e.target.value });
-                updateAccent();
+                axios
+                    .post('/users/accent', { accent_color: e.target.value })
+                    .then(async () => {
+                        await fetchUserInfo();
+                        showSnackSev('Accent color updated', 'success');
+                    })
+                    .catch((err) => {
+                        handleError(showSnackSev)(err);
+                    });
             }}
         />
     );
