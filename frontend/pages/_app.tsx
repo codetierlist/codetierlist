@@ -24,8 +24,11 @@ import { useEffect, useState } from 'react';
 import axios, { handleError } from '@/axios';
 import { SnackbarContext } from '@/contexts/SnackbarContext';
 import useLocalStorage from 'use-local-storage';
+import { ThemeContext } from '@/contexts/ThemeContext';
 
-type EnhancedAppProps = AppProps & { renderer?: GriffelRenderer };
+type EnhancedAppProps = AppProps & {
+    renderer?: GriffelRenderer;
+};
 
 function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
     /** snackbar */
@@ -104,7 +107,7 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
         } else {
             document.documentElement.style.colorScheme = 'light';
         }
-    }, [userInfo.theme]);
+    }, [theme, userInfo.theme]);
 
     // custom background image
     const [background, _] = useLocalStorage('background', undefined);
@@ -132,16 +135,18 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
         <RendererProvider renderer={renderer || createDOMRenderer()}>
             <SSRProvider>
                 <UserContext.Provider value={{ userInfo, setUserInfo, fetchUserInfo }}>
-                    <FluentProvider theme={themes[theme]} style={backgroundProps}>
-                        <SnackbarContext.Provider value={{ showSnack, showSnackSev }}>
-                            <Field validationState="none" id="axios-loading-backdrop">
-                                <ProgressBar />
-                            </Field>
-                            <Navbar />
-                            <Component {...pageProps} />
-                            <Toaster toasterId={toasterId} />
-                        </SnackbarContext.Provider>
-                    </FluentProvider>
+                    <ThemeContext.Provider value={{ theme, setTheme }}>
+                        <FluentProvider theme={themes[theme]} style={backgroundProps}>
+                            <SnackbarContext.Provider value={{ showSnack, showSnackSev }}>
+                                <Field validationState="none" id="axios-loading-backdrop">
+                                    <ProgressBar />
+                                </Field>
+                                <Navbar />
+                                <Component {...pageProps} />
+                                <Toaster toasterId={toasterId} />
+                            </SnackbarContext.Provider>
+                        </FluentProvider>
+                    </ThemeContext.Provider>
                 </UserContext.Provider>
             </SSRProvider>
         </RendererProvider>

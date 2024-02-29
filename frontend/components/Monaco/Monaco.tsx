@@ -1,6 +1,13 @@
 import Editor, { EditorProps } from '@monaco-editor/react';
-import { UserContext } from '@/contexts/UserContext';
 import { useContext } from 'react';
+import { ThemeContext } from '@/contexts/ThemeContext';
+import { Theme } from 'codetierlist-types';
+
+const editorThemes: Record<Exclude<Theme, 'SYSTEM'>, string> = {
+    CONTRAST: 'hc-black',
+    LIGHT: 'vs-light',
+    DARK: 'vs-dark',
+};
 
 /**
  * The Monaco editor is a wrapper around the monaco editor which is
@@ -9,12 +16,12 @@ import { useContext } from 'react';
  * @param props the props to pass to the editor
  */
 export const Monaco = (props: EditorProps): JSX.Element => {
-    const { userInfo } = useContext(UserContext);
+    const { theme } = useContext(ThemeContext);
 
     return (
         <Editor
             {...props}
-            theme={userInfo.theme === 'DARK' ? 'vs-dark' : 'vs-light'}
+            theme={props.theme || editorThemes[theme]}
             options={{
                 scrollbar: {
                     alwaysConsumeMouseWheel: false,
@@ -73,6 +80,7 @@ export const Monaco = (props: EditorProps): JSX.Element => {
                     monaco.KeyMod.CtrlCmd | monaco.KeyMod.Alt | monaco.KeyCode.Space,
                     () => {}
                 );
+                if (props.onMount) props.onMount(editor, monaco);
             }}
         />
     );
