@@ -149,15 +149,20 @@ const AccentSelector = () => {
             value={accentColor}
             onChange={(e) => {
                 setAccentColor(e.target.value);
-                if (accentTimeout && lastResolvedAccent < Date.now() - 10) {
+                if (accentTimeout) {
                     clearTimeout(accentTimeout);
                 }
-                setAccentTimeout(
-                    setTimeout(() => {
-                        setLastResolvedAccent(Date.now());
-                        setUserInfo({ ...userInfo, accent_color: e.target.value });
-                    }, 10)
-                );
+                if (Date.now() - lastResolvedAccent > 100) {
+                    setLastResolvedAccent(Date.now());
+                    setUserInfo({ ...userInfo, accent_color: e.target.value });
+                } else {
+                    setAccentTimeout(
+                        setTimeout(() => {
+                            setLastResolvedAccent(Date.now());
+                            setUserInfo({ ...userInfo, accent_color: e.target.value });
+                        }, 100)
+                    );
+                }
             }}
             onBlur={(e) => {
                 // save the accent color
