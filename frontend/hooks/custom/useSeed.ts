@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 /**
- * random seed to update the cover image
+ * random seed to force updates
  */
 export const useSeed = () => {
     const [seed, updateSeed] = useState(Math.random());
