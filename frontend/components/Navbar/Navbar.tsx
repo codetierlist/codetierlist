@@ -1,7 +1,7 @@
 import {
     NavbarUserPopover,
-    generateInitals,
-    generateInitalsAvatarProps,
+    generateInitials,
+    generateInitialsAvatarProps,
 } from '@/components';
 import { UserContext, defaultUser } from '@/contexts/UserContext';
 import {
@@ -30,8 +30,9 @@ const UserAvatar = (): JSX.Element => {
     return (
         <Persona
             textPosition="before"
-            avatar={generateInitalsAvatarProps(generateInitals(userInfo), {
+            avatar={generateInitialsAvatarProps(generateInitials(userInfo), {
                 badge: userInfo.new_achievements ? { status: 'busy' } : undefined,
+                className: styles.avatar
             })}
             primaryText={
                 <span className={styles.subtext}>
@@ -63,7 +64,7 @@ const NavbarUserPopoverButton = (): JSX.Element => {
                 <Button
                     appearance="subtle"
                     size="small"
-                    className="m-none p-none"
+                    className={`m-none ${styles.popoverButton}`}
                     aria-label={`Account manager for ${userInfo.givenName} ${userInfo.surname}`}
                 >
                     <UserAvatar />
