@@ -56,8 +56,10 @@ const useSystemTheme = (theme: Theme) => {
 
     return useMemo(() => {
         // set scrollbar color
-        document.documentElement.style.colorScheme =
-            theme === 'SYSTEM' ? (query ? 'dark' : 'light') : theme;
+        if (typeof document !== 'undefined') {
+            document.documentElement.style.colorScheme =
+                theme === 'SYSTEM' ? (query ? 'dark' : 'light') : theme;
+        }
 
         if (theme === 'SYSTEM') {
             return query ? 'DARK' : 'LIGHT';
