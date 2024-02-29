@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createContext } from 'react';
 import { type FetchedUser } from 'codetierlist-types';
-import { defaultAccentColor } from '@/utils/theme';
+import { defaultAccentColor } from '@/components/utils/theme/theme';
 
 /**
  * The user that is shown when the user's information is still loading.
@@ -15,7 +15,7 @@ export const defaultUser: FetchedUser = {
     givenName: 'Miku',
     theme: 'LIGHT',
     new_achievements: false,
-    accent_color: defaultAccentColor,
+    accent_color: '#004c20',
 };
 
 /**
