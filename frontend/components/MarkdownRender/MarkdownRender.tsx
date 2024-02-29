@@ -7,6 +7,7 @@ import {
     MessageBarIntent,
     MessageBarTitle,
     Subtitle1,
+    Image,
     Subtitle2,
     Text,
 } from '@fluentui/react-components';
@@ -136,7 +137,6 @@ export const MarkdownRender = ({
                 <Image
                     src={src?.startsWith('http') ? src : `${imagePath}/${src}`}
                     alt={alt}
-                    layout={'responsive'}
                     width={500}
                     height={500}
                 />
