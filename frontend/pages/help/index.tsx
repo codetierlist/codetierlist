@@ -1,16 +1,16 @@
-import { Caption1, Title1, Title2 } from '@fluentui/react-text';
+import { MarkdownRender } from '@/components';
 import {
     Accordion,
-    AccordionItem,
     AccordionHeader,
+    AccordionItem,
     AccordionPanel,
     Link,
 } from '@fluentui/react-components';
-import { Container } from 'react-grid-system';
+import { Caption1, Title1, Title2 } from '@fluentui/react-text';
 import Head from 'next/head';
-import styles from './help.module.css';
 import { useEffect, useState } from 'react';
-import { MarkdownRender } from '@/components';
+import { Container } from 'react-grid-system';
+import styles from './help.module.css';
 
 export const HelpPage = (): JSX.Element => {
     const [markdown, setMarkdown] = useState('');

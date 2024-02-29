@@ -1,5 +1,5 @@
-import { Avatar } from '@fluentui/react-components';
 import type { AvatarProps } from '@fluentui/react-components';
+import { Avatar } from '@fluentui/react-components';
 import { FetchedUser } from 'codetierlist-types';
 
 export const generateInitials = (user: FetchedUser): string =>

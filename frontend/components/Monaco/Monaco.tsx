@@ -1,8 +1,7 @@
+import { UserContext, useSystemTheme } from '@/hooks';
 import Editor, { EditorProps } from '@monaco-editor/react';
-import { useContext } from 'react';
 import { Theme } from 'codetierlist-types';
-import { useSystemTheme } from '@/pages/_app';
-import { UserContext } from '@/contexts/UserContext';
+import { useContext } from 'react';
 
 const editorThemes: Record<Exclude<Theme, 'SYSTEM'>, string> = {
     CONTRAST: 'hc-black',

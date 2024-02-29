@@ -1,4 +1,6 @@
+import axios, { handleError } from '@/axios';
 import { defaultAccentColor, getThemes, Navbar } from '@/components';
+import { defaultUser, SnackbarContext, UserContext, useSystemTheme } from '@/hooks';
 import '@/styles/globals.css';
 import '@/styles/spacing.css';
 import {
@@ -17,59 +19,13 @@ import {
     useId,
     useToastController,
 } from '@fluentui/react-components';
+import { FetchedUser } from 'codetierlist-types';
 import type { AppProps } from 'next/app';
-import { defaultUser, UserContext } from '@/contexts/UserContext';
-import { FetchedUser, Theme } from 'codetierlist-types';
-import { useEffect, useState, useMemo } from 'react';
-import axios, { handleError } from '@/axios';
-import { SnackbarContext } from '@/contexts/SnackbarContext';
+import { useEffect, useMemo, useState } from 'react';
 import useLocalStorage from 'use-local-storage';
 
 type EnhancedAppProps = AppProps & {
     renderer?: GriffelRenderer;
-};
-
-/**
- * Media query hook
- */
-const useMediaQuery = (query: string) => {
-    const [matches, setMatches] = useState(false);
-
-    useEffect(() => {
-        const mediaQuery = window.matchMedia(query);
-        if (mediaQuery.matches !== matches) {
-            setMatches(mediaQuery.matches);
-        }
-
-        const listener = () => setMatches(mediaQuery.matches);
-        mediaQuery.addEventListener('change', listener);
-
-        return () => mediaQuery.removeEventListener('change', listener);
-    }, [matches, query]);
-
-    return matches;
-};
-
-/**
- * Conditionally sets the theme based on the system theme
- */
-export const useSystemTheme = (theme: Theme) => {
-    const darkQuery = useMediaQuery('(prefers-color-scheme: dark)');
-    const contrastQuery = useMediaQuery('(prefers-contrast: more)');
-
-    return useMemo(() => {
-        // set scrollbar color
-        if (typeof document !== 'undefined') {
-            document.documentElement.style.colorScheme =
-                theme === 'SYSTEM' ? (darkQuery ? 'dark' : 'light') : theme;
-        }
-
-        if (theme === 'SYSTEM') {
-            return contrastQuery ? 'CONTRAST' : darkQuery ? 'DARK' : 'LIGHT';
-        } else {
-            return theme;
-        }
-    }, [darkQuery, contrastQuery, theme]);
 };
 
 /**

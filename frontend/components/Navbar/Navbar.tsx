@@ -3,7 +3,7 @@ import {
     generateInitials,
     generateInitialsAvatarProps,
 } from '@/components';
-import { UserContext, defaultUser } from '@/contexts/UserContext';
+import { UserContext, defaultUser } from '@/hooks';
 import {
     Badge,
     Button,

@@ -5,8 +5,8 @@ import {
     checkIfCourseAdmin,
     getTierClass,
 } from '@/components';
-import { SnackbarContext } from '@/contexts/SnackbarContext';
-import { UserContext } from '@/contexts/UserContext';
+import { SnackbarContext } from '@/hooks';
+import { UserContext } from '@/hooks';
 import {
     Button,
     Card,

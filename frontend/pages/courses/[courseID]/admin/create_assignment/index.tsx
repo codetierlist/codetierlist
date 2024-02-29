@@ -1,7 +1,6 @@
 import axios, { handleError } from '@/axios';
 import { ControlCard, HeaderToolbar, Monaco, checkIfCourseAdmin } from '@/components';
-import { SnackbarContext } from '@/contexts/SnackbarContext';
-import { UserContext } from '@/contexts/UserContext';
+import { SnackbarContext, UserContext } from '@/hooks';
 import {
     Button,
     Caption1,

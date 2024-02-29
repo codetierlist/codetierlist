@@ -1,7 +1,6 @@
 import axios, { handleError } from '@/axios';
 import { CourseOverviewCard, getSession } from '@/components';
-import { SnackbarContext } from '@/contexts/SnackbarContext';
-import { UserContext } from '@/contexts/UserContext';
+import { SnackbarContext, UserContext } from '@/hooks';
 import { FetchedCourse } from 'codetierlist-types';
 import { notFound } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';

@@ -1,15 +1,14 @@
 import axios, { handleError } from '@/axios';
 import {
     AssignmentPageFilesTab,
+    MarkdownRender,
     TierChip,
     TierList,
     checkIfCourseAdmin,
     convertDate,
     convertTime,
-    MarkdownRender,
 } from '@/components';
-import { SnackbarContext } from '@/contexts/SnackbarContext';
-import { UserContext } from '@/contexts/UserContext';
+import { SnackbarContext, UserContext } from '@/hooks';
 import {
     Button,
     Card,

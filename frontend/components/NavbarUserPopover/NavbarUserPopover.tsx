@@ -1,5 +1,5 @@
 import { generateInitials, generateInitialsAvatarProps } from '@/components';
-import { UserContext } from '@/contexts/UserContext';
+import { UserContext } from '@/hooks';
 import { Badge, Button, Persona } from '@fluentui/react-components';
 import {
     ErrorCircle12Filled,

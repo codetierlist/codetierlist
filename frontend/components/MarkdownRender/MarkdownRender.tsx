@@ -1,18 +1,18 @@
-import Markdown from 'react-markdown';
-import { Title2, Title3 } from '@fluentui/react-text';
 import {
+    Image,
     Link,
     MessageBar,
     MessageBarBody,
     MessageBarIntent,
     MessageBarTitle,
     Subtitle1,
-    Image,
     Subtitle2,
     Text,
 } from '@fluentui/react-components';
-import remarkGfm from 'remark-gfm';
+import { Title2, Title3 } from '@fluentui/react-text';
 import React, { Attributes, FunctionComponent, ReactNode } from 'react';
+import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const getNodeText = (node: React.ReactNode): string => {
     if (['string', 'number'].includes(typeof node)) return (node || '').toString();

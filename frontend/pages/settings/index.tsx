@@ -1,15 +1,14 @@
 import axios, { handleError } from '@/axios';
 import { ControlCard, defaultAccentColor, getThemes } from '@/components';
-import { SnackbarContext } from '@/contexts/SnackbarContext';
-import { UserContext } from '@/contexts/UserContext';
+import { SnackbarContext, UserContext } from '@/hooks';
 import favicon from '@/public/favicon.svg';
 import {
     Caption1,
     Dropdown,
+    Link,
     Option,
     Subtitle2,
     Title3,
-    Link,
 } from '@fluentui/react-components';
 import {
     Color24Regular,
@@ -19,10 +18,10 @@ import {
 import { Theme } from 'codetierlist-types';
 import Head from 'next/head';
 import Image from 'next/image';
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Container } from 'react-grid-system';
-import pkg from '../../package.json';
 import useLocalStorage from 'use-local-storage';
+import pkg from '../../package.json';
 import styles from './settings.module.css';
 
 const toSentenceCase = (str: string) => {

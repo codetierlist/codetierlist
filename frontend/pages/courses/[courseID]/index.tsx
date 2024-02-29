@@ -9,8 +9,7 @@ import {
     getSession,
     promptForFileObject,
 } from '@/components';
-import { SnackbarContext } from '@/contexts/SnackbarContext';
-import { UserContext } from '@/contexts/UserContext';
+import { SnackbarContext, UserContext } from '@/hooks';
 import { Caption1, Spinner, ToolbarButton } from '@fluentui/react-components';
 import {
     Add24Filled,

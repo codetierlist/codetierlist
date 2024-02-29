@@ -4,7 +4,7 @@ import {
     CreateCourseDialogSurface,
     getSession,
 } from '@/components';
-import { UserContext } from '@/contexts/UserContext';
+import { UserContext } from '@/hooks';
 import {
     Button,
     Caption1,
