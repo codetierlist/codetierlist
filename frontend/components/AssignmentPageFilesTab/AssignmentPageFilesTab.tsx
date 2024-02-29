@@ -79,7 +79,8 @@ export const AssignmentPageFilesTab = ({
         }
     }, [content.files, currentFolder]);
 
-    const submitFolder = async (fileslist: File[]) => {
+    const submitFolder = async (fileslist: File[], target?: string) => {
+        if (target === undefined) target = currentFolder;
         if (fileslist) {
             const zip = new JSZip();
             if (!zip) {
@@ -102,7 +103,7 @@ export const AssignmentPageFilesTab = ({
 
                 axios
                     .post(
-                        `/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/${currentFolder}`,
+                        `/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/${target}`,
                         formData,
                         {
                             params: { unzip: true },
@@ -130,7 +131,7 @@ export const AssignmentPageFilesTab = ({
      * @param target the path to submit the files to
      */
     const submitFiles = async (files: File[], target?: string) => {
-        if (!target) target = currentFolder;
+        if (target === undefined) target = currentFolder;
         if (
             files.some((file) => {
                 const path =
@@ -140,7 +141,7 @@ export const AssignmentPageFilesTab = ({
                 return path !== basename(path);
             })
         ) {
-            await submitFolder(files);
+            await submitFolder(files, target);
             return;
         }
         const formData = new FormData();
