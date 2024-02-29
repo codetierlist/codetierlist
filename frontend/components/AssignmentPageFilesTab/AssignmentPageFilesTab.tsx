@@ -130,7 +130,7 @@ export const AssignmentPageFilesTab = ({
      * @param target the path to submit the files to
      */
     const submitFiles = async (files: File[], target?: string) => {
-        if (!target) target = currentFolder;
+        if (target === undefined) target = currentFolder;
         if (
             files.some((file) => {
                 const path =
