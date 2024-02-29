@@ -27,3 +27,4 @@ export * from './utils/FileUploadUtils/FileUploadUtils';
 export * from './utils/TimeUtils/TimeUtils';
 export * from './utils/checkIfCourseAdmin/checkIfCourseAdmin';
 export * from './utils/generatePlaceholderImage/generatePlaceholderImage';
+export * from './utils/theme/theme';

@@ -1,6 +1,7 @@
 import axios, { handleError } from '@/axios';
 import { Navbar } from '@/components';
-import { defaultUser, SnackbarContext, UserContext, useSystemTheme } from '@/hooks';
+import { defaultAccentColor } from "@/components/utils/theme/theme";
+import { defaultUser, SnackbarContext, UserContext, useSystemTheme, useTheme } from '@/hooks';
 import '@/styles/globals.css';
 import '@/styles/spacing.css';
 import {
@@ -21,9 +22,8 @@ import {
 } from '@fluentui/react-components';
 import { FetchedUser } from 'codetierlist-types';
 import type { AppProps } from 'next/app';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import useLocalStorage from 'use-local-storage';
-import {defaultAccentColor, getThemes} from "@/utils/theme";
 
 type EnhancedAppProps = AppProps & {
     renderer?: GriffelRenderer;
@@ -88,9 +88,7 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
     /*
      * themes
      */
-    const themes = useMemo(() => {
-        return getThemes(userInfo.accent_color || defaultAccentColor);
-    }, [userInfo.accent_color]);
+    const themes = useTheme(userInfo.accent_color || defaultAccentColor);
 
     const theme = useSystemTheme(userInfo.theme);
 

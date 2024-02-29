@@ -1,5 +1,5 @@
 import axios, { handleError } from '@/axios';
-import { ControlCard } from '@/components';
+import { ControlCard, defaultAccentColor } from '@/components';
 import { SnackbarContext, UserContext } from '@/hooks';
 import favicon from '@/public/favicon.svg';
 import {
@@ -23,10 +23,15 @@ import { Container } from 'react-grid-system';
 import useLocalStorage from 'use-local-storage';
 import pkg from '../../package.json';
 import styles from './settings.module.css';
-import {defaultAccentColor, getThemes} from "@/utils/theme";
 
-const toSentenceCase = (str: string) => {
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+/**
+ * Friendly labels for the theme options.
+ */
+const themeOptions: Record<Theme, string> = {
+    SYSTEM: 'System',
+    LIGHT: 'Light',
+    DARK: 'Dark',
+    CONTRAST: 'High Contrast',
 };
 
 const ThemeSelector = () => {
@@ -51,17 +56,14 @@ const ThemeSelector = () => {
     };
 
     return (
-        <Dropdown value={toSentenceCase(userInfo.theme)} appearance="filled-darker">
-            {[
-                'SYSTEM',
-                ...Object.keys(getThemes(userInfo.accent_color || defaultAccentColor)),
-            ].map((theme) => (
+        <Dropdown value={themeOptions[userInfo.theme as Theme]} appearance="filled-darker">
+            {Object.keys(themeOptions).map((theme) => (
                 <Option
                     key={theme}
                     value={theme}
                     onClick={() => changeTheme(theme as Theme)}
                 >
-                    {toSentenceCase(theme)}
+                    {themeOptions[theme as Theme]}
                 </Option>
             ))}
         </Dropdown>
