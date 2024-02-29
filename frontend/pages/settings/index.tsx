@@ -1,5 +1,5 @@
 import axios, { handleError } from '@/axios';
-import { ControlCard, defaultAccentColor, getThemes } from '@/components';
+import { ControlCard } from '@/components';
 import { SnackbarContext, UserContext } from '@/hooks';
 import favicon from '@/public/favicon.svg';
 import {
@@ -23,6 +23,7 @@ import { Container } from 'react-grid-system';
 import useLocalStorage from 'use-local-storage';
 import pkg from '../../package.json';
 import styles from './settings.module.css';
+import {defaultAccentColor, getThemes} from "@/utils/theme";
 
 const toSentenceCase = (str: string) => {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();

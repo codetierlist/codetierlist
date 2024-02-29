@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createContext } from 'react';
 import { type FetchedUser } from 'codetierlist-types';
-import { defaultAccentColor } from '@/components';
+import { defaultAccentColor } from '@/utils/theme';
 
 /**
  * The user that is shown when the user's information is still loading.

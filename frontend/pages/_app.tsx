@@ -1,5 +1,5 @@
 import axios, { handleError } from '@/axios';
-import { defaultAccentColor, getThemes, Navbar } from '@/components';
+import { Navbar } from '@/components';
 import { defaultUser, SnackbarContext, UserContext, useSystemTheme } from '@/hooks';
 import '@/styles/globals.css';
 import '@/styles/spacing.css';
@@ -23,6 +23,7 @@ import { FetchedUser } from 'codetierlist-types';
 import type { AppProps } from 'next/app';
 import { useEffect, useMemo, useState } from 'react';
 import useLocalStorage from 'use-local-storage';
+import {defaultAccentColor, getThemes} from "@/utils/theme";
 
 type EnhancedAppProps = AppProps & {
     renderer?: GriffelRenderer;

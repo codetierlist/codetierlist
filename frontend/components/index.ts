@@ -24,7 +24,6 @@ export * from './TooltipIcon/TooltipIcon';
 
 export * from './utils/ColourHash/ColourHash';
 export * from './utils/FileUploadUtils/FileUploadUtils';
-export * from './utils/Theme/Theme';
 export * from './utils/TimeUtils/TimeUtils';
 export * from './utils/checkIfCourseAdmin/checkIfCourseAdmin';
 export * from './utils/generatePlaceholderImage/generatePlaceholderImage';
