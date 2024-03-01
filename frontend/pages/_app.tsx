@@ -82,7 +82,11 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
     const showSnackSev = (message?: string, severity?: ToastIntent) =>
         dispatchToast(
             <Toast>
-                <ToastTitle>{severity}</ToastTitle>
+                {severity && (
+                    <ToastTitle>
+                        {severity.charAt(0).toUpperCase() + severity.slice(1)}
+                    </ToastTitle>
+                )}
                 <ToastBody>{message}</ToastBody>
             </Toast>,
             { intent: severity }
