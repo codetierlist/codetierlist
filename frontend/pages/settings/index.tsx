@@ -103,6 +103,10 @@ const backgrounds = [
         name: 'Glow',
         url: 'url("https://logonoff.co/assets/FirstLogonAnim.svg")',
     },
+    {
+        name: 'Galaxy',
+        url: 'url("/galaxy.webp")',
+    },
 ];
 
 const BackgroundSelector = () => {
