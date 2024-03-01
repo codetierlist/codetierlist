@@ -56,7 +56,10 @@ const ThemeSelector = () => {
     };
 
     return (
-        <Dropdown value={themeOptions[userInfo.theme as Theme]} appearance="filled-darker">
+        <Dropdown
+            value={themeOptions[userInfo.theme as Theme]}
+            appearance="filled-darker"
+        >
             {Object.keys(themeOptions).map((theme) => (
                 <Option
                     key={theme}

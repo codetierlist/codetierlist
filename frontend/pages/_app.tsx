@@ -1,7 +1,13 @@
 import axios, { handleError } from '@/axios';
 import { Navbar } from '@/components';
-import { defaultAccentColor } from "@/components/utils/theme/theme";
-import { defaultUser, SnackbarContext, UserContext, useSystemTheme, useTheme } from '@/hooks';
+import { defaultAccentColor } from '@/components/utils/theme/theme';
+import {
+    defaultUser,
+    SnackbarContext,
+    UserContext,
+    useSystemTheme,
+    useTheme,
+} from '@/hooks';
 import '@/styles/globals.css';
 import '@/styles/spacing.css';
 import {
