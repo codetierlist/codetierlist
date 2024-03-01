@@ -1,13 +1,19 @@
 import { Subtitle1 } from '@fluentui/react-components';
 import { useSearchParams } from 'next/navigation';
 import { ReactNode } from 'react';
-import { DropEvent, FileRejection, useDropzone } from 'react-dropzone';
+import {
+    DropEvent,
+    DropzoneOptions,
+    FileRejection,
+    useDropzone
+} from 'react-dropzone';
 import styles from './AssignmentPageFilesTab.module.css';
 
 export const Dropzone = ({
     submitFiles,
     children,
     routeName,
+    ...props
 }: {
     submitFiles: <T extends File>(
         acceptedFiles: T[],
@@ -16,7 +22,7 @@ export const Dropzone = ({
     ) => void;
     children: ReactNode | ReactNode[];
     routeName: string;
-}): JSX.Element => {
+} & (DropzoneOptions | undefined)): JSX.Element => {
     const searchParams = useSearchParams();
     // create a dropzone for the user to upload files
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -26,6 +32,9 @@ export const Dropzone = ({
         multiple: true,
         disabled: searchParams.has('utorid'),
         noDragEventsBubbling: true,
+        maxFiles: 100,
+        maxSize: 1e+9,
+        ...props,
     });
     return (
         <div {...getRootProps({ className: styles.dropZone })}>
