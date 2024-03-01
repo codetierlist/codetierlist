@@ -1,8 +1,14 @@
-import { Image, MessageBar, MessageBarTitle, MessageBarBody, Link } from '@fluentui/react-components';
+import {
+    Image,
+    MessageBar,
+    MessageBarTitle,
+    MessageBarBody,
+    Link,
+} from '@fluentui/react-components';
 import { extname } from 'path';
 import { Monaco } from '@/components';
 import styles from './FileRender.module.css';
-import {useEffect, useState} from "react";
+import { useEffect, useState } from 'react';
 
 const langauges = {
     js: 'javascript',
@@ -42,7 +48,13 @@ const imgExt = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp', 'ico'];
 const videoExt = ['mp4', 'webm', 'ogg', 'avi', 'mov', 'wmv', 'flv', 'mkv', '3gp'];
 const audioExt = ['mp3', 'wav', 'ogg', 'flac', 'aac', 'wma', 'm4a'];
 
-const ProcessedFileRender = ({ path, content }: { path: string; content: ArrayBuffer }) => {
+const ProcessedFileRender = ({
+    path,
+    content,
+}: {
+    path: string;
+    content: ArrayBuffer;
+}) => {
     const ext = extname(path).slice(1);
     const [viewAnyway, setViewAnyway] = useState(false);
     useEffect(() => {
@@ -88,31 +100,46 @@ const ProcessedFileRender = ({ path, content }: { path: string; content: ArrayBu
                 title={path}
                 width="100%"
                 height="50vh"
-                style={{ height: '50vh'}}
+                style={{ height: '50vh' }}
             />
         );
     }
     const language = langauges[ext as keyof typeof langauges];
-    const decoder = new TextDecoder("utf-8");
+    const decoder = new TextDecoder('utf-8');
     const decoded = decoder.decode(content);
-    if(!viewAnyway && /\ufffd/.test(decoded)) {
-        return (        <MessageBar intent={"error"}>
-          <MessageBarBody>
-            <MessageBarTitle>Binary Data</MessageBarTitle>
-            This file contains binary data that cannot be rendered.{" "}
-              <Link onClick={()=>setViewAnyway(true)}>View anyway</Link>
-          </MessageBarBody>
-        </MessageBar>)
+    if (!viewAnyway && /\ufffd/.test(decoded)) {
+        return (
+            <MessageBar intent={'error'}>
+                <MessageBarBody>
+                    <MessageBarTitle>Binary Data</MessageBarTitle>
+                    This file contains binary data that cannot be rendered.{' '}
+                    <Link onClick={() => setViewAnyway(true)}>View anyway</Link>
+                </MessageBarBody>
+            </MessageBar>
+        );
     }
-    if(ext === 'svg') {
-        return (<Image src={URL.createObjectURL(
-                        new Blob([content], { type: `image/svg+xml` })
-                    )} alt={path}/>)
+    if (ext === 'svg') {
+        return (
+            <Image
+                src={URL.createObjectURL(new Blob([content], { type: `image/svg+xml` }))}
+                alt={path}
+            />
+        );
     }
 
-    return <Monaco language={language ?? "text"} value={new TextDecoder().decode(content)} height="50vh" />;
+    return (
+        <Monaco
+            language={language ?? 'text'}
+            value={new TextDecoder().decode(content)}
+            height="50vh"
+        />
+    );
 };
 
-export const FileRender = ({ path, content }: { path: string, content: ArrayBuffer }) => {
-    return (<div className={styles.filerenderer} onClick={event => event.stopPropagation()}><ProcessedFileRender path={path} content={content} /></div>)
-}
+export const FileRender = ({ path, content }: { path: string; content: ArrayBuffer }) => {
+    return (
+        <div className={styles.filerenderer} onClick={(event) => event.stopPropagation()}>
+            <ProcessedFileRender path={path} content={content} />
+        </div>
+    );
+};

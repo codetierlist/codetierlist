@@ -1,12 +1,7 @@
 import { Subtitle1 } from '@fluentui/react-components';
 import { useSearchParams } from 'next/navigation';
 import { ReactNode } from 'react';
-import {
-    DropEvent,
-    DropzoneOptions,
-    FileRejection,
-    useDropzone
-} from 'react-dropzone';
+import { DropEvent, DropzoneOptions, FileRejection, useDropzone } from 'react-dropzone';
 import styles from './AssignmentPageFilesTab.module.css';
 
 export const Dropzone = ({
@@ -33,7 +28,7 @@ export const Dropzone = ({
         disabled: searchParams.has('utorid'),
         noDragEventsBubbling: true,
         maxFiles: 100,
-        maxSize: 1e+9,
+        maxSize: 1e9,
         ...props,
     });
     return (

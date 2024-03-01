@@ -58,6 +58,8 @@ export const promptForFileObject = async ({
             }
         });
         fileInput.click();
-        setTimeout(() => {fileInput.remove()}, 1);
+        setTimeout(() => {
+            fileInput.remove();
+        }, 1);
     });
 };
