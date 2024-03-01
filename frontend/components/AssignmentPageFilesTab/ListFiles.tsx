@@ -1,5 +1,4 @@
 import axios, { handleError } from '@/axios';
-import { Monaco } from '@/components';
 import { SnackbarContext } from '@/hooks';
 import { Tree } from '@fluentui/react-components';
 import { Commit, UserFetchedAssignment } from 'codetierlist-types';
@@ -8,6 +7,7 @@ import { join, normalize } from 'path';
 import { useContext, useEffect, useState } from 'react';
 import { FileListing } from './FileListing';
 import { FolderListing } from './FolderListing';
+import { FileRender } from '@/components/AssignmentPageFilesTab/FileRender';
 
 declare type ListFilesProps = {
     /** the commit to display */
@@ -78,7 +78,9 @@ export const ListFiles = ({
 }: ListFilesProps) => {
     const { showSnackSev } = useContext(SnackbarContext);
     const searchParams = useSearchParams();
-    const [currentFileContent, setCurrentFileContent] = useState<string | null>(null);
+    const [currentFileContent, setCurrentFileContent] = useState<ArrayBuffer | null>(
+        null
+    );
 
     // turn the files into a tree
     const files = convertPathsToTree(commit.files);
@@ -90,19 +92,19 @@ export const ListFiles = ({
      */
     const getFileContents = async (file: string) => {
         await axios
-            .get<string>(
+            .get<ArrayBuffer>(
                 `/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/${commit.log[0]}/${file}`,
                 {
                     skipErrorHandling: true,
-                    transformResponse: (res) => res,
                     params: {
                         utorid: searchParams.get('utorid') ?? undefined,
                     },
+                    responseType: 'arraybuffer',
                 }
             )
             .then((res) => {
                 // read the file contents from buffer
-                setCurrentFileContent(Buffer.from(res.data).toString('utf-8'));
+                setCurrentFileContent(res.data);
             })
             .catch((e) => {
                 handleError(showSnackSev)(e);
@@ -166,13 +168,8 @@ export const ListFiles = ({
                     </Tree>
                 )
             }
-
-            {currentFile !== '' && (
-                <Monaco
-                    height="50vh"
-                    language={assignment.runner_image.split('/', 2)[0]}
-                    value={currentFileContent ?? ''}
-                />
+            {currentFile !== '' && currentFileContent && (
+                <FileRender path={currentFile} content={currentFileContent} />
             )}
         </>
     );
