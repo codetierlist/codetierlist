@@ -8,17 +8,11 @@ import {
 } from '@fluentui/react-components';
 import { Caption1, Title1, Title2 } from '@fluentui/react-text';
 import Head from 'next/head';
-import { useEffect, useState } from 'react';
 import { Container } from 'react-grid-system';
 import styles from './help.module.css';
+import markdown from '@/public/help.md';
 
 export const HelpPage = (): JSX.Element => {
-    const [markdown, setMarkdown] = useState('');
-    useEffect(() => {
-        fetch('/help.md')
-            .then((response) => response.text())
-            .then((text) => setMarkdown(text));
-    }, []);
     return (
         <>
             <Head>
