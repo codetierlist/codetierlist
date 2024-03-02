@@ -58,12 +58,14 @@ const ProcessedFileRender = ({
 }) => {
     const pathExt = extname(path).slice(1);
     const fileTypes = filetype(new Uint8Array(content));
+
     let ext: string | undefined =pathExt;
     let fileType;
     if(fileTypes.length > 0){
         ext = fileTypes[0].extension;
         fileType = fileTypes[0];
     }
+    ext = ext?.toLowerCase();
 
     const [viewAnyway, setViewAnyway] = useState(false);
 
@@ -76,6 +78,7 @@ const ProcessedFileRender = ({
         if ((fileType && fileType.mime?.startsWith("image")) || imgExt.includes(ext)) {
             return (
                 <Image
+                    draggable="false"
                     src={URL.createObjectURL(new Blob([content], {type: fileType?.mime || `image/${fileType?.extension ?? ext}`}))}
                     alt={path}
                     width="100%"
@@ -84,7 +87,7 @@ const ProcessedFileRender = ({
         }
         if ((fileType && fileType.mime?.startsWith("video")) || videoExt.includes(ext)) {
             return (
-                <video controls width="100%" height="50vh">
+                <video draggable="false"  controls width="100%" height="50vh">
                     <source
                         src={URL.createObjectURL(
                             new Blob([content], {type: `video/${fileType?.extension ?? ext}`})
@@ -95,7 +98,7 @@ const ProcessedFileRender = ({
         }
         if ((fileType && fileType.mime?.startsWith("audio")) || audioExt.includes(ext)) {
             return (
-                <audio controls>
+                <audio draggable="false" controls>
                     <source
                         src={URL.createObjectURL(
                             new Blob([content], {type: `audio/${fileType?.extension ?? ext}`})
@@ -107,6 +110,7 @@ const ProcessedFileRender = ({
         if (fileType?.mime === "application/pdf") {
             return (
                 <iframe
+                    draggable="false"
                     src={URL.createObjectURL(
                         new Blob([content], {type: `application/pdf`})
                     )}
@@ -135,6 +139,7 @@ const ProcessedFileRender = ({
     if (ext === 'svg') {
         return (
             <Image
+                draggable="false"
                 src={URL.createObjectURL(new Blob([content], {type: `image/svg+xml`}))}
                 alt={path}
             />
