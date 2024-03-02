@@ -2,9 +2,9 @@
   "achievements": [
     {
       "id": 1,
-      "name": "First Blood",
+      "name": "Quality Assurance",
       "description": "Be the first to upload a testcase for an assignment",
-      "icon": "first_blood.png",
+      "icon": "quality_assurance.png",
       "type": "first:testcase"
     },
     {
