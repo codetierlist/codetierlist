@@ -5,12 +5,13 @@ import {
     MessageBarBody,
     Link,
 } from '@fluentui/react-components';
-import { extname } from 'path';
-import { Monaco } from '@/components';
+import {extname} from 'path';
+import {Monaco} from '@/components';
 import styles from './FileRender.module.css';
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
+import filetype from 'magic-bytes.js'
 
-const langauges = {
+const languages = {
     js: 'javascript',
     jsx: 'javascript',
     ts: 'typescript',
@@ -49,62 +50,75 @@ const videoExt = ['mp4', 'webm', 'ogg', 'avi', 'mov', 'wmv', 'flv', 'mkv', '3gp'
 const audioExt = ['mp3', 'wav', 'ogg', 'flac', 'aac', 'wma', 'm4a'];
 
 const ProcessedFileRender = ({
-    path,
-    content,
-}: {
+                                 path,
+                                 content,
+                             }: {
     path: string;
     content: ArrayBuffer;
 }) => {
-    const ext = extname(path).slice(1);
+    const pathExt = extname(path).slice(1);
+    const fileTypes = filetype(new Uint8Array(content));
+    let ext: string | undefined =pathExt;
+    let fileType;
+    if(fileTypes.length > 0){
+        ext = fileTypes[0].extension;
+        fileType = fileTypes[0];
+    }
+
     const [viewAnyway, setViewAnyway] = useState(false);
+
+
     useEffect(() => {
         setViewAnyway(false);
     }, [path, content]);
-    if (imgExt.includes(ext)) {
-        return (
-            <Image
-                src={URL.createObjectURL(new Blob([content], { type: `image/${ext}` }))}
-                alt={path}
-                width="100%"
-            />
-        );
-    }
-    if (videoExt.includes(ext)) {
-        return (
-            <video controls width="100%" height="50vh">
-                <source
-                    src={URL.createObjectURL(
-                        new Blob([content], { type: `video/${ext}` })
-                    )}
+
+    if(ext) {
+        if ((fileType && fileType.mime?.startsWith("image")) || imgExt.includes(ext)) {
+            return (
+                <Image
+                    src={URL.createObjectURL(new Blob([content], {type: fileType?.mime || `image/${fileType?.extension ?? ext}`}))}
+                    alt={path}
+                    width="100%"
                 />
-            </video>
-        );
-    }
-    if (audioExt.includes(ext)) {
-        return (
-            <audio controls>
-                <source
+            );
+        }
+        if ((fileType && fileType.mime?.startsWith("video")) || videoExt.includes(ext)) {
+            return (
+                <video controls width="100%" height="50vh">
+                    <source
+                        src={URL.createObjectURL(
+                            new Blob([content], {type: `video/${fileType?.extension ?? ext}`})
+                        )}
+                    />
+                </video>
+            );
+        }
+        if ((fileType && fileType.mime?.startsWith("audio")) || audioExt.includes(ext)) {
+            return (
+                <audio controls>
+                    <source
+                        src={URL.createObjectURL(
+                            new Blob([content], {type: `audio/${fileType?.extension ?? ext}`})
+                        )}
+                    />
+                </audio>
+            );
+        }
+        if (fileType?.mime === "application/pdf") {
+            return (
+                <iframe
                     src={URL.createObjectURL(
-                        new Blob([content], { type: `audio/${ext}` })
+                        new Blob([content], {type: `application/pdf`})
                     )}
+                    title={path}
+                    width="100%"
+                    height="50vh"
+                    style={{height: '50vh'}}
                 />
-            </audio>
-        );
+            );
+        }
     }
-    if (ext === 'pdf') {
-        return (
-            <iframe
-                src={URL.createObjectURL(
-                    new Blob([content], { type: `application/pdf` })
-                )}
-                title={path}
-                width="100%"
-                height="50vh"
-                style={{ height: '50vh' }}
-            />
-        );
-    }
-    const language = langauges[ext as keyof typeof langauges];
+    const language = ext ? languages[ext as keyof typeof languages] : undefined;
     const decoder = new TextDecoder('utf-8');
     const decoded = decoder.decode(content);
     if (!viewAnyway && /\ufffd/.test(decoded)) {
@@ -121,7 +135,7 @@ const ProcessedFileRender = ({
     if (ext === 'svg') {
         return (
             <Image
-                src={URL.createObjectURL(new Blob([content], { type: `image/svg+xml` }))}
+                src={URL.createObjectURL(new Blob([content], {type: `image/svg+xml`}))}
                 alt={path}
             />
         );
@@ -136,10 +150,14 @@ const ProcessedFileRender = ({
     );
 };
 
-export const FileRender = ({ path, content }: { path: string; content: ArrayBuffer }) => {
+export const FileRender = ({path, content}: {
+    path: string;
+    content: ArrayBuffer
+}) => {
     return (
-        <div className={styles.filerenderer} onClick={(event) => event.stopPropagation()}>
-            <ProcessedFileRender path={path} content={content} />
+        <div className={styles.filerenderer}
+             onClick={(event) => event.stopPropagation()}>
+            <ProcessedFileRender path={path} content={content}/>
         </div>
     );
 };
