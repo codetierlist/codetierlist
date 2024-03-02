@@ -11,11 +11,13 @@ This guide will help you get started with the Codetierlist as a student.
     - [Code](#code)
     - [Test Cases](#test-cases) 
   - [Tierlist](#tierlist)
+  - [Managing your files](#managing-your-files)
   - [Due Dates](#due-dates)
 - [Customization and Accessibility](#customization-and-accessibility)
   - [Themes](#themes)
   - [Backgrounds](#backgrounds)
   - [Colors](#colors)
+- [Achievements](#achievements)
 - [Data Privacy](#data-privacy)
 - [Contact and Support](#contact-and-support)
 
@@ -64,6 +66,13 @@ The tierlist is dynamic and will update if your classmates update their code and
 > The tierlist does not reflect the accuracy of your code in the instructor's test cases (or final mark). The tierlist only reflects the accuracy of your code in your test cases.
 > The tierlist is only as good as the testcases submitted by your peers. If the testcases are not comprehensive, the tierlist may not accurately reflect the accuracy of your code. So make sure to submit comprehensive test cases!
 
+### Managing your files
+- To upload a file into the root directory you can press "upload a testcase"/"upload a solution" when you have no directory selected. 
+- To upload a directory you can press "upload a testcase"/"upload a solution" when you have a directory selected.
+- To upload a file/folder into a directory you can select the folder by clicking it (or any of the files in that folder) and press "upload a testcase"/"upload a solution".
+- You can delete files/folders by clicking the delete icon on the file/folder you want to delete.
+- You can also drag and drop files/folders into the directory you want to upload them to.
+
 ### Due Dates
 Each assignment will have a due date. The due date will be displayed on the assignment page. Make sure to submit your code and test cases before the due date. Late submissions will not be accepted unless stated otherwise.
 > [!NOTE]
@@ -81,6 +90,12 @@ If you have any suggestions for backgrounds, please send the image to us and we 
 
 ### Colors
 Codetierlist lets you customize the primary accent color of the site. You can change the accent color by clicking the settings icon in the top right corner of the page and selecting the color you want to use.
+
+## Achievements
+Codetierlist is designed to be fun and engaging for students, we included various achievements for you to discover while using the site. To check your current achievements click on your profile and then press "achievements".
+
+> [!NOTE]
+> Achievements remain hidden until unlocked 
 
 ## Data Privacy
 Anything you upload to Codetierlist will be visible to the instructors and TAs of the course, however, your uploads will not be used for grading the assignment. 
