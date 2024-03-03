@@ -4,3 +4,4 @@ node_modules
 volumes
 logs
 *.local
+frontend/public/help.md
