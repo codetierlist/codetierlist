@@ -3,3 +3,13 @@
     flex-direction: column;
     gap: var(--spacingVerticalXL);
 }
+
+.accentSelector {
+    display: flex;
+    gap: var(--spacingHorizontalM);
+    align-items: center;
+}
+
+.color {
+    color: var(--colorNeutralForeground2);
+}

@@ -35,7 +35,7 @@ export const runJob = async (job: ReadyJobData): Promise<JobResult> => {
     const query = job.query;
     const img = job.image.runner_image;
     const img_ver = job.image.image_version;
-    const max_seconds = 1;
+    const max_seconds = 5;
     const promise =  new Promise<JobResult>((resolve) => {
         const runner = spawn("docker",
             ["run", "--rm", "-i", "--ulimit", `cpu=${max_seconds}`, "--network=none", `codetl-runner-${img}-${img_ver}`],
@@ -69,7 +69,7 @@ export const runJob = async (job: ReadyJobData): Promise<JobResult> => {
                 resolve({status: "ERROR", error: "stdout ended"}); // read all output and still no result
                 // });
             } else {
-                resolve({status: "ERROR", error: "stdout exited"}); // fail case
+                resolve({status: "ERROR", error: `stdout exited (${code})`}); // fail case
             }
         });
     });

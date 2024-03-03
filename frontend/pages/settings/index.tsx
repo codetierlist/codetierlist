@@ -4,6 +4,7 @@ import { SnackbarContext, UserContext } from '@/hooks';
 import favicon from '@/public/favicon.svg';
 import {
     Caption1,
+    Caption2,
     Dropdown,
     Link,
     Option,
@@ -123,6 +124,8 @@ const BackgroundSelector = () => {
 
         if (value) {
             setDropdownValue(value);
+        } else {
+            setDropdownValue('Custom');
         }
     }, [background]);
 
@@ -153,39 +156,50 @@ const AccentSelector = () => {
     const [lastResolvedAccent, setLastResolvedAccent] = useState(0);
 
     return (
-        <input
-            type="color"
-            value={accentColor}
-            onChange={(e) => {
-                setAccentColor(e.target.value);
-                if (accentTimeout) {
-                    clearTimeout(accentTimeout);
-                }
-                if (Date.now() - lastResolvedAccent > 100) {
-                    setLastResolvedAccent(Date.now());
-                    setUserInfo({ ...userInfo, accent_color: e.target.value });
-                } else {
-                    setAccentTimeout(
-                        setTimeout(() => {
-                            setLastResolvedAccent(Date.now());
-                            setUserInfo({ ...userInfo, accent_color: e.target.value });
-                        }, 100)
-                    );
-                }
-            }}
-            onBlur={(e) => {
-                // save the accent color
-                axios
-                    .post('/users/accent', { accent_color: e.target.value })
-                    .then(async () => {
-                        await fetchUserInfo();
-                        showSnackSev('Accent color updated', 'success');
-                    })
-                    .catch((err) => {
-                        handleError(showSnackSev)(err);
-                    });
-            }}
-        />
+        <div className={styles.accentSelector}>
+            <Caption2 className={styles.color} aria-hidden={true}>
+                {accentColor}
+            </Caption2>
+            <input
+                style={{
+                    border: 'none',
+                }}
+                type="color"
+                value={accentColor}
+                onChange={(e) => {
+                    setAccentColor(e.target.value);
+                    if (accentTimeout) {
+                        clearTimeout(accentTimeout);
+                    }
+                    if (Date.now() - lastResolvedAccent > 100) {
+                        setLastResolvedAccent(Date.now());
+                        setUserInfo({ ...userInfo, accent_color: e.target.value });
+                    } else {
+                        setAccentTimeout(
+                            setTimeout(() => {
+                                setLastResolvedAccent(Date.now());
+                                setUserInfo({
+                                    ...userInfo,
+                                    accent_color: e.target.value,
+                                });
+                            }, 100)
+                        );
+                    }
+                }}
+                onBlur={(e) => {
+                    // save the accent color
+                    axios
+                        .post('/users/accent', { accent_color: e.target.value })
+                        .then(async () => {
+                            await fetchUserInfo();
+                            showSnackSev('Accent color updated', 'success');
+                        })
+                        .catch((err) => {
+                            handleError(showSnackSev)(err);
+                        });
+                }}
+            />
+        </div>
     );
 };
 export const Settings = () => {

@@ -54,17 +54,20 @@ if __name__ == '__main__':
     test_files = data['test_case_files']
 
     for file in sol_files.keys():
+        os.makedirs(os.path.dirname(os.path.join('../code', file)), exist_ok=True)
         with open(os.path.join('../code', file), 'wb') as f:
             f.write(base64.b64decode(sol_files[file]))
 
     for file in test_files.keys():
+        os.makedirs(os.path.dirname(os.path.join('../tests', file)), exist_ok=True)
         with open(os.path.join('../tests', file), 'wb') as f:
             f.write(base64.b64decode(test_files[file]))
 
     sys.path.append('../code')
+    os.chdir('../tests')
 
     plugin = PytestPlugin()
     with suppress_output():
-        pytest_out = pytest.main(['../tests'], plugins=[plugin])
+        pytest_out = pytest.main(['.'], plugins=[plugin])
 
     print(json.dumps(plugin.res()))
