@@ -260,7 +260,7 @@ export const removeTestcases = async (utorid: string): Promise<void> => {
                 .map(async job => await job.remove())));
 };
 
-new Worker<ParentJobData, undefined, JobType>(parent_job_queue, async (job, token) => {
+const parentWorker = new Worker<ParentJobData, undefined, JobType>(parent_job_queue, async (job, token) => {
     if (!job || !job.data) return;
     while (job.data.status !== "COMPLETED") {
         if (job.data.status === "WAITING_FILES") {
@@ -362,3 +362,13 @@ parent_job_events.on("completed", async ({jobId}) => {
     if (!job) return;
     await job.remove({removeChildren: true});
 });
+
+export const shutDown = async () => {
+    await fetchWorker.close();
+    await parentWorker.close();
+    await parent_queue.close();
+    await job_queue.close();
+    await pending_queue.close();
+    await job_events.close();
+    await parent_job_events.close();
+};

@@ -1,6 +1,7 @@
 import prisma from "@/common/prisma";
 import "@/common/achievements/events";
 import logger from "@/common/logger";
+import {shutDown} from "@/common/runner";
 
 process.on("unhandledRejection", e=>{
     logger.error(e);
@@ -20,11 +21,13 @@ prisma.$connect().then(async () => {
 process.on("SIGINT", async () => {
     logger.info("Stopping server");
     await prisma.$disconnect();
+    await shutDown();
     process.exit(0);
 });
 
 process.on("SIGTERM", async () => {
     logger.info("Stopping server");
     await prisma.$disconnect();
+    await shutDown();
     process.exit(0);
 });
