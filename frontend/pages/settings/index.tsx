@@ -97,7 +97,7 @@ const backgrounds = [
     },
     {
         name: 'Daksh',
-        url: 'url("https://avatars.githubusercontent.com/u/47948188")',
+        url: 'url("/hello-kitty.png")',
     },
     {
         name: 'Glow',
