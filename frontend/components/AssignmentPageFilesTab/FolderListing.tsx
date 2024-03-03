@@ -55,7 +55,6 @@ export const FolderListing = ({
                     className={currentFolder === path ? styles.currentFile : ''}
                     actions={
                         <>
-                            {' '}
                             <Button
                                 aria-label="Delete"
                                 appearance="subtle"
