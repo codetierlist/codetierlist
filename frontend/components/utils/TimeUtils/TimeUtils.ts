@@ -115,20 +115,21 @@ export const daysUntilDate = (targetDate: Date) => {
 
 /**
  * Get the session based on the month of the date
+ *
  * @param date The date to get the session of
  * @returns The session of the date
  */
 export const getSession = (date: Date): Session => {
     const month = date.getMonth() as number;
 
-    if (2 <= month && month < 6) {
-        // April - July
+    if (5 <= month && month <= 7) {
+        // May - July
         return 'Summer';
-    } else if (7 <= month && month < 9) {
-        // Aug - Sep
+    } else if (8 <= month && month <= 12) {
+        // Aug - Dec
         return 'Fall';
     } else {
-        // Oct - Mar
+        // Jan - Apr
         return 'Winter';
     }
 };

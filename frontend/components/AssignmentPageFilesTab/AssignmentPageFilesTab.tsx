@@ -83,7 +83,6 @@ export const AssignmentPageFilesTab = ({
     }, [content.files, currentFile, currentFolder]);
 
     const submitFolder = async (fileslist: File[], target?: string) => {
-        alert(fileslist.reduce((a, x) => a + x.size, 0));
         if (fileslist.length > 100 || fileslist.reduce((a, x) => a + x.size, 0) >= 1e9) {
             showSnackSev(
                 'Please upload less than 1000 files and less than 1GB at a time',

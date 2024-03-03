@@ -107,7 +107,7 @@ const createImages = () => {
 createImages();
 
 // create workers
-new Worker<ReadyJobData, JobResult>("job_queue",
+const worker = new Worker<ReadyJobData, JobResult>("job_queue",
     async (job: Job<ReadyJobData, JobResult>, token): Promise<JobResult> => {
         if("status" in job.data) {
             console.error(`job ${job.id} is not ready`);
@@ -134,3 +134,15 @@ new Worker<ReadyJobData, JobResult>("job_queue",
         },
         concurrency: mtask
     });
+
+
+// trap SIGINT and SIGTERM and gracefully shutdown
+process.on("SIGINT", async () => {
+    await worker.close();
+    process.exit(0);
+});
+
+process.on("SIGTERM", async () => {
+    await worker.close();
+    process.exit(0);
+});
