@@ -89,9 +89,13 @@ export const HelpPage = (): JSX.Element => {
                         </AccordionHeader>
                         <AccordionPanel className={styles.accordionPanel}>
                             <p>
-                                The way testcases are run against the solutions is determined by the instructor when they create the assignment, if you are unsure please confirm with them.
+                                The way testcases are run against the solutions is
+                                determined by the instructor when they create the
+                                assignment, if you are unsure please confirm with them.
                                 Generally, the directory structure should be as follows:
-                                Place your code in the root directory (not in a subfolder!), and upload your testcases separately in the root of the testcases upload area.
+                                Place your code in the root directory (not in a
+                                subfolder!), and upload your testcases separately in the
+                                root of the testcases upload area.
                             </p>
                         </AccordionPanel>
                     </AccordionItem>
@@ -143,7 +147,7 @@ export const HelpPage = (): JSX.Element => {
                 </Accordion>
 
                 <div className={`${styles.accordionPanel} p-y-xl`}>
-                    <MarkdownRender markdown={markdown} imagePath={"/docs/user"}/>
+                    <MarkdownRender markdown={markdown} imagePath={'/docs/user'} />
                 </div>
             </Container>
         </>
