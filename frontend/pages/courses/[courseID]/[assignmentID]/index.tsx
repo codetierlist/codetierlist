@@ -8,9 +8,11 @@ import {
     convertDate,
     convertTime,
     DueDateMessageBar,
+    ToolTipIcon,
 } from '@/components';
 import { SnackbarContext, UserContext } from '@/hooks';
 import {
+    Badge,
     Button,
     Card,
     CardHeader,
@@ -186,17 +188,25 @@ const ViewDetailsTab = ({
                             <Subtitle2 className={styles.dueDate}>
                                 <strong>Due</strong> {convertDate(assignment.due_date)} at{' '}
                                 {convertTime(assignment.due_date)}
-                                <Tooltip
-                                    content={
+                                <ToolTipIcon
+                                    style={{ display: 'inline-flex' }}
+                                    className="m-l-m-nudge"
+                                    tooltip={
                                         assignment.strict_deadline
                                             ? 'This assignment does not accept submissions past the deadline.'
                                             : 'You will still be able to submit after the deadline, however other students may not be updating their solutions and testcases anymore.'
                                     }
-                                    relationship={'description'}
-                                    withArrow
-                                >
-                                    <Info16Regular />
-                                </Tooltip>
+                                    icon={
+                                        <Badge
+                                            appearance="filled"
+                                            icon={<Info16Regular />}
+                                        >
+                                            {assignment.strict_deadline
+                                                ? 'Strict'
+                                                : 'Flexible'}
+                                        </Badge>
+                                    }
+                                />
                             </Subtitle2>
 
                             <Title2>{assignment.title}</Title2>
