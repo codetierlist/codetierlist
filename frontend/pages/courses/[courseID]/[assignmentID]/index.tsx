@@ -200,6 +200,7 @@ const ViewDetailsTab = ({
                                         <Badge
                                             appearance="filled"
                                             icon={<Info16Regular />}
+                                            iconPosition="after"
                                         >
                                             {assignment.strict_deadline
                                                 ? 'Strict'
