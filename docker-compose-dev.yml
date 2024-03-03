@@ -52,7 +52,7 @@ services:
       - ./frontend/public:/frontend/public
       - ./frontend/styles:/frontend/styles
       - ./frontend/axios.ts:/frontend/axios.ts
-      - ./docs/user/README.md:/frontend/public/help.md
+      - ./docs/user:/frontend/public/docs/user:RO
 
   db:
     image: postgres
