@@ -363,6 +363,9 @@ parent_job_events.on("completed", async ({jobId}) => {
     await job.remove({removeChildren: true});
 });
 
+/**
+ * Shuts down all workers and queues for the runner
+ */
 export const shutDown = async () => {
     await fetchWorker.close();
     await parentWorker.close();
