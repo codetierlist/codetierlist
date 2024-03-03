@@ -383,6 +383,7 @@ router.get("/:assignment/tierlist", fetchAssignmentMiddleware, errorHandler(asyn
     if (!fullFetchedAssignment.groups[0]) {
         res.statusCode = 404;
         res.send({message: `No tierlist found for ${utorid}.`});
+        return;
     }
 
     const tierlist = await generateList(fullFetchedAssignment.groups[0], req.user, !isProf(req.course!, req.user));
