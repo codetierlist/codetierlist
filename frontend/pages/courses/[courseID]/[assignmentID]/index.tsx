@@ -7,6 +7,7 @@ import {
     checkIfCourseAdmin,
     convertDate,
     convertTime,
+    DueDateMessageBar,
 } from '@/components';
 import { SnackbarContext, UserContext } from '@/hooks';
 import {
@@ -20,6 +21,7 @@ import {
     Subtitle1,
     Tab,
     TabList,
+    Tooltip,
 } from '@fluentui/react-components';
 import { Subtitle2, Title2 } from '@fluentui/react-text';
 import { Tierlist, UserFetchedAssignment } from 'codetierlist-types';
@@ -31,6 +33,7 @@ import { useCallback, useContext, useEffect, useState } from 'react';
 import { Col, Container } from 'react-grid-system';
 import ViewAdminTab from './admin/index';
 import styles from './page.module.css';
+import { Info16Regular } from '@fluentui/react-icons';
 
 export declare type Stage = 'details' | 'upload' | 'tierlist' | 'admin' | '404';
 
@@ -107,6 +110,7 @@ const ViewFilesTab = ({
 }) => {
     return (
         <div className={`${styles.massiveGap}`}>
+            <DueDateMessageBar assignment={assignment} />
             <AssignmentPageFilesTab
                 routeName="solution"
                 route="submissions"
@@ -172,6 +176,7 @@ const ViewDetailsTab = ({
 }) => {
     return (
         <>
+            <DueDateMessageBar assignment={assignment} />
             <Card className={`m-b-l ${styles.assignmentHeader}`} orientation="horizontal">
                 <CardHeader
                     className={styles.assignmentHeaderContent}
@@ -181,6 +186,17 @@ const ViewDetailsTab = ({
                             <Subtitle2 className={styles.dueDate}>
                                 <strong>Due</strong> {convertDate(assignment.due_date)} at{' '}
                                 {convertTime(assignment.due_date)}
+                                <Tooltip
+                                    content={
+                                        assignment.strict_deadline
+                                            ? 'This assignment does not accept submissions past the deadline.'
+                                            : 'You will still be able to submit after the deadline, however other students may not be updating their solutions and testcases anymore.'
+                                    }
+                                    relationship={'description'}
+                                    withArrow
+                                >
+                                    <Info16Regular />
+                                </Tooltip>
                             </Subtitle2>
 
                             <Title2>{assignment.title}</Title2>

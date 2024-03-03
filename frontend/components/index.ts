@@ -10,6 +10,7 @@ export * from './BaseAdminToolbarDeleteButton/BaseAdminToolbarDeleteButton';
 export * from './ControlCard/ControlCard';
 export * from './CourseOverviewCard/CourseOverviewCard';
 export * from './CreateCourseDialogSurface/CreateCourseDialogSurface';
+export * from './DueDateMessageBar/DueDateMessageBar';
 export * from './EnrollRemovePeopleMenu/EnrollRemovePeopleMenu';
 export * from './HeaderToolbar/HeaderToolbar';
 export * from './InitialsAvatar/InitialsAvatar';

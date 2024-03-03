@@ -33,6 +33,10 @@ const highContrastTheme: Theme = {
     ...createHighContrastTheme(),
 };
 
+highContrastTheme.fontFamilyNumeric = spaceGrotesk.style.fontFamily;
+highContrastTheme.fontFamilyBase = inter.style.fontFamily;
+highContrastTheme.fontFamilyMonospace = spaceMono.style.fontFamily;
+
 /**
  * Get the theme for the app based on the accent color.
  */
@@ -61,10 +65,6 @@ export const useTheme = (accentColor: string) => {
         darkTheme.fontFamilyNumeric = spaceGrotesk.style.fontFamily;
         darkTheme.fontFamilyBase = inter.style.fontFamily;
         darkTheme.fontFamilyMonospace = spaceMono.style.fontFamily;
-
-        highContrastTheme.fontFamilyNumeric = spaceGrotesk.style.fontFamily;
-        highContrastTheme.fontFamilyBase = inter.style.fontFamily;
-        highContrastTheme.fontFamilyMonospace = spaceMono.style.fontFamily;
 
         return themes;
     }, [brandTheme]);

@@ -1,0 +1,6 @@
+.messageBar {
+    margin: var(--spacingVerticalM) 0;
+    max-width: 100%;
+    white-space: pre-wrap !important;
+    padding: var(--spacingVerticalS) var(--spacingHorizontalS);
+}

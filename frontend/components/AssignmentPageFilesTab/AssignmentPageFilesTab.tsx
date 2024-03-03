@@ -83,6 +83,14 @@ export const AssignmentPageFilesTab = ({
     }, [content.files, currentFile, currentFolder]);
 
     const submitFolder = async (fileslist: File[], target?: string) => {
+        alert(fileslist.reduce((a, x) => a + x.size, 0));
+        if (fileslist.length > 100 || fileslist.reduce((a, x) => a + x.size, 0) >= 1e9) {
+            showSnackSev(
+                'Please upload less than 1000 files and less than 1GB at a time',
+                'error'
+            );
+            return;
+        }
         if (target === undefined) target = currentFolder;
         if (fileslist) {
             const zip = new JSZip();
@@ -231,26 +239,28 @@ export const AssignmentPageFilesTab = ({
                     <TestCaseStatus status={content.valid} />
                 </Subtitle1>
 
-                {!searchParams.has('utorid') && (
-                    <div>
-                        <Button
-                            icon={<Folder24Filled />}
-                            appearance="subtle"
-                            onClick={uploadFolder}
-                        >
-                            Upload a folder
-                            {currentFolder && ` to ${basename(currentFolder)}`}
-                        </Button>
-                        <Button
-                            icon={<Add24Filled />}
-                            appearance="subtle"
-                            onClick={uploadFile}
-                        >
-                            Upload a {routeName}{' '}
-                            {currentFolder ? ` to ${basename(currentFolder)}` : null}
-                        </Button>
-                    </div>
-                )}
+                {!searchParams.has('utorid') &&
+                    (!assignment.strict_deadline ||
+                        new Date(assignment.due_date) >= new Date()) && (
+                        <div>
+                            <Button
+                                icon={<Folder24Filled />}
+                                appearance="subtle"
+                                onClick={uploadFolder}
+                            >
+                                Upload a folder
+                                {currentFolder && ` to ${basename(currentFolder)}`}
+                            </Button>
+                            <Button
+                                icon={<Add24Filled />}
+                                appearance="subtle"
+                                onClick={uploadFile}
+                            >
+                                Upload a {routeName}{' '}
+                                {currentFolder ? ` to ${basename(currentFolder)}` : null}
+                            </Button>
+                        </div>
+                    )}
             </div>
 
             {/* {content.log[0] && (

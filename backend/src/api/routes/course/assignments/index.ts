@@ -39,8 +39,8 @@ const storage = multer.diskStorage({
 });
 const upload = multer({
     storage, limits: {
-        fileSize: config.max_file_size, // 1MB
-        files: config.max_file_count // 30 files, 30MB total
+        fileSize: config.max_file_size, // 20MB
+        files: config.max_file_count // 30 files, 600MB total (total limit is lower but limited by nginx)
     }
 });
 const uploadMiddleware = (req: Request, res: Response, next: NextFunction) =>
