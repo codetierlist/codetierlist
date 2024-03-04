@@ -8,6 +8,7 @@ export const Dropzone = ({
     submitFiles,
     children,
     routeName,
+    customDropText,
     ...props
 }: {
     submitFiles: <T extends File>(
@@ -17,6 +18,7 @@ export const Dropzone = ({
     ) => void;
     children: ReactNode | ReactNode[];
     routeName: string;
+    customDropText?: string;
 } & (DropzoneOptions | undefined)): JSX.Element => {
     const searchParams = useSearchParams();
     // create a dropzone for the user to upload files
@@ -36,7 +38,9 @@ export const Dropzone = ({
             {isDragActive ? (
                 <div className={styles.dropZoneOverlay}>
                     <Subtitle1 block as="p" className={styles.dropZoneText}>
-                        Drop files to upload as a {routeName}
+                        {customDropText
+                            ? customDropText
+                            : `Drop files to upload as a ${routeName}`}
                     </Subtitle1>
                 </div>
             ) : null}

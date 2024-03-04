@@ -12,4 +12,5 @@
 
 .color {
     color: var(--colorNeutralForeground2);
+    font-family: var(--fontFamilyMonospace) !important;
 }

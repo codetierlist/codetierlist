@@ -17,36 +17,23 @@ const languages = {
     jsx: 'javascript',
     ts: 'typescript',
     tsx: 'typescript',
-    html: 'html',
-    css: 'css',
-    scss: 'scss',
     md: 'markdown',
-    json: 'json',
     yml: 'yaml',
-    yaml: 'yaml',
-    xml: 'xml',
-    java: 'java',
-    c: 'c',
     cpp: 'cpp',
     h: 'c',
     hpp: 'cpp',
     py: 'python',
     rb: 'ruby',
-    php: 'php',
     sh: 'shell',
-    go: 'go',
     rs: 'rust',
     kt: 'kotlin',
-    swift: 'swift',
-    sql: 'sql',
     pl: 'perl',
-    r: 'r',
     cs: 'csharp',
     mdx: 'markdown',
     txt: 'text',
 };
 
-const imgExt = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp', 'ico'];
+const imgExt = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp', 'ico', 'svg'];
 const videoExt = ['mp4', 'webm', 'ogg', 'avi', 'mov', 'wmv', 'flv', 'mkv', '3gp'];
 const audioExt = ['mp3', 'wav', 'ogg', 'flac', 'aac', 'wma', 'm4a'];
 
@@ -60,7 +47,6 @@ const ProcessedFileRender = ({
     const pathExt = extname(path).slice(1);
     const fileTypes = filetype(new Uint8Array(content));
     let fileType: GuessedFile | undefined;
-    console.log(fileTypes);
     let ext = pathExt;
     if (fileTypes.length > 0) {
         if (fileTypes[0].extension) {
@@ -136,7 +122,7 @@ const ProcessedFileRender = ({
                     title={path}
                     width="100%"
                     height="50vh"
-                    style={{ height: '50vh' }}
+                    style={{ height: '50vh', border: 'none' }}
                 />
             );
         }
@@ -144,6 +130,7 @@ const ProcessedFileRender = ({
     const language = ext ? languages[ext as keyof typeof languages] : undefined;
     const decoder = new TextDecoder('utf-8');
     const decoded = decoder.decode(content);
+
     if (!viewAnyway && /\ufffd/.test(decoded)) {
         return (
             <MessageBar className={styles.messagebar} intent={'error'}>
@@ -155,21 +142,15 @@ const ProcessedFileRender = ({
             </MessageBar>
         );
     }
-    if (ext === 'svg') {
-        return (
-            <Image
-                draggable="false"
-                src={URL.createObjectURL(new Blob([content], { type: `image/svg+xml` }))}
-                alt={path}
-            />
-        );
-    }
 
     return (
         <Monaco
-            language={language ?? 'text'}
+            language={language || ext || 'text'}
             value={new TextDecoder().decode(content)}
             height="50vh"
+            options={{
+                readOnly: true,
+            }}
         />
     );
 };

@@ -6,13 +6,13 @@
     font-weight: var(--fontWeightBold);
     padding: 0 var(--spacingHorizontalXS);
 
-    &.Fall {
+    &.FALL {
         background-color: var(--colorPaletteDarkOrangeForeground2);
     }
-    &.Winter {
+    &.WINTER {
         background-color: var(--colorPaletteRoyalBlueForeground2);
     }
-    &.Summer {
+    &.SUMMER {
         background-color: var(--colorPaletteDarkGreenForeground2);
     }
 }

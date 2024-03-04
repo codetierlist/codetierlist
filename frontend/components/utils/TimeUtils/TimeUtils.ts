@@ -124,12 +124,12 @@ export const getSession = (date: Date): Session => {
 
     if (5 <= month && month <= 7) {
         // May - July
-        return 'Summer';
+        return 'SUMMER';
     } else if (8 <= month && month <= 12) {
         // Aug - Dec
-        return 'Fall';
+        return 'FALL';
     } else {
         // Jan - Apr
-        return 'Winter';
+        return 'WINTER';
     }
 };

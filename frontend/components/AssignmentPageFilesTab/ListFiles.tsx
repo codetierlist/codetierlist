@@ -118,56 +118,54 @@ export const ListFiles = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentFile]);
 
+    /** for each folder in the first level of the tree (the root) create a folder */
+    const treeChildren = Array.from(files.children).map((file) => {
+        return file.children.length === 0 ? (
+            <FileListing
+                key={file.name}
+                fullRoute={FULL_ROUTE}
+                update={update}
+                changeFile={(val) => {
+                    setCurrentFile(val);
+                    setCurrentFolder(val ? normalize(join('/', val, '..')).slice(1) : '');
+                }}
+                path={file.name}
+                currentFile={currentFile}
+            />
+        ) : (
+            <FolderListing
+                key={file.name}
+                fullRoute={FULL_ROUTE}
+                update={update}
+                path={file.name}
+                changeFile={(val) => {
+                    setCurrentFile(val);
+                    setCurrentFolder(val ? normalize(join(val, '..')) : '');
+                }}
+                changeFolder={(val) => {
+                    setCurrentFolder && setCurrentFolder(val);
+                    setCurrentFile('');
+                }}
+                subtree={file}
+                currentFile={currentFile}
+                currentFolder={currentFolder}
+                submitFiles={submitFiles}
+                routeName={route}
+            />
+        );
+    });
+
     return (
         <>
-            {
-                // for each folder in the first level of the tree (the root) create a folder
-                commit.files && (
-                    <Tree aria-label={route}>
-                        {Object.entries(files.children).map(([key, file]) => {
-                            return file.children.length === 0 ? (
-                                <FileListing
-                                    key={key}
-                                    fullRoute={FULL_ROUTE}
-                                    update={update}
-                                    changeFile={(val) => {
-                                        setCurrentFile(val);
-                                        setCurrentFolder(
-                                            val
-                                                ? normalize(join('/', val, '..')).slice(1)
-                                                : ''
-                                        );
-                                    }}
-                                    path={file.name}
-                                    currentFile={currentFile}
-                                />
-                            ) : (
-                                <FolderListing
-                                    key={key}
-                                    fullRoute={FULL_ROUTE}
-                                    update={update}
-                                    path={file.name}
-                                    changeFile={(val) => {
-                                        setCurrentFile(val);
-                                        setCurrentFolder(
-                                            val ? normalize(join(val, '..')) : ''
-                                        );
-                                    }}
-                                    changeFolder={(val) => {
-                                        setCurrentFolder && setCurrentFolder(val);
-                                        setCurrentFile('');
-                                    }}
-                                    subtree={file}
-                                    currentFile={currentFile}
-                                    currentFolder={currentFolder}
-                                    submitFiles={submitFiles}
-                                    routeName={route}
-                                />
-                            );
-                        })}
-                    </Tree>
-                )
-            }
+            {commit.files && commit.files.length > 0 && (
+                <Tree
+                    aria-label={`Files for ${route}`}
+                    checkedItems={currentFile ? [currentFile] : []}
+                >
+                    {treeChildren}
+                </Tree>
+            )}
+
             {currentFile !== '' && currentFileContent && (
                 <FileRender path={currentFile} content={currentFileContent} />
             )}

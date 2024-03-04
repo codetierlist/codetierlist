@@ -14,7 +14,7 @@ export declare type ToolTipIconProps = {
  * A tooltip with an icon that can be hovered over to show the tooltip.
  */
 export const ToolTipIcon = (
-    props: Partial<TooltipProps> & ToolTipIconProps
+    props: Partial<TooltipProps> & ToolTipIconProps & React.HTMLAttributes<HTMLDivElement>
 ): JSX.Element | undefined => {
     const contentId = useId('content');
     const [visible, setVisible] = useState(false);
@@ -26,7 +26,7 @@ export const ToolTipIcon = (
         <span
             aria-owns={visible ? contentId : undefined}
             className={props.className}
-            style={{ display: 'flex' }}
+            style={{ display: 'flex', ...props.style }}
         >
             <Tooltip
                 content={

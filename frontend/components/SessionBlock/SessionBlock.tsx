@@ -13,17 +13,17 @@ export declare type SessionBlockProps = {
  */
 const getSessionStyle = (session: Session): CSSProperties | undefined => {
     switch (session) {
-        case 'Summer':
+        case 'SUMMER':
             return {
                 color: 'var(--colorNeutralForegroundInverted)',
                 backgroundColor: 'var(--colorPaletteGreenForeground2)',
             };
-        case 'Fall':
+        case 'FALL':
             return {
                 color: 'var(--colorNeutralForegroundInverted)',
                 backgroundColor: 'var(--colorPaletteRedForeground2)',
             };
-        case 'Winter':
+        case 'WINTER':
             return {
                 color: 'var(--colorNeutralForegroundInverted)',
                 backgroundColor: 'var(--colorPaletteBlueForeground2)',

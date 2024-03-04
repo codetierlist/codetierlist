@@ -40,6 +40,24 @@ router.post("/", errorHandler(async (req, res) => {
         return;
     }
     const {name, code} = req.body;
+    let {session} = req.body;
+    if (session && (typeof session !== 'string' || session.length > 10 || !["FALL", "WINTER", "SUMMER"].includes(session.toUpperCase()))) {
+        res.statusCode = 400;
+        res.send({message: 'Invalid session.'});
+        return;
+    } else if (!session) {
+        const date = new Date();
+        const month = date.getMonth();
+        if (month >= 8 && month <= 11) {
+            session = "FALL";
+        }
+        else if (month >= 0 && month <= 3) {
+            session = "WINTER";
+        }
+        else {
+            session = "SUMMER";
+        }
+    }
     if (typeof name !== 'string' || typeof code !== 'string') {
         res.statusCode = 400;
         res.send({message: 'Invalid body.'});
@@ -62,7 +80,8 @@ router.post("/", errorHandler(async (req, res) => {
         data: {
             id,
             name,
-            code
+            code,
+            session: session.toUpperCase(),
         }
     });
 

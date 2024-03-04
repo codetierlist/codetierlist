@@ -1,16 +1,18 @@
 import axios, { handleError } from '@/axios';
 import {
     AssignmentPageFilesTab,
+    DueDateMessageBar,
     MarkdownRender,
     TierChip,
     TierList,
+    ToolTipIcon,
     checkIfCourseAdmin,
     convertDate,
     convertTime,
-    DueDateMessageBar,
 } from '@/components';
 import { SnackbarContext, UserContext } from '@/hooks';
 import {
+    Badge,
     Button,
     Card,
     CardHeader,
@@ -21,8 +23,8 @@ import {
     Subtitle1,
     Tab,
     TabList,
-    Tooltip,
 } from '@fluentui/react-components';
+import { Info16Regular } from '@fluentui/react-icons';
 import { Subtitle2, Title2 } from '@fluentui/react-text';
 import { Tierlist, UserFetchedAssignment } from 'codetierlist-types';
 import Error from 'next/error';
@@ -33,7 +35,6 @@ import { useCallback, useContext, useEffect, useState } from 'react';
 import { Col, Container } from 'react-grid-system';
 import ViewAdminTab from './admin/index';
 import styles from './page.module.css';
-import { Info16Regular } from '@fluentui/react-icons';
 
 export declare type Stage = 'details' | 'upload' | 'tierlist' | 'admin' | '404';
 
@@ -186,17 +187,31 @@ const ViewDetailsTab = ({
                             <Subtitle2 className={styles.dueDate}>
                                 <strong>Due</strong> {convertDate(assignment.due_date)} at{' '}
                                 {convertTime(assignment.due_date)}
-                                <Tooltip
-                                    content={
+                                <ToolTipIcon
+                                    style={{ display: 'inline-flex' }}
+                                    className="m-l-m-nudge"
+                                    tooltip={
                                         assignment.strict_deadline
                                             ? 'This assignment does not accept submissions past the deadline.'
                                             : 'You will still be able to submit after the deadline, however other students may not be updating their solutions and testcases anymore.'
                                     }
-                                    relationship={'description'}
-                                    withArrow
-                                >
-                                    <Info16Regular />
-                                </Tooltip>
+                                    icon={
+                                        <Badge
+                                            appearance="filled"
+                                            icon={<Info16Regular />}
+                                            iconPosition="after"
+                                            color={
+                                                assignment.strict_deadline
+                                                    ? 'danger'
+                                                    : 'warning'
+                                            }
+                                        >
+                                            {assignment.strict_deadline
+                                                ? 'Strict'
+                                                : 'Flexible'}
+                                        </Badge>
+                                    }
+                                />
                             </Subtitle2>
 
                             <Title2>{assignment.title}</Title2>

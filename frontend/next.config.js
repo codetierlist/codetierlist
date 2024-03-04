@@ -19,6 +19,15 @@ const nextConfig = {
 
         return config;
     },
+
+    images: {
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'res.cdn.office.net',
+            },
+        ],
+    },
 };
 
 module.exports = nextConfig;

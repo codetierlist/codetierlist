@@ -10,7 +10,7 @@ import { Caption1, Title1, Title2 } from '@fluentui/react-text';
 import Head from 'next/head';
 import { Container } from 'react-grid-system';
 import styles from './help.module.css';
-import markdown from '@/public/help.md';
+import markdown from '@/public/docs/user/README.md';
 
 export const HelpPage = (): JSX.Element => {
     return (
@@ -85,6 +85,23 @@ export const HelpPage = (): JSX.Element => {
 
                     <AccordionItem value="faq4" className={styles.accordionItem}>
                         <AccordionHeader as="h2" expandIconPosition="end">
+                            What directory structure should I use?
+                        </AccordionHeader>
+                        <AccordionPanel className={styles.accordionPanel}>
+                            <p>
+                                The way testcases are run against the solutions is
+                                determined by the instructor when they create the
+                                assignment, if you are unsure please confirm with them.
+                                Generally, the directory structure should be as follows:
+                                Place your code in the root directory (not in a
+                                subfolder!), and upload your testcases separately in the
+                                root of the testcases upload area.
+                            </p>
+                        </AccordionPanel>
+                    </AccordionItem>
+
+                    <AccordionItem value="faq5" className={styles.accordionItem}>
+                        <AccordionHeader as="h2" expandIconPosition="end">
                             Why is testing important?
                         </AccordionHeader>
                         <AccordionPanel className={styles.accordionPanel}>
@@ -130,7 +147,7 @@ export const HelpPage = (): JSX.Element => {
                 </Accordion>
 
                 <div className={`${styles.accordionPanel} p-y-xl`}>
-                    <MarkdownRender markdown={markdown} />
+                    <MarkdownRender markdown={markdown} imagePath={'/docs/user'} />
                 </div>
             </Container>
         </>

@@ -1,13 +1,25 @@
+import { promptForFileObject, ToolTipIcon } from '@/components';
+import { deletePath } from '@/components/AssignmentPageFilesTab/helpers';
 import { SnackbarContext } from '@/hooks';
-import { Button, Tree, TreeItem, TreeItemLayout } from '@fluentui/react-components';
-import { Delete20Regular } from '@fluentui/react-icons';
+import {
+    Button,
+    Tree,
+    TreeItem,
+    TreeItemLayout,
+    useRestoreFocusTarget,
+} from '@fluentui/react-components';
+import {
+    ArrowUpload20Regular,
+    Delete20Regular,
+    Folder16Filled,
+    FolderOpen16Filled,
+} from '@fluentui/react-icons';
 import { basename, join } from 'path';
 import { useContext, useState } from 'react';
-import { Dropzone } from './Dropzone';
-import { TreeType } from './ListFiles';
 import styles from './AssignmentPageFilesTab.module.css';
+import { Dropzone } from './Dropzone';
 import { FileListing, FileListingProps } from './FileListing';
-import { deletePath } from '@/components/AssignmentPageFilesTab/helpers';
+import { TreeType } from './ListFiles';
 
 export declare type FolderListingProps = FileListingProps & {
     /** the subtree to display */
@@ -33,10 +45,39 @@ export const FolderListing = ({
     currentFolder,
     submitFiles,
     routeName,
+    ...props
 }: FolderListingProps) => {
     const { showSnackSev } = useContext(SnackbarContext);
+    const focusTargetAttribute = useRestoreFocusTarget();
 
     const [expanded, setExpanded] = useState(false);
+
+    const treeChildren = Array.from(subtree.children).map((file) => {
+        return file.children.length === 0 ? (
+            <FileListing
+                key={join(path, file.name)}
+                changeFile={changeFile}
+                currentFile={currentFile}
+                fullRoute={fullRoute}
+                path={join(path, file.name)}
+                update={update}
+            />
+        ) : (
+            <FolderListing
+                key={join(path, file.name)}
+                changeFile={changeFile}
+                changeFolder={changeFolder}
+                currentFile={currentFile}
+                fullRoute={fullRoute}
+                path={join(path, file.name)}
+                subtree={file}
+                update={update}
+                currentFolder={currentFolder}
+                submitFiles={submitFiles}
+                routeName={routeName}
+            />
+        );
+    });
 
     return (
         <Dropzone
@@ -44,18 +85,51 @@ export const FolderListing = ({
                 submitFiles(files, path);
             }}
             routeName={routeName}
+            customDropText={`Drop files to upload to ${path}`}
         >
-            <TreeItem itemType="branch" open={expanded}>
+            <TreeItem
+                open={expanded}
+                itemType="branch"
+                aria-description="has actions"
+                value={path}
+                {...focusTargetAttribute}
+                {...props}
+            >
                 <TreeItemLayout
                     onClick={(e) => {
                         e.stopPropagation();
                         changeFolder && changeFolder(path);
                         setExpanded(!expanded);
                     }}
+                    iconBefore={
+                        <>
+                            {expanded && <FolderOpen16Filled className="m-r-xs" />}
+                            {!expanded && <Folder16Filled className="m-r-xs" />}
+                        </>
+                    }
                     className={currentFolder === path ? styles.currentFile : ''}
                     actions={
                         <>
-                            {' '}
+                            <ToolTipIcon
+                                tooltip={`Upload files to ${basename(path)}`}
+                                icon={
+                                    <Button
+                                        aria-label="Upload"
+                                        appearance="subtle"
+                                        icon={<ArrowUpload20Regular />}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            promptForFileObject({
+                                                folders: false,
+                                                multiple: true,
+                                            }).then((files) => {
+                                                submitFiles(Array.from(files), path);
+                                            });
+                                        }}
+                                    />
+                                }
+                            />
+
                             <Button
                                 aria-label="Delete"
                                 appearance="subtle"
@@ -79,36 +153,7 @@ export const FolderListing = ({
                 >
                     {basename(path)}
                 </TreeItemLayout>
-                {
-                    <Tree>
-                        {Object.entries(subtree.children).map(([key, file]) => {
-                            return file.children.length === 0 ? (
-                                <FileListing
-                                    key={key}
-                                    changeFile={changeFile}
-                                    currentFile={currentFile}
-                                    fullRoute={fullRoute}
-                                    path={join(path, file.name)}
-                                    update={update}
-                                />
-                            ) : (
-                                <FolderListing
-                                    key={key}
-                                    changeFile={changeFile}
-                                    changeFolder={changeFolder}
-                                    currentFile={currentFile}
-                                    fullRoute={fullRoute}
-                                    path={join(path, file.name)}
-                                    subtree={file}
-                                    update={update}
-                                    currentFolder={currentFolder}
-                                    submitFiles={submitFiles}
-                                    routeName={routeName}
-                                />
-                            );
-                        })}
-                    </Tree>
-                }
+                <Tree>{treeChildren}</Tree>
             </TreeItem>
         </Dropzone>
     );

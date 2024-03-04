@@ -27,9 +27,6 @@ export const promptForFileReader = async (type: string): Promise<FileReader> => 
 
 /**
  * prompt the user to select a file
- * @param type the file types to accept
- * @param multiple whether multiple files can be uploaded
- * @param folders whether folders can be uploaded
  * @returns the file object
  */
 export const promptForFileObject = async ({
@@ -37,8 +34,11 @@ export const promptForFileObject = async ({
     multiple = false,
     folders = false,
 }: {
+    /** the file types to accept */
     type?: string;
+    /** whether multiple files can be uploaded */
     multiple?: boolean;
+    /** whether folders can be uploaded */
     folders?: boolean;
 }): Promise<FileList> => {
     const fileInput = document.createElement('input');

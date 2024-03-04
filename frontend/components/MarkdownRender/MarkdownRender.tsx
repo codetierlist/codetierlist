@@ -13,6 +13,7 @@ import { Title2, Title3 } from '@fluentui/react-text';
 import React, { Attributes, FunctionComponent, ReactNode } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import path from 'path';
 
 const getNodeText = (node: React.ReactNode): string => {
     if (['string', 'number'].includes(typeof node)) return (node || '').toString();
@@ -135,10 +136,17 @@ export const MarkdownRender = ({
             a: ({ children, href }) => <Link href={href || '#'}>{children}</Link>,
             img: ({ src, alt }) => (
                 <Image
-                    src={src?.startsWith('http') ? src : `${imagePath}/${src}`}
+                    src={
+                        src?.startsWith('http')
+                            ? src
+                            : imagePath
+                              ? path.join(imagePath, src || '')
+                              : src
+                    }
                     alt={alt}
-                    width={500}
-                    height={500}
+                    style={{
+                        maxHeight: '500px',
+                    }}
                 />
             ),
         }}

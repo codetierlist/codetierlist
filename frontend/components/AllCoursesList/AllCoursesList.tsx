@@ -1,5 +1,5 @@
 import axios, { handleError } from '@/axios';
-import { CourseOverviewCard, getSession } from '@/components';
+import { CourseOverviewCard } from '@/components';
 import { SnackbarContext, UserContext } from '@/hooks';
 import { FetchedCourse } from 'codetierlist-types';
 import { notFound } from 'next/navigation';
@@ -67,7 +67,7 @@ export const AllCoursesList = () => {
                             id={course.id}
                             name={course.name}
                             role="INSTRUCTOR"
-                            session={getSession(new Date(course.createdAt))}
+                            session={course.session}
                             image={`${process.env.NEXT_PUBLIC_API_URL}/courses/${course.id}/cover`}
                         />
                     ))}

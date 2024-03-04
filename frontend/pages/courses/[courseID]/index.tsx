@@ -186,11 +186,7 @@ export default function Page() {
                     {course !== null && (
                         <Title2 className={styles.courseTitle}>
                             <CourseSessionChip
-                                session={
-                                    course
-                                        ? getSession(new Date(course.createdAt))
-                                        : getSession(new Date())
-                                }
+                                session={course?.session ?? getSession(new Date())}
                             >
                                 {courseID}
                             </CourseSessionChip>

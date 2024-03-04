@@ -20,6 +20,7 @@ This guide will help you get started with the Codetierlist as a student.
 - [Achievements](#achievements)
 - [Data Privacy](#data-privacy)
 - [Contact and Support](#contact-and-support)
+- [Credits](#credits)
 
 ## Testing in Software Development
 Testing is a major part of the software development process. Many development models like Agile and Waterfall include testing as a key part of the development process. There are many ways to develop testcases alongside the code, Codetierlist is inspired by ping-pong pair programing where the testcases are developed alongside the code by a fellow peer. Ping-pong pair programming is a technique where one peer programs and the other peer writes the testcases. This is a great way to develop testcases as the person writing the testcases is not the person who wrote the code, so they are less likely to be biased towards the code.
@@ -111,3 +112,21 @@ If you have any questions, suggestions, or just want to chat about Codetierlist,
 - Jackson Lee ([jacks.lee@utoronto.ca](mailto:jacks.lee@utoronto.ca))
 
 If you have any questions about a specific course or assignment, please contact your instructor or TA. You can find their contact information on the course page.
+
+## Credits
+#### Faculty Supervisor:
+- [Professor Michael Liut](https://www.utm.utoronto.ca/math-cs-stats/faculty-staff/liut-michael)
+
+#### Development and research:
+- [Ido Ben Haim](https://www.linkedin.com/in/idobenhaim/)
+- [Jackson Lee](https://www.linkedin.com/in/leejacks/)
+- [Daksh Malhotra](https://www.linkedin.com/in/daksh-malhotra/)
+- [Yousef Bulbulia](https://www.linkedin.com/in/yousef-bulbulia/)
+- [Brian Zhang](https://www.linkedin.com/in/brianzhang/)
+
+#### Special thanks to:
+- [Giang Bui](https://www.linkedin.com/in/huonggiangbui/)
+- [Professor Andrew Petersen](https://www.utm.utoronto.ca/math-cs-stats/faculty-staff/petersen-andrew)
+- [Professor Andreas (Andi) Bergen](https://www.utm.utoronto.ca/math-cs-stats/people/andreas-andi-bergen)
+- [Professor Arnold Rosenbloom](https://www.utm.utoronto.ca/math-cs-stats/faculty-staff/rosenbloom-arnold)
+- CSC148H5 TA's, faculty, and students

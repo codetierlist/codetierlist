@@ -2,7 +2,6 @@ import {
     AllCoursesList,
     CourseOverviewCard,
     CreateCourseDialogSurface,
-    getSession,
 } from '@/components';
 import { UserContext } from '@/hooks';
 import {
@@ -42,7 +41,7 @@ export default function Home() {
                                 id={role.course.id}
                                 name={role.course.name}
                                 role={role.type}
-                                session={getSession(new Date(role.course.createdAt))}
+                                session={role.course.session}
                                 image={`${process.env.NEXT_PUBLIC_API_URL}/courses/${role.course.id}/cover`}
                             />
                         ))}
