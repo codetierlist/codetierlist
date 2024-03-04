@@ -16,6 +16,22 @@ import {promises as fs} from "fs";
 import path from "path";
 import extract from "extract-zip";
 
+
+const commitAndRespond =  async (res : Response, object: Omit<TestCase | Solution, 'datetime' | 'id'>, table: "solution" | "testCase", prof : boolean) => {
+    const commit = await commitFiles(object, table, prof);
+    if (commit === null) {
+        res.statusCode = 500;
+        res.send({message: 'Failed to process submission.'});
+        return;
+    }
+    if (typeof commit === "object" && "error" in commit) {
+        res.statusCode = 400;
+        res.send({message: commit.error});
+        return;
+    }
+    res.send({commit});
+};
+
 /**
  * Wraps an async api handler to catch any errors and pass them to the next middleware
  * @param cb The async handler to wrap
@@ -197,7 +213,7 @@ export const processSubmission = async (req: Request, res: Response, table: "sol
         }
     }
     /** commit files */
-    const commit = await commitFiles(submission ?? {
+    await commitAndRespond(res, submission ?? {
         git_id: "",
         git_url: repoPath,
         course_id: req.course!.id,
@@ -205,18 +221,6 @@ export const processSubmission = async (req: Request, res: Response, table: "sol
         author_id: req.user.utorid,
         group_number: group
     }, table, isProf(req.course!, req.user));
-
-    if (commit === null) {
-        res.statusCode = 500;
-        res.send({message: 'Failed to process submission.'});
-        return;
-    }
-    if (typeof commit === "object" && "error" in commit) {
-        res.statusCode = 400;
-        res.send({message: commit.error});
-        return;
-    }
-    res.send({commit});
 };
 
 /**
@@ -271,18 +275,7 @@ export const deleteFile = async (req: Request, res: Response, table: "solution" 
         /* if the file doesn't exist then continue */
     }
 
-    const commit = await commitFiles(object, table, isProf(object.course_id, req.user));
-    if (commit === null) {
-        res.statusCode = 500;
-        res.send({message: 'Failed to delete.'});
-        return;
-    }
-    if (typeof commit === "object" && "error" in commit) {
-        res.statusCode = 400;
-        res.send({message: commit.error});
-        return;
-    }
-    res.send({commit});
+    await commitAndRespond(res, object, table, isProf(object.course_id, req.user));
 };
 
 /**
@@ -347,7 +340,7 @@ export const fetchAssignmentMiddleware = async (req: Request, res: Response, nex
         res.statusCode = 404;
         res.send({
             status: 404,
-            message: 'Course not found.',
+            message: 'Assignment not found.',
         });
         return;
     }

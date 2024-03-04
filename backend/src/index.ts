@@ -17,17 +17,17 @@ prisma.$connect().then(async () => {
     await import("./api");
 });
 
-// trap SIGINT and SIGTERM and gracefully shutdown
-process.on("SIGINT", async () => {
+/**
+ * Gracefully shutdown the server
+ */
+const exitHandler = async () => {
     logger.info("Stopping server");
     await prisma.$disconnect();
     await shutDown();
     process.exit(0);
-});
+};
 
-process.on("SIGTERM", async () => {
-    logger.info("Stopping server");
-    await prisma.$disconnect();
-    await shutDown();
-    process.exit(0);
-});
+// trap SIGINT and SIGTERM and gracefully shutdown
+process.on("SIGINT", exitHandler);
+
+process.on("SIGTERM", exitHandler);
