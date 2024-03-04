@@ -1,14 +1,27 @@
 import axios, { handleError } from '@/axios';
-import { ControlCard, HeaderToolbar, Monaco, checkIfCourseAdmin } from '@/components';
+import {
+    ControlCard,
+    HeaderToolbar,
+    Monaco,
+    checkIfCourseAdmin,
+    MarkdownRender,
+} from '@/components';
 import { SnackbarContext, UserContext } from '@/hooks';
 import {
     Button,
     Caption1,
     Card,
     CardHeader,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogSurface,
+    DialogTitle,
+    DialogTrigger,
     Dropdown,
     Input,
     Label,
+    Link,
     Option,
     OptionGroup,
     Switch,
@@ -78,6 +91,33 @@ const useRunners = () => {
     return { runners, setSelectedRunner, selectedRunner };
 };
 
+const Preview = ({
+    description,
+    setPreview,
+    preview,
+}: {
+    description: string;
+    setPreview: (preview: boolean) => void;
+    preview: boolean;
+}) => {
+    return (
+        preview && (
+            <Dialog open={preview} onOpenChange={(_, x) => setPreview(x.open)}>
+                <DialogSurface>
+                    <DialogTitle>Preview</DialogTitle>
+                    <DialogContent className={`${styles.previewMarkdown} m-y-l`}>
+                        <MarkdownRender markdown={description} />
+                    </DialogContent>
+                    <DialogActions>
+                        <DialogTrigger disableButtonEnhancement>
+                            <Button appearance="secondary">Close</Button>
+                        </DialogTrigger>
+                    </DialogActions>
+                </DialogSurface>
+            </Dialog>
+        )
+    );
+};
 export default function Page(): JSX.Element {
     const { showSnackSev } = useContext(SnackbarContext);
     const [assignmentName, setAssignmentName] = useState('');
@@ -88,6 +128,7 @@ export default function Page(): JSX.Element {
     const { fetchUserInfo } = useContext(UserContext);
     const [groupSize, setGroupSize] = useState<number | null>(null);
     const [strictDeadlines, setStrictDeadlines] = useState(false);
+    const [preview, setPreview] = useState(false);
     const { userInfo } = useContext(UserContext);
     const router = useRouter();
 
@@ -186,7 +227,11 @@ export default function Page(): JSX.Element {
             <Head>
                 <title>Create Assignment - Codetierlist</title>
             </Head>
-
+            <Preview
+                description={description}
+                setPreview={setPreview}
+                preview={preview}
+            />
             <HeaderToolbar>
                 <ToolbarButton
                     icon={<ArrowLeft24Regular />}
@@ -354,7 +399,8 @@ export default function Page(): JSX.Element {
                             }
                             description={
                                 <Caption1>
-                                    The markdown-formatted description of the assignment.
+                                    The markdown-formatted description of the assignment.{' '}
+                                    <Link onClick={() => setPreview(true)}>Preview</Link>
                                 </Caption1>
                             }
                         />

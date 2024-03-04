@@ -11,3 +11,9 @@
 .submit {
     align-self: flex-end;
 }
+
+.previewMarkdown {
+    background-color: var(--colorNeutralBackground2);
+    height: 50vh;
+    overflow-y: auto;
+}
