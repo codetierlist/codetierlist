@@ -1,5 +1,5 @@
 import axios, { handleError } from '@/axios';
-import { CourseOverviewCard, getSession } from '@/components';
+import { CourseOverviewCard } from '@/components';
 import { SnackbarContext, UserContext } from '@/hooks';
 import { FetchedCourse } from 'codetierlist-types';
 import { notFound } from 'next/navigation';

@@ -2,7 +2,6 @@ import {
     AllCoursesList,
     CourseOverviewCard,
     CreateCourseDialogSurface,
-    getSession,
 } from '@/components';
 import { UserContext } from '@/hooks';
 import {
