@@ -1,4 +1,4 @@
-import { promptForFileObject } from '@/components';
+import { promptForFileObject, ToolTipIcon } from '@/components';
 import { deletePath } from '@/components/AssignmentPageFilesTab/helpers';
 import { SnackbarContext } from '@/hooks';
 import {
@@ -110,20 +110,26 @@ export const FolderListing = ({
                     className={currentFolder === path ? styles.currentFile : ''}
                     actions={
                         <>
-                            <Button
-                                aria-label="Upload"
-                                appearance="subtle"
-                                icon={<ArrowUpload20Regular />}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    promptForFileObject({
-                                        folders: false,
-                                        multiple: true
-                                    }).then((files) => {
-                                        submitFiles(Array.from(files), path);
-                                    });
-                                }}
+                            <ToolTipIcon
+                                tooltip={`Upload files to ${basename(path)}`}
+                                icon={
+                                    <Button
+                                        aria-label="Upload"
+                                        appearance="subtle"
+                                        icon={<ArrowUpload20Regular />}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            promptForFileObject({
+                                                folders: false,
+                                                multiple: true,
+                                            }).then((files) => {
+                                                submitFiles(Array.from(files), path);
+                                            });
+                                        }}
+                                    />
+                                }
                             />
+
                             <Button
                                 aria-label="Delete"
                                 appearance="subtle"
