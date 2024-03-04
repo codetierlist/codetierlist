@@ -110,7 +110,9 @@ export const CreateCourseDialogSurface = ({
                                 name="courseSession"
                                 value={session}
                                 defaultValue={defaultSession}
-                                onOptionSelect={(_, data) => setSession(data.optionValue as string)}
+                                onOptionSelect={(_, data) =>
+                                    setSession(data.optionValue as string)
+                                }
                             >
                                 <Option value="FALL">Fall</Option>
                                 <Option value="WINTER">Winter</Option>
