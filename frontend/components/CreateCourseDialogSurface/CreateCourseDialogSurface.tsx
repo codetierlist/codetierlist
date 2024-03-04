@@ -9,8 +9,10 @@ import {
     DialogSurface,
     DialogTitle,
     DialogTrigger,
+    Dropdown,
     Input,
     Label,
+    Option,
 } from '@fluentui/react-components';
 import { useContext, useState } from 'react';
 
@@ -27,8 +29,20 @@ export declare type CreateCourseFormProps = {
 export const CreateCourseDialogSurface = ({
     closeDialog,
 }: CreateCourseFormProps): JSX.Element => {
+    let defaultSession;
+    const date = new Date();
+    const month = date.getMonth();
+    if (month >= 8 && month <= 11) {
+        defaultSession = 'FALL';
+    } else if (month >= 0 && month <= 3) {
+        defaultSession = 'WINTER';
+    } else {
+        defaultSession = 'SUMMER';
+    }
+
     const [code, setCourseCode] = useState('');
     const [name, setCourseName] = useState('');
+    const [session, setSession] = useState(defaultSession);
     const { fetchUserInfo } = useContext(UserContext);
     const { showSnackSev } = useContext(SnackbarContext);
 
@@ -39,7 +53,7 @@ export const CreateCourseDialogSurface = ({
                     event.preventDefault();
 
                     axios
-                        .post('/courses', { code, name })
+                        .post('/courses', { code, name, session })
                         .then(closeDialog)
                         .catch((e) => {
                             handleError(showSnackSev)(e);
@@ -85,6 +99,23 @@ export const CreateCourseDialogSurface = ({
                                 maxLength={50}
                                 onChange={(e) => setCourseName(e.target.value)}
                             />
+                        </div>
+
+                        <div className={styles.input}>
+                            <Label required htmlFor={'courseSession'}>
+                                Course Session:
+                            </Label>
+                            <Dropdown
+                                id="courseSession"
+                                name="courseSession"
+                                value={session}
+                                defaultValue={defaultSession}
+                                onOptionSelect={(_, data) => setSession(data.optionValue as string)}
+                            >
+                                <Option value="FALL">Fall</Option>
+                                <Option value="WINTER">Winter</Option>
+                                <Option value="SUMMER">Summer</Option>
+                            </Dropdown>
                         </div>
                     </DialogContent>
 

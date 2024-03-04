@@ -121,7 +121,7 @@ export type Tierlist = Record<Tier, TierlistEntry[]>;
 /**
  * a session of the course
  */
-export type Session = "Fall" | "Winter" | "Summer"
+export type Session = Course["session"]
 
 const role: Role;
 export type RoleType = typeof role.type

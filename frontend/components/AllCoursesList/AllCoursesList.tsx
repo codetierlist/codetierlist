@@ -67,7 +67,7 @@ export const AllCoursesList = () => {
                             id={course.id}
                             name={course.name}
                             role="INSTRUCTOR"
-                            session={getSession(new Date(course.createdAt))}
+                            session={course.session}
                             image={`${process.env.NEXT_PUBLIC_API_URL}/courses/${course.id}/cover`}
                         />
                     ))}
