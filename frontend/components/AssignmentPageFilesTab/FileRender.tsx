@@ -148,6 +148,9 @@ const ProcessedFileRender = ({
             language={language ?? ext ?? 'text'}
             value={new TextDecoder().decode(content)}
             height="50vh"
+            options={{
+                readOnly: true,
+            }}
         />
     );
 };
