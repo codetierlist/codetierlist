@@ -85,6 +85,7 @@ export const FolderListing = ({
                 open={expanded}
                 itemType="branch"
                 aria-description="has actions"
+                value={path}
                 {...focusTargetAttribute}
                 {...props}
             >

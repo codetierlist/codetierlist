@@ -118,6 +118,7 @@ export const ListFiles = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentFile]);
 
+    /** for each folder in the first level of the tree (the root) create a folder */
     const treeChildren = Array.from(files.children).map((file) => {
         return file.children.length === 0 ? (
             <FileListing
@@ -156,12 +157,15 @@ export const ListFiles = ({
 
     return (
         <>
-            {
-                // for each folder in the first level of the tree (the root) create a folder
-                commit.files && (
-                    <Tree aria-label={`Files for ${route}`}>{treeChildren}</Tree>
-                )
-            }
+            {commit.files && (
+                <Tree
+                    aria-label={`Files for ${route}`}
+                    checkedItems={currentFile ? [currentFile] : []}
+                >
+                    {treeChildren}
+                </Tree>
+            )}
+
             {currentFile !== '' && currentFileContent && (
                 <FileRender path={currentFile} content={currentFileContent} />
             )}
