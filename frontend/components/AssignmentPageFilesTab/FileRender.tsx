@@ -122,7 +122,7 @@ const ProcessedFileRender = ({
                     title={path}
                     width="100%"
                     height="50vh"
-                    style={{ height: '50vh' }}
+                    style={{ height: '50vh', border: 'none' }}
                 />
             );
         }

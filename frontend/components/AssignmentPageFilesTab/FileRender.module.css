@@ -1,6 +1,7 @@
 .filerenderer {
     width: 100%;
-    max-height: 50vh;
+    /* some extra buffer space to hide the scrollbar */
+    max-height: calc(50vh + 1em);
     overflow: auto;
     text-align: center;
 }
