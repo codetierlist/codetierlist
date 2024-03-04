@@ -43,7 +43,7 @@ export const FileListing = ({
     }, [path]);
 
     return (
-        <TreeItem {...focusTargetAttribute} {...props} itemType="leaf">
+        <TreeItem itemType="leaf" value={path} {...focusTargetAttribute} {...props}>
             <TreeItemLayout
                 className={`${currentFile === path ? styles.currentFile : ''}`}
                 onClick={(e) => {
@@ -51,6 +51,25 @@ export const FileListing = ({
                     if (currentFile !== path) changeFile && changeFile(path);
                     else changeFile && changeFile('');
                 }}
+                iconBefore={
+                    <>
+                        {!iconType && (
+                            <div
+                                className="m-r-xs"
+                                style={{ width: 16, height: 16 }}
+                            />
+                        )}
+                        {iconType && (
+                            <Image
+                                src={iconType}
+                                className="m-r-xs"
+                                alt=""
+                                width={16}
+                                height={16}
+                            />
+                        )}
+                    </>
+                }
                 actions={
                     <>
                         <Button
@@ -72,12 +91,8 @@ export const FileListing = ({
                     </>
                 }
             >
-                <div className={styles.fileListing}>
-                    {!iconType && <div style={{ width: 16, height: 16 }}></div>}
-                    {iconType && <Image src={iconType} alt="" width={16} height={16} />}
-                    {currentFile === path && <strong>{basename(path)}</strong>}
-                    {currentFile !== path && <>{basename(path)}</>}
-                </div>
+                {currentFile === path && <strong>{basename(path)}</strong>}
+                {currentFile !== path && <>{basename(path)}</>}
             </TreeItemLayout>
         </TreeItem>
     );
