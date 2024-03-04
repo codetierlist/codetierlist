@@ -145,7 +145,7 @@ const ProcessedFileRender = ({
 
     return (
         <Monaco
-            language={language ?? (ext ?? 'text')}
+            language={language ?? ext ?? 'text'}
             value={new TextDecoder().decode(content)}
             height="50vh"
         />

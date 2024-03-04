@@ -120,3 +120,9 @@
 .currentFile:active {
     background-color: var(--colorBrandBackgroundPressed) !important;
 }
+
+.fileListing {
+    display: flex;
+    align-items: center;
+    gap: var(--spacingHorizontalS);
+}
