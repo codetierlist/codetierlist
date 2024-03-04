@@ -111,6 +111,20 @@ export const FolderListing = ({
                     actions={
                         <>
                             <Button
+                                aria-label="Upload"
+                                appearance="subtle"
+                                icon={<ArrowUpload20Regular />}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    promptForFileObject({
+                                        folders: false,
+                                        multiple: true
+                                    }).then((files) => {
+                                        submitFiles(Array.from(files), path);
+                                    });
+                                }}
+                            />
+                            <Button
                                 aria-label="Delete"
                                 appearance="subtle"
                                 icon={<Delete20Regular />}
@@ -125,20 +139,6 @@ export const FolderListing = ({
                                         path,
                                         showSnackSev,
                                         update,
-                                    });
-                                }}
-                            />
-                            <Button
-                                aria-label="Upload"
-                                appearance="subtle"
-                                icon={<ArrowUpload20Regular />}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    promptForFileObject({
-                                        folders: false,
-                                        multiple: true
-                                    }).then((files) => {
-                                        submitFiles(Array.from(files), path);
                                     });
                                 }}
                             />
