@@ -73,12 +73,8 @@ export const FileListing = ({
                 }
             >
                 <div className={styles.fileListing}>
-                    {
-                        !iconType && <div style={{ width: 16, height: 16 }}></div>
-                    }
-                    {
-                        iconType && <Image src={iconType} alt="" width={16} height={16} />
-                    }
+                    {!iconType && <div style={{ width: 16, height: 16 }}></div>}
+                    {iconType && <Image src={iconType} alt="" width={16} height={16} />}
                     {currentFile === path && <strong>{basename(path)}</strong>}
                     {currentFile !== path && <>{basename(path)}</>}
                 </div>

@@ -1,14 +1,14 @@
 import axios, { handleError } from '@/axios';
 import {
     AssignmentPageFilesTab,
+    DueDateMessageBar,
     MarkdownRender,
     TierChip,
     TierList,
+    ToolTipIcon,
     checkIfCourseAdmin,
     convertDate,
     convertTime,
-    DueDateMessageBar,
-    ToolTipIcon,
 } from '@/components';
 import { SnackbarContext, UserContext } from '@/hooks';
 import {
@@ -23,8 +23,8 @@ import {
     Subtitle1,
     Tab,
     TabList,
-    Tooltip,
 } from '@fluentui/react-components';
+import { Info16Regular } from '@fluentui/react-icons';
 import { Subtitle2, Title2 } from '@fluentui/react-text';
 import { Tierlist, UserFetchedAssignment } from 'codetierlist-types';
 import Error from 'next/error';
@@ -35,7 +35,6 @@ import { useCallback, useContext, useEffect, useState } from 'react';
 import { Col, Container } from 'react-grid-system';
 import ViewAdminTab from './admin/index';
 import styles from './page.module.css';
-import { Info16Regular } from '@fluentui/react-icons';
 
 export declare type Stage = 'details' | 'upload' | 'tierlist' | 'admin' | '404';
 

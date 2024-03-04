@@ -79,6 +79,7 @@ export const FolderListing = ({
                 submitFiles(files, path);
             }}
             routeName={routeName}
+            customDropText={`Drop files to upload to ${path}`}
         >
             <TreeItem
                 open={expanded}
