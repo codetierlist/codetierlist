@@ -7,7 +7,11 @@ import {
     TreeItemLayout,
     useRestoreFocusTarget,
 } from '@fluentui/react-components';
-import { Delete20Regular } from '@fluentui/react-icons';
+import {
+    Delete20Regular,
+    Folder16Filled,
+    FolderOpen16Filled,
+} from '@fluentui/react-icons';
 import { basename, join } from 'path';
 import { useContext, useState } from 'react';
 import styles from './AssignmentPageFilesTab.module.css';
@@ -95,6 +99,12 @@ export const FolderListing = ({
                         changeFolder && changeFolder(path);
                         setExpanded(!expanded);
                     }}
+                    iconBefore={
+                        <>
+                            {expanded && <FolderOpen16Filled className="m-r-xs" />}
+                            {!expanded && <Folder16Filled className="m-r-xs" />}
+                        </>
+                    }
                     className={currentFolder === path ? styles.currentFile : ''}
                     actions={
                         <>

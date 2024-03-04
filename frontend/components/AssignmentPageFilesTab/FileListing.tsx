@@ -54,10 +54,7 @@ export const FileListing = ({
                 iconBefore={
                     <>
                         {!iconType && (
-                            <div
-                                className="m-r-xs"
-                                style={{ width: 16, height: 16 }}
-                            />
+                            <div className="m-r-xs" style={{ width: 16, height: 16 }} />
                         )}
                         {iconType && (
                             <Image
