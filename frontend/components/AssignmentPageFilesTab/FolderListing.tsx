@@ -1,3 +1,4 @@
+import { promptForFileObject } from '@/components';
 import { deletePath } from '@/components/AssignmentPageFilesTab/helpers';
 import { SnackbarContext } from '@/hooks';
 import {
@@ -8,6 +9,7 @@ import {
     useRestoreFocusTarget,
 } from '@fluentui/react-components';
 import {
+    ArrowUpload20Regular,
     Delete20Regular,
     Folder16Filled,
     FolderOpen16Filled,
@@ -123,6 +125,20 @@ export const FolderListing = ({
                                         path,
                                         showSnackSev,
                                         update,
+                                    });
+                                }}
+                            />
+                            <Button
+                                aria-label="Upload"
+                                appearance="subtle"
+                                icon={<ArrowUpload20Regular />}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    promptForFileObject({
+                                        folders: false,
+                                        multiple: true
+                                    }).then((files) => {
+                                        submitFiles(Array.from(files), path);
                                     });
                                 }}
                             />
