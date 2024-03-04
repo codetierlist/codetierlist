@@ -200,6 +200,7 @@ const ViewDetailsTab = ({
                                             appearance="filled"
                                             icon={<Info16Regular />}
                                             iconPosition="after"
+                                            color={assignment.strict_deadline ? 'danger' : 'warning'}
                                         >
                                             {assignment.strict_deadline
                                                 ? 'Strict'
