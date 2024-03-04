@@ -157,7 +157,7 @@ export const ListFiles = ({
 
     return (
         <>
-            {commit.files && (
+            {commit.files && commit.files.length > 0 && (
                 <Tree
                     aria-label={`Files for ${route}`}
                     checkedItems={currentFile ? [currentFile] : []}
