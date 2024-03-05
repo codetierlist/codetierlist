@@ -12,7 +12,6 @@ WORKDIR /frontend
 COPY ./frontend/package.json ./frontend/package-lock.json ./
 RUN npm ci
 COPY ./frontend ./
-COPY ./docs/user/README.md ./public/docs/user/README.md
 
 # Environment variables must be present at build time
 # https://github.com/vercel/next.js/discussions/14030

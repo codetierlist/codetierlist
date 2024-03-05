@@ -1,13 +1,13 @@
 import axios, { handleError } from '@/axios';
+import { FileRender } from '@/components/AssignmentPageFilesTab/FileRender';
 import { SnackbarContext } from '@/hooks';
-import { Tree } from '@fluentui/react-components';
+import { Tree, useRestoreFocusTarget } from '@fluentui/react-components';
 import { Commit, UserFetchedAssignment } from 'codetierlist-types';
 import { useSearchParams } from 'next/navigation';
 import { join, normalize } from 'path';
 import { useContext, useEffect, useState } from 'react';
 import { FileListing } from './FileListing';
 import { FolderListing } from './FolderListing';
-import { FileRender } from '@/components/AssignmentPageFilesTab/FileRender';
 
 declare type ListFilesProps = {
     /** the commit to display */
@@ -118,6 +118,8 @@ export const ListFiles = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentFile]);
 
+    const focusTargetAttribute = useRestoreFocusTarget();
+
     /** for each folder in the first level of the tree (the root) create a folder */
     const treeChildren = Array.from(files.children).map((file) => {
         return file.children.length === 0 ? (
@@ -131,6 +133,7 @@ export const ListFiles = ({
                 }}
                 path={file.name}
                 currentFile={currentFile}
+                {...focusTargetAttribute}
             />
         ) : (
             <FolderListing
@@ -151,6 +154,7 @@ export const ListFiles = ({
                 currentFolder={currentFolder}
                 submitFiles={submitFiles}
                 routeName={route}
+                {...focusTargetAttribute}
             />
         );
     });

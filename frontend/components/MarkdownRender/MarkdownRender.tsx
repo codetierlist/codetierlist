@@ -13,7 +13,7 @@ import { Title2, Title3 } from '@fluentui/react-text';
 import React, { Attributes, FunctionComponent, ReactNode } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import remarkGemoji from 'remark-gemoji'
+import remarkGemoji from 'remark-gemoji';
 import path from 'path';
 
 const getNodeText = (node: React.ReactNode): string => {
