@@ -19,7 +19,7 @@ admin_headers = {"utorid": admin_utorid, "http_mail": "ido.benhaim@mail.utoronto
                  "givenName": "Michael"}
 
 n = 1000
-group_size = 999999
+group_size = 30
 
 
 def create_course(course_name: str, course_code: str) -> str:
@@ -116,7 +116,7 @@ def upload_tests(user: str):
     with open(f'./lab_10_submissions/{user}/lab10_tests.py', mode='rb') as f:
         contents = f.read()
     with httpx.Client() as client:
-        url = f'{base_url}/courses/{course}/assignments/{assignment}/testcases'
+        url = f'{base_url}/courses/{course}/assignments/{assignment}/testcases/'
         files = {
             'files': ("lab10_tests.py", contents, "text/plain")
         }
@@ -185,7 +185,7 @@ def main():
     print("Enrolling students")
     enroll_students(students)
     print("Uploading submissions and tests")
-    url = f'{base_url}/courses/{course}/assignments/{assignment}/submissions'
+    url = f'{base_url}/courses/{course}/assignments/{assignment}/submissions/'
     files = {
         'files': ("lab10.py",
                   open(f'./lab10.py', 'rb'),
