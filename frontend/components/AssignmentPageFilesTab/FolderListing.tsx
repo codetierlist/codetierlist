@@ -1,24 +1,15 @@
 import { promptForFileObject, ToolTipIcon } from '@/components';
 import { deletePath } from '@/components/AssignmentPageFilesTab/helpers';
 import { SnackbarContext } from '@/hooks';
-import {
-    Button,
-    Tree,
-    TreeItem,
-    TreeItemLayout
-} from '@fluentui/react-components';
-import {
-    ArrowUpload20Regular,
-    Delete20Regular,
-    FolderOpen16Filled
-} from '@fluentui/react-icons';
+import { Button, Tree, TreeItem, TreeItemLayout } from '@fluentui/react-components';
+import { FileIconType, getFileTypeIconAsUrl } from '@fluentui/react-file-type-icons';
+import { ArrowUpload20Regular, Delete20Regular } from '@fluentui/react-icons';
+import Image from 'next/image';
 import { basename, join } from 'path';
 import { useContext } from 'react';
 import { Dropzone } from './Dropzone';
 import { FileListing, FileListingProps } from './FileListing';
 import { TreeType } from './ListFiles';
-import Image from 'next/image';
-import { FileIconType, getFileTypeIconAsUrl } from '@fluentui/react-file-type-icons';
 
 export declare type FolderListingProps = FileListingProps & {
     /** the subtree to display */
@@ -94,7 +85,12 @@ export const FolderListing = ({
                 <TreeItemLayout
                     iconBefore={
                         <Image
-                            src={getFileTypeIconAsUrl({ type: FileIconType.folder, size: 16 }) ?? ''}
+                            src={
+                                getFileTypeIconAsUrl({
+                                    type: FileIconType.folder,
+                                    size: 16,
+                                }) ?? ''
+                            }
                             className="m-r-xs"
                             alt=""
                             width={16}

@@ -1,10 +1,6 @@
 import { deletePath } from '@/components/AssignmentPageFilesTab/helpers';
 import { SnackbarContext } from '@/hooks';
-import {
-    Button,
-    TreeItem,
-    TreeItemLayout
-} from '@fluentui/react-components';
+import { Button, TreeItem, TreeItemLayout } from '@fluentui/react-components';
 import { getFileTypeIconAsUrl } from '@fluentui/react-file-type-icons';
 import { Delete20Regular } from '@fluentui/react-icons';
 import Image from 'next/image';
