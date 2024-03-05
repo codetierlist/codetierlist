@@ -10,7 +10,7 @@ import { Caption1, Title1, Title2 } from '@fluentui/react-text';
 import Head from 'next/head';
 import { Container } from 'react-grid-system';
 import styles from './help.module.css';
-import markdown from '@/public/docs/user/README.md';
+import markdown from '@docs/user/README.md';
 
 export const HelpPage = (): JSX.Element => {
     return (
