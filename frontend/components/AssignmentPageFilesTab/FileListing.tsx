@@ -3,15 +3,14 @@ import { SnackbarContext } from '@/hooks';
 import {
     Button,
     TreeItem,
-    TreeItemLayout,
-    useRestoreFocusTarget,
+    TreeItemLayout
 } from '@fluentui/react-components';
+import { getFileTypeIconAsUrl } from '@fluentui/react-file-type-icons';
 import { Delete20Regular } from '@fluentui/react-icons';
+import Image from 'next/image';
 import { basename } from 'path';
 import { useContext, useMemo } from 'react';
-import { getFileTypeIconAsUrl } from '@fluentui/react-file-type-icons';
 import styles from './AssignmentPageFilesTab.module.css';
-import Image from 'next/image';
 
 export declare type FileListingProps = {
     /** the full path of the file to display */
@@ -35,7 +34,6 @@ export const FileListing = ({
     ...props
 }: FileListingProps) => {
     const { showSnackSev } = useContext(SnackbarContext);
-    const focusTargetAttribute = useRestoreFocusTarget();
 
     const iconType = useMemo(() => {
         const extension = path.split('.').pop() ?? '';
@@ -43,7 +41,7 @@ export const FileListing = ({
     }, [path]);
 
     return (
-        <TreeItem itemType="leaf" value={path} {...focusTargetAttribute} {...props}>
+        <TreeItem itemType="leaf" value={path} {...props}>
             <TreeItemLayout
                 className={`${currentFile === path ? styles.currentFile : ''}`}
                 onClick={(e) => {

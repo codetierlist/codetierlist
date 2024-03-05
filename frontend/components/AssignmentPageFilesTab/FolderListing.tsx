@@ -5,21 +5,20 @@ import {
     Button,
     Tree,
     TreeItem,
-    TreeItemLayout,
-    useRestoreFocusTarget,
+    TreeItemLayout
 } from '@fluentui/react-components';
 import {
     ArrowUpload20Regular,
     Delete20Regular,
-    Folder16Filled,
-    FolderOpen16Filled,
+    FolderOpen16Filled
 } from '@fluentui/react-icons';
 import { basename, join } from 'path';
-import { useContext, useState } from 'react';
-import styles from './AssignmentPageFilesTab.module.css';
+import { useContext } from 'react';
 import { Dropzone } from './Dropzone';
 import { FileListing, FileListingProps } from './FileListing';
 import { TreeType } from './ListFiles';
+import Image from 'next/image';
+import { FileIconType, getFileTypeIconAsUrl } from '@fluentui/react-file-type-icons';
 
 export declare type FolderListingProps = FileListingProps & {
     /** the subtree to display */
@@ -48,13 +47,11 @@ export const FolderListing = ({
     ...props
 }: FolderListingProps) => {
     const { showSnackSev } = useContext(SnackbarContext);
-    const focusTargetAttribute = useRestoreFocusTarget();
-
-    const [expanded, setExpanded] = useState(false);
 
     const treeChildren = Array.from(subtree.children).map((file) => {
         return file.children.length === 0 ? (
             <FileListing
+                {...props}
                 key={join(path, file.name)}
                 changeFile={changeFile}
                 currentFile={currentFile}
@@ -64,6 +61,7 @@ export const FolderListing = ({
             />
         ) : (
             <FolderListing
+                {...props}
                 key={join(path, file.name)}
                 changeFile={changeFile}
                 changeFolder={changeFolder}
@@ -88,26 +86,21 @@ export const FolderListing = ({
             customDropText={`Drop files to upload to ${path}`}
         >
             <TreeItem
-                open={expanded}
                 itemType="branch"
                 aria-description="has actions"
                 value={path}
-                {...focusTargetAttribute}
                 {...props}
             >
                 <TreeItemLayout
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        changeFolder && changeFolder(path);
-                        setExpanded(!expanded);
-                    }}
                     iconBefore={
-                        <>
-                            {expanded && <FolderOpen16Filled className="m-r-xs" />}
-                            {!expanded && <Folder16Filled className="m-r-xs" />}
-                        </>
+                        <Image
+                            src={getFileTypeIconAsUrl({ type: FileIconType.folder, size: 16 }) ?? ''}
+                            className="m-r-xs"
+                            alt=""
+                            width={16}
+                            height={16}
+                        />
                     }
-                    className={currentFolder === path ? styles.currentFile : ''}
                     actions={
                         <>
                             <ToolTipIcon
