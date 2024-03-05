@@ -99,7 +99,7 @@ def upload_submission(user: str):
     with open(f'./lab_10_submissions/{user}/lab10.py', mode='rb') as f:
         contents = f.read()
     with httpx.Client() as client:
-        url = f'{base_url}/courses/{course}/assignments/{assignment}/submissions'
+        url = f'{base_url}/courses/{course}/assignments/{assignment}/submissions/'
         response = client.post(url, files={
             'files': ("lab10.py", contents, "text/plain"),
         }, headers=generate_headers(user))
