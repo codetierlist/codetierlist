@@ -116,7 +116,7 @@ export const ListFiles = ({
             void getFileContents(currentFile);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentFile]);
+    }, [currentFile, submitFiles]);
 
     const focusTargetAttribute = useRestoreFocusTarget();
 
