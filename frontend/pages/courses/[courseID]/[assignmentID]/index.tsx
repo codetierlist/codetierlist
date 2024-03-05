@@ -193,7 +193,7 @@ const ViewDetailsTab = ({
                                     tooltip={
                                         assignment.strict_deadline
                                             ? 'This assignment does not accept submissions past the deadline.'
-                                            : 'You will still be able to submit after the deadline, however other students may not be updating their solutions and testcases anymore.'
+                                            : <>This assignment accepts submissions past the deadline; however, you <strong>must</strong> submit by the deadline on Markus. Furthermore, other students may not be updating their solutions after the deadline.</>
                                     }
                                     icon={
                                         <Badge
