@@ -15,7 +15,8 @@
     background-color: var(--colorNeutralBackground1);
 }
 
-.tierAvatars:not(:last-child), .tierIndicator:not(:nth-last-of-type(2)) {
+.tierAvatars:not(:last-child),
+.tierIndicator:not(:nth-last-of-type(2)) {
     border-bottom: var(--strokeWidthThin) solid var(--colorNeutralBackground1Pressed);
 }
 

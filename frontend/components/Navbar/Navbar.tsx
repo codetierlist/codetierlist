@@ -42,9 +42,9 @@ const UserAvatar = (): JSX.Element => {
                         </Badge>
                     )}
                     <div className={styles.name}>
-                    {`${userInfo.givenName} ${userInfo.surname}` == ' '
-                        ? userInfo.utorid
-                        : `${userInfo.givenName} ${userInfo.surname}`}
+                        {`${userInfo.givenName} ${userInfo.surname}` == ' '
+                            ? userInfo.utorid
+                            : `${userInfo.givenName} ${userInfo.surname}`}
                     </div>
                 </span>
             }
