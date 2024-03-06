@@ -53,6 +53,22 @@
     text-overflow: ellipsis;
 }
 
+.popoverButton:hover .subtext {
+    color: var(--colorNeutralForeground1Hover);
+}
+
+.popoverButton:active .subtext {
+    color: var(--colorNeutralForeground1Pressed);
+}
+
+.popoverButton:hover .adminBadge {
+    color: var(--colorBrandForegroundOnLightHover);
+}
+
+.popoverButton:active .adminBadge {
+    color: var(--colorBrandForegroundOnLightPressed);
+}
+
 @media (max-width: 768px) {
     .subtext {
         display: none;
