@@ -28,30 +28,20 @@ app.use(bodyParser.json());
  * Middleware for prod
  */
 app.use(errorHandler(async (req, res, next) => {
-    let utorid, email, surname, givenName;
-
-    // HACK
-    // DO NOT COMMIT THIS !!!!!!!!!!!!!!!!!!!
-    if (req.headers['user-agent']?.includes('Safari/605.1.15')) {
-        utorid = 'hmiku' as string;
-        email = 'fsdfds@utoronto.ca' as string;
-        surname = 'Safari User' as string;
-        givenName = 'mikaaaau' as string;
-    } else {
-        if (!req.headers.utorid || !req.headers.http_mail || !req.headers.sn || !req.headers.givenname) {
-            res.statusCode = 401;
-            res.send({
-                status: 401,
-                message: 'Missing Shibboleth headers.',
-            });
-            return;
-        }
-
-        utorid = req.headers.utorid as string;
-        email = req.headers.http_mail as string;
-        surname = req.headers.sn as string;
-        givenName = req.headers.givenname as string;
+    if (!req.headers.utorid || !req.headers.http_mail || !req.headers.sn || !req.headers.givenname) {
+        res.statusCode = 401;
+        res.send({
+            status: 401,
+            message: 'Missing Shibboleth headers.',
+        });
+        return;
     }
+
+    const h = req.headers;
+    const utorid = h.utorid as string;
+    const email = h.http_mail as string;
+    const surname = h.sn as string;
+    const givenName = h.givenname as string;
 
     // header validation
     if (!utorid || !email || !isUTORid(utorid) || !isUofTEmail(email)) {
