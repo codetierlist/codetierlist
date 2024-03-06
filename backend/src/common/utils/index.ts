@@ -8,7 +8,11 @@ import {PathLike, promises as fs} from "fs";
 import path from "path";
 
 export const securePath = (p: string) => {
-    return `.${path.normalize(`/${p}`)}`.slice(2);
+    const res = `.${path.normalize(`/${p}`)}`.slice(2);
+    if(res.startsWith(".git")) {
+        throw new Error("Invalid path");
+    }
+    return res;
 };
 
 /**

@@ -89,6 +89,26 @@ const getObjectFromRequest = async (req: Request, table: "solution" | "testCase"
     return object;
 };
 
+export const verifySubmission = async (req: Request, res: Response) => {
+    if (!req.user.roles.some(role => role.course_id === req.course!.id)) {
+        res.statusCode = 403;
+        res.send({message: 'You are not enrolled in this course.'});
+        return false;
+    }
+    if (req.assignment!.strict_deadline && req.assignment!.due_date && Date.now() > new Date(req.assignment!.due_date).getTime()) {
+        res.statusCode = 403;
+        res.send({message: 'The deadline has passed.'});
+        return false;
+    }
+    const submission = await getObjectFromRequest(req, "solution");
+    if (submission && submission.author_id !== req.user.utorid) {
+        res.statusCode = 403;
+        res.send({message: 'Cannot make a submission for other users.'});
+        return false;
+    }
+    return submission;
+};
+
 /**
  * Processes a submission.
  * @param req
@@ -96,26 +116,14 @@ const getObjectFromRequest = async (req: Request, table: "solution" | "testCase"
  * @param table the table to process the submission for. Either "solution" or "testCase"
  */
 export const processSubmission = async (req: Request, res: Response, table: "solution" | "testCase") => {
-    if (!req.user.roles.some(role => role.course_id === req.course!.id)) {
-        res.statusCode = 403;
-        res.send({message: 'You are not enrolled in this course.'});
-        return;
-    }
-    if (req.assignment!.strict_deadline && req.assignment!.due_date && Date.now() > new Date(req.assignment!.due_date).getTime()) {
-        res.statusCode = 403;
-        res.send({message: 'The deadline has passed.'});
-        return;
-    }
+
     // upload files
     const repoPath = path.resolve(`/repos/${req.course!.id}/${req.assignment!.title}/${req.user.utorid}_${table}`);
 
     // check if git repo exists
-    let submission = await getObjectFromRequest(req, table);
-    if (submission && submission.author_id !== req.user.utorid) {
-        res.statusCode = 403;
-        res.send({message: 'Cannot make a submission for other users.'});
-        return;
-    }
+    let submission = await verifySubmission(req, res);
+    if(submission === false) return;
+
     if (submission === null || submission === undefined || !(await exists(submission.git_url))) {
         if (submission !== null) {
             await prisma.solution.deleteMany({
@@ -257,7 +265,9 @@ export const getFileFromRequest = async (req: Request, res: Response, table: "so
  * @param table the table to delete the file from. Either "solution" or "testCase"
  */
 export const deleteFile = async (req: Request, res: Response, table: "solution" | "testCase") => {
-    const object = await getObjectFromRequest(req, table);
+    const object = await verifySubmission(req, res);
+    if(object === false) return;
+
     if (object === null) {
         res.statusCode = 404;
         res.send({message: 'Submission not found.'});
