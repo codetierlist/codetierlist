@@ -20,8 +20,16 @@
 .courseCard {
     text-decoration: none;
     --card-width: 300px;
+    color: var(--colorNeutralForeground1);
 }
 
+.courseCard:hover {
+    color: var(--colorNeutralForeground1Hover);
+}
+
+.courseCard:active {
+    color: var(--colorNeutralForeground1Pressed);
+}
 .coursePreview {
     max-width: var(--card-width);
 }
@@ -48,4 +56,14 @@
 .role {
     border-radius: var(--spacingVerticalNone) !important;
     text-transform: uppercase;
+}
+
+.courseCard .viewMore {
+    color: var(--colorNeutralForeground2);
+}
+.courseCard:hover .viewMore {
+    color: var(--colorNeutralForeground2Hover);
+}
+.courseCard:active .viewMore {
+    color: var(--colorNeutralForeground2Pressed);
 }

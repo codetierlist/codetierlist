@@ -35,15 +35,17 @@ const UserAvatar = (): JSX.Element => {
                 className: styles.avatar,
             })}
             primaryText={
-                <span className={styles.subtext}>
+                <span className={`${styles.subtext} ${styles.rowFlex}`}>
                     {userInfo.admin && (
-                        <Badge className="m-x-xs" appearance="outline">
+                        <Badge className={`m-x-xs ${styles.adminBadge}`} appearance="outline">
                             Admin
                         </Badge>
                     )}
-                    {`${userInfo.givenName} ${userInfo.surname}` == ' '
-                        ? userInfo.utorid
-                        : `${userInfo.givenName} ${userInfo.surname}`}
+                    <div className={styles.name}>
+                        {`${userInfo.givenName} ${userInfo.surname}` == ' '
+                            ? userInfo.utorid
+                            : `${userInfo.givenName} ${userInfo.surname}`}
+                    </div>
                 </span>
             }
             secondaryText={<span className={styles.subtext}>{userInfo.utorid}</span>}

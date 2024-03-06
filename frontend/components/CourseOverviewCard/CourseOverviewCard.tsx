@@ -105,7 +105,7 @@ export const CourseOverviewCard = ({
             />
 
             <CardFooter>
-                <Link appearance="subtle" aria-label={`Open ${name}`}>
+                <Link appearance="subtle" className={styles.viewMore} aria-label={`Open ${name}`}>
                     View more
                 </Link>
             </CardFooter>

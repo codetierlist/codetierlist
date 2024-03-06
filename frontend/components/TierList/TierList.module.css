@@ -12,12 +12,17 @@
 }
 
 .tierAvatars {
-    background-color: var(--colorNeutralBackground3);
+    background-color: var(--colorNeutralBackground1);
+}
+
+.tierAvatars:not(:last-child),
+.tierIndicator:not(:nth-last-of-type(2)) {
     border-bottom: var(--strokeWidthThin) solid var(--colorNeutralBackground1Pressed);
 }
 
 .tierIndicator {
     align-items: center !important;
+    border-right: var(--strokeWidthThin) solid var(--colorNeutralBackground1Pressed);
     display: flex !important;
     justify-content: center !important;
     min-height: 6rem !important;
