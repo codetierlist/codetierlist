@@ -89,7 +89,7 @@ const getObjectFromRequest = async (req: Request, table: "solution" | "testCase"
     return object;
 };
 
-export const verifySubmission = async (req: Request, res: Response) => {
+export const verifySubmission = async (req: Request, res: Response, table: "solution" | "testCase") => {
     if (!req.user.roles.some(role => role.course_id === req.course!.id)) {
         res.statusCode = 403;
         res.send({message: 'You are not enrolled in this course.'});
@@ -100,7 +100,7 @@ export const verifySubmission = async (req: Request, res: Response) => {
         res.send({message: 'The deadline has passed.'});
         return false;
     }
-    const submission = await getObjectFromRequest(req, "solution");
+    const submission = await getObjectFromRequest(req, table);
     if (submission && submission.author_id !== req.user.utorid) {
         res.statusCode = 403;
         res.send({message: 'Cannot make a submission for other users.'});
@@ -121,7 +121,7 @@ export const processSubmission = async (req: Request, res: Response, table: "sol
     const repoPath = path.resolve(`/repos/${req.course!.id}/${req.assignment!.title}/${req.user.utorid}_${table}`);
 
     // check if git repo exists
-    let submission = await verifySubmission(req, res);
+    let submission = await verifySubmission(req, res, table);
     if(submission === false) return;
 
     if (submission === null || submission === undefined || !(await exists(submission.git_url))) {
@@ -265,7 +265,7 @@ export const getFileFromRequest = async (req: Request, res: Response, table: "so
  * @param table the table to delete the file from. Either "solution" or "testCase"
  */
 export const deleteFile = async (req: Request, res: Response, table: "solution" | "testCase") => {
-    const object = await verifySubmission(req, res);
+    const object = await verifySubmission(req, res, table);
     if(object === false) return;
 
     if (object === null) {
