@@ -86,7 +86,7 @@ You can select the runner you want to use for the assignment. The runner is the 
 The available runners are listed in `backend_config.json` and can be added on request (see [Contact and Support](#contact-and-support)).
 
 ### Due Dates
-By default, due dates don't mean much and are only displayed to students for infomation. However, if you want to use the due dates to enforce the due date, you can enable the "Strict deadlines" option. Once enabled, students cannot submit after the deadline.
+By default, due dates don't mean much and are only displayed to students for information. However, if you want to use the due dates to enforce the deadline, you can enable the "Strict deadlines" option. Once enabled, students cannot submit after the deadline.
 
 ### Grouping
 You can group student's into tier list groups. This makes sure the students are only compared to other students in the same group. This makes the tier list more fun and less "grade like" as students will only be competing with a handful of other students. 
