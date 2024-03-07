@@ -4,6 +4,7 @@ import pytest
 import json
 import base64
 from contextlib import contextmanager
+import random
 
 
 @contextmanager
@@ -68,6 +69,20 @@ if __name__ == '__main__':
 
     plugin = PytestPlugin()
     with suppress_output():
+        random.seed(0)
         pytest_out = pytest.main(['.'], plugins=[plugin])
 
-    print(json.dumps(plugin.res()))
+    if pytest_out == 0 or pytest_out == 1:
+        print(json.dumps(plugin.res()))
+    else:
+        txt = ""
+        if pytest_out == 2:
+            txt = "Test execution was interrupted by the user / error importing tests"
+        elif pytest_out == 3:
+            txt = "Internal error happened while executing tests"
+        elif pytest_out == 4:
+            txt = "pytest command line usage error"
+        elif pytest_out == 5:
+            txt = "no tests were collected"
+        print(json.dumps({'status': 'ERROR',
+                          'error': f"pytest returned exit code {pytest_out}: {txt}"}))
