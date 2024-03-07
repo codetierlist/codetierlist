@@ -8,6 +8,9 @@ RUN npm ci
 COPY ./types ./
 RUN npm run prisma
 
+WORKDIR /docs
+COPY ./docs ./
+
 WORKDIR /frontend
 COPY ./frontend/package.json ./frontend/package-lock.json ./
 RUN npm ci

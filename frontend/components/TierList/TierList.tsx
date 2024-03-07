@@ -85,7 +85,9 @@ const TierAvatars = forwardRef<HTMLDivElement, TierAvatarsProps>(
                                             ? `${styles.you} ${styles.avatar}`
                                             : styles.avatar
                                     }
-                                    {...generateInitialsAvatarProps(person.name)}
+                                    {...generateInitialsAvatarProps(person.name, {
+                                        active: person.you ? 'active' : undefined,
+                                    })}
                                 />
                             );
                         })}

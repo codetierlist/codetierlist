@@ -38,6 +38,37 @@
     min-width: unset !important;
 }
 
+.rowFlex {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--spacingHorizontalXS);
+}
+
+.name {
+    flex-grow: 1;
+    /* nowrap */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.popoverButton:hover .subtext {
+    color: var(--colorNeutralForeground1Hover);
+}
+
+.popoverButton:active .subtext {
+    color: var(--colorNeutralForeground1Pressed);
+}
+
+.popoverButton:hover .adminBadge {
+    color: var(--colorBrandForegroundOnLightHover);
+}
+
+.popoverButton:active .adminBadge {
+    color: var(--colorBrandForegroundOnLightPressed);
+}
+
 @media (max-width: 768px) {
     .subtext {
         display: none;

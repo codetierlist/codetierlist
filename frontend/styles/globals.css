@@ -55,7 +55,7 @@ html {
     background-position: center;
 
     & main {
-        animation: slide-up 0.5s var(--curveDecelerateMax);
+        animation: slide-up 0.3s var(--curveDecelerateMax);
         min-height: calc(100vh - 60px);
     }
 }
