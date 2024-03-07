@@ -37,7 +37,10 @@ const UserAvatar = (): JSX.Element => {
             primaryText={
                 <span className={`${styles.subtext} ${styles.rowFlex}`}>
                     {userInfo.admin && (
-                        <Badge className={`m-x-xs ${styles.adminBadge}`} appearance="outline">
+                        <Badge
+                            className={`m-x-xs ${styles.adminBadge}`}
+                            appearance="outline"
+                        >
                             Admin
                         </Badge>
                     )}
