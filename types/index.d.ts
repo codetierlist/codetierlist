@@ -88,7 +88,6 @@ export type FetchedCourseWithTiers = Omit<FetchedCourse, "assignments"> & {
 export type Commit = {
     files: string[],
     valid?: TestCaseStatus,
-    failed_message?: string,
     log: string[],
 }
 
