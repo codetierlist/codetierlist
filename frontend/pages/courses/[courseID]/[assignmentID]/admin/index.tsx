@@ -166,6 +166,14 @@ export const AdminToolbarRevalidateAssignmentButton = ({
             .post(
                 `/courses/${assignment.course_id}/assignments/${assignment.title}/revalidate`
             )
+            .then((res) => {
+                if (res.status === 200) {
+                    showSnackSev(
+                        'All student test cases will now be revalidated against the instructor solution (if it exists). This may take a few minutes.',
+                        'success'
+                    );
+                }
+            })
             .catch((e) => {
                 handleError(showSnackSev)(e);
             })
