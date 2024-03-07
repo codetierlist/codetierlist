@@ -32,6 +32,7 @@ import {
     getFileFromRequest,
     processSubmission
 } from "@/common/utils/api";
+import {validateTestcase} from "@/common/updateScores";
 
 const storage = multer.diskStorage({
     filename: function (_, file, callback) {
@@ -456,6 +457,41 @@ router.get('/:assignment/stats', fetchAssignmentMiddleware, errorHandler(async (
         };
     });
     res.send(students satisfies AssignmentStudentStats);
+}));
+
+/**
+ * Revalidates all test cases for the assignment.
+ * @adminonly
+ */
+router.post('/:assignment/revalidate', fetchAssignmentMiddleware, errorHandler(async (req, res) => {
+    if (!isProf(req.course!, req.user)) {
+        res.statusCode = 403;
+        res.send({message: "You are not a prof"});
+        return;
+    }
+    const testCases = await prisma.testCase.findMany({
+        where: {
+            course_id: req.course!.id,
+            assignment_title: req.assignment!.title,
+        },
+        distinct: "author_id",
+        orderBy: {datetime: "desc"},
+    });
+
+    await prisma.testCase.updateMany({
+        where: {
+            id: {
+                in: testCases.map(x=>x.id)
+            }
+        },
+        data: {
+            valid: "INVALID"
+        }
+    });
+
+    await Promise.all(testCases.map(testCase => validateTestcase(testCase, req.assignment!)));
+
+    res.send({});
 }));
 
 export default router;
