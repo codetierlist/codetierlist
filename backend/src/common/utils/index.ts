@@ -3,7 +3,7 @@ import {
     Assignment as PrismaAssignment,
     RoleType
 } from "@prisma/client";
-import {FetchedUser} from "codetierlist-types";
+import {FetchedAssignment, FetchedUser} from "codetierlist-types";
 import {PathLike, promises as fs} from "fs";
 import path from "path";
 
@@ -44,3 +44,12 @@ export const exists = async (p: PathLike): Promise<boolean> => {
 export const serializeAssignment = <T extends PrismaAssignment>(assignment: T): Omit<T, "due_date"> & {
     due_date?: string
 } => ({...assignment, due_date: assignment.due_date?.toISOString()});
+
+/**
+ * Hide assignment details from students
+ * @param assignment assignment object
+ */
+export const hideAssignmentDetails = <T extends FetchedAssignment>(object: T) : Omit<T, "group_size"> => {
+    const {group_size: _, ...rest} = object;
+    return rest;
+};

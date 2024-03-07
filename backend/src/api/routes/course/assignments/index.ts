@@ -8,6 +8,7 @@ import {
     generateYourTier
 } from "@/common/tierlist";
 import {
+    hideAssignmentDetails,
     isProf,
     serializeAssignment
 } from "@/common/utils";
@@ -168,7 +169,7 @@ router.get("/:assignment", fetchAssignmentMiddleware, errorHandler(async (req, r
     } satisfies Omit<Submission, "group_number">));
 
     res.send({
-        ...req.assignment!,
+        ...hideAssignmentDetails(req.assignment!),
         test_cases: assignment.test_cases.map(testCase => ({
             datetime: testCase.datetime,
             id: testCase.id,

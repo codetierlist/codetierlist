@@ -48,9 +48,9 @@ const fullFetchedAssignmentArgs = Prisma.validator<Prisma.AssignmentDefaultArgs>
     }
 });
 
-export type Assignment = Omit<Prisma.AssignmentGetPayload<{}>, "due_date"> & {
+export type Assignment = Omit<Omit<Prisma.AssignmentGetPayload<{}>, "due_date"> & {
     due_date?: string
-};
+}, "group_size">;
 export type Course = Prisma.CourseGetPayload<{}>;
 export type User = Prisma.UserGetPayload<{}>;
 export type _Submission = Prisma.SolutionGetPayload<{}>;
@@ -70,11 +70,12 @@ export type Submission = _Submission;
 export type TestCase = _TestCase;
 export type FrontendSubmission = Omit<_Submission, "group_number"> & { group_number?: number | null};
 export type FrontendTestCase = Omit<_TestCase, "group_number"> & { group_number?: number | null};
-export type UserFetchedAssignment = Prisma.AssignmentGetPayload<> & { tier: UserTier, view_tierlist: boolean } & {
+export type UserFetchedAssignment = Assignment & { tier: UserTier, view_tierlist: boolean } & {
     due_date?: string,
-    submissions: Submission[],
-    test_cases: TestCase[],
+    submissions: Omit<Submission, "group_number">[],
+    test_cases: Omit<TestCase, "group_number">[],
 };
+
 export type AssignmentWithTier = Assignment & { tier: UserTier };
 export type FetchedAssignmentWithTier = FetchedAssignment & { tier: UserTier };
 export type FetchedCourseWithTiers = Omit<FetchedCourse, "assignments"> & {
@@ -87,6 +88,7 @@ export type FetchedCourseWithTiers = Omit<FetchedCourse, "assignments"> & {
 export type Commit = {
     files: string[],
     valid?: TestCaseStatus,
+    failed_message?: string,
     log: string[],
 }
 
