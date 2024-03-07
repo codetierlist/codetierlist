@@ -151,18 +151,11 @@ export const runTestcase = async (testCase: TestCase, image: Assignment | Runner
 };
 
 /**
- * When a new test case is added, test it and run it against all student submissions
- * @param testCase the test case to test
- * @param image the runner config to run the test case against
+ * Validate a test case against the prof submission
+ *
+ * @param testCase the test case to validate
  */
-export const onNewTestCase = async (testCase: TestCase, image: Assignment | RunnerImage) => {
-    // a valid test case should
-    // 1. not error or timeout against a valid submission
-    // 2. pass a valid submission
-    // 3. fail starter code
-    publish("testcase:submit", testCase);
-    await removeTestcases(testCase.author_id);
-
+export const validateTestcase = async (testCase: TestCase, image: Assignment | RunnerImage) => {
     // checks condition 1
     const profSubmission = await prisma.solution.findFirst({
         where: {
@@ -192,4 +185,19 @@ export const onNewTestCase = async (testCase: TestCase, image: Assignment | Runn
         });
         await runTestcase(testCase, image);
     }
+};
+
+/**
+ * When a new test case is added, test it and run it against all student submissions
+ * @param testCase the test case to test
+ * @param image the runner config to run the test case against
+ */
+export const onNewTestCase = async (testCase: TestCase, image: Assignment | RunnerImage) => {
+    // a valid test case should
+    // 1. not error or timeout against a valid submission
+    // 2. pass a valid submission
+    // 3. fail starter code
+    publish("testcase:submit", testCase);
+    await removeTestcases(testCase.author_id);
+    await validateTestcase(testCase, image);
 };

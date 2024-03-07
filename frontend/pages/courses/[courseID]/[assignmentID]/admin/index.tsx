@@ -20,9 +20,14 @@ import {
     TableHeader,
     TableHeaderCell,
     TableRow,
+    ToolbarButton,
     Tooltip,
 } from '@fluentui/react-components';
-import { Dismiss24Regular, Search24Regular } from '@fluentui/react-icons';
+import {
+    ArrowCounterclockwise24Regular,
+    Dismiss24Regular,
+    Search24Regular,
+} from '@fluentui/react-icons';
 import {
     AssignmentStudentStats,
     FetchedAssignmentWithTier,
@@ -146,6 +151,38 @@ export const AdminToolbarDeleteAssignmentButton = ({
 };
 
 /**
+ * A button that deletes an assignment
+ */
+export const AdminToolbarRevalidateAssignmentButton = ({
+    assignment,
+}: {
+    assignment: FetchedAssignment;
+}) => {
+    const { showSnackSev } = useContext(SnackbarContext);
+    const { fetchUserInfo } = useContext(UserContext);
+
+    const revalidateAssignment = async () => {
+        await axios
+            .post(
+                `/courses/${assignment.course_id}/assignments/${assignment.title}/revalidate`
+            )
+            .catch((e) => {
+                handleError(showSnackSev)(e);
+            })
+            .finally(() => fetchUserInfo());
+    };
+
+    return (
+        <ToolbarButton
+            icon={<ArrowCounterclockwise24Regular />}
+            onClick={revalidateAssignment}
+        >
+            Revalidate all test cases
+        </ToolbarButton>
+    );
+};
+
+/**
  * A button that views the submission of a student
  */
 const ViewSubmissionLink = ({
@@ -244,6 +281,7 @@ export default function Page({ setStage }: { setStage: (stage: Stage) => void })
         <section className="p-b-xxxl">
             <HeaderToolbar>
                 <AdminToolbarDeleteAssignmentButton assignment={assignment} />
+                <AdminToolbarRevalidateAssignmentButton assignment={assignment} />
             </HeaderToolbar>
 
             <Card className="m-x-l m-t-xxl">

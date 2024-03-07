@@ -240,6 +240,7 @@ export const AssignmentPageFilesTab = ({
 
                 {!searchParams.has('utorid') &&
                     (!assignment.strict_deadline ||
+                        assignment.due_date === undefined ||
                         new Date(assignment.due_date) >= new Date()) && (
                         <div>
                             <Button
