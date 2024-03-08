@@ -95,20 +95,21 @@ enum TestCaseStatus {
 }
 
 model TestCase {
-  id               String         @id @default(dbgenerated("gen_random_uuid()"))
-  git_url          String
-  git_id           String
-  datetime         DateTime       @default(now())
-  author_id        String
-  author           User           @relation(fields: [author_id], references: [utorid], onDelete: Cascade, onUpdate: Cascade)
-  assignment       Assignment     @relation(onDelete: Cascade, onUpdate: Cascade, fields: [course_id, assignment_title], references: [course_id, title])
-  course           Course         @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  scores           Score[]
-  course_id        String
-  assignment_title String
-  valid            TestCaseStatus @default(PENDING)
-  group_number     Int?
-  group            Group?         @relation(fields: [group_number, assignment_title, course_id], references: [number, assignment_title, course_id])
+  id                String         @id @default(dbgenerated("gen_random_uuid()"))
+  git_url           String
+  git_id            String
+  datetime          DateTime       @default(now())
+  author_id         String
+  author            User           @relation(fields: [author_id], references: [utorid], onDelete: Cascade, onUpdate: Cascade)
+  assignment        Assignment     @relation(onDelete: Cascade, onUpdate: Cascade, fields: [course_id, assignment_title], references: [course_id, title])
+  course            Course         @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  scores            Score[]
+  course_id         String
+  assignment_title  String
+  valid             TestCaseStatus @default(PENDING)
+  validation_result Json?
+  group_number      Int?
+  group             Group?         @relation(fields: [group_number, assignment_title, course_id], references: [number, assignment_title, course_id])
 
   @@unique([course_id, assignment_title, author_id, git_id], name: "_id")
   @@index([course_id, assignment_title, author_id], name: "testcase_index")

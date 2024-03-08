@@ -232,7 +232,7 @@ job_events.on("completed", async ({jobId}) => {
         await prisma.testCase.update({
             where: {
                 id: testCase.id
-            }, data: {valid: status}
+            }, data: {valid: status, validation_result: result }
         });
         // if the test case is valid, run the test case on all student submissions
         if ((job.name === JobType.validateTestCase || data.testCase.valid !== "VALID") && status === "VALID") {
