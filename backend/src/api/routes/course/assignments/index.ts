@@ -180,7 +180,7 @@ router.get("/:assignment", fetchAssignmentMiddleware, errorHandler(async (req, r
             git_id: testCase.git_id,
             assignment_title: testCase.assignment_title,
             valid: testCase.valid
-        } satisfies Omit<TestCase, "group_number">)),
+        } satisfies Omit<TestCase, "group_number" | "validation_result">)),
         submissions,
         tier: assignment.groups.length > 0 ? await generateYourTier(assignment.groups[0]) : "?",
         view_tierlist: assignment.test_cases.length > 0 &&

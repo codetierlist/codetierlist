@@ -73,7 +73,7 @@ export type FrontendTestCase = Omit<_TestCase, "group_number"> & { group_number?
 export type UserFetchedAssignment = Assignment & { tier: UserTier, view_tierlist: boolean } & {
     due_date?: string,
     submissions: Omit<Submission, "group_number">[],
-    test_cases: Omit<TestCase, "group_number">[],
+    test_cases: Omit<TestCase, "group_number" | "validation_result">[],
 };
 
 export type AssignmentWithTier = Assignment & { tier: UserTier };
@@ -88,6 +88,7 @@ export type FetchedCourseWithTiers = Omit<FetchedCourse, "assignments"> & {
 export type Commit = {
     files: string[],
     valid?: TestCaseStatus,
+    validation_result? : JobResult,
     log: string[],
 }
 

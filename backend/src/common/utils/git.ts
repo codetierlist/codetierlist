@@ -6,7 +6,7 @@ import {
 import {promises as fs} from "fs";
 import path from "path";
 import git from "isomorphic-git";
-import {Commit, TestCase} from "codetierlist-types";
+import {Commit, JobResult, TestCase} from "codetierlist-types";
 import {Solution} from "@prisma/client";
 import {config} from "../config";
 import logger from "../logger";
@@ -96,7 +96,7 @@ export const commitFiles = async (object: Omit<TestCase | Solution, 'datetime' |
  * @param submission
  * @param commitId
  */
-export const getCommit = async (submission: Omit<Solution | TestCase, "group_number">, commitId?: string | null) => {
+export const getCommit = async (submission: Omit<Solution | TestCase, "group_number">, commitId?: string | null, validation_details = false) => {
     let commit = null;
     try {
         commit = await git.readCommit({
@@ -128,6 +128,9 @@ export const getCommit = async (submission: Omit<Solution | TestCase, "group_num
         };
         if ((submission as TestCase).valid) {
             res.valid = (submission as TestCase).valid;
+            if(validation_details) {
+                res.validation_result = (submission as TestCase).validation_result as JobResult;
+            }
         }
         return res;
     } catch (e: unknown) {

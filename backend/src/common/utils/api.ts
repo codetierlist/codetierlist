@@ -302,7 +302,7 @@ export const getCommitFromRequest = async (req: Request, table: "solution" | "te
         return null;
     }
 
-    return await getCommit(object, req.params.commitId);
+    return await getCommit(object, req.params.commitId, isProf(object.course_id, req.user));
 };
 
 /**

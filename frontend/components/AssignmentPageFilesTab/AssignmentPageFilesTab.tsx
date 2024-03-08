@@ -1,13 +1,22 @@
 import axios, { handleError } from '@/axios';
-import { TestCaseStatus, promptForFileObject } from '@/components';
-import { SnackbarContext } from '@/hooks';
-import { Button, Caption1, Card, Link, Subtitle1 } from '@fluentui/react-components';
+import { TestCaseStatus, promptForFileObject, checkIfCourseAdmin } from '@/components';
+import { SnackbarContext, UserContext } from '@/hooks';
+import {
+    Button,
+    Caption1,
+    Card,
+    Link,
+    MessageBar,
+    MessageBarBody,
+    MessageBarTitle,
+    Subtitle1,
+} from '@fluentui/react-components';
 import {
     Add24Filled,
     DocumentMultiple24Regular,
     Folder24Filled,
 } from '@fluentui/react-icons';
-import { Commit, UserFetchedAssignment } from 'codetierlist-types';
+import { Commit, JobResult, UserFetchedAssignment } from 'codetierlist-types';
 import JSZip from 'jszip';
 import { useSearchParams } from 'next/navigation';
 import { basename, normalize } from 'path';
@@ -29,6 +38,44 @@ export declare type AssignmentPageFilesTabProps = {
     route: 'testcases' | 'submissions';
 };
 
+const ValidationError = ({ validationResult }: { validationResult?: JobResult }) => {
+    if (!validationResult)
+        return "This testcase failed instructor's solution for unknown reason";
+    if (validationResult.status === 'PASS')
+        return "This testcase passed instructor's solution";
+    if (validationResult.status === 'FAIL')
+        return (
+            <>
+                The instructor&apos;s solution failed{' '}
+                {validationResult.amount - validationResult.score} out of{' '}
+                {validationResult.amount} testcases.
+                <br />
+                <br />
+                <b>Failed cases:</b>
+                <ul>
+                    {validationResult.failed.map((error, index) => (
+                        <li key={index}>{error}</li>
+                    ))}
+                </ul>
+            </>
+        );
+    if (validationResult.status === 'ERROR')
+        return (
+            <>
+                This testcase errored when running instructor&apos;s solution.
+                {'error' in validationResult && (
+                    <>
+                        <br /><br/>
+                        <b>Error:</b> {validationResult.error}
+                    </>
+                )}
+            </>
+        );
+    if (validationResult.status === 'TESTCASE_EMPTY')
+        return 'No testcases were provided for this testcase';
+    return "This testcase failed instructor's solution for unknown reason";
+};
+
 /**
  * A tab that displays the files for an assignment
  */
@@ -48,6 +95,7 @@ export const AssignmentPageFilesTab = ({
     const searchParams = useSearchParams();
     const [currentFolder, setCurrentFolder] = useState<string>('');
     const [currentFile, setCurrentFile] = useState<string>('');
+    const { userInfo } = useContext(UserContext);
 
     const getTestData = useCallback(async () => {
         await axios
@@ -232,6 +280,19 @@ export const AssignmentPageFilesTab = ({
 
     return (
         <div className="m-y-xxxl">
+            {content.valid === 'INVALID' &&
+                checkIfCourseAdmin(userInfo, assignment.course_id) && (
+                    <MessageBar className="m-y-m" intent={'error'}>
+                        <MessageBarBody>
+                            <MessageBarTitle>
+                                This testcase failed instructor&apos;s solution
+                            </MessageBarTitle>
+                            <ValidationError
+                                validationResult={content.validation_result}
+                            />
+                        </MessageBarBody>
+                    </MessageBar>
+                )}
             <div className={`${styles.uploadHeader} m-b-xl`}>
                 <Subtitle1 className={styles.testCaseHeader} block>
                     Uploaded {routeName}s
