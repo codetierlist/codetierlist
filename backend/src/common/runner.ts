@@ -211,7 +211,11 @@ job_events.on("completed", async ({jobId}) => {
         runnerLogger.error(`job ${job.id} completed with no data or result`);
         return;
     }
-    runnerLogger.info(`job ${job.id} completed with status ${result.status} with data ${JSON.stringify(result)}`);
+    runnerLogger.info(`job ${job.id} completed with status ${result.status} with data ${JSON.stringify(result)}. Job info: ${JSON.stringify({
+        submission_utorid: data.submission.author_id,
+        testCase: data.testCase.author_id,
+        image: data.image
+    })}`);
     const submission = data.submission;
     const testCase = data.testCase;
     const pass = result.status === "PASS";
