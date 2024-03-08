@@ -7,6 +7,15 @@ import {FetchedUser} from "codetierlist-types";
 import {PathLike, promises as fs} from "fs";
 import path from "path";
 
+/**
+ * Hide assignment details from students
+ * @param object
+ */
+export function hideAssignmentDetails<T extends {group_size: unknown}>(object: T) : Omit<T, "group_size"> {
+    const {group_size: _, ...rest} = object;
+    return rest;
+}
+
 export const securePath = (p: string) => {
     const res = `.${path.normalize(`/${p}`)}`.slice(2);
     if(res.startsWith(".git")) {
