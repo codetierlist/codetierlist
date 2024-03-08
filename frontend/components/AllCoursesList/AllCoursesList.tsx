@@ -66,7 +66,7 @@ export const AllCoursesList = () => {
                             key={course.id}
                             id={course.id}
                             name={course.name}
-                            role="INSTRUCTOR"
+                            role="NOT ENROLLED"
                             session={course.session}
                             image={`${process.env.NEXT_PUBLIC_API_URL}/courses/${course.id}/cover`}
                         />
