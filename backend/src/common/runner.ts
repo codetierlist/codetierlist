@@ -196,7 +196,10 @@ export const queueJob = async (job: {
         testcaseAuthorId: job.testCase.author_id,
         submissionId: job.submission.id,
         submissionAuthorId: job.submission.author_id,
-        image: job.image,
+        image: {
+            runner_image: job.image.runner_image,
+            image_version: job.image.image_version
+        },
     }, {priority});
     runnerLogger.info(`job ${redis_job.id} added to queue`);
     return redis_job.id;
