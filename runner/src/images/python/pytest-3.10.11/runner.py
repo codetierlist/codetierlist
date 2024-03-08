@@ -70,7 +70,7 @@ if __name__ == '__main__':
     plugin = PytestPlugin()
     with suppress_output():
         random.seed(0)
-        pytest_out = pytest.main(['.'], plugins=[plugin])
+        pytest_out = pytest.main(['-o', 'python_files=*test*.py', '.'], plugins=[plugin])
 
     if pytest_out == 0 or pytest_out == 1:
         print(json.dumps(plugin.res()))
