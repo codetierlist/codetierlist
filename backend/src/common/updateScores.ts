@@ -1,6 +1,6 @@
-import { publish } from "@/common/achievements/eventHandler";
+import {publish} from "@/common/achievements/eventHandler";
 import prisma from "@/common/prisma";
-import { RoleType } from "@prisma/client";
+import {RoleType} from "@prisma/client";
 import {
     Assignment, RunnerImage,
     Submission, TestCase
@@ -21,6 +21,17 @@ import logger from "@/common/logger";
  * @param pass
  */
 export const updateScore = async (submission: Submission, testCase: TestCase, pass: boolean) => {
+    const currentScore = await prisma.scoreCache.findFirst({
+        where: {
+            course_id: submission.course_id,
+            assignment_title: submission.assignment_title,
+            solution_author_id: submission.author_id,
+            testcase_author_id: testCase.author_id
+        }, include: {score: {include: {testcase: true, solution: true}}},
+    });
+    if (currentScore && (currentScore.score.testcase.datetime > testCase.datetime || currentScore.score.solution.datetime > submission.datetime)) {
+        return;
+    }
     const score = {
         create: {
             pass,
@@ -66,7 +77,7 @@ export const onNewSubmission = async (submission: Submission, image: Assignment 
     publish("solution:submit", submission);
 
     try {
-        await removeSubmission(submission.author_id);
+        await removeSubmission(submission);
     } catch (e) {
         logger.warning(e);
     }
@@ -82,11 +93,6 @@ export const onNewSubmission = async (submission: Submission, image: Assignment 
         distinct: "author_id",
     });
 
-    // await Promise.all(testCases.map(testCase => queueJob({
-    //     submission: submission,
-    //     testCase,
-    //     image
-    // }, JobType.testSubmission)));
     await bulkQueueTestCases(image, submission, testCases);
 };
 /**
@@ -96,7 +102,7 @@ export const onNewSubmission = async (submission: Submission, image: Assignment 
  */
 export const onNewProfSubmission = async (submission: Submission, image: Assignment | RunnerImage) => {
     try {
-        await removeSubmission(submission.author_id);
+        await removeSubmission(submission);
     } catch (e) {
         logger.warning(e);
     }
@@ -123,6 +129,7 @@ export const onNewProfSubmission = async (submission: Submission, image: Assignm
  * @param image the runner config to run the test case against
  */
 export const runTestcase = async (testCase: TestCase, image: Assignment | RunnerImage) => {
+    await removeTestcases(testCase);
     // find all student submissions
     const submissions = await prisma.solution.findMany({
         where: {
@@ -198,6 +205,5 @@ export const onNewTestCase = async (testCase: TestCase, image: Assignment | Runn
     // 2. pass a valid submission
     // 3. fail starter code
     publish("testcase:submit", testCase);
-    await removeTestcases(testCase.author_id);
     await validateTestcase(testCase, image);
 };

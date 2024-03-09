@@ -155,8 +155,12 @@ export type PendingJobData = {
     image: RunnerImage,
     testcaseId: string,
     testcaseAuthorId: string,
+    testcaseDatetime: Date,
+    courseId: string,
+    assignmentTitle: string,
     submissionId: string,
     submissionAuthorId: string,
+    submissionDatetime: Date,
 }
 export type ParentJobData = {
     item: Submission | TestCase,
