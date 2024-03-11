@@ -120,7 +120,12 @@ export const getCommit = async (submission: Omit<Solution | TestCase, "group_num
             dir: submission.git_url,
             ref: commit.oid
         });
-        const log = [commit];
+        const log = await git.log({
+            fs,
+            dir: submission.git_url,
+            ref: commit.oid,
+            depth: 2
+        });
         const res: Commit = {
             files,
             // TODO cant get all logs after a lot of commits, this only returns latest commit
