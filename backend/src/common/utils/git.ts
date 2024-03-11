@@ -137,7 +137,7 @@ export const getCommit = async (submission: Omit<Solution | TestCase, "group_num
             // TODO cant get all logs after a lot of commits, this only returns latest commit
             log: log.map(commitIterator => ({
                 id: commitIterator.oid,
-                date: commitIterator.commit.committer.timestamp,
+                date: commitIterator.commit.committer.timestamp * 1000,
                 tree: commitIterator.commit.tree
             }))
         };
