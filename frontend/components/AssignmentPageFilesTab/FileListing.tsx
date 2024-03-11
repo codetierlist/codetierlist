@@ -19,6 +19,8 @@ export declare type FileListingProps = {
     changeFile?: (file: string) => void;
     /** the current file */
     currentFile?: string;
+    /** is the file editable */
+    editable?: boolean;
 };
 
 export const FileListing = ({
@@ -27,6 +29,7 @@ export const FileListing = ({
     path,
     changeFile,
     currentFile,
+    editable,
     ...props
 }: FileListingProps) => {
     const { showSnackSev } = useContext(SnackbarContext);
@@ -76,6 +79,7 @@ export const FileListing = ({
                                     path,
                                     showSnackSev,
                                     update,
+                                    editable,
                                 });
                             }}
                         />

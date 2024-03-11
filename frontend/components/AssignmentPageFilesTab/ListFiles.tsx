@@ -136,6 +136,7 @@ export const ListFiles = ({
                 }}
                 path={file.name}
                 currentFile={currentFile}
+                editable={!commitID}
                 {...focusTargetAttribute}
             />
         ) : (
@@ -157,6 +158,7 @@ export const ListFiles = ({
                 currentFolder={currentFolder}
                 submitFiles={submitFiles}
                 routeName={route}
+                editable={!commitID}
                 {...focusTargetAttribute}
             />
         );

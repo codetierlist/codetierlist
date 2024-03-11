@@ -16,6 +16,7 @@ export const deletePath = async <T extends string | undefined>({
     changePath,
     showSnackSev,
     update,
+    editable=true,
 }: {
     fullRoute: string;
     path: string;
@@ -23,7 +24,12 @@ export const deletePath = async <T extends string | undefined>({
     currentPath: T;
     changePath: T extends string ? (val: string) => void : undefined;
     update?: () => void;
+    editable?: boolean;
 }) => {
+    if (!editable) {
+        showSnackSev('You can only update the latest submission', 'error');
+        return;
+    }
     if (currentPath === path) {
         changePath && changePath('');
     }

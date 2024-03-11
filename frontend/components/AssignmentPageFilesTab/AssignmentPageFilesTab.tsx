@@ -121,7 +121,6 @@ export const AssignmentPageFilesTab = ({
                         res.data.files.some((x) => !content.files.includes(x))
                     ) {
                         setContent(res.data);
-                        if (!commitID) setCommitID(res.data.log[0]?.id ?? '');
                     }
                     // TODO why is this needed on production build?
                     content = res.data;
@@ -350,6 +349,7 @@ export const AssignmentPageFilesTab = ({
                     setCommitID(data.optionValue || '');
                     void getTestData(data.optionValue);
                 }}
+                defaultValue={"Latest - " + (content.log[0] ? new Date(content.log[0].date).toLocaleString() : '')}
             >
                 {content.log[0] && (
                     <Option

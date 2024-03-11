@@ -22,6 +22,8 @@ export declare type FolderListingProps = FileListingProps & {
     submitFiles: (files: File[], path?: string) => void;
     /** the name of the route */
     routeName: string;
+    /** is the route editable */
+    editable?: boolean;
 };
 
 export const FolderListing = ({
@@ -35,6 +37,7 @@ export const FolderListing = ({
     currentFolder,
     submitFiles,
     routeName,
+    editable,
     ...props
 }: FolderListingProps) => {
     const { showSnackSev } = useContext(SnackbarContext);
@@ -49,6 +52,7 @@ export const FolderListing = ({
                 fullRoute={fullRoute}
                 path={join(path, file.name)}
                 update={update}
+                editable={editable}
             />
         ) : (
             <FolderListing
@@ -64,12 +68,14 @@ export const FolderListing = ({
                 currentFolder={currentFolder}
                 submitFiles={submitFiles}
                 routeName={routeName}
+                editable={editable}
             />
         );
     });
 
     return (
         <Dropzone
+            disabled={editable === false}
             submitFiles={(files) => {
                 submitFiles(files, path);
             }}
@@ -134,6 +140,7 @@ export const FolderListing = ({
                                         path,
                                         showSnackSev,
                                         update,
+                                        editable,
                                     });
                                 }}
                             />

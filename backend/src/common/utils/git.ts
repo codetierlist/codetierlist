@@ -126,20 +126,21 @@ export const getCommit = async (submission: Omit<Solution | TestCase, "group_num
             dir: submission.git_url,
             ref: commit.oid
         });
-        const log = await git.log({
-            fs,
-            dir: submission.git_url,
-            ref: 'master',
-            depth: 20
-        });
-        const res: Commit = {
+        // const log = await git.log({
+        //     fs,
+        //     dir: submission.git_url,
+        //     ref: 'HEAD',
+        //     follow: true,
+        //     depth: Infinity
+        // });
+        const res: Omit<Commit, "log"> = {
             files,
             // TODO cant get all logs after a lot of commits, this only returns latest commit
-            log: log.map(commitIterator => ({
-                id: commitIterator.oid,
-                date: commitIterator.commit.committer.timestamp * 1000,
-                tree: commitIterator.commit.tree
-            }))
+            // log: log.map(commitIterator => ({
+            //     id: commitIterator.oid,
+            //     date: commitIterator.commit.committer.timestamp * 1000,
+            //     tree: commitIterator.commit.tree
+            // }))
         };
         if ((submission as TestCase).valid) {
             res.valid = (submission as TestCase).valid;

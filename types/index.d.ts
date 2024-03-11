@@ -89,7 +89,7 @@ export type Commit = {
     files: string[],
     valid?: TestCaseStatus,
     validation_result? : JobResult,
-    log: {id: string, tree: string, date:number}[],
+    log: {id: string, date:number}[],
 }
 
 /**

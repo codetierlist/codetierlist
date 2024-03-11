@@ -302,7 +302,29 @@ export const getCommitFromRequest = async (req: Request, table: "solution" | "te
         return null;
     }
 
-    return await getCommit(object, req.params.commitId, isProf(object.course_id, req.user));
+    const res = await getCommit(object, req.params.commitId, isProf(object.course_id, req.user));
+    if(res === null) {
+        return null;
+    }
+    const query : Prisma.SolutionFindManyArgs &  Prisma.TestCaseFindManyArgs
+        = {
+            where: {
+                author_id: object.author_id,
+                course_id: object.course_id,
+                assignment_title: object.assignment_title
+            },
+            take: 20,
+            select: {
+                datetime: true,
+                git_id: true
+            },
+            orderBy: {
+                datetime: "desc"
+            }
+        };
+    const log = table==="solution" ? await prisma.solution.findMany(query):
+        await prisma.testCase.findMany(query);
+    return {...res, log: log.map(x=>({id: x.git_id, date: x.datetime.getTime()}))};
 };
 
 /**
