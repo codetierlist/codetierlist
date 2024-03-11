@@ -164,6 +164,41 @@ const EmptyMessageBar = ({
 };
 
 /**
+ * The message bar for the past deadline
+ */
+const PastDeadlineTooltip = ({ assignment }: { assignment: UserFetchedAssignment }) => {
+    return (
+        <ToolTipIcon
+            style={{ display: 'inline-flex' }}
+            className="m-l-m-nudge"
+            tooltip={
+                assignment.strict_deadline ? (
+                    'This assignment does not accept submissions past the deadline.'
+                ) : (
+                    <>
+                        Codetierlist will accept submissions past the deadline; however,
+                        you <strong>must</strong> submit by the deadline on Markus.
+                        <br />
+                        <br />
+                        Furthermore, other students may not be updating their test cases.
+                    </>
+                )
+            }
+            icon={
+                <Badge
+                    appearance="filled"
+                    icon={<Info16Regular />}
+                    iconPosition="after"
+                    color={assignment.strict_deadline ? 'danger' : 'warning'}
+                >
+                    {assignment.strict_deadline ? 'Strict' : 'Flexible'}
+                </Badge>
+            }
+        />
+    );
+};
+
+/**
  * The view details tab for the assignment page
  */
 const ViewDetailsTab = ({
@@ -190,43 +225,8 @@ const ViewDetailsTab = ({
                                     {convertDate(assignment.due_date)} at{' '}
                                     {convertTime(assignment.due_date)}
                                 </div>
-                                <ToolTipIcon
-                                    style={{ display: 'inline-flex' }}
-                                    className="m-l-m-nudge"
-                                    tooltip={
-                                        assignment.strict_deadline ? (
-                                            'This assignment does not accept submissions past the deadline.'
-                                        ) : (
-                                            <>
-                                                This assignment accepts submissions past
-                                                the deadline; however, you{' '}
-                                                <strong>must</strong> submit by the
-                                                deadline on Markus.
-                                                <br />
-                                                <br />
-                                                Furthermore, other students may not be
-                                                updating their solutions after the
-                                                deadline.
-                                            </>
-                                        )
-                                    }
-                                    icon={
-                                        <Badge
-                                            appearance="filled"
-                                            icon={<Info16Regular />}
-                                            iconPosition="after"
-                                            color={
-                                                assignment.strict_deadline
-                                                    ? 'danger'
-                                                    : 'warning'
-                                            }
-                                        >
-                                            {assignment.strict_deadline
-                                                ? 'Strict'
-                                                : 'Flexible'}
-                                        </Badge>
-                                    }
-                                />
+
+                                <PastDeadlineTooltip assignment={assignment} />
                             </Subtitle2>
 
                             <Title2>{assignment.title}</Title2>

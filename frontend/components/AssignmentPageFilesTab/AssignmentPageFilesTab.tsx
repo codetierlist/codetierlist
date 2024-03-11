@@ -65,7 +65,8 @@ const ValidationError = ({ validationResult }: { validationResult?: JobResult })
                 This testcase errored when running instructor&apos;s solution.
                 {'error' in validationResult && (
                     <>
-                        <br /><br/>
+                        <br />
+                        <br />
                         <b>Error:</b> {validationResult.error}
                     </>
                 )}

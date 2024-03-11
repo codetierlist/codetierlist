@@ -103,11 +103,14 @@ const Quote = ({ children }: { children: ReactNode }) => {
                 <MessageBarBody>
                     {' '}
                     <MessageBarTitle>
-                        {intent.length > 0
-                            ? intent.charAt(0).toUpperCase() +
-                              intent.slice(1).toLowerCase() +
-                              ':'
-                            : ''}
+                        {intent.length > 0 ? (
+                            <span aria-label={`${intent}: `}>
+                                {intent.charAt(0).toUpperCase() +
+                                    intent.slice(1).toLowerCase()}
+                            </span>
+                        ) : (
+                            ''
+                        )}
                     </MessageBarTitle>
                     <br />
                     {children}

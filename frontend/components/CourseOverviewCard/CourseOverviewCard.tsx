@@ -48,7 +48,7 @@ export declare type CourseOverviewCardProps = {
     /** the session of the course */
     session: Session;
     /** the role of the user */
-    role: RoleType | "NOT ENROLLED"
+    role: RoleType | 'NOT ENROLLED';
     /** the props of the component */
     props?: React.HTMLAttributes<HTMLDivElement>;
 };
