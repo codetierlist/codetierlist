@@ -30,6 +30,8 @@ declare type ListFilesProps = {
     setCurrentFile: (file: string) => void;
     /** a function to submit files */
     submitFiles: (files: File[]) => void;
+    /** the commit ID */
+    commitID?: string;
 };
 
 export declare type TreeType = {
@@ -75,6 +77,7 @@ export const ListFiles = ({
     currentFile,
     setCurrentFile,
     submitFiles,
+    commitID,
 }: ListFilesProps) => {
     const { showSnackSev } = useContext(SnackbarContext);
     const searchParams = useSearchParams();
@@ -93,7 +96,7 @@ export const ListFiles = ({
     const getFileContents = async (file: string) => {
         await axios
             .get<ArrayBuffer>(
-                `/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/${commit.log[0]}/${file}`,
+                `/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/${commitID || (commit.log[0]?.id ?? '')}/${file}`,
                 {
                     skipErrorHandling: true,
                     params: {

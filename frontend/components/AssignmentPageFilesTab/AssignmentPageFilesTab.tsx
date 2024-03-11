@@ -5,11 +5,13 @@ import {
     Button,
     Caption1,
     Card,
+    Dropdown,
     Link,
     MessageBar,
     MessageBarBody,
     MessageBarTitle,
     Subtitle1,
+    Option,
 } from '@fluentui/react-components';
 import {
     Add24Filled,
@@ -97,30 +99,41 @@ export const AssignmentPageFilesTab = ({
     const [currentFolder, setCurrentFolder] = useState<string>('');
     const [currentFile, setCurrentFile] = useState<string>('');
     const { userInfo } = useContext(UserContext);
+    const [commitID, setCommitID] = useState<string>('');
 
-    const getTestData = useCallback(async () => {
-        await axios
-            .get<Commit>(
-                `/courses/${assignment.course_id}/assignments/${assignmentID}/${route}`,
-                {
-                    skipErrorHandling: true,
-                    params: {
-                        utorid: searchParams.get('utorid') ?? undefined,
-                    },
-                }
-            )
-            .then((res) => {
-                if (res.data.log[0] != content.log[0] || res.data.valid != content.valid)
-                    setContent(res.data);
-                // TODO why is this needed on production build?
-                content = res.data;
-            })
-            .catch((e) => {
-                handleError(showSnackSev)(e);
-                setContent({ files: [], log: [] } as Commit);
-            });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [assignment.course_id, assignmentID, route]);
+    const getTestData = useCallback(
+        async (commit = '') => {
+            await axios
+                .get<Commit>(
+                    `/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/${commit}`,
+                    {
+                        skipErrorHandling: true,
+                        params: {
+                            utorid: searchParams.get('utorid') ?? undefined,
+                        },
+                    }
+                )
+                .then((res) => {
+                    if (
+                        res.data.log[0]?.id != content.log[0]?.id ||
+                        res.data.valid != content.valid ||
+                        res.data.files.length != content.files.length ||
+                        res.data.files.some((x) => !content.files.includes(x))
+                    ) {
+                        setContent(res.data);
+                        if (!commitID) setCommitID(res.data.log[0]?.id ?? '');
+                    }
+                    // TODO why is this needed on production build?
+                    content = res.data;
+                })
+                .catch((e) => {
+                    handleError(showSnackSev)(e);
+                    setContent({ files: [], log: [] } as Commit);
+                });
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+        },
+        [assignment.course_id, assignmentID, route]
+    );
 
     useEffect(() => {
         if (currentFile && !content.files.includes(currentFile)) {
@@ -132,6 +145,10 @@ export const AssignmentPageFilesTab = ({
     }, [content.files, currentFile, currentFolder]);
 
     const submitFolder = async (fileslist: File[], target?: string) => {
+        if (commitID !== '') {
+            showSnackSev('You can only update the latest submission', 'error');
+            return;
+        }
         if (fileslist.length > 100 || fileslist.reduce((a, x) => a + x.size, 0) >= 1e9) {
             showSnackSev(
                 'Please upload less than 1000 files and less than 1GB at a time',
@@ -190,6 +207,10 @@ export const AssignmentPageFilesTab = ({
      * @param target the path to submit the files to
      */
     const submitFiles = async (files: File[], target?: string) => {
+        if (commitID !== '') {
+            showSnackSev('You can only update the latest submission', 'error');
+            return;
+        }
         if (target === undefined) target = currentFolder;
         if (
             files.some((file) => {
@@ -324,6 +345,30 @@ export const AssignmentPageFilesTab = ({
                         </div>
                     )}
             </div>
+            <Dropdown
+                onOptionSelect={(_, data) => {
+                    setCommitID(data.optionValue || '');
+                    void getTestData(data.optionValue);
+                }}
+            >
+                {content.log[0] && (
+                    <Option
+                        value=""
+                        text={`Latest - ${content.log[0] ? new Date(content.log[0].date).toLocaleString() : ''}`}
+                    >
+                        Latest - {new Date(content.log[0]?.date).toLocaleString()}
+                    </Option>
+                )}
+                {content.log.slice(1).map((commit) => (
+                    <Option
+                        key={commit.id}
+                        value={commit.id}
+                        text={new Date(commit.date).toLocaleString()}
+                    >
+                        {new Date(commit.date).toLocaleString()}
+                    </Option>
+                ))}
+            </Dropdown>
 
             {/* {content.log[0] && (
                         <Text block className={styles.commitId} font="numeric">
@@ -356,6 +401,7 @@ export const AssignmentPageFilesTab = ({
                             </div>
                         ) : null}
                         <ListFiles
+                            commitID={commitID}
                             commit={content}
                             route={route}
                             assignment={assignment}

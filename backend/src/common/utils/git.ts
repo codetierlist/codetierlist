@@ -31,7 +31,7 @@ export const softResetRepo = async (repoPath: string, commit: string) => {
  * @param object the object to commit
  * @param table the repo to commit to. Either "solution" or "testCase"
  */
-export const commitFiles = async (object: Omit<TestCase | Solution, 'datetime' | 'id'>, table: "solution" | "testCase", prof : boolean) => {
+export const commitFiles = async (object: Omit<TestCase | Solution, 'datetime' | 'id'>, table: "solution" | "testCase", prof: boolean) => {
     const repoPath = path.resolve(`/repos/${object.course_id}/${object.assignment_title}/${object.author_id}_${table}`);
     const status = await git.statusMatrix({fs, dir: repoPath});
 
@@ -66,8 +66,11 @@ export const commitFiles = async (object: Omit<TestCase | Solution, 'datetime' |
             group_number: object.group_number === -1 ? null : object.group_number
         };
         if (table === "solution") {
-            const solutionAssignment = await prisma.solution.create({data, include: {assignment: true}});
-            const solution : Optional<typeof solutionAssignment, "assignment"> = solutionAssignment;
+            const solutionAssignment = await prisma.solution.create({
+                data,
+                include: {assignment: true}
+            });
+            const solution: Optional<typeof solutionAssignment, "assignment"> = solutionAssignment;
             const assignment = solutionAssignment.assignment;
             delete solution.assignment;
             if (prof) {
@@ -76,8 +79,11 @@ export const commitFiles = async (object: Omit<TestCase | Solution, 'datetime' |
                 await onNewSubmission(solution, assignment);
             }
         } else {
-            const testCaseAssignment = await prisma.testCase.create({data, include: {assignment: true}});
-            const testCase : Optional<typeof testCaseAssignment, "assignment"> = testCaseAssignment;
+            const testCaseAssignment = await prisma.testCase.create({
+                data,
+                include: {assignment: true}
+            });
+            const testCase: Optional<typeof testCaseAssignment, "assignment"> = testCaseAssignment;
             const assignment = testCaseAssignment.assignment;
             delete testCase.assignment;
             await onNewTestCase(testCase, assignment);
@@ -123,17 +129,21 @@ export const getCommit = async (submission: Omit<Solution | TestCase, "group_num
         const log = await git.log({
             fs,
             dir: submission.git_url,
-            ref: commit.oid,
-            depth: 2
+            ref: 'master',
+            depth: 20
         });
         const res: Commit = {
             files,
             // TODO cant get all logs after a lot of commits, this only returns latest commit
-            log: log.map(commitIterator => commitIterator.oid)
+            log: log.map(commitIterator => ({
+                id: commitIterator.oid,
+                date: commitIterator.commit.committer.timestamp,
+                tree: commitIterator.commit.tree
+            }))
         };
         if ((submission as TestCase).valid) {
             res.valid = (submission as TestCase).valid;
-            if(validation_details) {
+            if (validation_details) {
                 res.validation_result = (submission as TestCase).validation_result as JobResult;
             }
         }
