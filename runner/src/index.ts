@@ -28,6 +28,17 @@ if (process.env.REDIS_PASSWORD === undefined) {
 
 const mtask = parseInt(process.env.MAX_RUNNING_TASKS);
 
+// todo:
+// what if we have just 5 containers running and have a job queue
+// instead of running one container per job
+//
+// this could potentially remove the performance hit of starting a container for each job
+// however we would need to jail the container (like we do in a ctf)
+//
+// we would also need to reset the container state after each job
+//
+// ~ shubh
+
 export const runJob = async (job: ReadyJobData): Promise<JobResult> => {
     if("status" in job) {
         throw new Error("Job not ready");
