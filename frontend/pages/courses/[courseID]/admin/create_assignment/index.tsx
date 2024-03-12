@@ -275,6 +275,7 @@ export default function Page(): JSX.Element {
                     >
                         <Input
                             required
+                            appearance="filled-darker"
                             type="text"
                             id="name"
                             name="courseCode"
@@ -292,6 +293,7 @@ export default function Page(): JSX.Element {
                     >
                         <Input
                             required
+                            appearance="filled-darker"
                             type="datetime-local"
                             id="dueDate"
                             name="dueDate"
@@ -313,6 +315,7 @@ export default function Page(): JSX.Element {
                     >
                         <Switch
                             id="strictDeadlines"
+                            appearance="filled-darker"
                             label={strictDeadlines ? 'On' : 'Off'}
                             labelPosition="before"
                             checked={strictDeadlines}
@@ -330,6 +333,7 @@ export default function Page(): JSX.Element {
                     >
                         <Dropdown
                             id="runner"
+                            appearance="filled-darker"
                             name="runner"
                             value={
                                 selectedRunner?.runner_image +
@@ -371,6 +375,7 @@ export default function Page(): JSX.Element {
                     >
                         <Input
                             type="number"
+                            appearance="filled-darker"
                             min={0}
                             id="groupSize"
                             name="groupSize"

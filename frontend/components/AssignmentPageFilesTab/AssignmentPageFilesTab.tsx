@@ -1,5 +1,10 @@
 import axios, { handleError } from '@/axios';
-import { TestCaseStatus, promptForFileObject, checkIfCourseAdmin } from '@/components';
+import {
+    TestCaseStatus,
+    promptForFileObject,
+    checkIfCourseAdmin,
+    HeaderToolbar,
+} from '@/components';
 import { SnackbarContext, UserContext } from '@/hooks';
 import {
     Button,
@@ -344,34 +349,39 @@ export const AssignmentPageFilesTab = ({
                         </div>
                     )}
             </div>
-            <Dropdown
-                onOptionSelect={(_, data) => {
-                    setCommitID(data.optionValue || '');
-                    void getTestData(data.optionValue);
-                }}
-                defaultValue={
-                    'Latest - ' +
-                    (content.log[0] ? new Date(content.log[0].date).toLocaleString() : '')
-                }
-            >
-                {content.log[0] && (
-                    <Option
-                        value=""
-                        text={`Latest - ${content.log[0] ? new Date(content.log[0].date).toLocaleString() : ''}`}
-                    >
-                        Latest - {new Date(content.log[0]?.date).toLocaleString()}
-                    </Option>
-                )}
-                {content.log.slice(1).map((commit) => (
-                    <Option
-                        key={commit.id}
-                        value={commit.id}
-                        text={new Date(commit.date).toLocaleString()}
-                    >
-                        {new Date(commit.date).toLocaleString()}
-                    </Option>
-                ))}
-            </Dropdown>
+            <HeaderToolbar className="m-none p-xs">
+                <Dropdown
+                    appearance="filled-darker"
+                    onOptionSelect={(_, data) => {
+                        setCommitID(data.optionValue || '');
+                        void getTestData(data.optionValue);
+                    }}
+                    defaultValue={
+                        'Latest - ' +
+                        (content.log[0]
+                            ? new Date(content.log[0].date).toLocaleString()
+                            : '')
+                    }
+                >
+                    {content.log[0] && (
+                        <Option
+                            value=""
+                            text={`Latest - ${content.log[0] ? new Date(content.log[0].date).toLocaleString() : ''}`}
+                        >
+                            Latest - {new Date(content.log[0]?.date).toLocaleString()}
+                        </Option>
+                    )}
+                    {content.log.slice(1).map((commit) => (
+                        <Option
+                            key={commit.id}
+                            value={commit.id}
+                            text={new Date(commit.date).toLocaleString()}
+                        >
+                            {new Date(commit.date).toLocaleString()}
+                        </Option>
+                    ))}
+                </Dropdown>
+            </HeaderToolbar>
 
             {/* {content.log[0] && (
                         <Text block className={styles.commitId} font="numeric">
