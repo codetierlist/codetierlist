@@ -16,7 +16,7 @@ export const deletePath = async <T extends string | undefined>({
     changePath,
     showSnackSev,
     update,
-    editable=true,
+    editable = true,
 }: {
     fullRoute: string;
     path: string;

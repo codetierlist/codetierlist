@@ -349,7 +349,10 @@ export const AssignmentPageFilesTab = ({
                     setCommitID(data.optionValue || '');
                     void getTestData(data.optionValue);
                 }}
-                defaultValue={"Latest - " + (content.log[0] ? new Date(content.log[0].date).toLocaleString() : '')}
+                defaultValue={
+                    'Latest - ' +
+                    (content.log[0] ? new Date(content.log[0].date).toLocaleString() : '')
+                }
             >
                 {content.log[0] && (
                     <Option

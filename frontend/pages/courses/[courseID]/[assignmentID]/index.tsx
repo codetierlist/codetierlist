@@ -14,6 +14,7 @@ import { SnackbarContext, UserContext } from '@/hooks';
 import {
     Badge,
     Button,
+    Caption1,
     Card,
     CardHeader,
     MessageBar,
@@ -86,9 +87,14 @@ const ViewTierList = (props: React.HTMLAttributes<HTMLDivElement>) => {
 
     return (
         <Col sm={12} {...props}>
-            <Subtitle1 className={styles.gutter} block>
+            <Subtitle1 className="p-t-s p-b-xs" block>
                 Tierlist
             </Subtitle1>
+            <Caption1 className="p-b-xxxl" block>
+                The tierlist shows the performance of your solution against your
+                classmates&lsquo; test cases. The tierlist is normally distributed, S tier
+                does not necessarily indicate a perfect solution.
+            </Caption1>
             {tierlist ? <TierList tierlist={tierlist} /> : 'No tier list available.'}
         </Col>
     );
