@@ -315,7 +315,6 @@ export default function Page(): JSX.Element {
                     >
                         <Switch
                             id="strictDeadlines"
-                            appearance="filled-darker"
                             label={strictDeadlines ? 'On' : 'Off'}
                             labelPosition="before"
                             checked={strictDeadlines}
