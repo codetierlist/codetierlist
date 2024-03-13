@@ -473,7 +473,7 @@ export const AssignmentPageFilesTab = ({
                 <FileSelectorAdminBar
                     content={content}
                     setCommitID={setCommitID}
-                    getTestData={getTestData}
+                    update={getTestData}
                 />
             )}
 
