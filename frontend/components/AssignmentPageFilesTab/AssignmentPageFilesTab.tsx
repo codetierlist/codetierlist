@@ -127,14 +127,14 @@ const ValidationErrorMessageBar = ({
 const FileSelectorAdminBar = ({
     content,
     setCommitID,
-    getTestData,
+    update,
 }: {
     /** the commit info */
     content: Commit;
     /** a function to set the commit id */
     setCommitID: (commitID: string) => void;
     /** a function to get the test data */
-    getTestData: (commit: string) => Promise<void>;
+    update: () => Promise<void>;
 }) => {
     const values = useMemo(() => {
         return content.log.map((commit) => ({
@@ -151,7 +151,7 @@ const FileSelectorAdminBar = ({
                 placeholder="View past uploads"
                 onOptionSelect={(_, data) => {
                     setCommitID(data.optionValue || '');
-                    data.optionValue && void getTestData(data.optionValue);
+                    data.optionValue && void update();
                 }}
                 defaultValue={values[0] && values[0].key}
             >
@@ -191,38 +191,34 @@ export const AssignmentPageFilesTab = ({
     // the commit id to display
     const [commitID, setCommitID] = useState<string>('');
 
-    const getTestData = useCallback(
-        async (commit = '') => {
-            await axios
-                .get<Commit>(
-                    `/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/${commit}`,
-                    {
-                        skipErrorHandling: true,
-                        params: {
-                            utorid: searchParams.get('utorid') ?? undefined,
-                        },
-                    }
-                )
-                .then((res) => {
-                    if (
-                        res.data.log[0]?.id != content.log[0]?.id ||
-                        res.data.valid != content.valid ||
-                        res.data.files.length != content.files.length ||
-                        res.data.files.some((x) => !content.files.includes(x))
-                    ) {
-                        setContent(res.data);
-                    }
-                    // TODO why is this needed on production build?
-                    content = res.data;
-                })
-                .catch((e) => {
-                    handleError(showSnack)(e);
-                    setContent({ files: [], log: [] } as Commit);
-                });
-            // eslint-disable-next-line react-hooks/exhaustive-deps
-        },
-        [assignment.course_id, assignmentID, route]
-    );
+    const getTestData = useCallback(async () => {
+        await axios
+            .get<Commit>(
+                `/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/${commitID}`,
+                {
+                    skipErrorHandling: true,
+                    params: {
+                        utorid: searchParams.get('utorid') ?? undefined,
+                    },
+                }
+            )
+            .then((res) => {
+                if (
+                    res.data.log[0]?.id != content.log[0]?.id ||
+                    res.data.valid != content.valid ||
+                    res.data.files.length != content.files.length ||
+                    res.data.files.some((x) => !content.files.includes(x))
+                ) {
+                    setContent(res.data);
+                }
+                // TODO why is this needed on production build?
+                content = res.data;
+            })
+            .catch((e) => {
+                handleError(showSnack)(e);
+                setContent({ files: [], log: [] } as Commit);
+            });
+    }, [assignment.course_id, assignmentID, route, commitID, searchParams]);
 
     useEffect(() => {
         if (currentFile && !content.files.includes(currentFile)) {
@@ -374,7 +370,14 @@ export const AssignmentPageFilesTab = ({
     useEffect(() => {
         void getTestData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [assignmentID, fetchAssignment, route, routeName, assignment.submissions, commitID]);
+    }, [
+        assignmentID,
+        fetchAssignment,
+        route,
+        routeName,
+        assignment.submissions,
+        commitID,
+    ]);
 
     /**
      * upload a file to the server

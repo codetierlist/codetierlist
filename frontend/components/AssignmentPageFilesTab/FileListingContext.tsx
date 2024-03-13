@@ -16,7 +16,6 @@ export const FileListingContext = createContext({
     submitFolder: (files: File[], path?: string) => {},
     currentFolder: '',
 
-
     isEditable: false,
 
     assignmentId: '',
