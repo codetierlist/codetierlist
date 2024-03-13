@@ -3,6 +3,7 @@ import { Navbar } from '@/components';
 import { defaultAccentColor } from '@/components/utils/theme/theme';
 import {
     defaultUser,
+    ShowSnackSevType,
     SnackbarContext,
     UserContext,
     useSystemTheme,
@@ -39,7 +40,7 @@ type EnhancedAppProps = AppProps & {
  * Fetches user info
  */
 const useUserInfo = (
-    showSnackSev: (message?: string, severity?: ToastIntent) => void
+    showSnackSev: ShowSnackSevType
 ) => {
     const [userInfo, setUserInfo] = useState<FetchedUser>(defaultUser);
 
@@ -79,12 +80,12 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
         }
     };
 
-    const showSnackSev = (message?: string, severity?: ToastIntent) =>
+    const showSnackSev = (message?: string, severity?: ToastIntent, title?: string) =>
         dispatchToast(
             <Toast>
                 {severity && (
                     <ToastTitle>
-                        {severity.charAt(0).toUpperCase() + severity.slice(1)}
+                        { title || severity.charAt(0).toUpperCase() + severity.slice(1)}
                     </ToastTitle>
                 )}
                 <ToastBody>{message}</ToastBody>

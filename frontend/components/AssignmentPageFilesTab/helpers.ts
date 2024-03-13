@@ -1,4 +1,5 @@
 import axios, { handleError } from '@/axios';
+import { ShowSnackSevType } from '@/hooks';
 import { ToastIntent } from '@fluentui/react-components';
 
 /** delete a file from the server */
@@ -16,7 +17,7 @@ export const deletePath = async <T extends string | undefined>({
     /** the path to the file to delete */
     path: string;
     /** a function to show a snack */
-    showSnackSev: (message?: string, sev?: ToastIntent) => void;
+    showSnackSev: ShowSnackSevType;
     /** the current path */
     currentPath: T;
     /** a function to change the current path */

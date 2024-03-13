@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ToastIntent } from '@fluentui/react-components';
 import { createContext } from 'react';
+
+export type ShowSnackSevType = (message?: string, severity?: ToastIntent, title?: string) => void;
 
 /**
  * The context for the global snackbar. Just use `showSnack` to display a
@@ -22,5 +25,5 @@ export const SnackbarContext = createContext({
      * @param message The message to display.
      * @param sev The severity of the snackbar.
      */
-    showSnackSev: (message?: string, sev?: ToastIntent) => {},
+    showSnackSev: (message?: string, severity?: ToastIntent, title?: string) => {},
 });

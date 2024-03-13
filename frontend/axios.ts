@@ -1,5 +1,6 @@
 import { ToastIntent } from '@fluentui/react-components';
 import axios, { AxiosError } from 'axios';
+import { ShowSnackSevType } from './hooks';
 
 declare module 'axios' {
     export interface AxiosRequestConfig {
@@ -9,7 +10,7 @@ declare module 'axios' {
 
 export const handleError =
     (
-        showSnackSev?: (message?: string, severity?: ToastIntent) => void,
+        showSnackSev?: ShowSnackSevType,
         message?: string
     ) =>
     (error: AxiosError) => {

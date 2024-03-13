@@ -5,7 +5,7 @@ import {
     checkIfCourseAdmin,
     promptForFileReader,
 } from '@/components';
-import { SnackbarContext, UserContext } from '@/hooks';
+import { ShowSnackSevType, SnackbarContext, UserContext } from '@/hooks';
 import {
     Body2,
     Button,
@@ -57,7 +57,7 @@ async function modifyEnrollment(
     csv: string,
     action: 'add' | 'remove',
     role: RoleType,
-    showSnackSev: (message?: string, severity?: ToastIntent) => void
+    showSnackSev: ShowSnackSevType
 ): Promise<void> {
     const utorids = csv.split('\n').map((utorid) => utorid.trim());
 
