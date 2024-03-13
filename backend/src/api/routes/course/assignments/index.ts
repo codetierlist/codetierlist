@@ -50,7 +50,17 @@ const uploadMiddleware = (req: Request, res: Response, next: NextFunction) =>
         if(err){
             if("code" in err && (err.code === 'LIMIT_FILE_COUNT' || err.code === 'LIMIT_FILE_SIZE')) {
                 res.statusCode = 413;
-                res.send({message: "File size or count exceeded."});
+
+                if (err.code === 'LIMIT_FILE_COUNT') {
+                    res.send({message: `File count exceeded. Maximum ${config.max_file_count} files allowed.`});
+                }
+                else if (err.code === 'LIMIT_FILE_SIZE') {
+                    res.send({message: `File size exceeded. Maximum ${config.max_file_size / 1000 / 1000} megabytes allowed.`});
+                }
+                else {
+                    res.send({message: "File size or count exceeded."});
+                }
+
                 return;
             }
             next(err);
