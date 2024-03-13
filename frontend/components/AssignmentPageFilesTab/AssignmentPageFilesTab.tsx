@@ -148,9 +148,7 @@ const FileSelectorAdminBar = ({
             <Dropdown
                 appearance="filled-darker"
                 clearable={true}
-                placeholder={
-                    values.length > 0 ? 'Select a commit' : 'No commits available'
-                }
+                placeholder="View past uploads"
                 onOptionSelect={(_, data) => {
                     setCommitID(data.optionValue || '');
                     data.optionValue && void getTestData(data.optionValue);
@@ -376,7 +374,7 @@ export const AssignmentPageFilesTab = ({
     useEffect(() => {
         void getTestData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [assignmentID, fetchAssignment, route, routeName, assignment.submissions]);
+    }, [assignmentID, fetchAssignment, route, routeName, assignment.submissions, commitID]);
 
     /**
      * upload a file to the server
