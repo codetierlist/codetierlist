@@ -134,34 +134,28 @@ const FileSelectorAdminBar = ({
     /** a function to get the test data */
     getTestData: (commit: string) => Promise<void>;
 }) => {
+    const values = useMemo(() => {
+        return content.log.map((commit) => ({
+            key: commit.id,
+            text: `${new Date(commit.date).toLocaleString()}${commit.id === content.log[0].id ? ' (Latest)' : ''}`,
+        }));
+    }, [content.log]);
+
     return (
         <HeaderToolbar className="m-none p-xs">
             <Dropdown
                 appearance="filled-darker"
+                clearable={true}
+                placeholder="Select a commit"
                 onOptionSelect={(_, data) => {
                     setCommitID(data.optionValue || '');
                     data.optionValue && void getTestData(data.optionValue);
                 }}
-                defaultValue={
-                    'Latest - ' +
-                    (content.log[0] ? new Date(content.log[0].date).toLocaleString() : '')
-                }
+                defaultValue={values[0] && values[0].key}
             >
-                {content.log[0] && (
-                    <Option
-                        value=""
-                        text={`Latest - ${content.log[0] ? new Date(content.log[0].date).toLocaleString() : ''}`}
-                    >
-                        Latest - {new Date(content.log[0]?.date).toLocaleString()}
-                    </Option>
-                )}
-                {content.log.slice(1).map((commit) => (
-                    <Option
-                        key={commit.id}
-                        value={commit.id}
-                        text={new Date(commit.date).toLocaleString()}
-                    >
-                        {new Date(commit.date).toLocaleString()}
+                {values.map((value) => (
+                    <Option key={value.key} value={value.key}>
+                        {value.text}
                     </Option>
                 ))}
             </Dropdown>
@@ -233,26 +227,32 @@ export const AssignmentPageFilesTab = ({
         }
     }, [content.files, currentFile, currentFolder]);
 
-    const submitFolder = async (fileslist: File[], target?: string) => {
+    /**
+     * Upload a folder to the system.
+     *
+     * By default, the target is the current folder selected. Otherwise
+     * it is the root of the submission.
+     */
+    const submitFolder = async (files: File[], target?: string) => {
         if (commitID !== '') {
             showSnackSev('You can only update the latest submission', 'error');
             return;
         }
-        if (fileslist.length > 100 || fileslist.reduce((a, x) => a + x.size, 0) >= 1e9) {
+        if (files.length > 100 || files.reduce((a, x) => a + x.size, 0) >= 1e9) {
             showSnackSev(
-                'Please upload less than 1000 files and less than 1GB at a time',
+                'Please upload less than 1000 files and less than 20mb at a time',
                 'error'
             );
             return;
         }
         if (target === undefined) target = currentFolder;
-        if (fileslist) {
+        if (files) {
             const zip = new JSZip();
             if (!zip) {
                 throw new Error('Failed to create zip folder');
             }
-            for (let i = 0; i < fileslist.length; i++) {
-                const file = fileslist[i];
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
                 const path =
                     'path' in file && typeof file.path === 'string'
                         ? file.path
@@ -292,6 +292,10 @@ export const AssignmentPageFilesTab = ({
 
     /**
      * submit files to the server
+     *
+     * By default, the target is the current folder selected. Otherwise
+     * it is the root of the submission.
+     *
      * @param files the files to submit
      * @param target the path to submit the files to
      */
@@ -343,7 +347,7 @@ export const AssignmentPageFilesTab = ({
      * increased polling rate while test is pending
      * since we expect runners to be fast
      */
-    const POLLING_RATE = 1000;
+    const PENDING_POLLING_RATE = 1000;
 
     useEffect(() => {
         if (content.valid === 'PENDING') {
@@ -354,7 +358,7 @@ export const AssignmentPageFilesTab = ({
                         void fetchAssignment();
                     }
                 });
-            }, POLLING_RATE);
+            }, PENDING_POLLING_RATE);
             return () => clearInterval(interval);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -369,7 +373,6 @@ export const AssignmentPageFilesTab = ({
      * upload a file to the server
      */
     const uploadFile = async () => {
-        // todo: make the language based on the runner
         promptForFileObject({ folders: false, multiple: true })
             .then((file) => {
                 if (file) {
@@ -463,7 +466,7 @@ export const AssignmentPageFilesTab = ({
                     submitFiles={(files) => {
                         void submitFiles(files, '');
                     }}
-                    routeName={routeName}
+                    dropText={`Drop files to upload as a ${routeName}`}
                     disabled={isEditable === false}
                 >
                     <Card className="m-t-xl">
@@ -471,11 +474,17 @@ export const AssignmentPageFilesTab = ({
                             <div className={styles.noFiles}>
                                 <DocumentMultiple24Regular />
                                 <Caption1>
-                                    No files uploaded yet. Drag and drop files here or{' '}
-                                    <Link inline={true} onClick={uploadFile}>
-                                        choose files
-                                    </Link>{' '}
-                                    to upload.
+                                    No files uploaded
+                                    {isEditable && (
+                                        <>
+                                            {' '}
+                                            yet. Drag and drop files here or{' '}
+                                            <Link inline={true} onClick={uploadFile}>
+                                                choose files
+                                            </Link>{' '}
+                                            to upload.
+                                        </>
+                                    )}
                                 </Caption1>
                             </div>
                         ) : null}
