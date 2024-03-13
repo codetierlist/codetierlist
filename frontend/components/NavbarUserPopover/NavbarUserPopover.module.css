@@ -20,3 +20,8 @@
     flex-direction: row;
     justify-content: flex-start !important;
 }
+
+.newAchievementsBadge {
+    text-transform: uppercase;
+    margin-left: var(--spacingHorizontalS);
+}

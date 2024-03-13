@@ -16,7 +16,7 @@ import {
     MessageBarTitle,
     ToolbarButton,
 } from '@fluentui/react-components';
-import { Add24Filled, ArrowLeft24Regular } from '@fluentui/react-icons';
+import { Add24Regular, ArrowLeft24Regular } from '@fluentui/react-icons';
 import { Title2 } from '@fluentui/react-text';
 import { RoleType } from 'codetierlist-types';
 import { isUTORid } from 'is-utorid';
@@ -143,7 +143,7 @@ export default function Page(): JSX.Element {
                     Back to Course
                 </ToolbarButton>
                 <ToolbarButton
-                    icon={<Add24Filled />}
+                    icon={<Add24Regular />}
                     onClick={async () => {
                         promptForFileReader('.csv').then((csv) => {
                             if (csv) {
