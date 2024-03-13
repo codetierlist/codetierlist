@@ -138,7 +138,11 @@ export const MarkdownRender = ({
             div: ({ children }) => <div>{children}</div>,
             ul: ({ children }) => <ul className={'p-l-xl'}>{children}</ul>,
             ol: ({ children }) => <ol className={'p-l-xl'}>{children}</ol>,
-            a: ({ children, href }) => <Link href={href || '#'}>{children}</Link>,
+            a: ({ children, href }) => (
+                <Link inline href={href || '#'}>
+                    {children}
+                </Link>
+            ),
             img: ({ src, alt }) => (
                 <Image
                     src={

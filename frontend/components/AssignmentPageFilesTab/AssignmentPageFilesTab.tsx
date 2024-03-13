@@ -502,7 +502,7 @@ export const AssignmentPageFilesTab = ({
                                         <>
                                             {' '}
                                             yet. Drag and drop files here or{' '}
-                                            <Link inline={true} onClick={uploadFile}>
+                                            <Link inline onClick={uploadFile}>
                                                 choose files
                                             </Link>{' '}
                                             to upload.

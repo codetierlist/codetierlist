@@ -14,7 +14,7 @@ import { Caption1, Spinner, ToolbarButton } from '@fluentui/react-components';
 import {
     Add24Regular,
     ImageAdd20Regular,
-    PersonDelete24Regular
+    PersonDelete24Regular,
 } from '@fluentui/react-icons';
 import { Title2 } from '@fluentui/react-text';
 import { FetchedCourseWithTiers } from 'codetierlist-types';

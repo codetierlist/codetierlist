@@ -404,7 +404,9 @@ export default function Page(): JSX.Element {
                             description={
                                 <Caption1>
                                     The markdown-formatted description of the assignment.{' '}
-                                    <Link onClick={() => setPreview(true)}>Preview</Link>
+                                    <Link inline onClick={() => setPreview(true)}>
+                                        Preview
+                                    </Link>
                                 </Caption1>
                             }
                         />

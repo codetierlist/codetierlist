@@ -1,10 +1,7 @@
 import { generateInitials, generateInitialsAvatarProps } from '@/components';
 import { UserContext } from '@/hooks';
 import { Badge, Button, Persona } from '@fluentui/react-components';
-import {
-    SignOut24Regular,
-    Trophy24Regular,
-} from '@fluentui/react-icons';
+import { SignOut24Regular, Trophy24Regular } from '@fluentui/react-icons';
 import { useRouter } from 'next/router';
 import { useContext } from 'react';
 import styles from './NavbarUserPopover.module.css';
@@ -54,7 +51,11 @@ export const NavbarUserPopover = (): JSX.Element => {
                 >
                     Achievements
                     {userInfo.new_achievements ? (
-                        <Badge appearance="filled" color="danger" className={styles.newAchievementsBadge}>
+                        <Badge
+                            appearance="filled"
+                            color="danger"
+                            className={styles.newAchievementsBadge}
+                        >
                             New
                         </Badge>
                     ) : null}

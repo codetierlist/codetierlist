@@ -137,7 +137,9 @@ const ProcessedFileRender = ({
                 <MessageBarBody>
                     <MessageBarTitle>Binary Data</MessageBarTitle>
                     This file contains binary data that cannot be rendered.{' '}
-                    <Link onClick={() => setViewAnyway(true)}>View anyway</Link>
+                    <Link inline onClick={() => setViewAnyway(true)}>
+                        View anyway
+                    </Link>
                 </MessageBarBody>
             </MessageBar>
         );
