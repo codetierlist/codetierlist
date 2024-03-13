@@ -37,7 +37,7 @@ export const handleError =
         } else {
             if (showSnack) {
                 showSnack(
-                    'Server was unresponsive, please try again later',
+                    'You may be logged out. Please refresh the page and try again.',
                     'error',
                     'Connection lost',
                     ReloadLink()
