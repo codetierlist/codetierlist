@@ -20,7 +20,6 @@ export const handleError =
         if (message) {
             res = message;
         } else if (error.response) {
-            console.log(typeof error.response.data);
             if (typeof error.response.data === 'string') {
                 try {
                     error.response.data = JSON.parse(error.response.data);

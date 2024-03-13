@@ -29,7 +29,6 @@ export const FolderListing = ({ path, subtree, ...props }: FolderListingProps) =
         currentFolder,
         submitFiles,
         submitFolder,
-        route,
         isEditable,
     } = useFileListingProps();
 
@@ -129,8 +128,7 @@ export const FolderListing = ({ path, subtree, ...props }: FolderListingProps) =
             submitFiles={(files) => {
                 submitFiles(files, path);
             }}
-            routeName={route}
-            customDropText={`Drop files to upload to ${path}`}
+            dropText={`Drop files to upload to ${path}`}
         >
             <TreeItem
                 itemType="branch"
