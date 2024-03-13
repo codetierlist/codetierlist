@@ -62,8 +62,7 @@ export const FileListing = ({ path, ...props }: FileListingProps) => {
                     if (currentFile !== path) {
                         changeFile && changeFile(path);
                         changeFolder && changeFolder(dirname(path));
-                    }
-                    else {
+                    } else {
                         changeFile && changeFile('');
                         changeFolder && changeFolder('');
                     }

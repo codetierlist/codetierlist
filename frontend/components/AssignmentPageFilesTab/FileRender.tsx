@@ -95,7 +95,7 @@ const ProcessedFileRender = ({
                         )}
                         draggable="false"
                         controls
-                    ></video>
+                    />
                 </div>
             );
         }
@@ -109,7 +109,7 @@ const ProcessedFileRender = ({
                             type: fileType?.mime ?? `audio/${fileType?.extension ?? ext}`,
                         })
                     )}
-                ></audio>
+                />
             );
         }
         if (fileType?.mime === 'application/pdf') {
