@@ -6,27 +6,16 @@ import { createContext, useContext } from 'react';
  * File listing context to avoid recursive prop drilling
  */
 export const FileListingContext = createContext({
-    update: () => {
-        return;
-    },
+    update: () => {},
 
-    changeFile: (file: string) => {
-        return;
-    },
+    changeFile: (file: string) => {},
+    submitFiles: (files: File[], path?: string) => {},
     currentFile: '',
 
-    changeFolder: (folder: string) => {
-        return;
-    },
+    changeFolder: (folder: string) => {},
+    submitFolder: (files: File[], path?: string) => {},
     currentFolder: '',
 
-    submitFiles: (files: File[], path?: string) => {
-        return;
-    },
-
-    submitFolder: (files: File[], path?: string) => {
-        return;
-    },
 
     isEditable: false,
 
@@ -44,21 +33,19 @@ export const FileListingContext = createContext({
 
     /** a function to call when the file is changed */
     changeFile?: (file: string) => void;
-
-    /** the current file */
+    /** a function to submit a folder */
+    submitFiles: (files: File[], path?: string) => void;
+    /** the full path to the current file */
     currentFile?: string;
 
     /** a function to call when the folder is changed */
     changeFolder?: (folder: string) => void;
-    /** the current folder */
-    currentFolder: string;
-
-    /** a function to submit a folder */
-    submitFiles: (files: File[], path?: string) => void;
     /** a function to submit files */
     submitFolder: (files: File[], path?: string) => void;
+    /** the full path to the current folder */
+    currentFolder: string;
 
-    /** is the file editable */
+    /** is this files tab currently editable? otherwise it is read only */
     isEditable: boolean;
 
     /** the current assignment id */
@@ -73,7 +60,7 @@ export const FileListingContext = createContext({
 
     /** api route to get the file */
     route: 'testcases' | 'submissions';
-    /** full api route */
+    /** full api route that can be used right away after adding a path */
     fullRoute: string;
 });
 
