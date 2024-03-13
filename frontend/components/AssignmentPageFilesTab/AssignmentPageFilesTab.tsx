@@ -146,7 +146,7 @@ const FileSelectorAdminBar = ({
             <Dropdown
                 appearance="filled-darker"
                 clearable={true}
-                placeholder="Select a commit"
+                placeholder={values.length > 0 ? "Select a commit" : "No commits available"}
                 onOptionSelect={(_, data) => {
                     setCommitID(data.optionValue || '');
                     data.optionValue && void getTestData(data.optionValue);
