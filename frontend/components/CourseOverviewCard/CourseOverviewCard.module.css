@@ -54,7 +54,6 @@
 }
 
 .role {
-    border-radius: var(--spacingVerticalNone) !important;
     text-transform: uppercase;
 }
 

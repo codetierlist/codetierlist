@@ -97,7 +97,7 @@ export const CourseOverviewCard = ({
                 description={
                     <div className={styles.badges}>
                         <SessionBlock session={session} />
-                        <Badge className={styles.role} appearance="filled">
+                        <Badge className={styles.role} appearance="filled" shape="square">
                             {role}
                         </Badge>
                     </div>

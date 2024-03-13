@@ -39,6 +39,7 @@ const getSessionStyle = (session: Session): CSSProperties | undefined => {
 export const SessionBlock = ({ session }: SessionBlockProps): JSX.Element => {
     return (
         <Badge
+            shape="square"
             appearance="filled"
             className={styles.badge}
             style={getSessionStyle(session)}
