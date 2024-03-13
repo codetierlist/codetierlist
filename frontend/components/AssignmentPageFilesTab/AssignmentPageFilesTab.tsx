@@ -487,6 +487,7 @@ export const AssignmentPageFilesTab = ({
                                 currentFile,
                                 changeFolder: setCurrentFolder,
                                 currentFolder,
+                                submitFolder,
                                 submitFiles,
                                 isEditable,
                                 assignmentId: assignmentID,

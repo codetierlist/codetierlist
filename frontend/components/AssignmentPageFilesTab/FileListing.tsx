@@ -8,6 +8,7 @@ import { basename } from 'path';
 import { useContext, useMemo } from 'react';
 import styles from './AssignmentPageFilesTab.module.css';
 import { useFileListingProps } from './FileListingContext';
+import { ToolTipIcon } from '..';
 
 export declare type FileListingProps = {
     /** the full path of the file to display */
@@ -27,22 +28,26 @@ export const FileListing = ({ path, ...props }: FileListingProps) => {
     const FileListingActions = () =>
         isEditable && (
             <>
-                <Button
-                    aria-label="Delete"
-                    appearance="subtle"
-                    icon={<Delete20Regular />}
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        void deletePath({
-                            changePath: changeFile,
-                            currentPath: currentFile,
-                            fullRoute,
-                            path,
-                            showSnackSev,
-                            update,
-                            editable: isEditable,
-                        });
-                    }}
+                <ToolTipIcon
+                    tooltip={`Delete ${basename(path)}`}
+                    icon={
+                        <Button
+                            appearance="subtle"
+                            icon={<Delete20Regular />}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                void deletePath({
+                                    changePath: changeFile,
+                                    currentPath: currentFile,
+                                    fullRoute,
+                                    path,
+                                    showSnackSev,
+                                    update,
+                                    editable: isEditable,
+                                });
+                            }}
+                        />
+                    }
                 />
             </>
         );

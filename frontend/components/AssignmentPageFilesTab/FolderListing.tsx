@@ -3,14 +3,18 @@ import { deletePath } from '@/components/AssignmentPageFilesTab/helpers';
 import { SnackbarContext } from '@/hooks';
 import { Button, Tree, TreeItem, TreeItemLayout } from '@fluentui/react-components';
 import { FileIconType, getFileTypeIconAsUrl } from '@fluentui/react-file-type-icons';
-import { ArrowUpload20Regular, Delete20Regular } from '@fluentui/react-icons';
+import {
+    Delete20Regular,
+    DocumentArrowUp20Regular,
+    FolderArrowUp20Regular,
+} from '@fluentui/react-icons';
 import Image from 'next/image';
 import { basename, join } from 'path';
 import { useContext } from 'react';
 import { Dropzone } from './Dropzone';
 import { FileListing, FileListingProps } from './FileListing';
-import { TreeType } from './ListFiles';
 import { useFileListingProps } from './FileListingContext';
+import { TreeType } from './ListFiles';
 
 export declare type FolderListingProps = FileListingProps & {
     /** the subtree to display */
@@ -24,6 +28,7 @@ export const FolderListing = ({ path, subtree, ...props }: FolderListingProps) =
         fullRoute,
         currentFolder,
         submitFiles,
+        submitFolder,
         route,
         isEditable,
     } = useFileListingProps();
@@ -60,9 +65,8 @@ export const FolderListing = ({ path, subtree, ...props }: FolderListingProps) =
                     tooltip={`Upload files to ${basename(path)}`}
                     icon={
                         <Button
-                            aria-label="Upload"
                             appearance="subtle"
-                            icon={<ArrowUpload20Regular />}
+                            icon={<DocumentArrowUp20Regular />}
                             onClick={(e) => {
                                 e.stopPropagation();
                                 promptForFileObject({
@@ -76,22 +80,45 @@ export const FolderListing = ({ path, subtree, ...props }: FolderListingProps) =
                     }
                 />
 
-                <Button
-                    aria-label="Delete"
-                    appearance="subtle"
-                    icon={<Delete20Regular />}
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        void deletePath({
-                            changePath: changeFolder,
-                            currentPath: changeFolder ? currentFolder : undefined,
-                            fullRoute,
-                            path,
-                            showSnackSev,
-                            update,
-                            editable: isEditable,
-                        });
-                    }}
+                <ToolTipIcon
+                    tooltip={`Upload folder to ${basename(path)}`}
+                    icon={
+                        <Button
+                            appearance="subtle"
+                            icon={<FolderArrowUp20Regular />}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                promptForFileObject({
+                                    folders: true,
+                                    multiple: false,
+                                }).then((files) => {
+                                    submitFolder(Array.from(files), path);
+                                });
+                            }}
+                        />
+                    }
+                />
+
+                <ToolTipIcon
+                    tooltip={`Delete ${basename(path)} folder`}
+                    icon={
+                        <Button
+                            appearance="subtle"
+                            icon={<Delete20Regular />}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                void deletePath({
+                                    changePath: changeFolder,
+                                    currentPath: changeFolder ? currentFolder : undefined,
+                                    fullRoute,
+                                    path,
+                                    showSnackSev,
+                                    update,
+                                    editable: isEditable,
+                                });
+                            }}
+                        />
+                    }
                 />
             </>
         );

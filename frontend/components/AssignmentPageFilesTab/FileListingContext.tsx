@@ -25,8 +25,13 @@ export const FileListingContext = createContext({
     /** the current folder */
     currentFolder: '',
 
-    /** a function to submit files */
+    /** a function to submit a folder */
     submitFiles: (files: File[], path?: string) => {
+        return;
+    },
+
+    /** a function to submit files */
+    submitFolder: (files: File[], path?: string) => {
         return;
     },
 
@@ -54,6 +59,7 @@ export const FileListingContext = createContext({
     changeFolder?: (folder: string) => void;
     currentFolder: string;
     submitFiles: (files: File[], path?: string) => void;
+    submitFolder: (files: File[], path?: string) => void;
     isEditable: boolean;
     assignmentId: string;
     assignment: UserFetchedAssignment;
