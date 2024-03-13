@@ -4,7 +4,7 @@ import { Button, TreeItem, TreeItemLayout } from '@fluentui/react-components';
 import { getFileTypeIconAsUrl } from '@fluentui/react-file-type-icons';
 import { Delete20Regular } from '@fluentui/react-icons';
 import Image from 'next/image';
-import { basename } from 'path';
+import { basename, dirname } from 'path';
 import { useContext, useMemo } from 'react';
 import styles from './AssignmentPageFilesTab.module.css';
 import { useFileListingProps } from './FileListingContext';
@@ -58,12 +58,15 @@ export const FileListing = ({ path, ...props }: FileListingProps) => {
                 className={`${currentFile === path ? styles.currentFile : ''}`}
                 onClick={(e) => {
                     e.stopPropagation();
-                    if (currentFile !== path) changeFile && changeFile(path);
-                    else changeFile && changeFile('');
 
-                    // also need to change folder
-                    const folder = path.split('/').slice(0, -1).join('/');
-                    changeFolder && changeFolder(folder);
+                    if (currentFile !== path) {
+                        changeFile && changeFile(path);
+                        changeFolder && changeFolder(dirname(path));
+                    }
+                    else {
+                        changeFile && changeFile('');
+                        changeFolder && changeFolder('');
+                    }
                 }}
                 iconBefore={
                     <>
