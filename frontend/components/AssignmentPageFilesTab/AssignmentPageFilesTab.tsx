@@ -22,10 +22,10 @@ import {
     Option,
 } from '@fluentui/react-components';
 import {
-    Add24Filled,
+    Add24Regular,
     DocumentMultiple24Regular,
-    EditProhibited24Filled,
-    Folder24Filled,
+    EditProhibited24Regular,
+    Folder24Regular,
 } from '@fluentui/react-icons';
 import { Commit, JobResult, UserFetchedAssignment } from 'codetierlist-types';
 import JSZip from 'jszip';
@@ -444,7 +444,7 @@ export const AssignmentPageFilesTab = ({
                     {!isEditable && (
                         <ToolTipIcon
                             tooltip="This file selector is currently read only"
-                            icon={<EditProhibited24Filled />}
+                            icon={<EditProhibited24Regular />}
                         />
                     )}
                 </Subtitle1>
@@ -452,7 +452,7 @@ export const AssignmentPageFilesTab = ({
                 {isEditable && (
                     <div>
                         <Button
-                            icon={<Folder24Filled />}
+                            icon={<Folder24Regular />}
                             appearance="subtle"
                             onClick={uploadFolder}
                         >
@@ -460,7 +460,7 @@ export const AssignmentPageFilesTab = ({
                             {currentFolder && ` to ${basename(currentFolder)}`}
                         </Button>
                         <Button
-                            icon={<Add24Filled />}
+                            icon={<Add24Regular />}
                             appearance="subtle"
                             onClick={uploadFile}
                         >

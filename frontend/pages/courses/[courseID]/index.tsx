@@ -12,9 +12,9 @@ import {
 import { SnackbarContext, UserContext, useSeed } from '@/hooks';
 import { Caption1, Spinner, ToolbarButton } from '@fluentui/react-components';
 import {
-    Add24Filled,
+    Add24Regular,
     ImageAdd20Regular,
-    PersonDelete24Regular,
+    PersonDelete24Regular
 } from '@fluentui/react-icons';
 import { Title2 } from '@fluentui/react-text';
 import { FetchedCourseWithTiers } from 'codetierlist-types';
@@ -105,7 +105,7 @@ const CourseAdminToolbar = ({
         <HeaderToolbar aria-label="Admin Toolbar">
             <ToolbarButton
                 appearance="subtle"
-                icon={<Add24Filled />}
+                icon={<Add24Regular />}
                 onClick={() =>
                     router.push(`/courses/${courseID}/admin/create_assignment`)
                 }
