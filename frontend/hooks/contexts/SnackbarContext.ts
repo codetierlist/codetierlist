@@ -22,6 +22,15 @@ export type ShowSnackType = (
  * snackbar!
  */
 export const SnackbarContext = createContext({
+    showSnack: (
+        message?: string,
+        severity?: ToastIntent,
+        title?: string,
+        action?: JSX.Element
+    ) => {},
+
+    toasterId: '',
+} as {
     /**
      * Displays a snackbar with the given message and severity. By default it
      * automatically closes after 6000ms.
@@ -30,17 +39,12 @@ export const SnackbarContext = createContext({
      * @param title The title of the snackbar.
      * @param action The action to display on the snackbar.
      */
-    showSnack: (
-        message?: string,
-        severity?: ToastIntent,
-        title?: string,
-        action?: JSX.Element
-    ) => {},
+    showSnack: ShowSnackType;
 
     /**
      * the id of the toaster in case you need it.
      *
      * use by using the useToastController hook from @fluentui/react-components
      */
-    toasterId: '',
+    toasterId: string;
 });

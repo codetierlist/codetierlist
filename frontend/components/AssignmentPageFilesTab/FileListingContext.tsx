@@ -6,66 +6,74 @@ import { createContext, useContext } from 'react';
  * File listing context to avoid recursive prop drilling
  */
 export const FileListingContext = createContext({
-    /** a function to call when the files are updated */
     update: () => {
         return;
     },
 
-    /** a function to call when the file is changed */
     changeFile: (file: string) => {
         return;
     },
-    /** the current file */
     currentFile: '',
 
-    /** a function to call when the folder is changed */
     changeFolder: (folder: string) => {
         return;
     },
-    /** the current folder */
     currentFolder: '',
 
-    /** a function to submit a folder */
     submitFiles: (files: File[], path?: string) => {
         return;
     },
 
-    /** a function to submit files */
     submitFolder: (files: File[], path?: string) => {
         return;
     },
 
-    /** is the file editable */
     isEditable: false,
 
-    /** the current assignment id */
     assignmentId: '',
-    /** the current assignment object */
     assignment: {},
 
-    /** the current commit obj */
     commit: {},
-    /** the commit id */
     commitId: '',
 
-    /** api route to get the file */
     route: 'submissions',
-    /** full api route */
     fullRoute: '',
 } as {
+    /** a function to call when the files are updated */
     update?: () => void;
+
+    /** a function to call when the file is changed */
     changeFile?: (file: string) => void;
+
+    /** the current file */
     currentFile?: string;
+
+    /** a function to call when the folder is changed */
     changeFolder?: (folder: string) => void;
+    /** the current folder */
     currentFolder: string;
+
+    /** a function to submit a folder */
     submitFiles: (files: File[], path?: string) => void;
+    /** a function to submit files */
     submitFolder: (files: File[], path?: string) => void;
+
+    /** is the file editable */
     isEditable: boolean;
+
+    /** the current assignment id */
     assignmentId: string;
+    /** the current assignment object */
     assignment: UserFetchedAssignment;
+
+    /** the current commit obj */
     commit: Commit;
+    /** the commit id */
     commitId: string;
+
+    /** api route to get the file */
     route: 'testcases' | 'submissions';
+    /** full api route */
     fullRoute: string;
 });
 
