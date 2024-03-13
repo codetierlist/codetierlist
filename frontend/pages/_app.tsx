@@ -113,7 +113,7 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
             <SSRProvider>
                 <UserContext.Provider value={{ userInfo, setUserInfo, fetchUserInfo }}>
                     <FluentProvider theme={themes[theme]} style={backgroundProps}>
-                        <SnackbarContext.Provider value={{ showSnack }}>
+                        <SnackbarContext.Provider value={{ showSnack, toasterId }}>
                             <Field validationState="none" id="axios-loading-backdrop">
                                 <ProgressBar />
                             </Field>

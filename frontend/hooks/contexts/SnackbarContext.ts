@@ -36,4 +36,11 @@ export const SnackbarContext = createContext({
         title?: string,
         action?: JSX.Element
     ) => {},
+
+    /**
+     * the id of the toaster in case you need it.
+     *
+     * use by using the useToastController hook from @fluentui/react-components
+     */
+    toasterId: '',
 });
