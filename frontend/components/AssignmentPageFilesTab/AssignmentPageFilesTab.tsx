@@ -239,8 +239,9 @@ export const AssignmentPageFilesTab = ({
             return;
         }
         if (files.length > 100 || files.reduce((a, x) => a + x.size, 0) >= 1e9) {
+            // TODO: this should sync with the backend
             showSnackSev(
-                'Please upload less than 1000 files and less than 20mb at a time',
+                'Please upload less than 30 files and less than 20mb at a time',
                 'error'
             );
             return;
