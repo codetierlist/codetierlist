@@ -2,7 +2,15 @@
 import { ToastIntent } from '@fluentui/react-components';
 import { createContext } from 'react';
 
-export type ShowSnackSevType = (message?: string, severity?: ToastIntent, title?: string) => void;
+/**
+ * Displays a snackbar with the given message and severity. By default it
+ * automatically closes after 6000ms.
+ * @param message The message to display.
+ * @param sev The severity of the snackbar.
+ * @param title The title of the snackbar.
+ * @param action The action to display on the snackbar.
+ */
+export type ShowSnackSevType = (message?: string, severity?: ToastIntent, title?: string, action?: JSX.Element) => void;
 
 /**
  * The context for the global snackbar. Just use `showSnack` to display a
@@ -10,20 +18,12 @@ export type ShowSnackSevType = (message?: string, severity?: ToastIntent, title?
  */
 export const SnackbarContext = createContext({
     /**
-     * Displays a snackbar with the given message and action. By default it
-     * automatically closes after 6000ms.
-     *
-     * @param message The message to display.
-     * @param action An optional element to display as an action.
-     * @param content An optional element to set the children of the snackbar.
-     */
-    showSnack: (message?: string, action?: JSX.Element, content?: JSX.Element) => {},
-
-    /**
      * Displays a snackbar with the given message and severity. By default it
      * automatically closes after 6000ms.
      * @param message The message to display.
      * @param sev The severity of the snackbar.
+     * @param title The title of the snackbar.
+     * @param action The action to display on the snackbar.
      */
-    showSnackSev: (message?: string, severity?: ToastIntent, title?: string) => {},
+    showSnackSev: (message?: string, severity?: ToastIntent, title?: string, action?: JSX.Element) => {},
 });

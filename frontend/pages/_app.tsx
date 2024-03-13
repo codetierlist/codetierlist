@@ -67,24 +67,11 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
     const toasterId = useId('toaster');
     const { dispatchToast } = useToastController(toasterId);
 
-    const showSnack = (message?: string, action?: JSX.Element, content?: JSX.Element) => {
-        if (message) {
-            dispatchToast(
-                <Toast>
-                    <ToastTitle>{message}</ToastTitle>
-                </Toast>,
-                { intent: 'info' }
-            );
-        } else {
-            dispatchToast(content, { intent: 'info' });
-        }
-    };
-
-    const showSnackSev = (message?: string, severity?: ToastIntent, title?: string) =>
+    const showSnackSev = (message?: string, severity?: ToastIntent, title?: string, action?: JSX.Element) => {
         dispatchToast(
             <Toast>
                 {severity && (
-                    <ToastTitle>
+                    <ToastTitle action={action}>
                         { title || severity.charAt(0).toUpperCase() + severity.slice(1)}
                     </ToastTitle>
                 )}
