@@ -80,7 +80,12 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
                 )}
                 <ToastBody>{message}</ToastBody>
             </Toast>,
-            { intent: severity }
+            {
+                intent: severity,
+                pauseOnWindowBlur: true,
+                pauseOnHover: true,
+                timeout: 6000,
+            }
         );
     };
 
