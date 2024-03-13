@@ -51,7 +51,7 @@ After creating the course, you can click on the course to view the course page.
 ![creating a course](creating_a_course.png)
 
 ### Enrollment
-To enroll people in the course, click on the "Add people" button on the course page. 
+To enroll people in the course, click on the "Add people" button on the course page.
 You will then be prompted to select the role of the people. Select "Add Instructors" to enroll instructors, "Add TAs" to enroll TAs, and "Add Students" to enroll students (see [permissions](#permissions)).
 
 ![add people](add_people.png)
@@ -89,7 +89,7 @@ The available runners are listed in `backend_config.json` and can be added on re
 By default, due dates don't mean much and are only displayed to students for information. However, if you want to use the due dates to enforce the deadline, you can enable the "Strict deadlines" option. Once enabled, students cannot submit after the deadline.
 
 ### Grouping
-You can group student's into tier list groups. This makes sure the students are only compared to other students in the same group. This makes the tier list more fun and less "grade like" as students will only be competing with a handful of other students. 
+You can group student's into tier list groups. This makes sure the students are only compared to other students in the same group. This makes the tier list more fun and less "grade like" as students will only be competing with a handful of other students.
 
 Another reason to use grouping is to make sure submissions are processed faster. Since students in groups will be tested against each other, submissions are ensured to only be run against the maximum number of students that can be in a group. When compared to running a submission against the entire class, this can provide a great deal of time savings.
 
@@ -99,7 +99,7 @@ Furthermore, smaller grouping size decreases the accuracy of the tier list, as s
 ### Admin Solutions
 You can submit the instructor's solution for the assignment. The instructor's solution is used to validate the students' testcases. If the instructor's solution is not submitted, the students' testcases will not be validated which might cause wrong tier list results.
 
-Any instructor or TA can submit the instructor's solution for the assignment. To submit the instructor's solution, click on the "Upload a Solution" button on the assignment page (under the "upload" tab). You will be prompted to upload the instructor's solution. 
+Any instructor or TA can submit the instructor's solution for the assignment. To submit the instructor's solution, click on the "Upload a Solution" button on the assignment page (under the "upload" tab). You will be prompted to upload the instructor's solution.
 
 > [!CAUTION]
 > *Uploading the instructor's solution will overwrite any previously submitted instructor's solution.*

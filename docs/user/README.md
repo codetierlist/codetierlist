@@ -9,7 +9,7 @@ This guide will help you get started with the Codetierlist as a student.
 - [Assignments](#assignments)
   - [Submission](#submission)
     - [Code](#code)
-    - [Test Cases](#test-cases) 
+    - [Test Cases](#test-cases)
   - [Tierlist](#tierlist)
   - [Managing your files](#managing-your-files)
   - [Due Dates](#due-dates)
@@ -68,7 +68,7 @@ The tierlist is dynamic and will update if your classmates update their code and
 > The tierlist is only as good as the testcases submitted by your peers. If the testcases are not comprehensive, the tierlist may not accurately reflect the accuracy of your code. So make sure to submit comprehensive test cases!
 
 ### Managing your files
-- To upload a file into the root directory you can press "upload a testcase"/"upload a solution" when you have no directory selected. 
+- To upload a file into the root directory you can press "upload a testcase"/"upload a solution" when you have no directory selected.
 - To upload a directory you can press "upload a testcase"/"upload a solution" when you have a directory selected.
 - To upload a file/folder into a directory you can select the folder by clicking it (or any of the files in that folder) and press "upload a testcase"/"upload a solution".
 - You can delete files/folders by clicking the delete icon on the file/folder you want to delete.
@@ -96,10 +96,10 @@ Codetierlist lets you customize the primary accent color of the site. You can ch
 Codetierlist is designed to be fun and engaging for students, we included various achievements for you to discover while using the site. To check your current achievements click on your profile and then press "achievements".
 
 > [!NOTE]
-> Achievements remain hidden until unlocked 
+> Achievements remain hidden until unlocked
 
 ## Data Privacy
-Anything you upload to Codetierlist will be visible to the instructors and TAs of the course, however, your uploads will not be used for grading the assignment. 
+Anything you upload to Codetierlist will be visible to the instructors and TAs of the course, however, your uploads will not be used for grading the assignment.
 The tierlist will be anonymized to students, so your peers will not be able to see who submitted what code and test cases.
 > [!WARNING]
 > Only submit your own code and test cases. Do not share your code and test cases with your peers. Sharing your code and test cases with your peers may be considered academic dishonesty.

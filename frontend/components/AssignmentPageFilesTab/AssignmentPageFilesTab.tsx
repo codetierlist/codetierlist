@@ -5,6 +5,8 @@ import {
     checkIfCourseAdmin,
     HeaderToolbar,
     ToolTipIcon,
+    convertDate,
+    convertTime,
 } from '@/components';
 import { SnackbarContext, UserContext } from '@/hooks';
 import {
@@ -146,7 +148,9 @@ const FileSelectorAdminBar = ({
             <Dropdown
                 appearance="filled-darker"
                 clearable={true}
-                placeholder={values.length > 0 ? "Select a commit" : "No commits available"}
+                placeholder={
+                    values.length > 0 ? 'Select a commit' : 'No commits available'
+                }
                 onOptionSelect={(_, data) => {
                     setCommitID(data.optionValue || '');
                     data.optionValue && void getTestData(data.optionValue);
@@ -178,11 +182,15 @@ export const AssignmentPageFilesTab = ({
         files: [],
         log: [],
     } as Commit);
+
     const { showSnackSev } = useContext(SnackbarContext);
+    const { userInfo } = useContext(UserContext);
     const searchParams = useSearchParams();
+
     const [currentFolder, setCurrentFolder] = useState<string>('');
     const [currentFile, setCurrentFile] = useState<string>('');
-    const { userInfo } = useContext(UserContext);
+
+    // the commit id to display
     const [commitID, setCommitID] = useState<string>('');
 
     const getTestData = useCallback(
@@ -394,6 +402,15 @@ export const AssignmentPageFilesTab = ({
     };
 
     /**
+     * The current commit object that is selected by an admin
+     */
+    const currentCommit = useMemo(() => {
+        return content.log.find((log) => log.id === commitID)
+            ? content.log.find((log) => log.id === commitID)
+            : content.log[0];
+    }, [commitID, content.log]);
+
+    /**
      * conditions for if the file is editable:
      * - if the utorid is not in the search params (i.e. viewing another student's submission)
      * - if the assignment is not strict deadline
@@ -417,7 +434,12 @@ export const AssignmentPageFilesTab = ({
 
             <div className={`${styles.uploadHeader} m-b-xl`}>
                 <Subtitle1 className={styles.testCaseHeader} block>
-                    Uploaded {routeName}s
+                    Uploaded {routeName}s{' '}
+                    {commitID &&
+                        currentCommit &&
+                        `from ${convertDate(
+                            new Date(currentCommit.date)
+                        )} at ${convertTime(new Date(currentCommit.date))}`}
                     <TestCaseStatus status={content.valid} />
                     {!isEditable && (
                         <ToolTipIcon
