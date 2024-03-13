@@ -7,32 +7,25 @@ import Image from 'next/image';
 import { basename } from 'path';
 import { useContext, useMemo } from 'react';
 import styles from './AssignmentPageFilesTab.module.css';
+import { useFileListingProps } from './FileListingContext';
 
 export declare type FileListingProps = {
     /** the full path of the file to display */
     path: string;
-    /** a function to call when the files are updated */
-    update?: () => void;
-    /** the full route to the file */
-    fullRoute: string;
-    /** a function to call when the file is changed */
-    changeFile?: (file: string) => void;
-    /** the current file */
-    currentFile?: string;
-    /** is the file editable */
-    editable?: boolean;
 };
 
 export const FileListing = ({
-    fullRoute,
-    update,
     path,
-    changeFile,
-    currentFile,
-    editable,
     ...props
 }: FileListingProps) => {
     const { showSnackSev } = useContext(SnackbarContext);
+    const {
+        update,
+        changeFile,
+        currentFile,
+        isEditable,
+        fullRoute,
+    } = useFileListingProps();
 
     const iconType = useMemo(() => {
         const extension = path.split('.').pop() ?? '';
@@ -79,7 +72,7 @@ export const FileListing = ({
                                     path,
                                     showSnackSev,
                                     update,
-                                    editable,
+                                    editable: isEditable,
                                 });
                             }}
                         />

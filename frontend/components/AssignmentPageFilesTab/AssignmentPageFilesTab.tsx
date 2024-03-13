@@ -27,10 +27,11 @@ import { Commit, JobResult, UserFetchedAssignment } from 'codetierlist-types';
 import JSZip from 'jszip';
 import { useSearchParams } from 'next/navigation';
 import { basename, normalize } from 'path';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import styles from './AssignmentPageFilesTab.module.css';
 import { Dropzone } from './Dropzone';
 import { ListFiles } from './ListFiles';
+import { FileListingContext } from './FileListingContext';
 
 export declare type AssignmentPageFilesTabProps = {
     /** a function that fetches the assignment */
@@ -304,6 +305,19 @@ export const AssignmentPageFilesTab = ({
             });
     };
 
+    /**
+     * conditions for if the file is editable:
+     * - if the utorid is not in the search params (i.e. viewing another student's submission)
+     * - if the assignment is not strict deadline
+     * - the due date has not passed yet
+     */
+    const isEditable = useMemo(() => {
+        return !searchParams.has('utorid') &&
+            (!assignment.strict_deadline ||
+                assignment.due_date === undefined ||
+                new Date(assignment.due_date) >= new Date());
+    }, [assignment.due_date, assignment.strict_deadline, searchParams]);
+
     return (
         <div className="m-y-xxxl">
             {content.valid === 'INVALID' &&
@@ -325,29 +339,26 @@ export const AssignmentPageFilesTab = ({
                     <TestCaseStatus status={content.valid} />
                 </Subtitle1>
 
-                {!searchParams.has('utorid') &&
-                    (!assignment.strict_deadline ||
-                        assignment.due_date === undefined ||
-                        new Date(assignment.due_date) >= new Date()) && (
-                        <div>
-                            <Button
-                                icon={<Folder24Filled />}
-                                appearance="subtle"
-                                onClick={uploadFolder}
-                            >
-                                Upload a folder
-                                {currentFolder && ` to ${basename(currentFolder)}`}
-                            </Button>
-                            <Button
-                                icon={<Add24Filled />}
-                                appearance="subtle"
-                                onClick={uploadFile}
-                            >
-                                Upload a {routeName}{' '}
-                                {currentFolder ? ` to ${basename(currentFolder)}` : null}
-                            </Button>
-                        </div>
-                    )}
+                {isEditable && (
+                    <div>
+                        <Button
+                            icon={<Folder24Filled />}
+                            appearance="subtle"
+                            onClick={uploadFolder}
+                        >
+                            Upload a folder
+                            {currentFolder && ` to ${basename(currentFolder)}`}
+                        </Button>
+                        <Button
+                            icon={<Add24Filled />}
+                            appearance="subtle"
+                            onClick={uploadFile}
+                        >
+                            Upload a {routeName}{' '}
+                            {currentFolder ? ` to ${basename(currentFolder)}` : null}
+                        </Button>
+                    </div>
+                )}
             </div>
             <HeaderToolbar className="m-none p-xs">
                 <Dropdown
@@ -413,19 +424,26 @@ export const AssignmentPageFilesTab = ({
                                 </Caption1>
                             </div>
                         ) : null}
-                        <ListFiles
-                            commitID={commitID}
-                            commit={content}
-                            route={route}
-                            assignment={assignment}
-                            assignmentID={assignmentID}
-                            update={getTestData}
-                            currentFolder={currentFolder}
-                            setCurrentFolder={setCurrentFolder}
-                            currentFile={currentFile}
-                            setCurrentFile={setCurrentFile}
-                            submitFiles={submitFiles}
-                        />
+
+                        <FileListingContext.Provider
+                            value={{
+                                update: getTestData,
+                                changeFile: setCurrentFile,
+                                currentFile,
+                                changeFolder: setCurrentFolder,
+                                currentFolder,
+                                submitFiles,
+                                isEditable: !isEditable && !commitID,
+                                assignmentId: assignmentID,
+                                assignment,
+                                commit: content,
+                                commitId: commitID,
+                                route,
+                                fullRoute:`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/`
+                            }}
+                        >
+                            <ListFiles />
+                        </FileListingContext.Provider>
                     </Card>
                 </Dropzone>
             </div>
