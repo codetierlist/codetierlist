@@ -10,7 +10,10 @@ const router = express.Router();
 
 /**
  * Get the images for the runner
+ *
  * @adminonly
+ *
+ * @returns {RunnerImage[]} all possible runner images
  */
 router.get("/images", (req, res) => {
     if (!req.user.admin && !req.user.roles.some((role) =>

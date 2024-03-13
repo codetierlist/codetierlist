@@ -72,6 +72,15 @@ const router = express.Router({mergeParams: true});
 
 /**
  * create a new assignment
+ *
+ * @param name the name of the assignment
+ * @param dueDate the due date of the assignment
+ * @param description the description of the assignment\
+ * @param runner_image the image to use for the runner
+ * @param image_version the version of the image to use
+ * @param groupSize the size of the groups
+ * @param strictDeadlines whether the assignment has strict deadlines
+ *
  * @adminonly
  */
 router.post("/", fetchCourseMiddleware, errorHandler(async (req, res) => {
@@ -143,7 +152,10 @@ router.post("/", fetchCourseMiddleware, errorHandler(async (req, res) => {
 
 /**
  * Fetches the assignment from the database and sends it to the client.
+ *
  * @public
+ *
+ * @return {UserFetchedAssignment}
  */
 router.get("/:assignment", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     const assignment = await prisma.assignment.findUniqueOrThrow({

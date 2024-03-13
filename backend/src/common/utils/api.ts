@@ -116,7 +116,6 @@ export const verifySubmission = async (req: Request, res: Response, table: "solu
  * @param table the table to process the submission for. Either "solution" or "testCase"
  */
 export const processSubmission = async (req: Request, res: Response, table: "solution" | "testCase") => {
-
     // upload files
     const repoPath = path.resolve(`/repos/${req.course!.id}/${req.assignment!.title}/${req.user.utorid}_${table}`);
 
