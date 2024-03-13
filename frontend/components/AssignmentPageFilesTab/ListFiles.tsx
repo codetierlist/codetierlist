@@ -2,35 +2,11 @@ import axios, { handleError } from '@/axios';
 import { FileRender } from '@/components/AssignmentPageFilesTab/FileRender';
 import { SnackbarContext } from '@/hooks';
 import { Tree, useRestoreFocusTarget } from '@fluentui/react-components';
-import { Commit, UserFetchedAssignment } from 'codetierlist-types';
 import { useSearchParams } from 'next/navigation';
-import { join, normalize } from 'path';
 import { useContext, useEffect, useState } from 'react';
 import { FileListing } from './FileListing';
 import { FolderListing } from './FolderListing';
-
-declare type ListFilesProps = {
-    /** the commit to display */
-    commit: Commit;
-    /** the route to use */
-    route: 'testcases' | 'submissions';
-    /** the assignment to display */
-    assignment: UserFetchedAssignment;
-    /** the ID of the assignment */
-    assignmentID: string;
-    /** a function to call when the files are updated */
-    update?: () => void;
-    /** the current folder */
-    currentFolder: string;
-    /** a function to call when the folder is changed */
-    setCurrentFolder: (folder: string) => void;
-    /** the current file */
-    currentFile: string;
-    /** a function to call when the file is changed */
-    setCurrentFile: (file: string) => void;
-    /** a function to submit files */
-    submitFiles: (files: File[]) => void;
-};
+import { useFileListingProps } from './FileListingContext';
 
 export declare type TreeType = {
     name: string;
@@ -64,19 +40,18 @@ const convertPathsToTree = (paths: string[]): TreeType => {
 /**
  * A list of files for a commit
  */
-export const ListFiles = ({
-    commit,
-    route,
-    assignment,
-    assignmentID,
-    update,
-    currentFolder,
-    setCurrentFolder,
-    currentFile,
-    setCurrentFile,
-    submitFiles,
-}: ListFilesProps) => {
-    const { showSnackSev } = useContext(SnackbarContext);
+export const ListFiles = () => {
+    const {
+        currentFile,
+        commit,
+        commitId,
+        assignment,
+        assignmentId,
+        route,
+        submitFiles,
+    } = useFileListingProps();
+
+    const { showSnack } = useContext(SnackbarContext);
     const searchParams = useSearchParams();
     const [currentFileContent, setCurrentFileContent] = useState<ArrayBuffer | null>(
         null
@@ -85,15 +60,13 @@ export const ListFiles = ({
     // turn the files into a tree
     const files = convertPathsToTree(commit.files);
 
-    const FULL_ROUTE = `/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/`;
-
     /** get the contents of a file and set it in the state
      * @param file the file to get the contents of
      */
     const getFileContents = async (file: string) => {
         await axios
             .get<ArrayBuffer>(
-                `/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/${commit.log[0]}/${file}`,
+                `/courses/${assignment.course_id}/assignments/${assignmentId}/${route}/${commitId || (commit.log[0]?.id ?? '')}/${file}`,
                 {
                     skipErrorHandling: true,
                     params: {
@@ -107,7 +80,7 @@ export const ListFiles = ({
                 setCurrentFileContent(res.data);
             })
             .catch((e) => {
-                handleError(showSnackSev)(e);
+                handleError(showSnack)(e);
             });
     };
 
@@ -123,37 +96,12 @@ export const ListFiles = ({
     /** for each folder in the first level of the tree (the root) create a folder */
     const treeChildren = Array.from(files.children).map((file) => {
         return file.children.length === 0 ? (
-            <FileListing
-                key={file.name}
-                fullRoute={FULL_ROUTE}
-                update={update}
-                changeFile={(val) => {
-                    setCurrentFile(val);
-                    setCurrentFolder(val ? normalize(join('/', val, '..')).slice(1) : '');
-                }}
-                path={file.name}
-                currentFile={currentFile}
-                {...focusTargetAttribute}
-            />
+            <FileListing key={file.name} path={file.name} {...focusTargetAttribute} />
         ) : (
             <FolderListing
                 key={file.name}
-                fullRoute={FULL_ROUTE}
-                update={update}
                 path={file.name}
-                changeFile={(val) => {
-                    setCurrentFile(val);
-                    setCurrentFolder(val ? normalize(join(val, '..')) : '');
-                }}
-                changeFolder={(val) => {
-                    setCurrentFolder && setCurrentFolder(val);
-                    setCurrentFile('');
-                }}
                 subtree={file}
-                currentFile={currentFile}
-                currentFolder={currentFolder}
-                submitFiles={submitFiles}
-                routeName={route}
                 {...focusTargetAttribute}
             />
         );
@@ -170,7 +118,7 @@ export const ListFiles = ({
                 </Tree>
             )}
 
-            {currentFile !== '' && currentFileContent && (
+            {currentFile && currentFile !== '' && currentFileContent && (
                 <FileRender path={currentFile} content={currentFileContent} />
             )}
         </>

@@ -89,7 +89,7 @@ export type Commit = {
     files: string[],
     valid?: TestCaseStatus,
     validation_result? : JobResult,
-    log: string[],
+    log: {id: string, date:number}[],
 }
 
 /**
@@ -155,8 +155,12 @@ export type PendingJobData = {
     image: RunnerImage,
     testcaseId: string,
     testcaseAuthorId: string,
+    testcaseDatetime: Date,
+    courseId: string,
+    assignmentTitle: string,
     submissionId: string,
     submissionAuthorId: string,
+    submissionDatetime: Date,
 }
 export type ParentJobData = {
     item: Submission | TestCase,

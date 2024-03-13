@@ -43,12 +43,12 @@ export declare type CourseOverviewCardProps = {
     id: string;
     /** the name of the course */
     name: string;
-    /** the image of the course */
+    /** a full URL to the cover image of the course */
     image: string;
     /** the session of the course */
     session: Session;
     /** the role of the user */
-    role: RoleType;
+    role: RoleType | 'NOT ENROLLED';
     /** the props of the component */
     props?: React.HTMLAttributes<HTMLDivElement>;
 };
@@ -97,7 +97,7 @@ export const CourseOverviewCard = ({
                 description={
                     <div className={styles.badges}>
                         <SessionBlock session={session} />
-                        <Badge className={styles.role} appearance="filled">
+                        <Badge className={styles.role} appearance="filled" shape="square">
                             {role}
                         </Badge>
                     </div>

@@ -1,6 +1,6 @@
 import { ToolTipIcon } from '@/components';
 import {
-    ArrowCounterclockwiseDashes24Filled,
+    ArrowCounterclockwiseDashes24Regular,
     CheckmarkCircle24Regular,
     DismissCircle24Regular,
 } from '@fluentui/react-icons';
@@ -26,7 +26,7 @@ export const TestCaseStatusIcon = ({ status }: TestCaseStatusIconProps): JSX.Ele
 
         case 'PENDING':
             return (
-                <ArrowCounterclockwiseDashes24Filled
+                <ArrowCounterclockwiseDashes24Regular
                     fill={'var(--colorPaletteGoldForeground2)'}
                     primaryFill={'var(--colorPaletteGoldForeground2)'}
                 />

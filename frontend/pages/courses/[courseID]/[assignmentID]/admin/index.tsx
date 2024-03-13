@@ -77,7 +77,7 @@ const HighlightSubstring = ({
 const useAssignmentAdmin = (courseID: string, assignmentID: string) => {
     const [assignment, setAssignment] = useState<FetchedAssignmentWithTier | null>(null);
     const [studentData, setStudentData] = useState<AssignmentStudentStats | null>(null);
-    const { showSnackSev } = useContext(SnackbarContext);
+    const { showSnack } = useContext(SnackbarContext);
 
     const fetchAssignment = async () => {
         await axios
@@ -89,7 +89,7 @@ const useAssignmentAdmin = (courseID: string, assignmentID: string) => {
             )
             .then((res) => setAssignment(res.data))
             .catch((e) => {
-                handleError(showSnackSev)(e);
+                handleError(showSnack)(e);
             });
     };
 
@@ -103,7 +103,7 @@ const useAssignmentAdmin = (courseID: string, assignmentID: string) => {
             )
             .then((res) => setStudentData(res.data))
             .catch((e) => {
-                handleError(showSnackSev)(e);
+                handleError(showSnack)(e);
             });
     };
 
@@ -127,7 +127,7 @@ export const AdminToolbarDeleteAssignmentButton = ({
 }: {
     assignment: FetchedAssignment;
 }) => {
-    const { showSnackSev } = useContext(SnackbarContext);
+    const { showSnack } = useContext(SnackbarContext);
     const { fetchUserInfo } = useContext(UserContext);
 
     const router = useRouter();
@@ -137,7 +137,7 @@ export const AdminToolbarDeleteAssignmentButton = ({
             .delete(`/courses/${assignment.course_id}/assignments/${assignment.title}`)
             .then(() => router.push('/'))
             .catch((e) => {
-                handleError(showSnackSev)(e);
+                handleError(showSnack)(e);
             })
             .finally(() => fetchUserInfo());
     };
@@ -158,7 +158,7 @@ export const AdminToolbarRevalidateAssignmentButton = ({
 }: {
     assignment: FetchedAssignment;
 }) => {
-    const { showSnackSev } = useContext(SnackbarContext);
+    const { showSnack } = useContext(SnackbarContext);
     const { fetchUserInfo } = useContext(UserContext);
 
     const revalidateAssignment = async () => {
@@ -168,14 +168,14 @@ export const AdminToolbarRevalidateAssignmentButton = ({
             )
             .then((res) => {
                 if (res.status === 200) {
-                    showSnackSev(
+                    showSnack(
                         'All student test cases will now be revalidated against the instructor solution (if it exists). This may take a few minutes.',
                         'success'
                     );
                 }
             })
             .catch((e) => {
-                handleError(showSnackSev)(e);
+                handleError(showSnack)(e);
             })
             .finally(() => fetchUserInfo());
     };

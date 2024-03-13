@@ -3,6 +3,7 @@ import { Navbar } from '@/components';
 import { defaultAccentColor } from '@/components/utils/theme/theme';
 import {
     defaultUser,
+    ShowSnackType,
     SnackbarContext,
     UserContext,
     useSystemTheme,
@@ -38,9 +39,7 @@ type EnhancedAppProps = AppProps & {
 /**
  * Fetches user info
  */
-const useUserInfo = (
-    showSnackSev: (message?: string, severity?: ToastIntent) => void
-) => {
+const useUserInfo = (showSnack: ShowSnackType) => {
     const [userInfo, setUserInfo] = useState<FetchedUser>(defaultUser);
 
     const fetchUserInfo = async () => {
@@ -49,7 +48,7 @@ const useUserInfo = (
                 setUserInfo(data as FetchedUser);
             })
             .catch((e) => {
-                handleError(showSnackSev)(e);
+                handleError(showSnack)(e);
             });
     };
 
@@ -66,34 +65,32 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
     const toasterId = useId('toaster');
     const { dispatchToast } = useToastController(toasterId);
 
-    const showSnack = (message?: string, action?: JSX.Element, content?: JSX.Element) => {
-        if (message) {
-            dispatchToast(
-                <Toast>
-                    <ToastTitle>{message}</ToastTitle>
-                </Toast>,
-                { intent: 'info' }
-            );
-        } else {
-            dispatchToast(content, { intent: 'info' });
-        }
-    };
-
-    const showSnackSev = (message?: string, severity?: ToastIntent) =>
+    const showSnack = (
+        message?: string,
+        severity?: ToastIntent,
+        title?: string,
+        action?: JSX.Element
+    ) => {
         dispatchToast(
             <Toast>
                 {severity && (
-                    <ToastTitle>
-                        {severity.charAt(0).toUpperCase() + severity.slice(1)}
+                    <ToastTitle action={action}>
+                        {title || severity.charAt(0).toUpperCase() + severity.slice(1)}
                     </ToastTitle>
                 )}
                 <ToastBody>{message}</ToastBody>
             </Toast>,
-            { intent: severity }
+            {
+                intent: severity,
+                pauseOnWindowBlur: true,
+                pauseOnHover: true,
+                timeout: 6000,
+            }
         );
+    };
 
     /** user info */
-    const { userInfo, setUserInfo, fetchUserInfo } = useUserInfo(showSnackSev);
+    const { userInfo, setUserInfo, fetchUserInfo } = useUserInfo(showSnack);
 
     /*
      * themes
@@ -121,7 +118,7 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
             <SSRProvider>
                 <UserContext.Provider value={{ userInfo, setUserInfo, fetchUserInfo }}>
                     <FluentProvider theme={themes[theme]} style={backgroundProps}>
-                        <SnackbarContext.Provider value={{ showSnack, showSnackSev }}>
+                        <SnackbarContext.Provider value={{ showSnack, toasterId }}>
                             <Field validationState="none" id="axios-loading-backdrop">
                                 <ProgressBar />
                             </Field>

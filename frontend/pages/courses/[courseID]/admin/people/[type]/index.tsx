@@ -5,7 +5,7 @@ import {
     checkIfCourseAdmin,
     promptForFileReader,
 } from '@/components';
-import { SnackbarContext, UserContext } from '@/hooks';
+import { ShowSnackType, SnackbarContext, UserContext } from '@/hooks';
 import {
     Body2,
     Button,
@@ -14,10 +14,9 @@ import {
     MessageBar,
     MessageBarBody,
     MessageBarTitle,
-    ToastIntent,
     ToolbarButton,
 } from '@fluentui/react-components';
-import { Add24Filled, ArrowLeft24Regular } from '@fluentui/react-icons';
+import { Add24Regular, ArrowLeft24Regular } from '@fluentui/react-icons';
 import { Title2 } from '@fluentui/react-text';
 import { RoleType } from 'codetierlist-types';
 import { isUTORid } from 'is-utorid';
@@ -57,25 +56,25 @@ async function modifyEnrollment(
     csv: string,
     action: 'add' | 'remove',
     role: RoleType,
-    showSnackSev: (message?: string, severity?: ToastIntent) => void
+    showSnack: ShowSnackType
 ): Promise<void> {
     const utorids = csv.split('\n').map((utorid) => utorid.trim());
 
     if (!csv || !utorids.length) {
-        showSnackSev('Please enter some UTORids', 'error');
+        showSnack('Please enter some UTORids', 'error');
     } else if (utorids.some((utorid: string) => !isUTORid(utorid))) {
-        showSnackSev('One of the UTORids are invalid', 'error');
+        showSnack('One of the UTORids are invalid', 'error');
     } else {
         await axios
             .post(`/courses/${courseID}/${action}`, { utorids, role })
             .then(() =>
-                showSnackSev(
+                showSnack(
                     `${action == 'add' ? 'Added' : 'Removed'} ${getRoleName(role)} successfully`,
                     'success'
                 )
             )
             .catch((e) => {
-                handleError(showSnackSev)(e);
+                handleError(showSnack)(e);
             });
     }
 }
@@ -86,7 +85,7 @@ export default function Page(): JSX.Element {
     const [add, isAdd] = useState(true);
     const [role, setRole] = useState(undefined as RoleType | undefined | 'invalid');
     const [editorValue, setEditorValue] = useState('');
-    const { showSnackSev } = useContext(SnackbarContext);
+    const { showSnack } = useContext(SnackbarContext);
     const { userInfo } = useContext(UserContext);
 
     useEffect(() => {
@@ -144,7 +143,7 @@ export default function Page(): JSX.Element {
                     Back to Course
                 </ToolbarButton>
                 <ToolbarButton
-                    icon={<Add24Filled />}
+                    icon={<Add24Regular />}
                     onClick={async () => {
                         promptForFileReader('.csv').then((csv) => {
                             if (csv) {
@@ -219,8 +218,8 @@ export default function Page(): JSX.Element {
                                     editorValue,
                                     add ? 'add' : 'remove',
                                     (role as RoleType) || undefined,
-                                    showSnackSev
-                                ).catch((e) => handleError(showSnackSev, e.message));
+                                    showSnack
+                                ).catch((e) => handleError(showSnack, e.message));
                             }}
                         >
                             Submit

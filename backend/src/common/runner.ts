@@ -147,7 +147,11 @@ export const bulkQueueTestCases = async <T extends Submission | TestCase>(image:
                         data: {
                             submissionId: submission.id,
                             submissionAuthorId: submission.author_id,
+                            submissionDatetime: submission.datetime,
                             testcaseId: testCase.id,
+                            testcaseDatetime: testCase.datetime,
+                            courseId: testCase.course_id,
+                            assignmentTitle: testCase.assignment_title,
                             testcaseAuthorId: testCase.author_id,
                             image: {
                                 runner_image: image.runner_image,
@@ -194,9 +198,16 @@ export const queueJob = async (job: {
     const redis_job = await pending_queue.add(name, {
         testcaseId: job.testCase.id,
         testcaseAuthorId: job.testCase.author_id,
+        testcaseDatetime: job.testCase.datetime,
+        courseId: job.testCase.course_id,
+        assignmentTitle: job.testCase.assignment_title,
         submissionId: job.submission.id,
         submissionAuthorId: job.submission.author_id,
-        image: job.image,
+        submissionDatetime: job.submission.datetime,
+        image: {
+            runner_image: job.image.runner_image,
+            image_version: job.image.image_version
+        },
     }, {priority});
     runnerLogger.info(`job ${redis_job.id} added to queue`);
     return redis_job.id;
@@ -249,18 +260,24 @@ job_events.on("completed", async ({jobId}) => {
 });
 
 /** Remove all pending jobs for a user */
-export const removeSubmission = async (utorid: string): Promise<void> => {
+export const removeSubmission = async (newSubmission: Submission): Promise<void> => {
     await Promise.all(await pending_queue.getJobs(["waiting", "active"])
         .then(async (jobs) =>
-            jobs.filter(job => job?.data?.submissionAuthorId === utorid)
+            jobs.filter(job => job?.data?.submissionAuthorId === newSubmission.author_id
+                && job?.data?.courseId === newSubmission.course_id
+                && job?.data?.assignmentTitle === newSubmission.assignment_title
+                && job?.data?.submissionDatetime < newSubmission.datetime)
                 .map(async job => await job.remove())));
 };
 
 /** Remove all pending jobs for a user */
-export const removeTestcases = async (utorid: string): Promise<void> => {
+export const removeTestcases = async (newSubmission: TestCase): Promise<void> => {
     await Promise.all(await pending_queue.getJobs(["waiting", "active"])
         .then(async (jobs) =>
-            jobs.filter(job => job?.data?.testcaseAuthorId === utorid)
+            jobs.filter(job => job?.data?.testcaseAuthorId === newSubmission.author_id
+                && job?.data?.courseId === newSubmission.course_id
+                && job?.data?.assignmentTitle === newSubmission.assignment_title
+                && job?.data?.testcaseDatetime < newSubmission.datetime)
                 .map(async job => await job.remove())));
 };
 

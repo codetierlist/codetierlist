@@ -44,7 +44,7 @@ export const CreateCourseDialogSurface = ({
     const [name, setCourseName] = useState('');
     const [session, setSession] = useState(defaultSession);
     const { fetchUserInfo } = useContext(UserContext);
-    const { showSnackSev } = useContext(SnackbarContext);
+    const { showSnack } = useContext(SnackbarContext);
 
     return (
         <DialogSurface>
@@ -56,7 +56,7 @@ export const CreateCourseDialogSurface = ({
                         .post('/courses', { code, name, session })
                         .then(closeDialog)
                         .catch((e) => {
-                            handleError(showSnackSev)(e);
+                            handleError(showSnack)(e);
                         })
                         .finally(fetchUserInfo);
                 }}

@@ -26,7 +26,7 @@ export const DueDateMessageBar = ({
                 </MessageBarTitle>
                 {assignment.strict_deadline
                     ? 'This assignment does not accept submissions past the deadline.'
-                    : 'You can still submit your code, however other students may not be updating their solutions and testcases anymore.'}{' '}
+                    : 'Codetierlist will accept submissions past the deadline; however, other students may not be updating their solutions and testcases anymore.'}{' '}
             </MessageBarBody>
         </MessageBar>
     );

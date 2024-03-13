@@ -14,6 +14,7 @@ import { SnackbarContext, UserContext } from '@/hooks';
 import {
     Badge,
     Button,
+    Caption1,
     Card,
     CardHeader,
     MessageBar,
@@ -46,7 +47,7 @@ const ViewTierList = (props: React.HTMLAttributes<HTMLDivElement>) => {
     const router = useRouter();
     const { courseID, assignmentID } = router.query;
     const [tierlist, setTierlist] = useState<Tierlist | null>(null);
-    const { showSnackSev } = useContext(SnackbarContext);
+    const { showSnack } = useContext(SnackbarContext);
     const searchParams = useSearchParams();
 
     const fetchTierlist = async () => {
@@ -59,7 +60,7 @@ const ViewTierList = (props: React.HTMLAttributes<HTMLDivElement>) => {
             })
             .then((res) => setTierlist(res.data))
             .catch((e) => {
-                handleError(showSnackSev)(e);
+                handleError(showSnack)(e);
             });
     };
 
@@ -86,9 +87,14 @@ const ViewTierList = (props: React.HTMLAttributes<HTMLDivElement>) => {
 
     return (
         <Col sm={12} {...props}>
-            <Subtitle1 className={styles.gutter} block>
+            <Subtitle1 className="p-t-s p-b-xs" block>
                 Tierlist
             </Subtitle1>
+            <Caption1 className="p-b-xxxl" block>
+                The tierlist shows the performance of your solution against your
+                classmates&lsquo; test cases. The tierlist is normally distributed, S tier
+                does not necessarily indicate a perfect solution.
+            </Caption1>
             {tierlist ? <TierList tierlist={tierlist} /> : 'No tier list available.'}
         </Col>
     );
@@ -164,6 +170,41 @@ const EmptyMessageBar = ({
 };
 
 /**
+ * The message bar for the past deadline
+ */
+const PastDeadlineTooltip = ({ assignment }: { assignment: UserFetchedAssignment }) => {
+    return (
+        <ToolTipIcon
+            style={{ display: 'inline-flex' }}
+            className="m-l-m-nudge"
+            tooltip={
+                assignment.strict_deadline ? (
+                    'This assignment does not accept submissions past the deadline.'
+                ) : (
+                    <>
+                        Codetierlist will accept submissions past the deadline; however,
+                        you <strong>must</strong> submit by the deadline on Markus.
+                        <br />
+                        <br />
+                        Furthermore, other students may not be updating their test cases.
+                    </>
+                )
+            }
+            icon={
+                <Badge
+                    appearance="filled"
+                    icon={<Info16Regular />}
+                    iconPosition="after"
+                    color={assignment.strict_deadline ? 'danger' : 'warning'}
+                >
+                    {assignment.strict_deadline ? 'Strict' : 'Flexible'}
+                </Badge>
+            }
+        />
+    );
+};
+
+/**
  * The view details tab for the assignment page
  */
 const ViewDetailsTab = ({
@@ -190,43 +231,8 @@ const ViewDetailsTab = ({
                                     {convertDate(assignment.due_date)} at{' '}
                                     {convertTime(assignment.due_date)}
                                 </div>
-                                <ToolTipIcon
-                                    style={{ display: 'inline-flex' }}
-                                    className="m-l-m-nudge"
-                                    tooltip={
-                                        assignment.strict_deadline ? (
-                                            'This assignment does not accept submissions past the deadline.'
-                                        ) : (
-                                            <>
-                                                This assignment accepts submissions past
-                                                the deadline; however, you{' '}
-                                                <strong>must</strong> submit by the
-                                                deadline on Markus.
-                                                <br />
-                                                <br />
-                                                Furthermore, other students may not be
-                                                updating their solutions after the
-                                                deadline.
-                                            </>
-                                        )
-                                    }
-                                    icon={
-                                        <Badge
-                                            appearance="filled"
-                                            icon={<Info16Regular />}
-                                            iconPosition="after"
-                                            color={
-                                                assignment.strict_deadline
-                                                    ? 'danger'
-                                                    : 'warning'
-                                            }
-                                        >
-                                            {assignment.strict_deadline
-                                                ? 'Strict'
-                                                : 'Flexible'}
-                                        </Badge>
-                                    }
-                                />
+
+                                <PastDeadlineTooltip assignment={assignment} />
                             </Subtitle2>
 
                             <Title2>{assignment.title}</Title2>
@@ -328,7 +334,7 @@ const useQueryString = (
  */
 const useAssignment = (courseID: string, assignmentID: string) => {
     const [assignment, setAssignment] = useState<UserFetchedAssignment | null>(null);
-    const { showSnackSev } = useContext(SnackbarContext);
+    const { showSnack } = useContext(SnackbarContext);
 
     const fetchAssignment = async () => {
         await axios
@@ -340,7 +346,7 @@ const useAssignment = (courseID: string, assignmentID: string) => {
             )
             .then((res) => setAssignment(res.data))
             .catch((e) => {
-                handleError(showSnackSev)(e);
+                handleError(showSnack)(e);
             });
     };
 

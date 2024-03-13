@@ -10,7 +10,7 @@ import { useContext, useEffect, useState } from 'react';
  */
 const useAllCourses = () => {
     const { userInfo } = useContext(UserContext);
-    const { showSnackSev } = useContext(SnackbarContext);
+    const { showSnack } = useContext(SnackbarContext);
     const [allCourses, setAllCourses] = useState<FetchedCourse[] | null>([]);
 
     const fetchAllCourses = async () => {
@@ -25,7 +25,7 @@ const useAllCourses = () => {
                 )
             )
             .catch((e) => {
-                handleError(showSnackSev)(e);
+                handleError(showSnack)(e);
                 notFound();
             });
     };
@@ -66,7 +66,7 @@ export const AllCoursesList = () => {
                             key={course.id}
                             id={course.id}
                             name={course.name}
-                            role="INSTRUCTOR"
+                            role="NOT ENROLLED"
                             session={course.session}
                             image={`${process.env.NEXT_PUBLIC_API_URL}/courses/${course.id}/cover`}
                         />
