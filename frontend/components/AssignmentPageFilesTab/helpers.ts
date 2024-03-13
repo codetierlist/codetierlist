@@ -1,14 +1,7 @@
 import axios, { handleError } from '@/axios';
 import { ToastIntent } from '@fluentui/react-components';
 
-/** delete a file from the server
- * @param fullRoute - the full route to the server
- * @param path - the path to the file to delete
- * @param currentPath - the current path
- * @param changePath - a function to change the current path
- * @param showSnackSev - a function to show a snack
- * @param update - a function to update the page
- */
+/** delete a file from the server */
 export const deletePath = async <T extends string | undefined>({
     fullRoute,
     path,
@@ -18,21 +11,30 @@ export const deletePath = async <T extends string | undefined>({
     update,
     editable = true,
 }: {
+    /** the full route to the server */
     fullRoute: string;
+    /** the path to the file to delete */
     path: string;
+    /** a function to show a snack */
     showSnackSev: (message?: string, sev?: ToastIntent) => void;
+    /** the current path */
     currentPath: T;
+    /** a function to change the current path */
     changePath: T extends string ? (val: string) => void : undefined;
+    /** a function to update the page */
     update?: () => void;
+    /** is the file editable */
     editable?: boolean;
 }) => {
     if (!editable) {
         showSnackSev('You can only update the latest submission', 'error');
         return;
     }
+
     if (currentPath === path) {
         changePath && changePath('');
     }
+
     await axios
         .delete(`${fullRoute}${path}`, {
             skipErrorHandling: true,
