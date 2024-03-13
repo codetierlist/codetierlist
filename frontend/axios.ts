@@ -1,6 +1,6 @@
-import { ToastIntent } from '@fluentui/react-components';
 import axios, { AxiosError } from 'axios';
 import { ShowSnackType } from './hooks';
+import { ReloadLink } from './components';
 
 declare module 'axios' {
     export interface AxiosRequestConfig {
@@ -40,7 +40,7 @@ export const handleError =
                     'Server was unresponsive, please try again later',
                     'error',
                     'Connection lost',
-                    undefined
+                    ReloadLink()
                 );
                 return;
             }
