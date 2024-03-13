@@ -4,6 +4,7 @@ import {
     promptForFileObject,
     checkIfCourseAdmin,
     HeaderToolbar,
+    ToolTipIcon,
 } from '@/components';
 import { SnackbarContext, UserContext } from '@/hooks';
 import {
@@ -21,6 +22,7 @@ import {
 import {
     Add24Filled,
     DocumentMultiple24Regular,
+    EditProhibited24Filled,
     Folder24Filled,
 } from '@fluentui/react-icons';
 import { Commit, JobResult, UserFetchedAssignment } from 'codetierlist-types';
@@ -46,7 +48,15 @@ export declare type AssignmentPageFilesTabProps = {
     route: 'testcases' | 'submissions';
 };
 
-const ValidationError = ({ validationResult }: { validationResult?: JobResult }) => {
+/**
+ * Shows the validation error
+ */
+const ValidationError = ({
+    validationResult,
+}: {
+    /** the job result if it exists */
+    validationResult?: JobResult;
+}) => {
     if (!validationResult)
         return "This testcase failed instructor's solution for unknown reason";
     if (validationResult.status === 'PASS')
@@ -83,6 +93,80 @@ const ValidationError = ({ validationResult }: { validationResult?: JobResult })
     if (validationResult.status === 'TESTCASE_EMPTY')
         return 'No testcases were provided for this testcase';
     return "This testcase failed instructor's solution for unknown reason";
+};
+
+/**
+ * Shows the validation error message bar
+ */
+const ValidationErrorMessageBar = ({
+    commit,
+}: {
+    /** the commit info */
+    commit: Commit;
+}) => {
+    if (commit.valid === 'INVALID') {
+        return (
+            <MessageBar className="m-y-m" intent={'error'}>
+                <MessageBarBody>
+                    <MessageBarTitle>
+                        This testcase failed instructor&apos;s solution
+                    </MessageBarTitle>
+                    <ValidationError validationResult={commit.validation_result} />
+                </MessageBarBody>
+            </MessageBar>
+        );
+    }
+    return null;
+};
+
+/**
+ * The admin bar for the file selector
+ */
+const FileSelectorAdminBar = ({
+    content,
+    setCommitID,
+    getTestData,
+}: {
+    /** the commit info */
+    content: Commit;
+    /** a function to set the commit id */
+    setCommitID: (commitID: string) => void;
+    /** a function to get the test data */
+    getTestData: (commit: string) => Promise<void>;
+}) => {
+    return (
+        <HeaderToolbar className="m-none p-xs">
+            <Dropdown
+                appearance="filled-darker"
+                onOptionSelect={(_, data) => {
+                    setCommitID(data.optionValue || '');
+                    data.optionValue && void getTestData(data.optionValue);
+                }}
+                defaultValue={
+                    'Latest - ' +
+                    (content.log[0] ? new Date(content.log[0].date).toLocaleString() : '')
+                }
+            >
+                {content.log[0] && (
+                    <Option
+                        value=""
+                        text={`Latest - ${content.log[0] ? new Date(content.log[0].date).toLocaleString() : ''}`}
+                    >
+                        Latest - {new Date(content.log[0]?.date).toLocaleString()}
+                    </Option>
+                )}
+                {content.log.slice(1).map((commit) => (
+                    <Option
+                        key={commit.id}
+                        value={commit.id}
+                        text={new Date(commit.date).toLocaleString()}
+                    >
+                        {new Date(commit.date).toLocaleString()}
+                    </Option>
+                ))}
+            </Dropdown>
+        </HeaderToolbar>
+    );
 };
 
 /**
@@ -312,31 +396,31 @@ export const AssignmentPageFilesTab = ({
      * - the due date has not passed yet
      */
     const isEditable = useMemo(() => {
-        return !searchParams.has('utorid') &&
+        return (
+            !searchParams.has('utorid') &&
             (!assignment.strict_deadline ||
                 assignment.due_date === undefined ||
-                new Date(assignment.due_date) >= new Date());
-    }, [assignment.due_date, assignment.strict_deadline, searchParams]);
+                new Date(assignment.due_date) >= new Date()) &&
+            commitID === ''
+        );
+    }, [assignment.due_date, assignment.strict_deadline, searchParams, commitID]);
 
     return (
         <div className="m-y-xxxl">
-            {content.valid === 'INVALID' &&
-                checkIfCourseAdmin(userInfo, assignment.course_id) && (
-                    <MessageBar className="m-y-m" intent={'error'}>
-                        <MessageBarBody>
-                            <MessageBarTitle>
-                                This testcase failed instructor&apos;s solution
-                            </MessageBarTitle>
-                            <ValidationError
-                                validationResult={content.validation_result}
-                            />
-                        </MessageBarBody>
-                    </MessageBar>
-                )}
+            {checkIfCourseAdmin(userInfo, assignment.course_id) && (
+                <ValidationErrorMessageBar commit={content} />
+            )}
+
             <div className={`${styles.uploadHeader} m-b-xl`}>
                 <Subtitle1 className={styles.testCaseHeader} block>
                     Uploaded {routeName}s
                     <TestCaseStatus status={content.valid} />
+                    {!isEditable && (
+                        <ToolTipIcon
+                            tooltip="This file selector is currently read only"
+                            icon={<EditProhibited24Filled />}
+                        />
+                    )}
                 </Subtitle1>
 
                 {isEditable && (
@@ -360,45 +444,15 @@ export const AssignmentPageFilesTab = ({
                     </div>
                 )}
             </div>
-            <HeaderToolbar className="m-none p-xs">
-                <Dropdown
-                    appearance="filled-darker"
-                    onOptionSelect={(_, data) => {
-                        setCommitID(data.optionValue || '');
-                        void getTestData(data.optionValue);
-                    }}
-                    defaultValue={
-                        'Latest - ' +
-                        (content.log[0]
-                            ? new Date(content.log[0].date).toLocaleString()
-                            : '')
-                    }
-                >
-                    {content.log[0] && (
-                        <Option
-                            value=""
-                            text={`Latest - ${content.log[0] ? new Date(content.log[0].date).toLocaleString() : ''}`}
-                        >
-                            Latest - {new Date(content.log[0]?.date).toLocaleString()}
-                        </Option>
-                    )}
-                    {content.log.slice(1).map((commit) => (
-                        <Option
-                            key={commit.id}
-                            value={commit.id}
-                            text={new Date(commit.date).toLocaleString()}
-                        >
-                            {new Date(commit.date).toLocaleString()}
-                        </Option>
-                    ))}
-                </Dropdown>
-            </HeaderToolbar>
 
-            {/* {content.log[0] && (
-                        <Text block className={styles.commitId} font="numeric">
-                            {content.log[0]}
-                        </Text>
-                    )} */}
+            {checkIfCourseAdmin(userInfo, assignment.course_id) && (
+                <FileSelectorAdminBar
+                    content={content}
+                    setCommitID={setCommitID}
+                    getTestData={getTestData}
+                />
+            )}
+
             <div
                 onClick={() => {
                     setCurrentFolder('');
@@ -410,6 +464,7 @@ export const AssignmentPageFilesTab = ({
                         void submitFiles(files, '');
                     }}
                     routeName={routeName}
+                    disabled={isEditable === false}
                 >
                     <Card className="m-t-xl">
                         {!content.files || content.files.length === 0 ? (
@@ -433,13 +488,13 @@ export const AssignmentPageFilesTab = ({
                                 changeFolder: setCurrentFolder,
                                 currentFolder,
                                 submitFiles,
-                                isEditable: !isEditable && !commitID,
+                                isEditable,
                                 assignmentId: assignmentID,
                                 assignment,
                                 commit: content,
                                 commitId: commitID,
                                 route,
-                                fullRoute:`/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/`
+                                fullRoute: `/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/`,
                             }}
                         >
                             <ListFiles />

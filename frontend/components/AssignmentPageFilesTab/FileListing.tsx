@@ -14,23 +14,38 @@ export declare type FileListingProps = {
     path: string;
 };
 
-export const FileListing = ({
-    path,
-    ...props
-}: FileListingProps) => {
+export const FileListing = ({ path, ...props }: FileListingProps) => {
     const { showSnackSev } = useContext(SnackbarContext);
-    const {
-        update,
-        changeFile,
-        currentFile,
-        isEditable,
-        fullRoute,
-    } = useFileListingProps();
+    const { update, changeFile, currentFile, isEditable, fullRoute, changeFolder } =
+        useFileListingProps();
 
     const iconType = useMemo(() => {
         const extension = path.split('.').pop() ?? '';
         return getFileTypeIconAsUrl({ extension, size: 16 });
     }, [path]);
+
+    const FileListingActions = () =>
+        isEditable && (
+            <>
+                <Button
+                    aria-label="Delete"
+                    appearance="subtle"
+                    icon={<Delete20Regular />}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        void deletePath({
+                            changePath: changeFile,
+                            currentPath: currentFile,
+                            fullRoute,
+                            path,
+                            showSnackSev,
+                            update,
+                            editable: isEditable,
+                        });
+                    }}
+                />
+            </>
+        );
 
     return (
         <TreeItem itemType="leaf" value={path} {...props}>
@@ -40,6 +55,10 @@ export const FileListing = ({
                     e.stopPropagation();
                     if (currentFile !== path) changeFile && changeFile(path);
                     else changeFile && changeFile('');
+
+                    // also need to change folder
+                    const folder = path.split('/').slice(0, -1).join('/');
+                    changeFolder && changeFolder(folder);
                 }}
                 iconBefore={
                     <>
@@ -57,27 +76,7 @@ export const FileListing = ({
                         )}
                     </>
                 }
-                actions={
-                    <>
-                        <Button
-                            aria-label="Delete"
-                            appearance="subtle"
-                            icon={<Delete20Regular />}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                void deletePath({
-                                    changePath: changeFile,
-                                    currentPath: currentFile,
-                                    fullRoute,
-                                    path,
-                                    showSnackSev,
-                                    update,
-                                    editable: isEditable,
-                                });
-                            }}
-                        />
-                    </>
-                }
+                actions={<FileListingActions />}
             >
                 {currentFile === path && <strong>{basename(path)}</strong>}
                 {currentFile !== path && <>{basename(path)}</>}

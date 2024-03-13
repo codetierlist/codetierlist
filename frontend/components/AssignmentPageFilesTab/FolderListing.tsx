@@ -17,11 +17,7 @@ export declare type FolderListingProps = FileListingProps & {
     subtree: TreeType;
 };
 
-export const FolderListing = ({
-    path,
-    subtree,
-    ...props
-}: FolderListingProps) => {
+export const FolderListing = ({ path, subtree, ...props }: FolderListingProps) => {
     const {
         update,
         changeFolder,
@@ -57,47 +53,48 @@ export const FolderListing = ({
     /**
      * The actions for the folder
      */
-    const FolderListingActions = () => <>
-        <ToolTipIcon
-            tooltip={`Upload files to ${basename(path)}`}
-            icon={
+    const FolderListingActions = () =>
+        isEditable && (
+            <>
+                <ToolTipIcon
+                    tooltip={`Upload files to ${basename(path)}`}
+                    icon={
+                        <Button
+                            aria-label="Upload"
+                            appearance="subtle"
+                            icon={<ArrowUpload20Regular />}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                promptForFileObject({
+                                    folders: false,
+                                    multiple: true,
+                                }).then((files) => {
+                                    submitFiles(Array.from(files), path);
+                                });
+                            }}
+                        />
+                    }
+                />
+
                 <Button
-                    aria-label="Upload"
+                    aria-label="Delete"
                     appearance="subtle"
-                    icon={<ArrowUpload20Regular />}
+                    icon={<Delete20Regular />}
                     onClick={(e) => {
                         e.stopPropagation();
-                        promptForFileObject({
-                            folders: false,
-                            multiple: true,
-                        }).then((files) => {
-                            submitFiles(Array.from(files), path);
+                        void deletePath({
+                            changePath: changeFolder,
+                            currentPath: changeFolder ? currentFolder : undefined,
+                            fullRoute,
+                            path,
+                            showSnackSev,
+                            update,
+                            editable: isEditable,
                         });
                     }}
                 />
-            }
-        />
-
-        <Button
-            aria-label="Delete"
-            appearance="subtle"
-            icon={<Delete20Regular />}
-            onClick={(e) => {
-                e.stopPropagation();
-                void deletePath({
-                    changePath: changeFolder,
-                    currentPath: changeFolder
-                        ? currentFolder
-                        : undefined,
-                    fullRoute,
-                    path,
-                    showSnackSev,
-                    update,
-                    editable: isEditable,
-                });
-            }}
-        />
-    </>;
+            </>
+        );
 
     return (
         <Dropzone
@@ -129,9 +126,7 @@ export const FolderListing = ({
                             height={16}
                         />
                     }
-                    actions={
-                        <FolderListingActions />
-                    }
+                    actions={<FolderListingActions />}
                 >
                     {basename(path)}
                 </TreeItemLayout>

@@ -96,11 +96,7 @@ export const ListFiles = () => {
     /** for each folder in the first level of the tree (the root) create a folder */
     const treeChildren = Array.from(files.children).map((file) => {
         return file.children.length === 0 ? (
-            <FileListing
-                key={file.name}
-                path={file.name}
-                {...focusTargetAttribute}
-            />
+            <FileListing key={file.name} path={file.name} {...focusTargetAttribute} />
         ) : (
             <FolderListing
                 key={file.name}
