@@ -51,7 +51,7 @@ export const ListFiles = () => {
         submitFiles,
     } = useFileListingProps();
 
-    const { showSnackSev } = useContext(SnackbarContext);
+    const { showSnack } = useContext(SnackbarContext);
     const searchParams = useSearchParams();
     const [currentFileContent, setCurrentFileContent] = useState<ArrayBuffer | null>(
         null
@@ -80,7 +80,7 @@ export const ListFiles = () => {
                 setCurrentFileContent(res.data);
             })
             .catch((e) => {
-                handleError(showSnackSev)(e);
+                handleError(showSnack)(e);
             });
     };
 

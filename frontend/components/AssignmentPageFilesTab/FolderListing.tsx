@@ -32,7 +32,7 @@ export const FolderListing = ({ path, subtree, ...props }: FolderListingProps) =
         isEditable,
     } = useFileListingProps();
 
-    const { showSnackSev } = useContext(SnackbarContext);
+    const { showSnack } = useContext(SnackbarContext);
 
     /**
      * The children of the subtree
@@ -111,7 +111,7 @@ export const FolderListing = ({ path, subtree, ...props }: FolderListingProps) =
                                     currentPath: changeFolder ? currentFolder : undefined,
                                     fullRoute,
                                     path,
-                                    showSnackSev,
+                                    showSnack,
                                     update,
                                     editable: isEditable,
                                 });

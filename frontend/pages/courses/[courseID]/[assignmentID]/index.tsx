@@ -47,7 +47,7 @@ const ViewTierList = (props: React.HTMLAttributes<HTMLDivElement>) => {
     const router = useRouter();
     const { courseID, assignmentID } = router.query;
     const [tierlist, setTierlist] = useState<Tierlist | null>(null);
-    const { showSnackSev } = useContext(SnackbarContext);
+    const { showSnack } = useContext(SnackbarContext);
     const searchParams = useSearchParams();
 
     const fetchTierlist = async () => {
@@ -60,7 +60,7 @@ const ViewTierList = (props: React.HTMLAttributes<HTMLDivElement>) => {
             })
             .then((res) => setTierlist(res.data))
             .catch((e) => {
-                handleError(showSnackSev)(e);
+                handleError(showSnack)(e);
             });
     };
 
@@ -334,7 +334,7 @@ const useQueryString = (
  */
 const useAssignment = (courseID: string, assignmentID: string) => {
     const [assignment, setAssignment] = useState<UserFetchedAssignment | null>(null);
-    const { showSnackSev } = useContext(SnackbarContext);
+    const { showSnack } = useContext(SnackbarContext);
 
     const fetchAssignment = async () => {
         await axios
@@ -346,7 +346,7 @@ const useAssignment = (courseID: string, assignmentID: string) => {
             )
             .then((res) => setAssignment(res.data))
             .catch((e) => {
-                handleError(showSnackSev)(e);
+                handleError(showSnack)(e);
             });
     };
 

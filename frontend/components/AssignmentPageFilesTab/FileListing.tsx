@@ -16,7 +16,7 @@ export declare type FileListingProps = {
 };
 
 export const FileListing = ({ path, ...props }: FileListingProps) => {
-    const { showSnackSev } = useContext(SnackbarContext);
+    const { showSnack } = useContext(SnackbarContext);
     const { update, changeFile, currentFile, isEditable, fullRoute, changeFolder } =
         useFileListingProps();
 
@@ -41,7 +41,7 @@ export const FileListing = ({ path, ...props }: FileListingProps) => {
                                     currentPath: currentFile,
                                     fullRoute,
                                     path,
-                                    showSnackSev,
+                                    showSnack,
                                     update,
                                     editable: isEditable,
                                 });

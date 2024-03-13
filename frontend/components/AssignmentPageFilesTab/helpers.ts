@@ -1,6 +1,5 @@
 import axios, { handleError } from '@/axios';
-import { ShowSnackSevType } from '@/hooks';
-import { ToastIntent } from '@fluentui/react-components';
+import { ShowSnackType } from '@/hooks';
 
 /** delete a file from the server */
 export const deletePath = async <T extends string | undefined>({
@@ -8,7 +7,7 @@ export const deletePath = async <T extends string | undefined>({
     path,
     currentPath,
     changePath,
-    showSnackSev,
+    showSnack,
     update,
     editable = true,
 }: {
@@ -17,7 +16,7 @@ export const deletePath = async <T extends string | undefined>({
     /** the path to the file to delete */
     path: string;
     /** a function to show a snack */
-    showSnackSev: ShowSnackSevType;
+    showSnack: ShowSnackType;
     /** the current path */
     currentPath: T;
     /** a function to change the current path */
@@ -28,7 +27,7 @@ export const deletePath = async <T extends string | undefined>({
     editable?: boolean;
 }) => {
     if (!editable) {
-        showSnackSev('You can only update the latest submission', 'error');
+        showSnack('You can only update the latest submission', 'error');
         return;
     }
 
@@ -42,11 +41,11 @@ export const deletePath = async <T extends string | undefined>({
         })
         .then((res) => {
             if (res.status === 200) {
-                showSnackSev('File deleted', 'success');
+                showSnack('File deleted', 'success');
             }
         })
         .catch((e) => {
-            handleError(showSnackSev)(e);
+            handleError(showSnack)(e);
         })
         .finally(() => {
             if (currentPath === path) {

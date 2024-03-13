@@ -32,7 +32,7 @@ const useCourse = (courseID: string) => {
     const [course, setCourse] = useState<FetchedCourseWithTiers | null | undefined>(
         undefined
     );
-    const { showSnackSev } = useContext(SnackbarContext);
+    const { showSnack } = useContext(SnackbarContext);
 
     const fetchCourse = async () => {
         if (!courseID) return;
@@ -43,7 +43,7 @@ const useCourse = (courseID: string) => {
             .then((res) => setCourse(res.data))
             .catch((e) => {
                 setCourse(null);
-                handleError(showSnackSev)(e);
+                handleError(showSnack)(e);
                 notFound();
             });
     };
@@ -65,7 +65,7 @@ export const AdminToolbarDeleteCourseButton = ({
     /** the course ID of the course */
     courseID: string;
 }) => {
-    const { showSnackSev } = useContext(SnackbarContext);
+    const { showSnack } = useContext(SnackbarContext);
     const { fetchUserInfo } = useContext(UserContext);
 
     const router = useRouter();
@@ -75,7 +75,7 @@ export const AdminToolbarDeleteCourseButton = ({
             .delete(`/courses/${courseID}`)
             .then(() => router.push('/'))
             .catch((e) => {
-                handleError(showSnackSev)(e);
+                handleError(showSnack)(e);
             })
             .finally(() => fetchUserInfo());
     };
@@ -99,7 +99,7 @@ const CourseAdminToolbar = ({
     updateSeed: () => void;
 }): JSX.Element => {
     const router = useRouter();
-    const { showSnackSev } = useContext(SnackbarContext);
+    const { showSnack } = useContext(SnackbarContext);
 
     return (
         <HeaderToolbar aria-label="Admin Toolbar">
@@ -144,7 +144,7 @@ const CourseAdminToolbar = ({
                         })
                         .then(updateSeed)
                         .catch((e) => {
-                            handleError(showSnackSev)(e);
+                            handleError(showSnack)(e);
                         })
                         .finally(() => {
                             void fetchCourse();

@@ -14,7 +14,7 @@ import { Col, Container, Row } from 'react-grid-system';
  */
 const useAchievements = () => {
     const [achievements, setAchievements] = useState<AchievementConfig[] | null>(null);
-    const { showSnackSev } = useContext(SnackbarContext);
+    const { showSnack } = useContext(SnackbarContext);
     const { userInfo, setUserInfo } = useContext(UserContext);
 
     const hiddenAchievementCount = useMemo(() => {
@@ -31,7 +31,7 @@ const useAchievements = () => {
                 setUserInfo({ ...userInfo, new_achievements: false });
             })
             .catch((e) => {
-                handleError(showSnackSev)(e);
+                handleError(showSnack)(e);
                 notFound();
             });
     };

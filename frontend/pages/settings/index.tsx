@@ -37,7 +37,7 @@ const themeOptions: Record<Theme, string> = {
 
 const ThemeSelector = () => {
     const { userInfo, fetchUserInfo } = useContext(UserContext);
-    const { showSnackSev } = useContext(SnackbarContext);
+    const { showSnack } = useContext(SnackbarContext);
 
     /**
      * Change the user's theme.
@@ -49,7 +49,7 @@ const ThemeSelector = () => {
                 theme,
             })
             .catch((e) => {
-                handleError(showSnackSev)(e);
+                handleError(showSnack)(e);
             })
             .finally(() => {
                 fetchUserInfo();
@@ -146,7 +146,7 @@ const BackgroundSelector = () => {
 
 const AccentSelector = () => {
     const { userInfo, setUserInfo, fetchUserInfo } = useContext(UserContext);
-    const { showSnackSev } = useContext(SnackbarContext);
+    const { showSnack } = useContext(SnackbarContext);
     const [accentColor, setAccentColor] = useState(
         userInfo.accent_color || defaultAccentColor
     );
@@ -192,10 +192,10 @@ const AccentSelector = () => {
                         .post('/users/accent', { accent_color: e.target.value })
                         .then(async () => {
                             await fetchUserInfo();
-                            showSnackSev('Accent color updated', 'success');
+                            showSnack('Accent color updated', 'success');
                         })
                         .catch((err) => {
-                            handleError(showSnackSev)(err);
+                            handleError(showSnack)(err);
                         });
                 }}
             />

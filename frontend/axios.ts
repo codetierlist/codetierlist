@@ -1,6 +1,6 @@
 import { ToastIntent } from '@fluentui/react-components';
 import axios, { AxiosError } from 'axios';
-import { ShowSnackSevType } from './hooks';
+import { ShowSnackType } from './hooks';
 
 declare module 'axios' {
     export interface AxiosRequestConfig {
@@ -9,11 +9,7 @@ declare module 'axios' {
 }
 
 export const handleError =
-    (
-        showSnackSev?: ShowSnackSevType,
-        message?: string
-    ) =>
-    (error: AxiosError) => {
+    (showSnack?: ShowSnackType, message?: string) => (error: AxiosError) => {
         if (!error.isAxiosError) {
             throw error;
         }
@@ -39,10 +35,20 @@ export const handleError =
                 res = error.message;
             }
         } else {
+            if (showSnack) {
+                showSnack(
+                    'Server was unresponsive, please try again later',
+                    'error',
+                    'Connection lost',
+                    undefined
+                );
+                return;
+            }
+
             res = 'Server was unresponsive, please try again later';
         }
-        if (showSnackSev) {
-            showSnackSev(res, 'error');
+        if (showSnack) {
+            showSnack(res, 'error');
         } else {
             console.error(res);
         }

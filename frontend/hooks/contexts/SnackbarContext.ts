@@ -10,7 +10,12 @@ import { createContext } from 'react';
  * @param title The title of the snackbar.
  * @param action The action to display on the snackbar.
  */
-export type ShowSnackSevType = (message?: string, severity?: ToastIntent, title?: string, action?: JSX.Element) => void;
+export type ShowSnackType = (
+    message?: string,
+    severity?: ToastIntent,
+    title?: string,
+    action?: JSX.Element
+) => void;
 
 /**
  * The context for the global snackbar. Just use `showSnack` to display a
@@ -25,5 +30,10 @@ export const SnackbarContext = createContext({
      * @param title The title of the snackbar.
      * @param action The action to display on the snackbar.
      */
-    showSnackSev: (message?: string, severity?: ToastIntent, title?: string, action?: JSX.Element) => {},
+    showSnack: (
+        message?: string,
+        severity?: ToastIntent,
+        title?: string,
+        action?: JSX.Element
+    ) => {},
 });

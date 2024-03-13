@@ -183,7 +183,7 @@ export const AssignmentPageFilesTab = ({
         log: [],
     } as Commit);
 
-    const { showSnackSev } = useContext(SnackbarContext);
+    const { showSnack } = useContext(SnackbarContext);
     const { userInfo } = useContext(UserContext);
     const searchParams = useSearchParams();
 
@@ -218,7 +218,7 @@ export const AssignmentPageFilesTab = ({
                     content = res.data;
                 })
                 .catch((e) => {
-                    handleError(showSnackSev)(e);
+                    handleError(showSnack)(e);
                     setContent({ files: [], log: [] } as Commit);
                 });
             // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -243,12 +243,12 @@ export const AssignmentPageFilesTab = ({
      */
     const submitFolder = async (files: File[], target?: string) => {
         if (commitID !== '') {
-            showSnackSev('You can only update the latest submission', 'error');
+            showSnack('You can only update the latest submission', 'error');
             return;
         }
         if (files.length > 100 || files.reduce((a, x) => a + x.size, 0) >= 1e9) {
             // TODO: this should sync with the backend
-            showSnackSev(
+            showSnack(
                 'Please upload less than 30 files and less than 20mb at a time',
                 'error'
             );
@@ -286,11 +286,11 @@ export const AssignmentPageFilesTab = ({
                     )
                     .then((res) => {
                         if (res.status === 200) {
-                            showSnackSev('Files uploaded', 'success');
+                            showSnack('Files uploaded', 'success');
                         }
                     })
                     .catch((e) => {
-                        handleError(showSnackSev)(e);
+                        handleError(showSnack)(e);
                     })
                     .finally(() => {
                         fetchAssignment();
@@ -310,7 +310,7 @@ export const AssignmentPageFilesTab = ({
      */
     const submitFiles = async (files: File[], target?: string) => {
         if (commitID !== '') {
-            showSnackSev('You can only update the latest submission', 'error');
+            showSnack('You can only update the latest submission', 'error');
             return;
         }
         if (target === undefined) target = currentFolder;
@@ -341,11 +341,11 @@ export const AssignmentPageFilesTab = ({
             )
             .then((res) => {
                 if (res.status === 200) {
-                    showSnackSev('Files uploaded', 'success');
+                    showSnack('Files uploaded', 'success');
                 }
             })
             .catch((e) => {
-                handleError(showSnackSev)(e);
+                handleError(showSnack)(e);
             })
             .finally(() => {
                 fetchAssignment();
@@ -389,7 +389,7 @@ export const AssignmentPageFilesTab = ({
                 }
             })
             .catch((e) => {
-                handleError(showSnackSev)(e);
+                handleError(showSnack)(e);
             });
     };
 
@@ -397,7 +397,7 @@ export const AssignmentPageFilesTab = ({
         promptForFileObject({ folders: true, multiple: false })
             .then((files) => submitFolder(Array.from(files)))
             .catch((e) => {
-                handleError(showSnackSev)(e);
+                handleError(showSnack)(e);
             });
     };
 

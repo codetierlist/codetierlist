@@ -60,12 +60,12 @@ const updateTimezoneOffset = (date: string) => {
 const useRunners = () => {
     const [runners, setRunners] = useState<Record<string, string[]>>({});
     const [selectedRunner, setSelectedRunner] = useState<RunnerImage | null>(null);
-    const { showSnackSev } = useContext(SnackbarContext);
+    const { showSnack } = useContext(SnackbarContext);
 
     useEffect(() => {
         const fetchRunners = async () => {
             const res = await axios.get<RunnerImage[]>('/runner/images').catch((e) => {
-                handleError(showSnackSev)(e);
+                handleError(showSnack)(e);
             });
             if (!res) {
                 return;
@@ -119,7 +119,7 @@ const Preview = ({
     );
 };
 export default function Page(): JSX.Element {
-    const { showSnackSev } = useContext(SnackbarContext);
+    const { showSnack } = useContext(SnackbarContext);
     const [assignmentName, setAssignmentName] = useState('');
     const [description, setDescription] = useState('');
     const { runners, setSelectedRunner, selectedRunner } = useRunners();
@@ -148,10 +148,10 @@ export default function Page(): JSX.Element {
         await navigator.clipboard
             .writeText(serialized)
             .catch((e) => {
-                showSnackSev(`Failed to write to clipboard: ${e.message}`, 'error');
+                showSnack(`Failed to write to clipboard: ${e.message}`, 'error');
             })
             .then(() => {
-                showSnackSev('Copied to clipboard', 'success');
+                showSnack('Copied to clipboard', 'success');
             });
     };
 
@@ -160,7 +160,7 @@ export default function Page(): JSX.Element {
      */
     const importFormData = async () => {
         const serialized = await navigator.clipboard.readText().catch((e) => {
-            showSnackSev(`Failed to read from clipboard: ${e.message}`, 'error');
+            showSnack(`Failed to read from clipboard: ${e.message}`, 'error');
             return '';
         });
 
@@ -169,7 +169,7 @@ export default function Page(): JSX.Element {
         try {
             data = JSON.parse(serialized);
         } catch (e) {
-            showSnackSev('Invalid JSON', 'error');
+            showSnack('Invalid JSON', 'error');
             return;
         }
 
@@ -180,7 +180,7 @@ export default function Page(): JSX.Element {
             !data.image ||
             !data.image_version
         ) {
-            showSnackSev('Invalid assignment data', 'error');
+            showSnack('Invalid assignment data', 'error');
             return;
         }
 
@@ -197,7 +197,7 @@ export default function Page(): JSX.Element {
      */
     const submitAssignment = async () => {
         if (!description) {
-            showSnackSev('Description is required', 'error');
+            showSnack('Description is required', 'error');
             return;
         }
 
@@ -213,7 +213,7 @@ export default function Page(): JSX.Element {
             .then(fetchUserInfo)
             .then(() => router.push(`/courses/${courseID}`))
             .catch((e) => {
-                handleError(showSnackSev)(e);
+                handleError(showSnack)(e);
             });
     };
 
