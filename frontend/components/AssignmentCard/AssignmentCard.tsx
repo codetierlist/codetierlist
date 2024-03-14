@@ -37,7 +37,9 @@ export const AssignmentCard = ({
         }
         return null;
     }, [dueDate]);
+
     const router = useRouter();
+
     return (
         <CompoundButton
             className={`${styles.card} p-0`}
