@@ -22,6 +22,7 @@ import {
     MessageBarActions,
     MessageBarBody,
     MessageBarTitle,
+    Spinner,
     Subtitle1,
     Tab,
     TabList,
@@ -167,6 +168,7 @@ const ViewFilesTab = ({
             <DueDateMessageBar assignment={assignment} />
             <AssignmentPageFilesTab
                 routeName="solution"
+                description="Upload your solution along with any additional files. This solution will be tested against your classmates&lsquo; test cases."
                 route="submissions"
                 fetchAssignment={fetchAssignment}
                 assignment={assignment}
@@ -175,6 +177,7 @@ const ViewFilesTab = ({
 
             <AssignmentPageFilesTab
                 routeName="test"
+                description="Upload your test cases. Your classmates&lsquo; solutions will be tested against your test cases. The test case will be validated for correctness."
                 route="testcases"
                 fetchAssignment={fetchAssignment}
                 assignment={assignment}
@@ -320,12 +323,14 @@ const ViewDetailsTab = ({
  * For when the page is loading
  */
 const LoadingSkeleton = () => {
+    const { stage } = useStage();
+
     return (
         <>
             <Head>
                 <title>Codetierlist</title>
             </Head>
-            <TabList className={styles.tabList} size="large" selectedValue={`details`}>
+            <TabList className={styles.tabList} size="large" selectedValue={stage}>
                 <Tab value="details" disabled>
                     Assignment details
                 </Tab>
@@ -337,7 +342,7 @@ const LoadingSkeleton = () => {
                 </Tab>
             </TabList>
             <Container component="main" className={styles.container}>
-                <></>
+                <Spinner />
             </Container>
         </>
     );
@@ -373,6 +378,8 @@ const useQueryString = (
 
 /**
  * A hook that fetches the assignment and tierlist for the assignment page
+ * @param courseID the course ID
+ * @param assignmentID the assignment ID
  */
 const useAssignment = (courseID: string, assignmentID: string) => {
     const [assignment, setAssignment] = useState<UserFetchedAssignment | null>(null);

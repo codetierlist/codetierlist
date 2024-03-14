@@ -49,6 +49,8 @@ export declare type AssignmentPageFilesTabProps = {
     routeName: string;
     /** the route to use */
     route: 'testcases' | 'submissions';
+    /** the subtext to put below the header */
+    description: string;
 };
 
 /**
@@ -206,6 +208,7 @@ export const AssignmentPageFilesTab = ({
     assignmentID,
     routeName,
     route,
+    description,
 }: AssignmentPageFilesTabProps): JSX.Element => {
     // eslint-disable-next-line prefer-const
     let [content, setContent] = useState<Commit>({
@@ -462,7 +465,7 @@ export const AssignmentPageFilesTab = ({
     return (
         <div className="m-y-xxxl">
             <div className={`${styles.uploadHeader} m-b-xl`}>
-                <Subtitle1 className={styles.testCaseHeader} block>
+                <Subtitle1 className={styles.testCaseHeader} block as="h2">
                     Uploaded {routeName}s{' '}
                     {commitID &&
                         currentCommit &&
@@ -477,6 +480,9 @@ export const AssignmentPageFilesTab = ({
                         />
                     )}
                 </Subtitle1>
+                <Caption1 className="p-y-s" block as="p">
+                    {description}
+                </Caption1>
             </div>
 
             {checkIfCourseAdmin(userInfo, assignment.course_id) && (
