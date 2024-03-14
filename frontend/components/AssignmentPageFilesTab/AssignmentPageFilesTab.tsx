@@ -23,6 +23,7 @@ import {
 } from '@fluentui/react-components';
 import {
     Add24Regular,
+    ArrowDownload24Regular,
     DocumentMultiple24Regular,
     EditProhibited24Regular,
     Folder24Regular,
@@ -124,7 +125,7 @@ const ValidationErrorMessageBar = ({
 /**
  * The admin bar for the file selector
  */
-const FileSelectorAdminBar = ({
+const FileSelectorDropdown = ({
     content,
     setCommitID,
     update,
@@ -144,24 +145,22 @@ const FileSelectorAdminBar = ({
     }, [content.log]);
 
     return (
-        <HeaderToolbar className="m-none p-xs">
-            <Dropdown
-                appearance="filled-darker"
-                clearable={true}
-                placeholder="View past uploads"
-                onOptionSelect={(_, data) => {
-                    setCommitID(data.optionValue || '');
-                    data.optionValue && void update();
-                }}
-                defaultValue={values[0] && values[0].key}
-            >
-                {values.map((value) => (
-                    <Option key={value.key} value={value.key}>
-                        {value.text}
-                    </Option>
-                ))}
-            </Dropdown>
-        </HeaderToolbar>
+        <Dropdown
+            appearance="filled-lighter"
+            clearable={true}
+            placeholder={values.length === 0 ? 'No past uploads' : 'View past uploads'}
+            onOptionSelect={(_, data) => {
+                setCommitID(data.optionValue || '');
+                data.optionValue && void update();
+            }}
+            defaultValue={values[0] && values[0].key}
+        >
+            {values.map((value) => (
+                <Option key={value.key} value={value.key}>
+                    {value.text}
+                </Option>
+            ))}
+        </Dropdown>
     );
 };
 
@@ -449,40 +448,51 @@ export const AssignmentPageFilesTab = ({
                         />
                     )}
                 </Subtitle1>
-
-                {isEditable && (
-                    <div>
-                        <Button
-                            icon={<Folder24Regular />}
-                            appearance="subtle"
-                            onClick={uploadFolder}
-                        >
-                            Upload a folder
-                            {currentFolder && ` to ${basename(currentFolder)}`}
-                        </Button>
-                        <Button
-                            icon={<Add24Regular />}
-                            appearance="subtle"
-                            onClick={uploadFile}
-                        >
-                            Upload a {routeName}{' '}
-                            {currentFolder ? ` to ${basename(currentFolder)}` : null}
-                        </Button>
-                    </div>
-                )}
             </div>
 
-            {checkIfCourseAdmin(userInfo, assignment.course_id) && (
-                <FileSelectorAdminBar
+            <HeaderToolbar className="m-none p-xs">
+                <Button
+                    disabled={!isEditable}
+                    icon={<Folder24Regular />}
+                    appearance="subtle"
+                    onClick={uploadFolder}
+                >
+                    Upload folder
+                    {currentFolder && ` to ${basename(currentFolder)}`}
+                </Button>
+
+                <Button
+                    disabled={!isEditable}
+                    icon={<Add24Regular />}
+                    appearance="subtle"
+                    onClick={uploadFile}
+                >
+                    Upload {routeName}{' '}
+                    {currentFolder ? ` to ${basename(currentFolder)}` : null}
+                </Button>
+                <Button
+                    disabled={currentFile === ''}
+                    icon={<ArrowDownload24Regular />}
+                    appearance="subtle"
+                    onClick={() => {
+                        window.open(
+                            `/api/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/${commitID || (content.log[0]?.id ?? '')}/${currentFile}`
+                        );
+                    }}
+                >
+                    Download {currentFile ? basename(currentFile) : 'selected file'}
+                </Button>
+
+                <FileSelectorDropdown
                     content={content}
                     setCommitID={setCommitID}
                     update={async () => {
-                        await getTestData();
                         setCurrentFile('');
                         setCurrentFolder('');
+                        await getTestData();
                     }}
                 />
-            )}
+            </HeaderToolbar>
 
             <div
                 onClick={() => {
