@@ -37,8 +37,6 @@ import {
 import {
     AssignmentStudentStat,
     AssignmentStudentStats,
-    FetchedAssignment,
-    FetchedAssignmentWithTier,
     Tier,
     UserTier,
 } from 'codetierlist-types';
@@ -46,7 +44,7 @@ import Error from 'next/error';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useMemo, useState } from 'react';
-import { Stage } from '..';
+import { Stage } from '../../pages/courses/[courseID]/[assignmentID]';
 
 /**
  * Highlights the substring in the string
@@ -78,62 +76,48 @@ const HighlightSubstring = ({
 };
 
 /**
- * Fetches the assignment and student data
+ * Fetches the assignment stats
+ *
  * @param courseID the course ID
  * @param assignmentID the assignment ID
  */
 const useAssignmentAdmin = (courseID: string, assignmentID: string) => {
-    const [assignment, setAssignment] = useState<FetchedAssignmentWithTier | null>(null);
-    const [studentData, setStudentData] = useState<AssignmentStudentStats | null>(null);
     const { showSnack } = useContext(SnackbarContext);
+    const [assignmentData, setAssignmentData] = useState<AssignmentStudentStats | null>(
+        null
+    );
 
-    const fetchAssignment = async () => {
-        await axios
-            .get<FetchedAssignmentWithTier>(
-                `/courses/${courseID}/assignments/${assignmentID}`,
-                {
-                    skipErrorHandling: true,
-                }
-            )
-            .then((res) => setAssignment(res.data))
-            .catch((e) => {
-                handleError(showSnack)(e);
-            });
-    };
-
-    const fetchAssignmentStats = async () => {
-        await axios
+    useEffect(() => {
+        axios
             .get<AssignmentStudentStats>(
                 `/courses/${courseID}/assignments/${assignmentID}/stats`,
                 {
                     skipErrorHandling: true,
                 }
             )
-            .then((res) => setStudentData(res.data))
+            .then((res) => {
+                setAssignmentData(res.data);
+            })
             .catch((e) => {
                 handleError(showSnack)(e);
             });
-    };
-
-    useEffect(() => {
-        if (!courseID || !assignmentID) {
-            return;
-        }
-        void fetchAssignment();
-        void fetchAssignmentStats();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [courseID, assignmentID]);
 
-    return { assignment, studentData };
+    return assignmentData;
 };
 
 /**
  * A button that deletes an assignment
  */
 export const AdminToolbarDeleteAssignmentButton = ({
-    assignment,
+    courseID,
+    assignmentID,
 }: {
-    assignment: FetchedAssignment;
+    /** the course ID */
+    courseID: string;
+    /** the assignment ID */
+    assignmentID: string;
 }) => {
     const { showSnack } = useContext(SnackbarContext);
     const { fetchUserInfo } = useContext(UserContext);
@@ -142,7 +126,7 @@ export const AdminToolbarDeleteAssignmentButton = ({
 
     const deleteAssignment = async () => {
         await axios
-            .delete(`/courses/${assignment.course_id}/assignments/${assignment.title}`)
+            .delete(`/courses/${courseID}/assignments/${assignmentID}`)
             .then(() => router.push('/'))
             .catch((e) => {
                 handleError(showSnack)(e);
@@ -162,18 +146,20 @@ export const AdminToolbarDeleteAssignmentButton = ({
  * A button that deletes an assignment
  */
 export const AdminToolbarRevalidateAssignmentButton = ({
-    assignment,
+    courseID,
+    assignmentID,
 }: {
-    assignment: FetchedAssignment;
+    /** the course ID */
+    courseID: string;
+    /** the assignment ID */
+    assignmentID: string;
 }) => {
     const { showSnack } = useContext(SnackbarContext);
     const { fetchUserInfo } = useContext(UserContext);
 
     const revalidateAssignment = async () => {
         await axios
-            .post(
-                `/courses/${assignment.course_id}/assignments/${assignment.title}/revalidate`
-            )
+            .post(`/courses/${courseID}/assignments/${assignmentID}/revalidate`)
             .then((res) => {
                 if (res.status === 200) {
                     showSnack(
@@ -235,6 +221,9 @@ const ViewTierlistLink = ({
     );
 };
 
+/**
+ * A mapping of tier to integer for sorting reasons
+ */
 const TierToInt: Record<UserTier, number> = {
     S: 0,
     A: 1,
@@ -245,12 +234,16 @@ const TierToInt: Record<UserTier, number> = {
     '?': 6,
 };
 
-export default function Page({ setStage }: { setStage: (stage: Stage) => void }) {
+/**
+ * The admin tab of the assignment page
+ */
+export const AssignmentPageAdminTab = ({
+    setStage,
+}: {
+    setStage: (stage: Stage) => void;
+}) => {
     const { courseID, assignmentID } = useRouter().query;
-    const { assignment, studentData } = useAssignmentAdmin(
-        courseID as string,
-        assignmentID as string
-    );
+    const studentData = useAssignmentAdmin(courseID as string, assignmentID as string);
     const [filterValue, setFilterValue] = useState<string>('');
 
     const router = useRouter();
@@ -262,7 +255,7 @@ export default function Page({ setStage }: { setStage: (stage: Stage) => void })
             return [];
         }
 
-        return studentData.filter((student) => {
+        return studentData.filter((student: AssignmentStudentStat) => {
             return (
                 student.utorid.toLowerCase().includes(filterValue.toLowerCase()) ||
                 `${student.givenName} ${student.surname}`
@@ -275,8 +268,8 @@ export default function Page({ setStage }: { setStage: (stage: Stage) => void })
     const { userInfo } = useContext(UserContext);
 
     useEffect(() => {
-        document.title = `${assignment?.title || assignmentID} - Codetierlist`;
-    }, [assignment, assignmentID]);
+        document.title = `${assignmentID} - Codetierlist`;
+    }, [assignmentID]);
 
     const columns: TableColumnDefinition<AssignmentStudentStat>[] = [
         createTableColumn<AssignmentStudentStat>({
@@ -353,10 +346,6 @@ export default function Page({ setStage }: { setStage: (stage: Stage) => void })
         </DataGridRow>
     );
 
-    if (!courseID || !assignmentID || !assignment) {
-        return <Error statusCode={404} />;
-    }
-
     // If the user is not an admin, error 403
     if (!checkIfCourseAdmin(userInfo, courseID as string)) {
         return <Error statusCode={403} />;
@@ -365,8 +354,14 @@ export default function Page({ setStage }: { setStage: (stage: Stage) => void })
     return (
         <section className="p-b-xxxl">
             <HeaderToolbar>
-                <AdminToolbarDeleteAssignmentButton assignment={assignment} />
-                <AdminToolbarRevalidateAssignmentButton assignment={assignment} />
+                <AdminToolbarDeleteAssignmentButton
+                    courseID={courseID as string}
+                    assignmentID={assignmentID as string}
+                />
+                <AdminToolbarRevalidateAssignmentButton
+                    courseID={courseID as string}
+                    assignmentID={assignmentID as string}
+                />
             </HeaderToolbar>
 
             <Card className="m-x-l m-t-xxl">
@@ -413,19 +408,20 @@ export default function Page({ setStage }: { setStage: (stage: Stage) => void })
                             )}
                         </DataGridRow>
                     </DataGridHeader>
+
+                    {!studentData && (
+                        <Spinner
+                            className="m-y-xxxl"
+                            labelPosition="below"
+                            label="Fetching the latest data for you&hellip;"
+                        />
+                    )}
+
                     <DataGridBody<AssignmentStudentStat> itemSize={40} height={500}>
                         {renderRow}
                     </DataGridBody>
                 </DataGrid>
-
-                {!studentData && (
-                    <Spinner
-                        className="m-y-xxxl"
-                        labelPosition="below"
-                        label="Fetching the latest data for you&hellip;"
-                    />
-                )}
             </Card>
         </section>
     );
-}
+};

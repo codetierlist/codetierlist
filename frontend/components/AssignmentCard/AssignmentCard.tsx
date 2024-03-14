@@ -3,11 +3,12 @@ import { CompoundButton, Subtitle1 } from '@fluentui/react-components';
 import { type Tier, type UserTier } from 'codetierlist-types';
 import { useRouter } from 'next/navigation';
 import { convertDate } from '../utils/TimeUtils/TimeUtils';
+import { useMemo } from 'react';
 import styles from './AssignmentCard.module.css';
 
 export declare type AssignmentCardProps = {
     /** The ID of the assignment */
-    id: string;
+    assignmentID: string;
 
     /** The name of the assignment */
     name: string;
@@ -23,13 +24,20 @@ export declare type AssignmentCardProps = {
 };
 
 export const AssignmentCard = ({
-    id,
+    assignmentID,
+    courseID,
     name,
     dueDate,
     tier,
-    courseID,
 }: AssignmentCardProps): JSX.Element => {
-    const formattedDueDate = dueDate ? convertDate(dueDate) : null;
+    /** The formatted due date of the assignment */
+    const formattedDueDate = useMemo(() => {
+        if (dueDate) {
+            return convertDate(dueDate);
+        }
+        return null;
+    }, [dueDate]);
+
     const router = useRouter();
 
     return (
@@ -47,7 +55,7 @@ export const AssignmentCard = ({
                 )
             }
             onClick={() => {
-                router.push(`/courses/${courseID}/${id}`);
+                router.push(`/courses/${courseID}/${assignmentID}`);
             }}
         >
             <Subtitle1 className={styles.cardText}>{name}</Subtitle1>

@@ -1,5 +1,6 @@
 import axios, { handleError } from '@/axios';
 import {
+    AssignmentPageAdminTab,
     AssignmentPageFilesTab,
     DueDateMessageBar,
     MarkdownRender,
@@ -33,19 +34,15 @@ import Head from 'next/head';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/router';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { Col, Container } from 'react-grid-system';
-import ViewAdminTab from './admin/index';
+import { Col, Container, Row } from 'react-grid-system';
 import styles from './page.module.css';
 
 export declare type Stage = 'details' | 'upload' | 'tierlist' | 'admin' | '404';
 
 /**
- * Displays the tierlist
- * @param tierlist
+ * A hook that fetches the tierlist for the assignment page
  */
-const ViewTierList = (props: React.HTMLAttributes<HTMLDivElement>) => {
-    const router = useRouter();
-    const { courseID, assignmentID } = router.query;
+const useTierlist = (courseID: string, assignmentID: string) => {
     const [tierlist, setTierlist] = useState<Tierlist | null>(null);
     const { showSnack } = useContext(SnackbarContext);
     const searchParams = useSearchParams();
@@ -85,18 +82,42 @@ const ViewTierList = (props: React.HTMLAttributes<HTMLDivElement>) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [courseID, assignmentID]);
 
+    return { tierlist, fetchTierlist };
+};
+
+/**
+ * Displays the tierlist
+ * @param tierlist
+ */
+const ViewTierList = (props: React.HTMLAttributes<HTMLDivElement>) => {
+    const router = useRouter();
+
+    const { tierlist } = useTierlist(
+        router.query.courseID as string,
+        router.query.assignmentID as string
+    );
+
     return (
-        <Col sm={12} {...props}>
-            <Subtitle1 className="p-t-s p-b-xs" block>
-                Tierlist
-            </Subtitle1>
-            <Caption1 className="p-b-xxxl" block>
-                The tierlist shows the performance of your solution against your
-                classmates&lsquo; test cases. The tierlist is normally distributed, S tier
-                does not necessarily indicate a perfect solution.
-            </Caption1>
+        <section {...props}>
+            <Row className="p-t-s p-b-xs">
+                <Col>
+                    <Subtitle1 block as="h2" className="m-b-xs">
+                        Tierlist
+                    </Subtitle1>
+                </Col>
+            </Row>
+            <Row className="p-b-xxxl">
+                <Col>
+                    <Caption1 block>
+                        The tierlist shows the performance of your solution against your
+                        classmates&lsquo; test cases. The tierlist is normally
+                        distributed, S tier does not necessarily indicate a perfect
+                        solution.
+                    </Caption1>
+                </Col>
+            </Row>
             {tierlist ? <TierList tierlist={tierlist} /> : 'No tier list available.'}
-        </Col>
+        </section>
     );
 };
 
@@ -431,7 +452,7 @@ export default function Page() {
                 {stage === 'tierlist' && <ViewTierList className="m-t-xxxl" />}
                 {stage === 'admin' &&
                     checkIfCourseAdmin(userInfo, assignment.course_id) && (
-                        <ViewAdminTab setStage={setStage} />
+                        <AssignmentPageAdminTab setStage={setStage} />
                     )}
             </Container>
         </>

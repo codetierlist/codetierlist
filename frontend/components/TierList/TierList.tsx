@@ -71,6 +71,7 @@ const TierAvatars = forwardRef<HTMLDivElement, TierAvatarsProps>(
             <Col
                 className={styles.tierAvatars}
                 xs={10}
+                role="rowgroup"
                 aria-label={`${people.length} people in this tier. ${youInTier ? 'You are in this tier.' : ''}`}
             >
                 <AvatarGroup className={styles.avatarGroup} ref={ref} aria-hidden="true">
@@ -180,7 +181,7 @@ export declare type TierListProps = {
  */
 export const TierList = ({ tierlist = EMPTY_DATA }: TierListProps): JSX.Element => {
     return (
-        <Row component="section">
+        <Row className={styles.tierList}>
             {Object.keys(tierlist).map((tier, index) => {
                 return <TierRow key={index} tier={tier} tierlist={tierlist} />;
             })}
