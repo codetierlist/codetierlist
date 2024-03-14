@@ -39,3 +39,7 @@
     margin-left: var(--spacingHorizontalS) !important;
     margin-bottom: var(--spacingVerticalS) !important;
 }
+
+.tierList {
+    box-shadow: var(--shadow2);
+}

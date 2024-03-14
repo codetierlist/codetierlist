@@ -34,7 +34,7 @@ import Head from 'next/head';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/router';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { Container, Row } from 'react-grid-system';
+import { Col, Container, Row } from 'react-grid-system';
 import styles from './page.module.css';
 
 export declare type Stage = 'details' | 'upload' | 'tierlist' | 'admin' | '404';
@@ -98,19 +98,23 @@ const ViewTierList = (props: React.HTMLAttributes<HTMLDivElement>) => {
     );
 
     return (
-        <>
-            <Row className="p-t-s p-b-xs" {...props}>
-                <Subtitle1 block>Tierlist</Subtitle1>
+        <section {...props}>
+            <Row className="p-t-s p-b-xs">
+                <Col>
+                    <Subtitle1 block as="h2" className="m-b-xs">Tierlist</Subtitle1>
+                </Col>
             </Row>
             <Row className="p-b-xxxl">
-                <Caption1 block>
-                    The tierlist shows the performance of your solution against your
-                    classmates&lsquo; test cases. The tierlist is normally distributed, S
-                    tier does not necessarily indicate a perfect solution.
-                </Caption1>
+                <Col>
+                    <Caption1 block>
+                        The tierlist shows the performance of your solution against your
+                        classmates&lsquo; test cases. The tierlist is normally distributed, S
+                        tier does not necessarily indicate a perfect solution.
+                    </Caption1>
+                </Col>
             </Row>
             {tierlist ? <TierList tierlist={tierlist} /> : 'No tier list available.'}
-        </>
+        </section>
     );
 };
 
