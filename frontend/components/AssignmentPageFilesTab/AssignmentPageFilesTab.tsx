@@ -474,18 +474,6 @@ export const AssignmentPageFilesTab = ({
                         currentFolder !== '.' &&
                         ` to ${basename(currentFolder)}`}
                 </Button>
-                <Button
-                    disabled={currentFile === ''}
-                    icon={<ArrowDownload24Regular />}
-                    appearance="subtle"
-                    onClick={() => {
-                        window.open(
-                            `/api/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/${commitID || (content.log[0]?.id ?? '')}/${currentFile}`
-                        );
-                    }}
-                >
-                    Download {currentFile ? basename(currentFile) : 'selected file'}
-                </Button>
 
                 <FileSelectorDropdown
                     content={content}
