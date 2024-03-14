@@ -9,7 +9,7 @@ import {
     AvatarGroup,
     AvatarGroupItem,
     Link,
-    partitionAvatarGroupItems
+    partitionAvatarGroupItems,
 } from '@fluentui/react-components';
 import { Tier, Tierlist, TierlistEntry } from 'codetierlist-types';
 import { forwardRef, useEffect, useRef, useState } from 'react';
