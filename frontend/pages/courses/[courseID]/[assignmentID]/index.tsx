@@ -415,19 +415,25 @@ export default function Page() {
 
     // validation of tabs
     useEffect(() => {
-        if (
+        const notValidTab =
             stage !== 'details' &&
             stage !== 'upload' &&
             stage !== 'tierlist' &&
-            stage !== 'admin'
-        ) {
-            setStage('details');
-        }
+            stage !== 'admin';
 
-        if (!checkIfCourseAdmin(userInfo, courseID as string) && stage === 'admin') {
+        const cantViewAdmin =
+            !checkIfCourseAdmin(userInfo, courseID as string) && stage === 'admin';
+
+        const cantViewTierlist =
+            assignment &&
+            !assignment?.view_tierlist &&
+            !checkIfCourseAdmin(userInfo, assignment.course_id) &&
+            stage === 'tierlist';
+
+        if (notValidTab || cantViewAdmin || cantViewTierlist) {
             setStage('details');
         }
-    }, [stage, setStage, userInfo, courseID]);
+    }, [stage, setStage, userInfo, courseID, assignment]);
 
     // remove utorid query when not in upload or tierlist stage
     useQueryString('utorid', ['upload', 'tierlist'], stage);
