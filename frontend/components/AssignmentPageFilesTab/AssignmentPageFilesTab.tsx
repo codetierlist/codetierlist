@@ -16,6 +16,7 @@ import {
     Dropdown,
     Link,
     MessageBar,
+    MessageBarActions,
     MessageBarBody,
     MessageBarTitle,
     Option,
@@ -25,7 +26,7 @@ import {
     Add24Regular,
     DocumentMultiple24Regular,
     EditProhibited24Regular,
-    Folder24Regular
+    Folder24Regular,
 } from '@fluentui/react-icons';
 import { Commit, JobResult, UserFetchedAssignment } from 'codetierlist-types';
 import JSZip from 'jszip';
@@ -106,6 +107,27 @@ const ValidationErrorMessageBar = ({
     /** the commit info */
     commit: Commit;
 }) => {
+    const { showSnack } = useContext(SnackbarContext);
+
+    const CopyButton = () => (
+        <MessageBarActions>
+            <Button
+                onClick={() => {
+                    navigator.clipboard
+                        .writeText(JSON.stringify(commit.validation_result) ?? '')
+                        .then(() => {
+                            showSnack('Status copied', 'success');
+                        })
+                        .catch(() => {
+                            showSnack('Failed to copy status', 'error');
+                        });
+                }}
+            >
+                Copy result
+            </Button>
+        </MessageBarActions>
+    );
+
     if (commit.valid === 'INVALID') {
         return (
             <MessageBar className="m-y-m" intent={'error'}>
@@ -115,6 +137,18 @@ const ValidationErrorMessageBar = ({
                     </MessageBarTitle>
                     <ValidationError validationResult={commit.validation_result} />
                 </MessageBarBody>
+                <CopyButton />
+            </MessageBar>
+        );
+    } else if (commit.valid === 'VALID') {
+        return (
+            <MessageBar className="m-y-m" intent={'success'}>
+                <MessageBarBody>
+                    <MessageBarTitle>
+                        This testcase passed instructor&apos;s solution
+                    </MessageBarTitle>
+                </MessageBarBody>
+                <CopyButton />
             </MessageBar>
         );
     }
