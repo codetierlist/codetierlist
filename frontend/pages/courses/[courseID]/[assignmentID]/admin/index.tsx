@@ -83,32 +83,29 @@ const HighlightSubstring = ({
  * @param assignmentID the assignment ID
  */
 const useAssignmentAdmin = (courseID: string, assignmentID: string) => {
-    const [studentData, setStudentData] = useState<AssignmentStudentStats | null>(null);
     const { showSnack } = useContext(SnackbarContext);
+    const [assignmentData, setAssignmentData] = useState<AssignmentStudentStats | null>(
+        null
+    );
 
-    const fetchAssignmentStats = async () => {
-        await axios
+    useEffect(() => {
+        axios
             .get<AssignmentStudentStats>(
                 `/courses/${courseID}/assignments/${assignmentID}/stats`,
                 {
                     skipErrorHandling: true,
                 }
             )
-            .then((res) => setStudentData(res.data))
+            .then((res) => {
+                setAssignmentData(res.data);
+            })
             .catch((e) => {
                 handleError(showSnack)(e);
             });
-    };
-
-    useEffect(() => {
-        if (!courseID || !assignmentID) {
-            return;
-        }
-        void fetchAssignmentStats();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [courseID, assignmentID]);
 
-    return { studentData };
+    return assignmentData;
 };
 
 /**
@@ -237,10 +234,7 @@ const TierToInt: Record<UserTier, number> = {
 
 export default function Page({ setStage }: { setStage: (stage: Stage) => void }) {
     const { courseID, assignmentID } = useRouter().query;
-    const { studentData } = useAssignmentAdmin(
-        courseID as string,
-        assignmentID as string
-    );
+    const studentData = useAssignmentAdmin(courseID as string, assignmentID as string);
     const [filterValue, setFilterValue] = useState<string>('');
 
     const router = useRouter();
@@ -252,7 +246,7 @@ export default function Page({ setStage }: { setStage: (stage: Stage) => void })
             return [];
         }
 
-        return studentData.filter((student) => {
+        return studentData.filter((student: AssignmentStudentStat) => {
             return (
                 student.utorid.toLowerCase().includes(filterValue.toLowerCase()) ||
                 `${student.givenName} ${student.surname}`
@@ -343,7 +337,7 @@ export default function Page({ setStage }: { setStage: (stage: Stage) => void })
         </DataGridRow>
     );
 
-    if (!courseID || !assignmentID || !assignment) {
+    if (!courseID || !assignmentID) {
         return <Error statusCode={404} />;
     }
 
@@ -355,8 +349,14 @@ export default function Page({ setStage }: { setStage: (stage: Stage) => void })
     return (
         <section className="p-b-xxxl">
             <HeaderToolbar>
-                <AdminToolbarDeleteAssignmentButton assignment={assignment} />
-                <AdminToolbarRevalidateAssignmentButton assignment={assignment} />
+                <AdminToolbarDeleteAssignmentButton
+                    courseID={courseID as string}
+                    assignmentID={assignmentID as string}
+                />
+                <AdminToolbarRevalidateAssignmentButton
+                    courseID={courseID as string}
+                    assignmentID={assignmentID as string}
+                />
             </HeaderToolbar>
 
             <Card className="m-x-l m-t-xxl">
@@ -403,18 +403,19 @@ export default function Page({ setStage }: { setStage: (stage: Stage) => void })
                             )}
                         </DataGridRow>
                     </DataGridHeader>
+
+                    {!studentData && (
+                        <Spinner
+                            className="m-y-xxxl"
+                            labelPosition="below"
+                            label="Fetching the latest data for you&hellip;"
+                        />
+                    )}
+
                     <DataGridBody<AssignmentStudentStat> itemSize={40} height={500}>
                         {renderRow}
                     </DataGridBody>
                 </DataGrid>
-
-                {!studentData && (
-                    <Spinner
-                        className="m-y-xxxl"
-                        labelPosition="below"
-                        label="Fetching the latest data for you&hellip;"
-                    />
-                )}
             </Card>
         </section>
     );
