@@ -216,11 +216,14 @@ export type JobResult =
 }
 
 
-export type AssignmentStudentStats = (Omit<User, "admin" | "theme" | "new_achievements" | "accent_color"> & {
+export type AssignmentStudentStat = (Omit<User, "admin" | "theme" | "new_achievements" | "accent_color"> & {
     tier: Tier,
     testsPassed: number,
     totalTests: number,
-})[]
+    groupNumber: number | null,
+});
+
+export type AssignmentStudentStats = AssignmentStudentStat[];
 
 
 export type AchievementConfig = {

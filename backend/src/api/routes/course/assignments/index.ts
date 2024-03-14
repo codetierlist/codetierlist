@@ -473,6 +473,7 @@ router.get('/:assignment/stats', fetchAssignmentMiddleware, errorHandler(async (
             givenName: submission.givenName,
             surname: submission.surname,
             email: submission.email,
+            groupNumber: submission.group_number,
             tier: invertedTierlist[submission.utorid],
             testsPassed: Number(submission.passed),
             totalTests: Number(submission.total)
