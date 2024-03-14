@@ -1,5 +1,6 @@
 import axios, { handleError } from '@/axios';
 import {
+    AssignmentPageAdminTab,
     AssignmentPageFilesTab,
     DueDateMessageBar,
     MarkdownRender,
@@ -34,7 +35,6 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/router';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { Col, Container } from 'react-grid-system';
-import ViewAdminTab from './admin/index';
 import styles from './page.module.css';
 
 export declare type Stage = 'details' | 'upload' | 'tierlist' | 'admin' | '404';
@@ -431,7 +431,7 @@ export default function Page() {
                 {stage === 'tierlist' && <ViewTierList className="m-t-xxxl" />}
                 {stage === 'admin' &&
                     checkIfCourseAdmin(userInfo, assignment.course_id) && (
-                        <ViewAdminTab setStage={setStage} />
+                        <AssignmentPageAdminTab setStage={setStage} />
                     )}
             </Container>
         </>

@@ -16,8 +16,7 @@ import {
     DataGridRow,
     RowRenderer,
 } from '@fluentui-contrib/react-data-grid-react-window';
-import {
-    Button,
+import { Button,
     Card,
     Field,
     Input,
@@ -37,8 +36,6 @@ import {
 import {
     AssignmentStudentStat,
     AssignmentStudentStats,
-    FetchedAssignment,
-    FetchedAssignmentWithTier,
     Tier,
     UserTier,
 } from 'codetierlist-types';
@@ -46,7 +43,7 @@ import Error from 'next/error';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useMemo, useState } from 'react';
-import { Stage } from '..';
+import { Stage } from '../../pages/courses/[courseID]/[assignmentID]';
 
 /**
  * Highlights the substring in the string
@@ -78,7 +75,8 @@ const HighlightSubstring = ({
 };
 
 /**
- * Fetches the assignment and student data
+ * Fetches the assignment stats
+ *
  * @param courseID the course ID
  * @param assignmentID the assignment ID
  */
@@ -222,6 +220,9 @@ const ViewTierlistLink = ({
     );
 };
 
+/**
+ * A mapping of tier to integer for sorting reasons
+ */
 const TierToInt: Record<UserTier, number> = {
     S: 0,
     A: 1,
@@ -232,7 +233,10 @@ const TierToInt: Record<UserTier, number> = {
     '?': 6,
 };
 
-export default function Page({ setStage }: { setStage: (stage: Stage) => void }) {
+/**
+ * The admin tab of the assignment page
+ */
+export const AssignmentPageAdminTab = ({ setStage }: { setStage: (stage: Stage) => void }) => {
     const { courseID, assignmentID } = useRouter().query;
     const studentData = useAssignmentAdmin(courseID as string, assignmentID as string);
     const [filterValue, setFilterValue] = useState<string>('');
@@ -336,10 +340,6 @@ export default function Page({ setStage }: { setStage: (stage: Stage) => void })
             {({ renderCell }) => <DataGridCell>{renderCell(item)}</DataGridCell>}
         </DataGridRow>
     );
-
-    if (!courseID || !assignmentID) {
-        return <Error statusCode={404} />;
-    }
 
     // If the user is not an admin, error 403
     if (!checkIfCourseAdmin(userInfo, courseID as string)) {

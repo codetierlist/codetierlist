@@ -4,6 +4,7 @@
 export * from './AchievementCard/AchievementCard';
 export * from './AllCoursesList/AllCoursesList';
 export * from './AssignmentCard/AssignmentCard';
+export * from './AssignmentPageAdminTab/AssignmentPageAdminTab';
 export * from './AssignmentPageFilesTab/AssignmentPageFilesTab';
 export * from './AssignmentPageTestCaseIcon/AssignmentPageTestCaseIcon';
 export * from './BaseAdminToolbarDeleteButton/BaseAdminToolbarDeleteButton';

@@ -2,15 +2,6 @@ import { Badge } from '@fluentui/react-components';
 import styles from './SessionBlock.module.css';
 import { Session } from 'codetierlist-types';
 import { CSSProperties } from 'react';
-
-export declare type SessionBlockProps = {
-    /** the session to display */
-    session: Session;
-};
-
-/**
- * Get the style for the session badge
- */
 const getSessionStyle = (session: Session): CSSProperties | undefined => {
     switch (session) {
         case 'SUMMER':
@@ -36,7 +27,12 @@ const getSessionStyle = (session: Session): CSSProperties | undefined => {
 /**
  * A badge that displays the session
  */
-export const SessionBlock = ({ session }: SessionBlockProps): JSX.Element => {
+export const SessionBlock = ({
+    session,
+}: {
+    /** the session to display */
+    session: Session;
+}): JSX.Element => {
     return (
         <Badge
             shape="square"
