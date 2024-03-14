@@ -282,7 +282,7 @@ export default function Page({ setStage }: { setStage: (stage: Stage) => void })
             renderCell: (item) => (
                 <ViewTierlistLink
                     utorid={item.utorid}
-                    setStage={() => {}}
+                    setStage={setStage}
                     tier={item.tier}
                 />
             ),
