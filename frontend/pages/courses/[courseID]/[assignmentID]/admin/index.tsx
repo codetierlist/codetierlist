@@ -30,11 +30,9 @@ import {
 } from '@fluentui/react-components';
 import {
     ArrowCounterclockwise24Regular,
-    ArrowRight12Regular,
-    ArrowRight24Regular,
     Dismiss24Regular,
     Open12Regular,
-    Search24Regular,
+    Search24Regular
 } from '@fluentui/react-icons';
 import {
     AssignmentStudentStat,
