@@ -24,7 +24,8 @@ const getSessionStyle = (session: Session): CSSProperties => {
             return {
                 color: 'var(--colorNeutralForegroundInverted)',
                 backgroundColor: 'var(--colorPaletteBlueForeground2)',
-            }; }
+            };
+    }
 };
 
 /**
