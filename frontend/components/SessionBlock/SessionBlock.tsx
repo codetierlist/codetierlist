@@ -2,7 +2,13 @@ import { Badge } from '@fluentui/react-components';
 import styles from './SessionBlock.module.css';
 import { Session } from 'codetierlist-types';
 import { CSSProperties } from 'react';
-const getSessionStyle = (session: Session): CSSProperties | undefined => {
+
+/**
+ * Get the style for the session
+ * @param session the session
+ * @returns the style for the session
+ */
+const getSessionStyle = (session: Session): CSSProperties => {
     switch (session) {
         case 'SUMMER':
             return {
@@ -18,10 +24,7 @@ const getSessionStyle = (session: Session): CSSProperties | undefined => {
             return {
                 color: 'var(--colorNeutralForegroundInverted)',
                 backgroundColor: 'var(--colorPaletteBlueForeground2)',
-            };
-        default:
-            return undefined;
-    }
+            }; }
 };
 
 /**
