@@ -1,12 +1,19 @@
 import {
+    TierChip,
+    ToolTipIcon,
+    generateInitialsAvatarProps,
+    getTierClass,
+} from '@/components';
+import { useStage } from '@/pages/courses/[courseID]/[assignmentID]';
+import {
     AvatarGroup,
     AvatarGroupItem,
-    partitionAvatarGroupItems,
+    Link,
+    partitionAvatarGroupItems
 } from '@fluentui/react-components';
 import { Tier, Tierlist, TierlistEntry } from 'codetierlist-types';
+import { forwardRef, useEffect, useRef, useState } from 'react';
 import { Col, Row } from 'react-grid-system';
-import { generateInitialsAvatarProps, TierChip, getTierClass } from '@/components';
-import { useState, forwardRef, useRef, useEffect } from 'react';
 import styles from './TierList.module.css';
 
 const EMPTY_DATA: Tierlist = {
@@ -39,6 +46,48 @@ declare type TierAvatarsProps = {
     people: TierlistEntry[];
     /** The maximum number of people to display before showing a +x */
     maxInlineItems: number;
+};
+
+/**
+ * A tier avatar displays the avatar of a person in the tier.
+ */
+const TierAvatar = ({ person }: { person: TierlistEntry }) => {
+    const { setStage } = useStage();
+
+    /**
+     * Load the uploads of the person.
+     */
+    const loadUploads = () => {
+        setStage('upload', person.utorid);
+    };
+
+    /**
+     * The avatar of the person.
+     */
+    const avatar = (
+        <AvatarGroupItem
+            className={person.you ? `${styles.you} ${styles.avatar}` : styles.avatar}
+            onClick={person.utorid ? loadUploads : undefined}
+            {...generateInitialsAvatarProps(person.name, {
+                active: person.you ? 'active' : undefined,
+            })}
+        />
+    );
+
+    if (person.utorid && person.utorid !== '') {
+        return (
+            <ToolTipIcon
+                tooltip={`View ${person.utorid}'s uploads`}
+                icon={
+                    <Link onClick={loadUploads} appearance="subtle">
+                        {avatar}
+                    </Link>
+                }
+            />
+        );
+    }
+
+    return avatar;
 };
 
 /**
@@ -78,19 +127,7 @@ const TierAvatars = forwardRef<HTMLDivElement, TierAvatarsProps>(
                     {newInlineItems
                         .filter((person) => person)
                         .map((person, i) => {
-                            return (
-                                <AvatarGroupItem
-                                    key={i}
-                                    className={
-                                        person.you
-                                            ? `${styles.you} ${styles.avatar}`
-                                            : styles.avatar
-                                    }
-                                    {...generateInitialsAvatarProps(person.name, {
-                                        active: person.you ? 'active' : undefined,
-                                    })}
-                                />
-                            );
+                            return <TierAvatar key={i} person={person} />;
                         })}
                     {overflowItems && (
                         <AvatarGroupItem
