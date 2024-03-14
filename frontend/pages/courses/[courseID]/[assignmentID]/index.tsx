@@ -122,6 +122,32 @@ const ViewTierList = (props: React.HTMLAttributes<HTMLDivElement>) => {
 };
 
 /**
+ * A hook that fetches the assignment and tierlist for the assignment page
+ */
+export const useStage = () => {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const pathname = usePathname();
+
+    const stage = (searchParams.get('tab') ?? 'details') as Stage;
+
+    const setStage = useCallback(
+        (s: Stage, utorid?: string) => {
+            const params = new URLSearchParams(searchParams.toString());
+            params.set('tab', s);
+            if (utorid) {
+                params.set('utorid', utorid);
+            }
+
+            void router.push(`${pathname}?${params.toString()}`);
+        },
+        [router, searchParams, pathname]
+    );
+
+    return { stage, setStage };
+};
+
+/**
  * The files tab for the assignment page
  */
 const ViewFilesTab = ({
@@ -230,13 +256,12 @@ const PastDeadlineTooltip = ({ assignment }: { assignment: UserFetchedAssignment
  */
 const ViewDetailsTab = ({
     assignment,
-    setStage,
 }: {
     /** The assignment to display */
     assignment: UserFetchedAssignment;
-    /** The function to set the stage */
-    setStage: (stage: Stage) => void;
 }) => {
+    const { setStage } = useStage();
+
     return (
         <>
             <DueDateMessageBar assignment={assignment} />
@@ -334,17 +359,13 @@ const useQueryString = (
     const searchParams = useSearchParams();
     const pathname = usePathname();
 
-    const createQueryString = useCallback(() => {
-        const params = new URLSearchParams(searchParams.toString());
-        params.delete(queryKey);
-        return params.toString();
-    }, [searchParams, queryKey]);
-
     return useEffect(() => {
-        // remove utorid query when not in upload or tierlist stage
+        // remove query when not in upload or tierlist stage
         if (!excludeStages.includes(currentStage) && searchParams.has(queryKey)) {
-            const query = createQueryString();
-            void router.replace(`${pathname}${query ? '?' : ''}${query}`);
+            const params = new URLSearchParams(searchParams.toString());
+            params.delete(queryKey);
+
+            void router.push(`${pathname}?${params.toString()}`);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentStage]);
@@ -384,7 +405,7 @@ const useAssignment = (courseID: string, assignmentID: string) => {
 
 export default function Page() {
     const router = useRouter();
-    const [stage, setStage] = useState<Stage>('details');
+    const { stage, setStage } = useStage();
     const { assignment, fetchAssignment } = useAssignment(
         router.query.courseID as string,
         router.query.assignmentID as string
@@ -392,6 +413,23 @@ export default function Page() {
     const { courseID, assignmentID } = router.query;
     const { userInfo } = useContext(UserContext);
 
+    // validation of tabs
+    useEffect(() => {
+        if (
+            stage !== 'details' &&
+            stage !== 'upload' &&
+            stage !== 'tierlist' &&
+            stage !== 'admin'
+        ) {
+            setStage('details');
+        }
+
+        if (!checkIfCourseAdmin(userInfo, courseID as string) && stage === 'admin') {
+            setStage('details');
+        }
+    }, [stage, setStage, userInfo, courseID]);
+
+    // remove utorid query when not in upload or tierlist stage
     useQueryString('utorid', ['upload', 'tierlist'], stage);
 
     useEffect(() => {
@@ -439,9 +477,7 @@ export default function Page() {
             </TabList>
 
             <Container component="main" className="m-t-xxxl">
-                {stage === 'details' && (
-                    <ViewDetailsTab assignment={assignment} setStage={setStage} />
-                )}
+                {stage === 'details' && <ViewDetailsTab assignment={assignment} />}
                 {stage === 'upload' && (
                     <ViewFilesTab
                         fetchAssignment={fetchAssignment}
@@ -452,7 +488,7 @@ export default function Page() {
                 {stage === 'tierlist' && <ViewTierList className="m-t-xxxl" />}
                 {stage === 'admin' &&
                     checkIfCourseAdmin(userInfo, assignment.course_id) && (
-                        <AssignmentPageAdminTab setStage={setStage} />
+                        <AssignmentPageAdminTab />
                     )}
             </Container>
         </>

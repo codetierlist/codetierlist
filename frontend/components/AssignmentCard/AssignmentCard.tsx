@@ -1,8 +1,7 @@
-import { TierChip } from '@/components';
+import { convertDate, TierChip } from '@/components';
 import { CompoundButton, Subtitle1 } from '@fluentui/react-components';
 import { type Tier, type UserTier } from 'codetierlist-types';
 import { useRouter } from 'next/navigation';
-import { convertDate } from '../utils/TimeUtils/TimeUtils';
 import { useMemo } from 'react';
 import styles from './AssignmentCard.module.css';
 

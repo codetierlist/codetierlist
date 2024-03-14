@@ -7,6 +7,7 @@ import {
     getTierClass,
 } from '@/components';
 import { SnackbarContext, UserContext } from '@/hooks';
+import { useStage } from '@/pages/courses/[courseID]/[assignmentID]';
 import {
     DataGrid,
     DataGridBody,
@@ -41,10 +42,8 @@ import {
     UserTier,
 } from 'codetierlist-types';
 import Error from 'next/error';
-import { usePathname, useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useMemo, useState } from 'react';
-import { Stage } from '../../pages/courses/[courseID]/[assignmentID]';
 
 /**
  * Highlights the substring in the string
@@ -189,31 +188,20 @@ export const AdminToolbarRevalidateAssignmentButton = ({
  */
 const ViewTierlistLink = ({
     utorid,
-    setStage,
     tier,
 }: {
     /** the utorid of the student to view the tierlist of */
     utorid: string;
-    /** the function to set the stage */
-    setStage: (stage: Stage) => void;
     /** the tier of the student */
     tier: UserTier | Tier;
 }) => {
-    const router = useRouter();
-    const searchParams = useSearchParams();
-    const pathname = usePathname();
-
-    const loadTierlist = () => {
-        const params = new URLSearchParams(searchParams.toString());
-        params.set('utorid', utorid);
-        router.push(`${pathname}?${params.toString()}`).then(() => setStage('tierlist'));
-    };
+    const { setStage } = useStage();
 
     return (
         <Button
             appearance="subtle"
             className={getTierClass(tier)}
-            onClick={loadTierlist}
+            onClick={() => setStage('tierlist', utorid)}
             icon={tier}
         >
             View Tierlist
@@ -237,18 +225,11 @@ const TierToInt: Record<UserTier, number> = {
 /**
  * The admin tab of the assignment page
  */
-export const AssignmentPageAdminTab = ({
-    setStage,
-}: {
-    setStage: (stage: Stage) => void;
-}) => {
+export const AssignmentPageAdminTab = () => {
+    const { setStage } = useStage();
     const { courseID, assignmentID } = useRouter().query;
     const studentData = useAssignmentAdmin(courseID as string, assignmentID as string);
     const [filterValue, setFilterValue] = useState<string>('');
-
-    const router = useRouter();
-    const pathname = usePathname();
-    const searchParams = useSearchParams();
 
     const filteredStudentData = useMemo(() => {
         if (!studentData) {
@@ -277,11 +258,7 @@ export const AssignmentPageAdminTab = ({
             renderHeaderCell: () => 'Tier',
             compare: (a, b) => TierToInt[a.tier] - TierToInt[b.tier],
             renderCell: (item) => (
-                <ViewTierlistLink
-                    utorid={item.utorid}
-                    setStage={setStage}
-                    tier={item.tier}
-                />
+                <ViewTierlistLink utorid={item.utorid} tier={item.tier} />
             ),
         }),
         createTableColumn<AssignmentStudentStat>({
@@ -295,13 +272,7 @@ export const AssignmentPageAdminTab = ({
                         <Link
                             appearance="subtle"
                             onClick={() => {
-                                const params = new URLSearchParams(
-                                    searchParams.toString()
-                                );
-                                params.set('utorid', item.utorid);
-                                router
-                                    .push(`${pathname}?${params.toString()}`)
-                                    .then(() => setStage('upload'));
+                                setStage('upload', item.utorid);
                             }}
                         >
                             <HighlightSubstring
