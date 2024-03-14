@@ -199,35 +199,6 @@ export const AdminToolbarRevalidateAssignmentButton = ({
 };
 
 /**
- * A button that views the submission of a student
- */
-const ViewSubmissionLink = ({
-    utorid,
-    setStage,
-}: {
-    /** the utorid of the student to view the submission of */
-    utorid: string;
-    /** the function to set the stage */
-    setStage: (stage: Stage) => void;
-}) => {
-    const router = useRouter();
-    const searchParams = useSearchParams();
-    const pathname = usePathname();
-
-    const loadSubmission = () => {
-        const params = new URLSearchParams(searchParams.toString());
-        params.set('utorid', utorid);
-        router.push(`${pathname}?${params.toString()}`).then(() => setStage('upload'));
-    };
-
-    return (
-        <Link appearance="subtle" onClick={loadSubmission}>
-            View Submission
-        </Link>
-    );
-};
-
-/**
  * A button that views the tierlist of a student
  */
 const ViewTierlistLink = ({
