@@ -83,23 +83,8 @@ const HighlightSubstring = ({
  * @param assignmentID the assignment ID
  */
 const useAssignmentAdmin = (courseID: string, assignmentID: string) => {
-    const [assignment, setAssignment] = useState<FetchedAssignmentWithTier | null>(null);
     const [studentData, setStudentData] = useState<AssignmentStudentStats | null>(null);
     const { showSnack } = useContext(SnackbarContext);
-
-    const fetchAssignment = async () => {
-        await axios
-            .get<FetchedAssignmentWithTier>(
-                `/courses/${courseID}/assignments/${assignmentID}`,
-                {
-                    skipErrorHandling: true,
-                }
-            )
-            .then((res) => setAssignment(res.data))
-            .catch((e) => {
-                handleError(showSnack)(e);
-            });
-    };
 
     const fetchAssignmentStats = async () => {
         await axios
@@ -119,21 +104,24 @@ const useAssignmentAdmin = (courseID: string, assignmentID: string) => {
         if (!courseID || !assignmentID) {
             return;
         }
-        void fetchAssignment();
         void fetchAssignmentStats();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [courseID, assignmentID]);
 
-    return { assignment, studentData };
+    return { studentData };
 };
 
 /**
  * A button that deletes an assignment
  */
 export const AdminToolbarDeleteAssignmentButton = ({
-    assignment,
+    courseID,
+    assignmentID,
 }: {
-    assignment: FetchedAssignment;
+    /** the course ID */
+    courseID: string;
+    /** the assignment ID */
+    assignmentID: string;
 }) => {
     const { showSnack } = useContext(SnackbarContext);
     const { fetchUserInfo } = useContext(UserContext);
@@ -142,7 +130,7 @@ export const AdminToolbarDeleteAssignmentButton = ({
 
     const deleteAssignment = async () => {
         await axios
-            .delete(`/courses/${assignment.course_id}/assignments/${assignment.title}`)
+            .delete(`/courses/${courseID}/assignments/${assignmentID}`)
             .then(() => router.push('/'))
             .catch((e) => {
                 handleError(showSnack)(e);
@@ -162,18 +150,20 @@ export const AdminToolbarDeleteAssignmentButton = ({
  * A button that deletes an assignment
  */
 export const AdminToolbarRevalidateAssignmentButton = ({
-    assignment,
+    courseID,
+    assignmentID,
 }: {
-    assignment: FetchedAssignment;
+    /** the course ID */
+    courseID: string;
+    /** the assignment ID */
+    assignmentID: string;
 }) => {
     const { showSnack } = useContext(SnackbarContext);
     const { fetchUserInfo } = useContext(UserContext);
 
     const revalidateAssignment = async () => {
         await axios
-            .post(
-                `/courses/${assignment.course_id}/assignments/${assignment.title}/revalidate`
-            )
+            .post(`/courses/${courseID}/assignments/${assignmentID}/revalidate`)
             .then((res) => {
                 if (res.status === 200) {
                     showSnack(
@@ -247,7 +237,7 @@ const TierToInt: Record<UserTier, number> = {
 
 export default function Page({ setStage }: { setStage: (stage: Stage) => void }) {
     const { courseID, assignmentID } = useRouter().query;
-    const { assignment, studentData } = useAssignmentAdmin(
+    const { studentData } = useAssignmentAdmin(
         courseID as string,
         assignmentID as string
     );
@@ -275,8 +265,8 @@ export default function Page({ setStage }: { setStage: (stage: Stage) => void })
     const { userInfo } = useContext(UserContext);
 
     useEffect(() => {
-        document.title = `${assignment?.title || assignmentID} - Codetierlist`;
-    }, [assignment, assignmentID]);
+        document.title = `${assignmentID} - Codetierlist`;
+    }, [assignmentID]);
 
     const columns: TableColumnDefinition<AssignmentStudentStat>[] = [
         createTableColumn<AssignmentStudentStat>({
