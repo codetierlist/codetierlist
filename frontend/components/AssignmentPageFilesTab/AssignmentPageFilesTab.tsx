@@ -458,7 +458,9 @@ export const AssignmentPageFilesTab = ({
                     onClick={uploadFolder}
                 >
                     Upload folder
-                    {currentFolder && ` to ${basename(currentFolder)}`}
+                    {currentFolder &&
+                        currentFolder !== '.' &&
+                        ` to ${basename(currentFolder)}`}
                 </Button>
 
                 <Button
@@ -468,7 +470,9 @@ export const AssignmentPageFilesTab = ({
                     onClick={uploadFile}
                 >
                     Upload {routeName}{' '}
-                    {currentFolder ? ` to ${basename(currentFolder)}` : null}
+                    {currentFolder &&
+                        currentFolder !== '.' &&
+                        ` to ${basename(currentFolder)}`}
                 </Button>
                 <Button
                     disabled={currentFile === ''}
