@@ -2,11 +2,20 @@ import axios, { handleError } from '@/axios';
 import {
     BaseAdminToolbarDeleteButton,
     HeaderToolbar,
+    ToolTipIcon,
     checkIfCourseAdmin,
     getTierClass,
 } from '@/components';
-import { SnackbarContext } from '@/hooks';
-import { UserContext } from '@/hooks';
+import { SnackbarContext, UserContext } from '@/hooks';
+import {
+    DataGrid,
+    DataGridBody,
+    DataGridCell,
+    DataGridHeader,
+    DataGridHeaderCell,
+    DataGridRow,
+    RowRenderer,
+} from '@fluentui-contrib/react-data-grid-react-window';
 import {
     Button,
     Card,
@@ -14,31 +23,31 @@ import {
     Input,
     Link,
     Spinner,
-    Table,
-    TableBody,
-    TableCell,
-    TableHeader,
-    TableHeaderCell,
-    TableRow,
+    TableColumnDefinition,
     ToolbarButton,
     Tooltip,
+    createTableColumn,
 } from '@fluentui/react-components';
 import {
     ArrowCounterclockwise24Regular,
+    ArrowRight12Regular,
+    ArrowRight24Regular,
     Dismiss24Regular,
+    Open12Regular,
     Search24Regular,
 } from '@fluentui/react-icons';
 import {
+    AssignmentStudentStat,
     AssignmentStudentStats,
-    FetchedAssignmentWithTier,
     FetchedAssignment,
-    UserTier,
+    FetchedAssignmentWithTier,
     Tier,
+    UserTier,
 } from 'codetierlist-types';
 import Error from 'next/error';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/router';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { Stage } from '..';
 
 /**
@@ -47,25 +56,26 @@ import { Stage } from '..';
 const HighlightSubstring = ({
     str,
     substr,
+    ...props
 }: {
     /** the string to highlight */
     str: string;
     /** the substring to highlight */
     substr: string;
-}) => {
+} & React.HTMLAttributes<HTMLSpanElement>) => {
     const index = str.toLowerCase().indexOf(substr.toLowerCase());
     if (index === -1) {
         return str;
     }
 
     return (
-        <>
+        <span {...props}>
             {str.substring(0, index)}
             <strong style={{ color: 'var(--colorBrandForeground1)' }}>
                 {str.substring(index, index + substr.length)}
             </strong>
             {str.substring(index + substr.length)}
-        </>
+        </span>
     );
 };
 
@@ -256,6 +266,16 @@ const ViewTierlistLink = ({
     );
 };
 
+const TierToInt: Record<UserTier, number> = {
+    S: 0,
+    A: 1,
+    B: 2,
+    C: 3,
+    D: 4,
+    F: 5,
+    '?': 6,
+};
+
 export default function Page({ setStage }: { setStage: (stage: Stage) => void }) {
     const { courseID, assignmentID } = useRouter().query;
     const { assignment, studentData } = useAssignmentAdmin(
@@ -263,22 +283,95 @@ export default function Page({ setStage }: { setStage: (stage: Stage) => void })
         assignmentID as string
     );
     const [filterValue, setFilterValue] = useState<string>('');
+
+    const filteredStudentData = useMemo(() => {
+        if (!studentData) {
+            return [];
+        }
+
+        return studentData.filter((student) => {
+            return (
+                student.utorid.toLowerCase().includes(filterValue.toLowerCase()) ||
+                `${student.givenName} ${student.surname}`
+                    .toLowerCase()
+                    .includes(filterValue.toLowerCase())
+            );
+        });
+    }, [studentData, filterValue]);
+
     const { userInfo } = useContext(UserContext);
 
     useEffect(() => {
         document.title = `${assignment?.title || assignmentID} - Codetierlist`;
     }, [assignment, assignmentID]);
 
+    const columns: TableColumnDefinition<AssignmentStudentStat>[] = [
+        createTableColumn<AssignmentStudentStat>({
+            columnId: 'tier',
+            renderHeaderCell: () => 'Tier',
+            compare: (a, b) => TierToInt[a.tier] - TierToInt[b.tier],
+            renderCell: (item) => (
+                <ViewTierlistLink
+                    utorid={item.utorid}
+                    setStage={() => {}}
+                    tier={item.tier}
+                />
+            ),
+        }),
+        createTableColumn<AssignmentStudentStat>({
+            columnId: 'utorid',
+            renderHeaderCell: () => 'UTORid',
+            compare: (a, b) => a.utorid.localeCompare(b.utorid),
+            renderCell: (item) => (
+                <ToolTipIcon
+                    tooltip="View submission"
+                    icon={
+                        <Link appearance="subtle" onClick={() => setStage('upload')}>
+                            <HighlightSubstring
+                                str={item.utorid}
+                                substr={filterValue}
+                                className="m-r-s"
+                            />
+                            <Open12Regular />
+                        </Link>
+                    }
+                />
+            ),
+        }),
+        createTableColumn<AssignmentStudentStat>({
+            columnId: 'name',
+            renderHeaderCell: () => 'Full Name',
+            compare: (a, b) => a.givenName.localeCompare(b.givenName),
+            renderCell: (item) => (
+                <HighlightSubstring
+                    str={`${item.givenName} ${item.surname}`}
+                    substr={filterValue}
+                />
+            ),
+        }),
+        createTableColumn<AssignmentStudentStat>({
+            columnId: 'testsPassed',
+            renderHeaderCell: () => 'Tests Passed',
+            compare: (a, b) => a.testsPassed - b.testsPassed,
+            renderCell: (item) => `${item.testsPassed}/${item.totalTests}`,
+        }),
+        createTableColumn<AssignmentStudentStat>({
+            columnId: 'groupNumber',
+            renderHeaderCell: () => 'Group Number',
+            compare: (a, b) => Number(a.groupNumber ?? 0) - Number(b.groupNumber ?? 0),
+            renderCell: (item) => item.groupNumber,
+        }),
+    ];
+
+    const renderRow: RowRenderer<AssignmentStudentStat> = ({ item, rowId }, style) => (
+        <DataGridRow<AssignmentStudentStat> key={rowId} style={style}>
+            {({ renderCell }) => <DataGridCell>{renderCell(item)}</DataGridCell>}
+        </DataGridRow>
+    );
+
     if (!courseID || !assignmentID || !assignment) {
         return <Error statusCode={404} />;
     }
-
-    const columns = [
-        { columnKey: 'tier', label: 'Tier' },
-        { columnKey: 'utorid', label: 'UTORid' },
-        { columnKey: 'name', label: 'Full Name' },
-        { columnKey: 'testsPassed', label: 'Tests Passed' },
-    ];
 
     // If the user is not an admin, error 403
     if (!checkIfCourseAdmin(userInfo, courseID as string)) {
@@ -326,66 +419,20 @@ export default function Page({ setStage }: { setStage: (stage: Stage) => void })
                     </Field>
                 </div>
 
-                <Table arial-label="Admin table" className="m-xs m-t-s">
-                    <TableHeader>
-                        <TableRow>
-                            {columns.map((column) => (
-                                <TableHeaderCell key={column.columnKey}>
-                                    {column.label}
-                                </TableHeaderCell>
-                            ))}
-                        </TableRow>
-                    </TableHeader>
-
-                    <TableBody>
-                        {studentData &&
-                            studentData.map((item) => (
-                                <TableRow
-                                    key={item.utorid}
-                                    style={{
-                                        display:
-                                            filterValue === '' ||
-                                            item.utorid.includes(filterValue) ||
-                                            `${item.givenName} ${item.surname}`.includes(
-                                                filterValue
-                                            )
-                                                ? undefined
-                                                : 'none',
-                                    }}
-                                >
-                                    <TableCell>
-                                        <ViewTierlistLink
-                                            utorid={item.utorid}
-                                            setStage={setStage}
-                                            tier={item.tier}
-                                        />
-                                    </TableCell>
-
-                                    <TableCell>
-                                        <HighlightSubstring
-                                            str={item.utorid}
-                                            substr={filterValue}
-                                        />
-                                    </TableCell>
-                                    <TableCell>
-                                        <HighlightSubstring
-                                            str={`${item.givenName} ${item.surname}`}
-                                            substr={filterValue}
-                                        />
-                                    </TableCell>
-                                    <TableCell>
-                                        {item.testsPassed}/{item.totalTests}
-                                    </TableCell>
-                                    <TableCell>
-                                        <ViewSubmissionLink
-                                            utorid={item.utorid}
-                                            setStage={setStage}
-                                        />
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                    </TableBody>
-                </Table>
+                <DataGrid items={filteredStudentData} columns={columns} sortable>
+                    <DataGridHeader>
+                        <DataGridRow>
+                            {({ renderHeaderCell }) => (
+                                <DataGridHeaderCell>
+                                    {renderHeaderCell()}
+                                </DataGridHeaderCell>
+                            )}
+                        </DataGridRow>
+                    </DataGridHeader>
+                    <DataGridBody<AssignmentStudentStat> itemSize={40} height={500}>
+                        {renderRow}
+                    </DataGridBody>
+                </DataGrid>
 
                 {!studentData && (
                     <Spinner
