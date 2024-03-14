@@ -54,20 +54,15 @@ declare type TierAvatarsProps = {
 const TierAvatar = ({ person }: { person: TierlistEntry }) => {
     const { setStage } = useStage();
 
-    /**
-     * Load the uploads of the person.
-     */
+    /** Load the uploads of the person. */
     const loadUploads = () => {
         setStage('upload', person.utorid);
     };
 
-    /**
-     * The avatar of the person.
-     */
+    /** The avatar of the person. */
     const avatar = (
         <AvatarGroupItem
             className={person.you ? `${styles.you} ${styles.avatar}` : styles.avatar}
-            onClick={person.utorid ? loadUploads : undefined}
             {...generateInitialsAvatarProps(person.name, {
                 active: person.you ? 'active' : undefined,
             })}
