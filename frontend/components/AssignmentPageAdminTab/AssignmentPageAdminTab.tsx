@@ -16,7 +16,8 @@ import {
     DataGridRow,
     RowRenderer,
 } from '@fluentui-contrib/react-data-grid-react-window';
-import { Button,
+import {
+    Button,
     Card,
     Field,
     Input,
@@ -236,7 +237,11 @@ const TierToInt: Record<UserTier, number> = {
 /**
  * The admin tab of the assignment page
  */
-export const AssignmentPageAdminTab = ({ setStage }: { setStage: (stage: Stage) => void }) => {
+export const AssignmentPageAdminTab = ({
+    setStage,
+}: {
+    setStage: (stage: Stage) => void;
+}) => {
     const { courseID, assignmentID } = useRouter().query;
     const studentData = useAssignmentAdmin(courseID as string, assignmentID as string);
     const [filterValue, setFilterValue] = useState<string>('');
@@ -419,4 +424,4 @@ export const AssignmentPageAdminTab = ({ setStage }: { setStage: (stage: Stage) 
             </Card>
         </section>
     );
-}
+};
