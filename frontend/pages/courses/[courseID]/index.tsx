@@ -224,7 +224,8 @@ export default function Page() {
                         course.assignments.map((assignment) => (
                             <AssignmentCard
                                 key={assignment.title}
-                                id={assignment.title}
+                                assignmentID={assignment.title}
+                                courseID={courseID as string}
                                 name={assignment.title}
                                 dueDate={
                                     assignment.due_date
@@ -232,7 +233,6 @@ export default function Page() {
                                         : undefined
                                 }
                                 tier={assignment.tier}
-                                courseID={courseID as string}
                             />
                         ))}
                 </div>
