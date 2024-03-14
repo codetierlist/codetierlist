@@ -29,6 +29,7 @@
 
 .uploadHeader {
     display: flex !important;
+    flex-direction: column;
     justify-content: space-between;
 }
 
