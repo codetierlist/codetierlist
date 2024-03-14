@@ -3,6 +3,7 @@ import { CompoundButton, Subtitle1 } from '@fluentui/react-components';
 import { type Tier, type UserTier } from 'codetierlist-types';
 import { useRouter } from 'next/navigation';
 import { convertDate } from '../utils/TimeUtils/TimeUtils';
+import { useMemo } from 'react';
 import styles from './AssignmentCard.module.css';
 
 export declare type AssignmentCardProps = {
@@ -29,9 +30,14 @@ export const AssignmentCard = ({
     tier,
     courseID,
 }: AssignmentCardProps): JSX.Element => {
-    const formattedDueDate = dueDate ? convertDate(dueDate) : null;
+    /** The formatted due date of the assignment */
+    const formattedDueDate = useMemo(() => {
+        if (dueDate) {
+            return convertDate(dueDate);
+        }
+        return null;
+    }, [dueDate]);
     const router = useRouter();
-
     return (
         <CompoundButton
             className={`${styles.card} p-0`}
