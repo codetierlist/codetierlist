@@ -461,10 +461,6 @@ export const AssignmentPageFilesTab = ({
 
     return (
         <div className="m-y-xxxl">
-            {checkIfCourseAdmin(userInfo, assignment.course_id) && (
-                <ValidationErrorMessageBar commit={content} />
-            )}
-
             <div className={`${styles.uploadHeader} m-b-xl`}>
                 <Subtitle1 className={styles.testCaseHeader} block>
                     Uploaded {routeName}s{' '}
@@ -482,6 +478,10 @@ export const AssignmentPageFilesTab = ({
                     )}
                 </Subtitle1>
             </div>
+
+            {checkIfCourseAdmin(userInfo, assignment.course_id) && (
+                <ValidationErrorMessageBar commit={content} />
+            )}
 
             <HeaderToolbar className="m-none p-xs">
                 <Button

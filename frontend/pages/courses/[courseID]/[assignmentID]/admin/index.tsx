@@ -32,7 +32,7 @@ import {
     ArrowCounterclockwise24Regular,
     Dismiss24Regular,
     Open12Regular,
-    Search24Regular
+    Search24Regular,
 } from '@fluentui/react-icons';
 import {
     AssignmentStudentStat,
@@ -253,6 +253,10 @@ export default function Page({ setStage }: { setStage: (stage: Stage) => void })
     );
     const [filterValue, setFilterValue] = useState<string>('');
 
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+
     const filteredStudentData = useMemo(() => {
         if (!studentData) {
             return [];
@@ -295,7 +299,18 @@ export default function Page({ setStage }: { setStage: (stage: Stage) => void })
                 <ToolTipIcon
                     tooltip="View submission"
                     icon={
-                        <Link appearance="subtle" onClick={() => setStage('upload')}>
+                        <Link
+                            appearance="subtle"
+                            onClick={() => {
+                                const params = new URLSearchParams(
+                                    searchParams.toString()
+                                );
+                                params.set('utorid', item.utorid);
+                                router
+                                    .push(`${pathname}?${params.toString()}`)
+                                    .then(() => setStage('upload'));
+                            }}
+                        >
                             <HighlightSubstring
                                 str={item.utorid}
                                 substr={filterValue}
