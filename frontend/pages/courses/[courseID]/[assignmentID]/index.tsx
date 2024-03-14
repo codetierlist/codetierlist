@@ -101,15 +101,18 @@ const ViewTierList = (props: React.HTMLAttributes<HTMLDivElement>) => {
         <section {...props}>
             <Row className="p-t-s p-b-xs">
                 <Col>
-                    <Subtitle1 block as="h2" className="m-b-xs">Tierlist</Subtitle1>
+                    <Subtitle1 block as="h2" className="m-b-xs">
+                        Tierlist
+                    </Subtitle1>
                 </Col>
             </Row>
             <Row className="p-b-xxxl">
                 <Col>
                     <Caption1 block>
                         The tierlist shows the performance of your solution against your
-                        classmates&lsquo; test cases. The tierlist is normally distributed, S
-                        tier does not necessarily indicate a perfect solution.
+                        classmates&lsquo; test cases. The tierlist is normally
+                        distributed, S tier does not necessarily indicate a perfect
+                        solution.
                     </Caption1>
                 </Col>
             </Row>
