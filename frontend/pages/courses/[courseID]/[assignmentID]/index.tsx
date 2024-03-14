@@ -40,12 +40,9 @@ import styles from './page.module.css';
 export declare type Stage = 'details' | 'upload' | 'tierlist' | 'admin' | '404';
 
 /**
- * Displays the tierlist
- * @param tierlist
+ * A hook that fetches the tierlist for the assignment page
  */
-const ViewTierList = (props: React.HTMLAttributes<HTMLDivElement>) => {
-    const router = useRouter();
-    const { courseID, assignmentID } = router.query;
+const useTierlist = (courseID: string, assignmentID: string) => {
     const [tierlist, setTierlist] = useState<Tierlist | null>(null);
     const { showSnack } = useContext(SnackbarContext);
     const searchParams = useSearchParams();
@@ -84,6 +81,21 @@ const ViewTierList = (props: React.HTMLAttributes<HTMLDivElement>) => {
         void fetchTierlist();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [courseID, assignmentID]);
+
+    return { tierlist, fetchTierlist };
+}
+
+/**
+ * Displays the tierlist
+ * @param tierlist
+ */
+const ViewTierList = (props: React.HTMLAttributes<HTMLDivElement>) => {
+    const router = useRouter();
+
+    const { tierlist } = useTierlist(
+        router.query.courseID as string,
+        router.query.assignmentID as string
+    );
 
     return (
         <Col sm={12} {...props}>
