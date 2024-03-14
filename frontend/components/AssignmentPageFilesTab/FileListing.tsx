@@ -2,7 +2,7 @@ import { deletePath } from '@/components/AssignmentPageFilesTab/helpers';
 import { SnackbarContext } from '@/hooks';
 import { Button, TreeItem, TreeItemLayout } from '@fluentui/react-components';
 import { getFileTypeIconAsUrl } from '@fluentui/react-file-type-icons';
-import { Delete20Regular } from '@fluentui/react-icons';
+import { ArrowDownload24Regular, Delete20Regular } from '@fluentui/react-icons';
 import Image from 'next/image';
 import { basename, dirname } from 'path';
 import { useContext, useMemo } from 'react';
@@ -25,7 +25,10 @@ export const FileListing = ({ path, ...props }: FileListingProps) => {
         return getFileTypeIconAsUrl({ extension, size: 16 });
     }, [path]);
 
-    const FileListingActions = () =>
+    /**
+     * Actions for when there is writing permission
+     */
+    const WritableFileListingActions = () =>
         isEditable && (
             <>
                 <ToolTipIcon
@@ -51,6 +54,40 @@ export const FileListing = ({ path, ...props }: FileListingProps) => {
                 />
             </>
         );
+
+    /**
+     * Actions for when there is reading permission
+     */
+    const ReadableFileListingActions = () => (
+        <>
+            <ToolTipIcon
+                tooltip={`Download ${basename(path)}`}
+                icon={
+                    <Button
+                        appearance="subtle"
+                        icon={<ArrowDownload24Regular />}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            void fetch(`/api/assignment/${fullRoute}/file/${path}`)
+                                .then((res) => res.blob())
+                                .then((blob) => {
+                                    const url = window.URL.createObjectURL(blob);
+                                    const a = document.createElement('a');
+                                    a.href = url;
+                                    a.download = basename(path);
+                                    document.body.appendChild(a);
+                                    a.click();
+                                    a.remove();
+                                })
+                                .catch((err) => {
+                                    showSnack(err.message, 'error');
+                                });
+                        }}
+                    />
+                }
+            />
+        </>
+    );
 
     return (
         <TreeItem itemType="leaf" value={path} {...props}>
@@ -83,7 +120,12 @@ export const FileListing = ({ path, ...props }: FileListingProps) => {
                         )}
                     </>
                 }
-                actions={<FileListingActions />}
+                actions={
+                    <>
+                        <WritableFileListingActions />
+                        <ReadableFileListingActions />
+                    </>
+                }
             >
                 {currentFile === path && <strong>{basename(path)}</strong>}
                 {currentFile !== path && <>{basename(path)}</>}

@@ -28,17 +28,21 @@ Follow along below to ✨**learn more**✨:
 ## 😋 Features
 
 ### 🔒 Login features
+
 For each course, only students enrolled are able to have access to the courses
 Codetierlist.
 
 ### 🥇 Tierlist with real time updates
+
 Continuously updating the accuracy of each students code and repositioning them
 in the tier list.
 
 ### 🧑‍💻 Straightforward REST API
+
 Allows for user addition of multiple files.
 
 ### 🤫 Safety and Independent working
+
 While students do provide their test cases and code to rank their progress, these
 will not be shown to other students. This is done to ensures students work
 independently, and to prevent [Academic Offenses](https://www.utm.utoronto.ca/academic-integrity/students/sanctions).
@@ -46,47 +50,56 @@ independently, and to prevent [Academic Offenses](https://www.utm.utoronto.ca/ac
 ## 💼 Local Development
 
 ### Running Locally
+
 To start the run the containers needed to run Codetierlist, run the following command in the root directory of the project:
+
 ```bash
 make docker_up_dev
 ```
 
 To tear down the docker containers when finished with development, run:
+
 ```bash
 make docker_down_dev
 ```
 
 After running the docker containers, go to http://localhost:3555/ to visit the site.
 
-
 ## 🚀 Production Deployment
+
 Production is handled via GitHub actions CI/CD.
 
 ### Running Locally
+
 To start the run the containers needed to run Codetierlist, run the following command in the root directory of the project:
+
 ```bash
 make docker_up
 ```
 
 To tear down the docker containers, run:
+
 ```bash
 make docker_down
 ```
+
 After running the docker containers, go to http://localhost:3555/ to visit the site.
 
-
 ### Tech stack:
+
+![System achitecture](https://i.imgur.com/bLK35FU.png)
+
 * Frontend
-    * [Fluent UI](https://fluent2.microsoft.design/) 🌊
-    * [Next.js](https://nextjs.org/) 🖖
+  * [Fluent UI](https://fluent2.microsoft.design/) 🌊
+  * [Next.js](https://nextjs.org/) 🖖
 * Backend
-    * [Express.js](https://expressjs.com/) 🚂
-    * [Docker](https://www.docker.com/) 🐳
+  * [Express.js](https://expressjs.com/) 🚂
+  * [Docker](https://www.docker.com/) 🐳
 * Database, ORM, and data storage
-    * [Redis](https://redis.io/) 🍎
-    * [Postgres](https://www.postgresql.org/) 🐘
-    * [Prisma](https://www.prisma.io/) 🦄
-    * [Isomorphic-git](https://github.com/isomorphic-git/isomorphic-git) 🐙
+  * [Redis](https://redis.io/) 🍎
+  * [Postgres](https://www.postgresql.org/) 🐘
+  * [Prisma](https://www.prisma.io/) 🦄
+  * [Isomorphic-git](https://github.com/isomorphic-git/isomorphic-git) 🐙
 
 ## 💪 Contributing
 
@@ -97,4 +110,5 @@ You can open issues for bugs you've found or features you think are missing.
 You can also submit pull requests to this repository.
 
 ## ⚖️ License
+
 LGPL-3.0 License © 2023 Codetierlist Contributors

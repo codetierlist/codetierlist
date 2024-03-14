@@ -1,12 +1,12 @@
 import axios, { handleError } from '@/axios';
 import {
-    TestCaseStatus,
-    promptForFileObject,
-    checkIfCourseAdmin,
     HeaderToolbar,
+    TestCaseStatus,
     ToolTipIcon,
+    checkIfCourseAdmin,
     convertDate,
     convertTime,
+    promptForFileObject,
 } from '@/components';
 import { SnackbarContext, UserContext } from '@/hooks';
 import {
@@ -18,14 +18,14 @@ import {
     MessageBar,
     MessageBarBody,
     MessageBarTitle,
-    Subtitle1,
     Option,
+    Subtitle1,
 } from '@fluentui/react-components';
 import {
     Add24Regular,
     DocumentMultiple24Regular,
     EditProhibited24Regular,
-    Folder24Regular,
+    Folder24Regular
 } from '@fluentui/react-icons';
 import { Commit, JobResult, UserFetchedAssignment } from 'codetierlist-types';
 import JSZip from 'jszip';
@@ -34,8 +34,8 @@ import { basename, normalize } from 'path';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import styles from './AssignmentPageFilesTab.module.css';
 import { Dropzone } from './Dropzone';
-import { ListFiles } from './ListFiles';
 import { FileListingContext } from './FileListingContext';
+import { ListFiles } from './ListFiles';
 
 export declare type AssignmentPageFilesTabProps = {
     /** a function that fetches the assignment */
@@ -124,7 +124,7 @@ const ValidationErrorMessageBar = ({
 /**
  * The admin bar for the file selector
  */
-const FileSelectorAdminBar = ({
+const FileSelectorDropdown = ({
     content,
     setCommitID,
     update,
@@ -144,24 +144,22 @@ const FileSelectorAdminBar = ({
     }, [content.log]);
 
     return (
-        <HeaderToolbar className="m-none p-xs">
-            <Dropdown
-                appearance="filled-darker"
-                clearable={true}
-                placeholder="View past uploads"
-                onOptionSelect={(_, data) => {
-                    setCommitID(data.optionValue || '');
-                    data.optionValue && void update();
-                }}
-                defaultValue={values[0] && values[0].key}
-            >
-                {values.map((value) => (
-                    <Option key={value.key} value={value.key}>
-                        {value.text}
-                    </Option>
-                ))}
-            </Dropdown>
-        </HeaderToolbar>
+        <Dropdown
+            appearance="filled-lighter"
+            clearable={true}
+            placeholder={values.length === 0 ? 'No past uploads' : 'View past uploads'}
+            onOptionSelect={(_, data) => {
+                setCommitID(data.optionValue || '');
+                data.optionValue && void update();
+            }}
+            defaultValue={values[0] && values[0].key}
+        >
+            {values.map((value) => (
+                <Option key={value.key} value={value.key}>
+                    {value.text}
+                </Option>
+            ))}
+        </Dropdown>
     );
 };
 
@@ -449,36 +447,43 @@ export const AssignmentPageFilesTab = ({
                         />
                     )}
                 </Subtitle1>
-
-                {isEditable && (
-                    <div>
-                        <Button
-                            icon={<Folder24Regular />}
-                            appearance="subtle"
-                            onClick={uploadFolder}
-                        >
-                            Upload a folder
-                            {currentFolder && ` to ${basename(currentFolder)}`}
-                        </Button>
-                        <Button
-                            icon={<Add24Regular />}
-                            appearance="subtle"
-                            onClick={uploadFile}
-                        >
-                            Upload a {routeName}{' '}
-                            {currentFolder ? ` to ${basename(currentFolder)}` : null}
-                        </Button>
-                    </div>
-                )}
             </div>
 
-            {checkIfCourseAdmin(userInfo, assignment.course_id) && (
-                <FileSelectorAdminBar
+            <HeaderToolbar className="m-none p-xs">
+                <Button
+                    disabled={!isEditable}
+                    icon={<Folder24Regular />}
+                    appearance="subtle"
+                    onClick={uploadFolder}
+                >
+                    Upload folder
+                    {currentFolder &&
+                        currentFolder !== '.' &&
+                        ` to ${basename(currentFolder)}`}
+                </Button>
+
+                <Button
+                    disabled={!isEditable}
+                    icon={<Add24Regular />}
+                    appearance="subtle"
+                    onClick={uploadFile}
+                >
+                    Upload {routeName}{' '}
+                    {currentFolder &&
+                        currentFolder !== '.' &&
+                        ` to ${basename(currentFolder)}`}
+                </Button>
+
+                <FileSelectorDropdown
                     content={content}
                     setCommitID={setCommitID}
-                    update={getTestData}
+                    update={async () => {
+                        setCurrentFile('');
+                        setCurrentFolder('');
+                        await getTestData();
+                    }}
                 />
-            )}
+            </HeaderToolbar>
 
             <div
                 onClick={() => {

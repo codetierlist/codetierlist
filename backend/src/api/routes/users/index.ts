@@ -19,7 +19,8 @@ router.get("/", (req, res) => {
 
 /**
  * Sets the user's theme to the specified theme.
- * @param theme the theme to set. Must be "LIGHT" or "DARK".
+ * @param theme the theme to set. Must be within the Theme enum.
+ *
  * @returns 200 if success, 400 if fail
  *
  * @public
@@ -47,6 +48,15 @@ router.post("/theme", errorHandler(async (req, res) => {
     res.status(200).send({ message: `Set theme to ${req.body.theme}.` });
 
 }));
+
+/**
+ * Change the user's accent color
+ * @param accent_color the new accent color to set. Must be a valid hex color code.
+ *
+ * @public
+ *
+ * @returns 200 if success, 400 if fail
+ */
 router.post("/accent", errorHandler(async (req, res) => {
     if (!req.body.accent_color) {
         res.status(400).send({ message: "No accent color specified." });
@@ -64,6 +74,7 @@ router.post("/accent", errorHandler(async (req, res) => {
 
     res.status(200).send({ message: `Set accent color to ${req.body.accent_color}.` });
 }));
+
 /**
  * get the achievements of the user
  * @public
