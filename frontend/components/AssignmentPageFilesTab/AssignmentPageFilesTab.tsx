@@ -1,12 +1,12 @@
 import axios, { handleError } from '@/axios';
 import {
-    TestCaseStatus,
-    promptForFileObject,
-    checkIfCourseAdmin,
     HeaderToolbar,
+    TestCaseStatus,
     ToolTipIcon,
+    checkIfCourseAdmin,
     convertDate,
     convertTime,
+    promptForFileObject,
 } from '@/components';
 import { SnackbarContext, UserContext } from '@/hooks';
 import {
@@ -18,15 +18,14 @@ import {
     MessageBar,
     MessageBarBody,
     MessageBarTitle,
-    Subtitle1,
     Option,
+    Subtitle1,
 } from '@fluentui/react-components';
 import {
     Add24Regular,
-    ArrowDownload24Regular,
     DocumentMultiple24Regular,
     EditProhibited24Regular,
-    Folder24Regular,
+    Folder24Regular
 } from '@fluentui/react-icons';
 import { Commit, JobResult, UserFetchedAssignment } from 'codetierlist-types';
 import JSZip from 'jszip';
@@ -35,8 +34,8 @@ import { basename, normalize } from 'path';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import styles from './AssignmentPageFilesTab.module.css';
 import { Dropzone } from './Dropzone';
-import { ListFiles } from './ListFiles';
 import { FileListingContext } from './FileListingContext';
+import { ListFiles } from './ListFiles';
 
 export declare type AssignmentPageFilesTabProps = {
     /** a function that fetches the assignment */

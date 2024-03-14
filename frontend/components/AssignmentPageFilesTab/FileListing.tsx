@@ -79,8 +79,8 @@ export const FileListing = ({ path, ...props }: FileListingProps) => {
                                     a.click();
                                     a.remove();
                                 })
-                                .catch((e) => {
-                                    showSnack(e.message, 'error');
+                                .catch((err) => {
+                                    showSnack(err.message, 'error');
                                 });
                         }}
                     />
