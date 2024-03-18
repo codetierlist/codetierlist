@@ -16,7 +16,7 @@
         "@fluentui/react-components": "^9.47.0",
         "@fluentui/react-date-time": "^8.7.137",
         "@fluentui/react-datepicker-compat": "^0.4.27",
-        "@fluentui/react-file-type-icons": "^8.11.3",
+        "@fluentui/react-file-type-icons": "^8.11.4",
         "@fluentui/react-icons": "^2.0.232",
         "@monaco-editor/react": "^4.6.0",
         "axios": "^1.6.7",
