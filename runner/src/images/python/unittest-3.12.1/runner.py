@@ -36,7 +36,7 @@ if __name__ == '__main__':
         with open(os.path.join('../tests', file), 'wb') as f:
             f.write(base64.b64decode(test_files[file]))
 
-    sys.path.append('../code')
+    sys.path.insert(0, '../code')
     os.chdir('../tests')
 
     suite = unittest.TestLoader().discover('.')
