@@ -302,6 +302,13 @@ export const AssignmentPageFilesTab = ({
 
             zip.generateAsync({ type: 'blob' }).then(function (blob) {
                 const formData = new FormData();
+
+                // check if the blob is less than 50 MB in size
+                if (blob.size > 50 * 1024 * 1024) {
+                    showSnack('Please upload a folder less than 50MB', 'error');
+                    return;
+                }
+
                 formData.append('files', blob, 'files.zip');
 
                 axios
