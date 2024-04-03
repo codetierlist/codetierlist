@@ -325,8 +325,8 @@ const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue
     const isRateLimited = await job_queue.count();
     const waiting = await job_queue.getWaitingChildrenCount()
         + await job_queue.getWaitingCount()
-        + await job_queue.getFailedCount()
-        + await job_queue.getCompletedCount()
+        // + await job_queue.getFailedCount()
+        // + await job_queue.getCompletedCount()
         + await job_queue.getDelayedCount();
     if (isRateLimited - waiting >= max_fetched) {
         await fetchWorker.rateLimit(1000);
@@ -352,6 +352,7 @@ const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue
         'solution_files': await getFiles(submission),
         'test_case_files': await getFiles(testCase),
     };
+
     const newData: ReadyJobData = {
         query,
         submission,
@@ -364,6 +365,16 @@ const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue
     }
     const parent = await job_queue.getJob(job.parent.id);
     if (!parent) {
+        return;
+    }
+    if(Object.keys(query.solution_files).length === 0) {
+        // https://docs.bullmq.io/patterns/manually-fetching-jobs
+        await parent.moveToCompleted({status: "SUBMISSION_EMPTY"}, parent.id ?? '', false);
+        return;
+    }
+    if(Object.keys(query.test_case_files).length === 0) {
+        // https://docs.bullmq.io/patterns/manually-fetching-jobs
+        await parent.moveToCompleted({status: "TESTCASE_EMPTY"}, parent.id ?? '', false);
         return;
     }
     await parent.updateData(newData);
