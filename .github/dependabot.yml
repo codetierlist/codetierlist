@@ -30,7 +30,7 @@ updates:
     target-branch: "dev"
 
   - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/runners" # Location of package manifests
+    directory: "/runner" # Location of package manifests
     schedule:
       interval: "weekly"
     # Raise pull requests for version updates

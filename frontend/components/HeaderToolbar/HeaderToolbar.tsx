@@ -7,7 +7,11 @@ import style from './HeaderToolbar.module.css';
  */
 export const HeaderToolbar = (props: ToolbarProps) => {
     return (
-        <Card className="p-y-xxs p-x-none m-y-none m-x-l">
+        <Card
+            className={
+                props?.className ? props.className : 'p-y-xxs p-x-none m-y-none m-x-l'
+            }
+        >
             <Toolbar className={style.toolbarContainer} {...props}>
                 {props.children}
             </Toolbar>

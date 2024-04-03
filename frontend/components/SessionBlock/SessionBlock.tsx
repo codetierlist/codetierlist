@@ -3,45 +3,39 @@ import styles from './SessionBlock.module.css';
 import { Session } from 'codetierlist-types';
 import { CSSProperties } from 'react';
 
-export declare type SessionBlockProps = {
-    /** the session to display */
-    session: Session;
-};
-
 /**
- * Get the style for the session badge
+ * The styles for the session badge per session
  */
-const getSessionStyle = (session: Session): CSSProperties | undefined => {
-    switch (session) {
-        case 'SUMMER':
-            return {
-                color: 'var(--colorNeutralForegroundInverted)',
-                backgroundColor: 'var(--colorPaletteGreenForeground2)',
-            };
-        case 'FALL':
-            return {
-                color: 'var(--colorNeutralForegroundInverted)',
-                backgroundColor: 'var(--colorPaletteRedForeground2)',
-            };
-        case 'WINTER':
-            return {
-                color: 'var(--colorNeutralForegroundInverted)',
-                backgroundColor: 'var(--colorPaletteBlueForeground2)',
-            };
-        default:
-            return undefined;
-    }
+const sessionStyles: Record<Session, CSSProperties> = {
+    SUMMER: {
+        color: 'var(--colorNeutralForegroundInverted)',
+        backgroundColor: 'var(--colorPaletteGreenForeground2)',
+    },
+    FALL: {
+        color: 'var(--colorNeutralForegroundInverted)',
+        backgroundColor: 'var(--colorPaletteRedForeground2)',
+    },
+    WINTER: {
+        color: 'var(--colorNeutralForegroundInverted)',
+        backgroundColor: 'var(--colorPaletteBlueForeground2)',
+    },
 };
 
 /**
  * A badge that displays the session
  */
-export const SessionBlock = ({ session }: SessionBlockProps): JSX.Element => {
+export const SessionBlock = ({
+    session,
+}: {
+    /** the session to display */
+    session: Session;
+}): JSX.Element => {
     return (
         <Badge
+            shape="square"
             appearance="filled"
             className={styles.badge}
-            style={getSessionStyle(session)}
+            style={sessionStyles[session]}
         >
             {session}
         </Badge>

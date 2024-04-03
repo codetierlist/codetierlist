@@ -43,7 +43,7 @@ export const commitFiles = async (object: Omit<TestCase | Solution, 'datetime' |
     if (status.filter(x => x[2] !== 0).length > config.max_file_count
         && status.some(x => x[1] === 0)) {
         await softResetRepo(repoPath, object.git_id);
-        return {error: "Too many files added"};
+        return {error: `Too many files added. The limit is ${config.max_file_count}`};
     }
     await git.add({fs, dir: repoPath, filepath: '.'});
     try {

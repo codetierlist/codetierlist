@@ -31,6 +31,11 @@ const router = express.Router();
 
 /**
  * create a new course
+ *
+ * @param {string} name - the name of the course
+ * @param {string} code - the course code
+ * @param {string} session - the session of the course (optional, default: current session)
+ *
  * @adminonly
  */
 router.post("/", errorHandler(async (req, res) => {
@@ -233,7 +238,11 @@ router.delete("/:courseId", fetchCourseMiddleware, errorHandler(async (req, res)
 }));
 
 /**
- * add a user to a course
+ * add a list of users to a course by utorid
+ *
+ * @param {string[]} utorids - the utorids of the users to add
+ * @param {string} role - the role to add the users as (optional, default: student)
+ *
  * @adminonly
  */
 router.post("/:courseId/add", fetchCourseMiddleware, errorHandler(async (req, res) => {
@@ -336,7 +345,11 @@ router.post("/:courseId/remove", fetchCourseMiddleware, errorHandler(async (req,
 
 /**
  * update the cover image of a course
+ * @param {file} file - the file to upload
+ *
  * @adminonly
+ *
+ * @returns 400 if no file is uploaded
  */
 router.post("/:courseId/cover", fetchCourseMiddleware, upload.single("file"), errorHandler(async (req, res) => {
     if (!req.file || !isProf(req.course!, req.user)) {
@@ -354,7 +367,10 @@ router.post("/:courseId/cover", fetchCourseMiddleware, upload.single("file"), er
 
 /**
  * get the cover image of a course
+ *
  * @public
+ *
+ * @returns a path to the cover image
  */
 router.get("/:courseId/cover", fetchCourseMiddleware, errorHandler(async (req, res) => {
     if (!req.course?.cover) {

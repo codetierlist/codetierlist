@@ -1,5 +1,6 @@
-import { ToastIntent } from '@fluentui/react-components';
 import axios, { AxiosError } from 'axios';
+import { ShowSnackType } from './hooks';
+import { ReloadLink } from './components';
 
 declare module 'axios' {
     export interface AxiosRequestConfig {
@@ -8,11 +9,7 @@ declare module 'axios' {
 }
 
 export const handleError =
-    (
-        showSnackSev?: (message?: string, severity?: ToastIntent) => void,
-        message?: string
-    ) =>
-    (error: AxiosError) => {
+    (showSnack?: ShowSnackType, message?: string) => (error: AxiosError) => {
         if (!error.isAxiosError) {
             throw error;
         }
@@ -20,7 +17,6 @@ export const handleError =
         if (message) {
             res = message;
         } else if (error.response) {
-            console.log(typeof error.response.data);
             if (typeof error.response.data === 'string') {
                 try {
                     error.response.data = JSON.parse(error.response.data);
@@ -39,10 +35,20 @@ export const handleError =
                 res = error.message;
             }
         } else {
+            if (showSnack) {
+                showSnack(
+                    'You may be logged out. Please refresh the page and try again.',
+                    'error',
+                    'Connection lost',
+                    ReloadLink()
+                );
+                return;
+            }
+
             res = 'Server was unresponsive, please try again later';
         }
-        if (showSnackSev) {
-            showSnackSev(res, 'error');
+        if (showSnack) {
+            showSnack(res, 'error');
         } else {
             console.error(res);
         }

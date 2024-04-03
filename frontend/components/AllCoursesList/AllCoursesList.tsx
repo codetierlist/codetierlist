@@ -10,7 +10,7 @@ import { useContext, useEffect, useState } from 'react';
  */
 const useAllCourses = () => {
     const { userInfo } = useContext(UserContext);
-    const { showSnackSev } = useContext(SnackbarContext);
+    const { showSnack } = useContext(SnackbarContext);
     const [allCourses, setAllCourses] = useState<FetchedCourse[] | null>([]);
 
     const fetchAllCourses = async () => {
@@ -25,7 +25,7 @@ const useAllCourses = () => {
                 )
             )
             .catch((e) => {
-                handleError(showSnackSev)(e);
+                handleError(showSnack)(e);
                 notFound();
             });
     };
