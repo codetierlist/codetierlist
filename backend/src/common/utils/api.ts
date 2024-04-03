@@ -154,12 +154,20 @@ export const processSubmission = async (req: Request, res: Response, table: "sol
         await fs.mkdir(dest, {recursive: true});
         if (req.query.unzip && file.mimetype === "application/zip") {
             let totalcount = 0;
-            await extract(file.path, {dir: dest, onEntry: entry => {
-                totalcount += 1;
-                if(entry.uncompressedSize>config.max_file_size || totalcount>config.max_file_count) {
-                    throw new Error("unzip too big");
+            try{
+                await extract(file.path, {dir: dest, onEntry: entry => {
+                    totalcount += 1;
+                    if(entry.uncompressedSize>config.max_file_size || totalcount>config.max_file_count) {
+                        throw new Error("unzip too big");
+                    }
+                }});
+            } catch (e) {
+                if(typeof e === "object" && "message" in e! && e.message === "unzip too big"){
+                    res.send({message: "File size or count exceeded."});
+                    return;
                 }
-            }});
+                throw e;
+            }
             continue;
         }
         if ((await fs.lstat(file.path)).isDirectory()) {
