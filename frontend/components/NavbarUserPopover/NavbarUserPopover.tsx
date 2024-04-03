@@ -1,11 +1,7 @@
 import { generateInitials, generateInitialsAvatarProps } from '@/components';
 import { UserContext } from '@/hooks';
 import { Badge, Button, Persona } from '@fluentui/react-components';
-import {
-    ErrorCircle12Filled,
-    SignOut24Regular,
-    Trophy24Regular,
-} from '@fluentui/react-icons';
+import { SignOut24Regular, Trophy24Regular } from '@fluentui/react-icons';
 import { useRouter } from 'next/router';
 import { useContext } from 'react';
 import styles from './NavbarUserPopover.module.css';
@@ -53,13 +49,15 @@ export const NavbarUserPopover = (): JSX.Element => {
                         router.push('/achievements');
                     }}
                 >
-                    Achievements{' '}
+                    Achievements
                     {userInfo.new_achievements ? (
-                        <ErrorCircle12Filled
-                            fill="red"
-                            color="red"
-                            className="m-l-s-nudge"
-                        />
+                        <Badge
+                            appearance="filled"
+                            color="danger"
+                            className={styles.newAchievementsBadge}
+                        >
+                            New
+                        </Badge>
                     ) : null}
                 </Button>
 

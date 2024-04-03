@@ -50,7 +50,17 @@ const uploadMiddleware = (req: Request, res: Response, next: NextFunction) =>
         if(err){
             if("code" in err && (err.code === 'LIMIT_FILE_COUNT' || err.code === 'LIMIT_FILE_SIZE')) {
                 res.statusCode = 413;
-                res.send({message: "File size or count exceeded."});
+
+                if (err.code === 'LIMIT_FILE_COUNT') {
+                    res.send({message: `File count exceeded. Maximum ${config.max_file_count} files allowed.`});
+                }
+                else if (err.code === 'LIMIT_FILE_SIZE') {
+                    res.send({message: `File size exceeded. Maximum ${config.max_file_size / 1000 / 1000} megabytes allowed.`});
+                }
+                else {
+                    res.send({message: "File size or count exceeded."});
+                }
+
                 return;
             }
             next(err);
@@ -62,6 +72,15 @@ const router = express.Router({mergeParams: true});
 
 /**
  * create a new assignment
+ *
+ * @param name the name of the assignment
+ * @param dueDate the due date of the assignment
+ * @param description the description of the assignment\
+ * @param runner_image the image to use for the runner
+ * @param image_version the version of the image to use
+ * @param groupSize the size of the groups
+ * @param strictDeadlines whether the assignment has strict deadlines
+ *
  * @adminonly
  */
 router.post("/", fetchCourseMiddleware, errorHandler(async (req, res) => {
@@ -133,7 +152,10 @@ router.post("/", fetchCourseMiddleware, errorHandler(async (req, res) => {
 
 /**
  * Fetches the assignment from the database and sends it to the client.
+ *
  * @public
+ *
+ * @return {UserFetchedAssignment}
  */
 router.get("/:assignment", fetchAssignmentMiddleware, errorHandler(async (req, res) => {
     const assignment = await prisma.assignment.findUniqueOrThrow({
@@ -451,6 +473,7 @@ router.get('/:assignment/stats', fetchAssignmentMiddleware, errorHandler(async (
             givenName: submission.givenName,
             surname: submission.surname,
             email: submission.email,
+            groupNumber: submission.group_number,
             tier: invertedTierlist[submission.utorid],
             testsPassed: Number(submission.passed),
             totalTests: Number(submission.total)

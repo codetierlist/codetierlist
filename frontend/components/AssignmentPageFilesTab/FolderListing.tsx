@@ -3,84 +3,132 @@ import { deletePath } from '@/components/AssignmentPageFilesTab/helpers';
 import { SnackbarContext } from '@/hooks';
 import { Button, Tree, TreeItem, TreeItemLayout } from '@fluentui/react-components';
 import { FileIconType, getFileTypeIconAsUrl } from '@fluentui/react-file-type-icons';
-import { ArrowUpload20Regular, Delete20Regular } from '@fluentui/react-icons';
+import {
+    Delete20Regular,
+    DocumentArrowUp20Regular,
+    FolderArrowUp20Regular,
+} from '@fluentui/react-icons';
 import Image from 'next/image';
 import { basename, join } from 'path';
 import { useContext } from 'react';
 import { Dropzone } from './Dropzone';
 import { FileListing, FileListingProps } from './FileListing';
+import { useFileListingProps } from './FileListingContext';
 import { TreeType } from './ListFiles';
 
 export declare type FolderListingProps = FileListingProps & {
     /** the subtree to display */
     subtree: TreeType;
-    /** a function to call when the folder is changed */
-    changeFolder?: (folder: string) => void;
-    /** the current folder */
-    currentFolder: string;
-    /** a function to submit files */
-    submitFiles: (files: File[], path?: string) => void;
-    /** the name of the route */
-    routeName: string;
-    /** is the route editable */
-    editable?: boolean;
 };
 
-export const FolderListing = ({
-    fullRoute,
-    update,
-    path,
-    changeFile,
-    subtree,
-    currentFile,
-    changeFolder,
-    currentFolder,
-    submitFiles,
-    routeName,
-    editable,
-    ...props
-}: FolderListingProps) => {
-    const { showSnackSev } = useContext(SnackbarContext);
+export const FolderListing = ({ path, subtree, ...props }: FolderListingProps) => {
+    const {
+        update,
+        changeFolder,
+        fullRoute,
+        currentFolder,
+        submitFiles,
+        submitFolder,
+        isEditable,
+    } = useFileListingProps();
 
+    const { showSnack } = useContext(SnackbarContext);
+
+    /**
+     * The children of the subtree
+     */
     const treeChildren = Array.from(subtree.children).map((file) => {
         return file.children.length === 0 ? (
             <FileListing
                 {...props}
                 key={join(path, file.name)}
-                changeFile={changeFile}
-                currentFile={currentFile}
-                fullRoute={fullRoute}
                 path={join(path, file.name)}
-                update={update}
-                editable={editable}
             />
         ) : (
             <FolderListing
                 {...props}
                 key={join(path, file.name)}
-                changeFile={changeFile}
-                changeFolder={changeFolder}
-                currentFile={currentFile}
-                fullRoute={fullRoute}
                 path={join(path, file.name)}
                 subtree={file}
-                update={update}
-                currentFolder={currentFolder}
-                submitFiles={submitFiles}
-                routeName={routeName}
-                editable={editable}
             />
         );
     });
 
+    /**
+     * The actions for the folder
+     */
+    const FolderListingActions = () =>
+        isEditable && (
+            <>
+                <ToolTipIcon
+                    tooltip={`Upload files to ${basename(path)}`}
+                    icon={
+                        <Button
+                            appearance="subtle"
+                            icon={<DocumentArrowUp20Regular />}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                promptForFileObject({
+                                    folders: false,
+                                    multiple: true,
+                                }).then((files) => {
+                                    submitFiles(Array.from(files), path);
+                                });
+                            }}
+                        />
+                    }
+                />
+
+                <ToolTipIcon
+                    tooltip={`Upload folder to ${basename(path)}`}
+                    icon={
+                        <Button
+                            appearance="subtle"
+                            icon={<FolderArrowUp20Regular />}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                promptForFileObject({
+                                    folders: true,
+                                    multiple: false,
+                                }).then((files) => {
+                                    submitFolder(Array.from(files), path);
+                                });
+                            }}
+                        />
+                    }
+                />
+
+                <ToolTipIcon
+                    tooltip={`Delete ${basename(path)} folder`}
+                    icon={
+                        <Button
+                            appearance="subtle"
+                            icon={<Delete20Regular />}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                void deletePath({
+                                    changePath: changeFolder,
+                                    currentPath: changeFolder ? currentFolder : undefined,
+                                    fullRoute,
+                                    path,
+                                    showSnack,
+                                    update,
+                                    editable: isEditable,
+                                });
+                            }}
+                        />
+                    }
+                />
+            </>
+        );
+
     return (
         <Dropzone
-            disabled={editable === false}
+            disabled={isEditable === false}
             submitFiles={(files) => {
                 submitFiles(files, path);
             }}
-            routeName={routeName}
-            customDropText={`Drop files to upload to ${path}`}
+            dropText={`Drop files to upload to ${path}`}
         >
             <TreeItem
                 itemType="branch"
@@ -103,49 +151,7 @@ export const FolderListing = ({
                             height={16}
                         />
                     }
-                    actions={
-                        <>
-                            <ToolTipIcon
-                                tooltip={`Upload files to ${basename(path)}`}
-                                icon={
-                                    <Button
-                                        aria-label="Upload"
-                                        appearance="subtle"
-                                        icon={<ArrowUpload20Regular />}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            promptForFileObject({
-                                                folders: false,
-                                                multiple: true,
-                                            }).then((files) => {
-                                                submitFiles(Array.from(files), path);
-                                            });
-                                        }}
-                                    />
-                                }
-                            />
-
-                            <Button
-                                aria-label="Delete"
-                                appearance="subtle"
-                                icon={<Delete20Regular />}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    void deletePath({
-                                        changePath: changeFolder,
-                                        currentPath: changeFolder
-                                            ? currentFolder
-                                            : undefined,
-                                        fullRoute,
-                                        path,
-                                        showSnackSev,
-                                        update,
-                                        editable,
-                                    });
-                                }}
-                            />
-                        </>
-                    }
+                    actions={<FolderListingActions />}
                 >
                     {basename(path)}
                 </TreeItemLayout>

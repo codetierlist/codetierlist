@@ -1,3 +1,6 @@
+/**
+ * @fileoverview This file exports all the hooks in the hooks folder
+ */
 export * from './contexts/SnackbarContext';
 export * from './contexts/UserContext';
 

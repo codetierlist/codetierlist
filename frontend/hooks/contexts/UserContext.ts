@@ -22,23 +22,25 @@ export const defaultUser: FetchedUser = {
  * The context for the user's information.
  */
 export const UserContext = createContext({
+    userInfo: defaultUser,
+    setUserInfo: (user: FetchedUser) => {},
+    fetchUserInfo: async () => {},
+} as {
     /**
      * The user's information. This is set to defaultUser until the user's
      * information is fetched from the backend.
      */
-    userInfo: defaultUser,
+    userInfo: FetchedUser;
+
     /**
      * Sets the user's information to the global state.
      * @param user the user's information to set
      */
-    setUserInfo: (user: FetchedUser) => {},
+    setUserInfo: (user: FetchedUser) => void;
+
     /**
      * Fetches the user's information from the backend and sets it to
      * the global state.
      */
-    fetchUserInfo: async () => {},
-} as {
-    userInfo: FetchedUser;
-    setUserInfo: (user: FetchedUser) => void;
     fetchUserInfo: () => Promise<void>;
 });

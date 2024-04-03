@@ -1,12 +1,19 @@
 import {
+    TierChip,
+    ToolTipIcon,
+    generateInitialsAvatarProps,
+    getTierClass,
+} from '@/components';
+import { useStage } from '@/pages/courses/[courseID]/[assignmentID]';
+import {
     AvatarGroup,
     AvatarGroupItem,
+    Link,
     partitionAvatarGroupItems,
 } from '@fluentui/react-components';
 import { Tier, Tierlist, TierlistEntry } from 'codetierlist-types';
+import { forwardRef, useEffect, useRef, useState } from 'react';
 import { Col, Row } from 'react-grid-system';
-import { generateInitialsAvatarProps, TierChip, getTierClass } from '@/components';
-import { useState, forwardRef, useRef, useEffect } from 'react';
 import styles from './TierList.module.css';
 
 const EMPTY_DATA: Tierlist = {
@@ -42,6 +49,43 @@ declare type TierAvatarsProps = {
 };
 
 /**
+ * A tier avatar displays the avatar of a person in the tier.
+ */
+const TierAvatar = ({ person }: { person: TierlistEntry }) => {
+    const { setStage } = useStage();
+
+    /** Load the uploads of the person. */
+    const loadUploads = () => {
+        setStage('upload', person.utorid);
+    };
+
+    /** The avatar of the person. */
+    const avatar = (
+        <AvatarGroupItem
+            className={person.you ? `${styles.you} ${styles.avatar}` : styles.avatar}
+            {...generateInitialsAvatarProps(person.name, {
+                active: person.you ? 'active' : undefined,
+            })}
+        />
+    );
+
+    if (person.utorid && person.utorid !== '') {
+        return (
+            <ToolTipIcon
+                tooltip={`View ${person.utorid}'s uploads`}
+                icon={
+                    <Link onClick={loadUploads} appearance="subtle">
+                        {avatar}
+                    </Link>
+                }
+            />
+        );
+    }
+
+    return avatar;
+};
+
+/**
  * A tier avatars displays the avatars of the people in the tier.
  */
 const TierAvatars = forwardRef<HTMLDivElement, TierAvatarsProps>(
@@ -71,25 +115,14 @@ const TierAvatars = forwardRef<HTMLDivElement, TierAvatarsProps>(
             <Col
                 className={styles.tierAvatars}
                 xs={10}
+                role="rowgroup"
                 aria-label={`${people.length} people in this tier. ${youInTier ? 'You are in this tier.' : ''}`}
             >
                 <AvatarGroup className={styles.avatarGroup} ref={ref} aria-hidden="true">
                     {newInlineItems
                         .filter((person) => person)
                         .map((person, i) => {
-                            return (
-                                <AvatarGroupItem
-                                    key={i}
-                                    className={
-                                        person.you
-                                            ? `${styles.you} ${styles.avatar}`
-                                            : styles.avatar
-                                    }
-                                    {...generateInitialsAvatarProps(person.name, {
-                                        active: person.you ? 'active' : undefined,
-                                    })}
-                                />
-                            );
+                            return <TierAvatar key={i} person={person} />;
                         })}
                     {overflowItems && (
                         <AvatarGroupItem
@@ -180,7 +213,7 @@ export declare type TierListProps = {
  */
 export const TierList = ({ tierlist = EMPTY_DATA }: TierListProps): JSX.Element => {
     return (
-        <Row component="section">
+        <Row className={styles.tierList}>
             {Object.keys(tierlist).map((tier, index) => {
                 return <TierRow key={index} tier={tier} tierlist={tierlist} />;
             })}

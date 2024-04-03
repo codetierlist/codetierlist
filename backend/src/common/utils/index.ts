@@ -16,6 +16,11 @@ export function hideAssignmentDetails<T extends {group_size: unknown}>(object: T
     return rest;
 }
 
+/**
+ * prohibit path traversal and .git which could lead to security vulnerabilities
+ *
+ * (e.g., git hooks, potentially escaping the root directory)
+ */
 export const securePath = (p: string) => {
     const res = `.${path.normalize(`/${p}`)}`.slice(2);
     if(res.startsWith(".git")) {

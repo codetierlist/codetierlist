@@ -1,5 +1,13 @@
 import axios, { handleError } from '@/axios';
-import { TestCaseStatus, promptForFileObject, checkIfCourseAdmin } from '@/components';
+import {
+    HeaderToolbar,
+    TestCaseStatus,
+    ToolTipIcon,
+    checkIfCourseAdmin,
+    convertDate,
+    convertTime,
+    promptForFileObject,
+} from '@/components';
 import { SnackbarContext, UserContext } from '@/hooks';
 import {
     Button,
@@ -8,23 +16,26 @@ import {
     Dropdown,
     Link,
     MessageBar,
+    MessageBarActions,
     MessageBarBody,
     MessageBarTitle,
-    Subtitle1,
     Option,
+    Subtitle1,
 } from '@fluentui/react-components';
 import {
-    Add24Filled,
+    Add24Regular,
     DocumentMultiple24Regular,
-    Folder24Filled,
+    EditProhibited24Regular,
+    Folder24Regular,
 } from '@fluentui/react-icons';
 import { Commit, JobResult, UserFetchedAssignment } from 'codetierlist-types';
 import JSZip from 'jszip';
 import { useSearchParams } from 'next/navigation';
 import { basename, normalize } from 'path';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import styles from './AssignmentPageFilesTab.module.css';
 import { Dropzone } from './Dropzone';
+import { FileListingContext } from './FileListingContext';
 import { ListFiles } from './ListFiles';
 
 export declare type AssignmentPageFilesTabProps = {
@@ -38,9 +49,19 @@ export declare type AssignmentPageFilesTabProps = {
     routeName: string;
     /** the route to use */
     route: 'testcases' | 'submissions';
+    /** the subtext to put below the header */
+    description: string;
 };
 
-const ValidationError = ({ validationResult }: { validationResult?: JobResult }) => {
+/**
+ * Shows the validation error
+ */
+const ValidationError = ({
+    validationResult,
+}: {
+    /** the job result if it exists */
+    validationResult?: JobResult;
+}) => {
     if (!validationResult)
         return "This testcase failed instructor's solution for unknown reason";
     if (validationResult.status === 'PASS')
@@ -80,6 +101,105 @@ const ValidationError = ({ validationResult }: { validationResult?: JobResult })
 };
 
 /**
+ * Shows the validation error message bar
+ */
+const ValidationErrorMessageBar = ({
+    commit,
+}: {
+    /** the commit info */
+    commit: Commit;
+}) => {
+    const { showSnack } = useContext(SnackbarContext);
+
+    const CopyButton = () => (
+        <MessageBarActions>
+            <Button
+                onClick={() => {
+                    navigator.clipboard
+                        .writeText(JSON.stringify(commit.validation_result) ?? '')
+                        .then(() => {
+                            showSnack('Status copied', 'success');
+                        })
+                        .catch(() => {
+                            showSnack('Failed to copy status', 'error');
+                        });
+                }}
+            >
+                Copy result
+            </Button>
+        </MessageBarActions>
+    );
+
+    if (commit.valid === 'INVALID') {
+        return (
+            <MessageBar className="m-y-m" intent={'error'}>
+                <MessageBarBody>
+                    <MessageBarTitle>
+                        This testcase failed instructor&apos;s solution
+                    </MessageBarTitle>
+                    <ValidationError validationResult={commit.validation_result} />
+                </MessageBarBody>
+                <CopyButton />
+            </MessageBar>
+        );
+    } else if (commit.valid === 'VALID') {
+        return (
+            <MessageBar className="m-y-m" intent={'success'}>
+                <MessageBarBody>
+                    <MessageBarTitle>
+                        This testcase passed instructor&apos;s solution
+                    </MessageBarTitle>
+                </MessageBarBody>
+                <CopyButton />
+            </MessageBar>
+        );
+    }
+    return null;
+};
+
+/**
+ * The admin bar for the file selector
+ */
+const FileSelectorDropdown = ({
+    content,
+    setCommitID,
+    update,
+}: {
+    /** the commit info */
+    content: Commit;
+    /** a function to set the commit id */
+    setCommitID: (commitID: string) => void;
+    /** a function to get the test data */
+    update: () => Promise<void>;
+}) => {
+    const values = useMemo(() => {
+        return content.log.map((commit) => ({
+            key: commit.id,
+            text: `${new Date(commit.date).toLocaleString()}${commit.id === content.log[0].id ? ' (Latest)' : ''}`,
+        }));
+    }, [content.log]);
+
+    return (
+        <Dropdown
+            appearance="filled-lighter"
+            clearable={true}
+            placeholder={values.length === 0 ? 'No past uploads' : 'View past uploads'}
+            onOptionSelect={(_, data) => {
+                setCommitID(data.optionValue || '');
+                data.optionValue && void update();
+            }}
+            defaultValue={values[0] && values[0].key}
+        >
+            {values.map((value) => (
+                <Option key={value.key} value={value.key}>
+                    {value.text}
+                </Option>
+            ))}
+        </Dropdown>
+    );
+};
+
+/**
  * A tab that displays the files for an assignment
  */
 export const AssignmentPageFilesTab = ({
@@ -88,51 +208,52 @@ export const AssignmentPageFilesTab = ({
     assignmentID,
     routeName,
     route,
+    description,
 }: AssignmentPageFilesTabProps): JSX.Element => {
     // eslint-disable-next-line prefer-const
     let [content, setContent] = useState<Commit>({
         files: [],
         log: [],
     } as Commit);
-    const { showSnackSev } = useContext(SnackbarContext);
+
+    const { showSnack } = useContext(SnackbarContext);
+    const { userInfo } = useContext(UserContext);
     const searchParams = useSearchParams();
+
     const [currentFolder, setCurrentFolder] = useState<string>('');
     const [currentFile, setCurrentFile] = useState<string>('');
-    const { userInfo } = useContext(UserContext);
+
+    // the commit id to display
     const [commitID, setCommitID] = useState<string>('');
 
-    const getTestData = useCallback(
-        async (commit = '') => {
-            await axios
-                .get<Commit>(
-                    `/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/${commit}`,
-                    {
-                        skipErrorHandling: true,
-                        params: {
-                            utorid: searchParams.get('utorid') ?? undefined,
-                        },
-                    }
-                )
-                .then((res) => {
-                    if (
-                        res.data.log[0]?.id != content.log[0]?.id ||
-                        res.data.valid != content.valid ||
-                        res.data.files.length != content.files.length ||
-                        res.data.files.some((x) => !content.files.includes(x))
-                    ) {
-                        setContent(res.data);
-                    }
-                    // TODO why is this needed on production build?
-                    content = res.data;
-                })
-                .catch((e) => {
-                    handleError(showSnackSev)(e);
-                    setContent({ files: [], log: [] } as Commit);
-                });
-            // eslint-disable-next-line react-hooks/exhaustive-deps
-        },
-        [assignment.course_id, assignmentID, route]
-    );
+    const getTestData = useCallback(async () => {
+        await axios
+            .get<Commit>(
+                `/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/${commitID}`,
+                {
+                    skipErrorHandling: true,
+                    params: {
+                        utorid: searchParams.get('utorid') ?? undefined,
+                    },
+                }
+            )
+            .then((res) => {
+                if (
+                    res.data.log[0]?.id != content.log[0]?.id ||
+                    res.data.valid != content.valid ||
+                    res.data.files.length != content.files.length ||
+                    res.data.files.some((x) => !content.files.includes(x))
+                ) {
+                    setContent(res.data);
+                }
+                // TODO why is this needed on production build?
+                content = res.data;
+            })
+            .catch((e) => {
+                handleError(showSnack)(e);
+                setContent({ files: [], log: [] } as Commit);
+            });
+    }, [assignment.course_id, assignmentID, route, commitID, searchParams]);
 
     useEffect(() => {
         if (currentFile && !content.files.includes(currentFile)) {
@@ -143,26 +264,33 @@ export const AssignmentPageFilesTab = ({
         }
     }, [content.files, currentFile, currentFolder]);
 
-    const submitFolder = async (fileslist: File[], target?: string) => {
+    /**
+     * Upload a folder to the system.
+     *
+     * By default, the target is the current folder selected. Otherwise
+     * it is the root of the submission.
+     */
+    const submitFolder = async (files: File[], target?: string) => {
         if (commitID !== '') {
-            showSnackSev('You can only update the latest submission', 'error');
+            showSnack('You can only update the latest submission', 'error');
             return;
         }
-        if (fileslist.length > 100 || fileslist.reduce((a, x) => a + x.size, 0) >= 1e9) {
-            showSnackSev(
-                'Please upload less than 1000 files and less than 1GB at a time',
+        if (files.length > 100 || files.reduce((a, x) => a + x.size, 0) >= 1e9) {
+            // TODO: this should sync with the backend
+            showSnack(
+                'Please upload less than 30 files and less than 20mb at a time',
                 'error'
             );
             return;
         }
         if (target === undefined) target = currentFolder;
-        if (fileslist) {
+        if (files) {
             const zip = new JSZip();
             if (!zip) {
                 throw new Error('Failed to create zip folder');
             }
-            for (let i = 0; i < fileslist.length; i++) {
-                const file = fileslist[i];
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
                 const path =
                     'path' in file && typeof file.path === 'string'
                         ? file.path
@@ -174,6 +302,13 @@ export const AssignmentPageFilesTab = ({
 
             zip.generateAsync({ type: 'blob' }).then(function (blob) {
                 const formData = new FormData();
+
+                // check if the blob is less than 50 MB in size
+                if (blob.size > 50 * 1024 * 1024) {
+                    showSnack('Please upload a folder less than 50MB', 'error');
+                    return;
+                }
+
                 formData.append('files', blob, 'files.zip');
 
                 axios
@@ -187,11 +322,11 @@ export const AssignmentPageFilesTab = ({
                     )
                     .then((res) => {
                         if (res.status === 200) {
-                            showSnackSev('Files uploaded', 'success');
+                            showSnack('Files uploaded', 'success');
                         }
                     })
                     .catch((e) => {
-                        handleError(showSnackSev)(e);
+                        handleError(showSnack)(e);
                     })
                     .finally(() => {
                         fetchAssignment();
@@ -202,12 +337,16 @@ export const AssignmentPageFilesTab = ({
 
     /**
      * submit files to the server
+     *
+     * By default, the target is the current folder selected. Otherwise
+     * it is the root of the submission.
+     *
      * @param files the files to submit
      * @param target the path to submit the files to
      */
     const submitFiles = async (files: File[], target?: string) => {
         if (commitID !== '') {
-            showSnackSev('You can only update the latest submission', 'error');
+            showSnack('You can only update the latest submission', 'error');
             return;
         }
         if (target === undefined) target = currentFolder;
@@ -238,11 +377,11 @@ export const AssignmentPageFilesTab = ({
             )
             .then((res) => {
                 if (res.status === 200) {
-                    showSnackSev('Files uploaded', 'success');
+                    showSnack('Files uploaded', 'success');
                 }
             })
             .catch((e) => {
-                handleError(showSnackSev)(e);
+                handleError(showSnack)(e);
             })
             .finally(() => {
                 fetchAssignment();
@@ -253,7 +392,7 @@ export const AssignmentPageFilesTab = ({
      * increased polling rate while test is pending
      * since we expect runners to be fast
      */
-    const POLLING_RATE = 1000;
+    const PENDING_POLLING_RATE = 1000;
 
     useEffect(() => {
         if (content.valid === 'PENDING') {
@@ -264,7 +403,7 @@ export const AssignmentPageFilesTab = ({
                         void fetchAssignment();
                     }
                 });
-            }, POLLING_RATE);
+            }, PENDING_POLLING_RATE);
             return () => clearInterval(interval);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -273,13 +412,19 @@ export const AssignmentPageFilesTab = ({
     useEffect(() => {
         void getTestData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [assignmentID, fetchAssignment, route, routeName, assignment.submissions]);
+    }, [
+        assignmentID,
+        fetchAssignment,
+        route,
+        routeName,
+        assignment.submissions,
+        commitID,
+    ]);
 
     /**
      * upload a file to the server
      */
     const uploadFile = async () => {
-        // todo: make the language based on the runner
         promptForFileObject({ folders: false, multiple: true })
             .then((file) => {
                 if (file) {
@@ -287,7 +432,7 @@ export const AssignmentPageFilesTab = ({
                 }
             })
             .catch((e) => {
-                handleError(showSnackSev)(e);
+                handleError(showSnack)(e);
             });
     };
 
@@ -295,86 +440,98 @@ export const AssignmentPageFilesTab = ({
         promptForFileObject({ folders: true, multiple: false })
             .then((files) => submitFolder(Array.from(files)))
             .catch((e) => {
-                handleError(showSnackSev)(e);
+                handleError(showSnack)(e);
             });
     };
 
+    /**
+     * The current commit object that is selected by an admin
+     */
+    const currentCommit = useMemo(() => {
+        return content.log.find((log) => log.id === commitID)
+            ? content.log.find((log) => log.id === commitID)
+            : content.log[0];
+    }, [commitID, content.log]);
+
+    /**
+     * conditions for if the file is editable:
+     * - if the utorid is not in the search params (i.e. viewing another student's submission)
+     * - if the assignment is not strict deadline
+     * - the due date has not passed yet
+     */
+    const isEditable = useMemo(() => {
+        return (
+            !searchParams.has('utorid') &&
+            (!assignment.strict_deadline ||
+                assignment.due_date === undefined ||
+                new Date(assignment.due_date) >= new Date()) &&
+            commitID === ''
+        );
+    }, [assignment.due_date, assignment.strict_deadline, searchParams, commitID]);
+
     return (
         <div className="m-y-xxxl">
-            {content.valid === 'INVALID' &&
-                checkIfCourseAdmin(userInfo, assignment.course_id) && (
-                    <MessageBar className="m-y-m" intent={'error'}>
-                        <MessageBarBody>
-                            <MessageBarTitle>
-                                This testcase failed instructor&apos;s solution
-                            </MessageBarTitle>
-                            <ValidationError
-                                validationResult={content.validation_result}
-                            />
-                        </MessageBarBody>
-                    </MessageBar>
-                )}
             <div className={`${styles.uploadHeader} m-b-xl`}>
-                <Subtitle1 className={styles.testCaseHeader} block>
-                    Uploaded {routeName}s
+                <Subtitle1 className={styles.testCaseHeader} block as="h2">
+                    Uploaded {routeName}s{' '}
+                    {commitID &&
+                        currentCommit &&
+                        `from ${convertDate(
+                            new Date(currentCommit.date)
+                        )} at ${convertTime(new Date(currentCommit.date))}`}
                     <TestCaseStatus status={content.valid} />
-                </Subtitle1>
-
-                {!searchParams.has('utorid') &&
-                    (!assignment.strict_deadline ||
-                        assignment.due_date === undefined ||
-                        new Date(assignment.due_date) >= new Date()) && (
-                        <div>
-                            <Button
-                                icon={<Folder24Filled />}
-                                appearance="subtle"
-                                onClick={uploadFolder}
-                            >
-                                Upload a folder
-                                {currentFolder && ` to ${basename(currentFolder)}`}
-                            </Button>
-                            <Button
-                                icon={<Add24Filled />}
-                                appearance="subtle"
-                                onClick={uploadFile}
-                            >
-                                Upload a {routeName}{' '}
-                                {currentFolder ? ` to ${basename(currentFolder)}` : null}
-                            </Button>
-                        </div>
+                    {!isEditable && (
+                        <ToolTipIcon
+                            tooltip="This file selector is currently read only"
+                            icon={<EditProhibited24Regular />}
+                        />
                     )}
+                </Subtitle1>
+                <Caption1 className="p-y-s" block as="p">
+                    {description}
+                </Caption1>
             </div>
-            <Dropdown
-                onOptionSelect={(_, data) => {
-                    setCommitID(data.optionValue || '');
-                    void getTestData(data.optionValue);
-                }}
-                defaultValue={"Latest - " + (content.log[0] ? new Date(content.log[0].date).toLocaleString() : '')}
-            >
-                {content.log[0] && (
-                    <Option
-                        value=""
-                        text={`Latest - ${content.log[0] ? new Date(content.log[0].date).toLocaleString() : ''}`}
-                    >
-                        Latest - {new Date(content.log[0]?.date).toLocaleString()}
-                    </Option>
-                )}
-                {content.log.slice(1).map((commit) => (
-                    <Option
-                        key={commit.id}
-                        value={commit.id}
-                        text={new Date(commit.date).toLocaleString()}
-                    >
-                        {new Date(commit.date).toLocaleString()}
-                    </Option>
-                ))}
-            </Dropdown>
 
-            {/* {content.log[0] && (
-                        <Text block className={styles.commitId} font="numeric">
-                            {content.log[0]}
-                        </Text>
-                    )} */}
+            {checkIfCourseAdmin(userInfo, assignment.course_id) && (
+                <ValidationErrorMessageBar commit={content} />
+            )}
+
+            <HeaderToolbar className="m-none p-xs">
+                <Button
+                    disabled={!isEditable}
+                    icon={<Folder24Regular />}
+                    appearance="subtle"
+                    onClick={uploadFolder}
+                >
+                    Upload folder
+                    {currentFolder &&
+                        currentFolder !== '.' &&
+                        ` to ${basename(currentFolder)}`}
+                </Button>
+
+                <Button
+                    disabled={!isEditable}
+                    icon={<Add24Regular />}
+                    appearance="subtle"
+                    onClick={uploadFile}
+                >
+                    Upload {routeName}{' '}
+                    {currentFolder &&
+                        currentFolder !== '.' &&
+                        ` to ${basename(currentFolder)}`}
+                </Button>
+
+                <FileSelectorDropdown
+                    content={content}
+                    setCommitID={setCommitID}
+                    update={async () => {
+                        setCurrentFile('');
+                        setCurrentFolder('');
+                        await getTestData();
+                    }}
+                />
+            </HeaderToolbar>
+
             <div
                 onClick={() => {
                     setCurrentFolder('');
@@ -385,34 +542,49 @@ export const AssignmentPageFilesTab = ({
                     submitFiles={(files) => {
                         void submitFiles(files, '');
                     }}
-                    routeName={routeName}
+                    dropText={`Drop files to upload as a ${routeName}`}
+                    disabled={isEditable === false}
                 >
                     <Card className="m-t-xl">
                         {!content.files || content.files.length === 0 ? (
                             <div className={styles.noFiles}>
                                 <DocumentMultiple24Regular />
                                 <Caption1>
-                                    No files uploaded yet. Drag and drop files here or{' '}
-                                    <Link inline={true} onClick={uploadFile}>
-                                        choose files
-                                    </Link>{' '}
-                                    to upload.
+                                    No files uploaded
+                                    {isEditable && (
+                                        <>
+                                            {' '}
+                                            yet. Drag and drop files here or{' '}
+                                            <Link inline onClick={uploadFile}>
+                                                choose files
+                                            </Link>{' '}
+                                            to upload.
+                                        </>
+                                    )}
                                 </Caption1>
                             </div>
                         ) : null}
-                        <ListFiles
-                            commitID={commitID}
-                            commit={content}
-                            route={route}
-                            assignment={assignment}
-                            assignmentID={assignmentID}
-                            update={getTestData}
-                            currentFolder={currentFolder}
-                            setCurrentFolder={setCurrentFolder}
-                            currentFile={currentFile}
-                            setCurrentFile={setCurrentFile}
-                            submitFiles={submitFiles}
-                        />
+
+                        <FileListingContext.Provider
+                            value={{
+                                update: getTestData,
+                                changeFile: setCurrentFile,
+                                currentFile,
+                                changeFolder: setCurrentFolder,
+                                currentFolder,
+                                submitFolder,
+                                submitFiles,
+                                isEditable,
+                                assignmentId: assignmentID,
+                                assignment,
+                                commit: content,
+                                commitId: commitID,
+                                route,
+                                fullRoute: `/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/`,
+                            }}
+                        >
+                            <ListFiles />
+                        </FileListingContext.Provider>
                     </Card>
                 </Dropzone>
             </div>

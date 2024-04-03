@@ -5,7 +5,11 @@ import express from "express";
 
 const router = express.Router();
 
+/**
+ * No route in the root
+ */
 router.get("/", (_, res) => {
+    res.statusCode = 418;
     res.send({message: "( ͡° ͜ʖ ͡°)"});
 });
 

@@ -4,23 +4,30 @@ import { ReactNode } from 'react';
 import { DropEvent, DropzoneOptions, FileRejection, useDropzone } from 'react-dropzone';
 import styles from './AssignmentPageFilesTab.module.css';
 
+/**
+ * A container that accepts files that are dropped onto it
+ */
 export const Dropzone = ({
     submitFiles,
     children,
-    routeName,
-    customDropText,
+    dropText,
     ...props
 }: {
+    /** a function to call when the files are submitted */
     submitFiles: <T extends File>(
         acceptedFiles: T[],
         fileRejections: FileRejection[],
         event: DropEvent
     ) => void;
+
+    /** the children to display */
     children: ReactNode | ReactNode[];
-    routeName: string;
-    customDropText?: string;
+
+    /** the text to display when the user is dragging files */
+    dropText: string;
 } & (DropzoneOptions | undefined)): JSX.Element => {
     const searchParams = useSearchParams();
+
     // create a dropzone for the user to upload files
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop: submitFiles,
@@ -38,9 +45,7 @@ export const Dropzone = ({
             {isDragActive ? (
                 <div className={styles.dropZoneOverlay}>
                     <Subtitle1 block as="p" className={styles.dropZoneText}>
-                        {customDropText
-                            ? customDropText
-                            : `Drop files to upload as a ${routeName}`}
+                        {dropText}
                     </Subtitle1>
                 </div>
             ) : null}
