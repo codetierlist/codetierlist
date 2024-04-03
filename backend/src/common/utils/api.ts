@@ -15,6 +15,7 @@ import git, {ReadBlobResult} from "isomorphic-git";
 import {promises as fs} from "fs";
 import path from "path";
 import extract from "extract-zip";
+import {config} from "@/common/config";
 
 
 const commitAndRespond =  async (res : Response, object: Omit<TestCase | Solution, 'datetime' | 'id'>, table: "solution" | "testCase", prof : boolean) => {
@@ -152,7 +153,21 @@ export const processSubmission = async (req: Request, res: Response, table: "sol
         const dest = path.join(repoPath, securePath(req.params[0] ?? "."));
         await fs.mkdir(dest, {recursive: true});
         if (req.query.unzip && file.mimetype === "application/zip") {
-            await extract(file.path, {dir: dest});
+            let totalcount = 0;
+            try{
+                await extract(file.path, {dir: dest, onEntry: entry => {
+                    totalcount += 1;
+                    if(entry.uncompressedSize>config.max_file_size || totalcount>config.max_file_count) {
+                        throw new Error("unzip too big");
+                    }
+                }});
+            } catch (e) {
+                if(typeof e === "object" && "message" in e! && e.message === "unzip too big"){
+                    res.send({message: "File size or count exceeded."});
+                    return;
+                }
+                throw e;
+            }
             continue;
         }
         if ((await fs.lstat(file.path)).isDirectory()) {
