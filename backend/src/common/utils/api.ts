@@ -16,21 +16,25 @@ import {promises as fs} from "fs";
 import path from "path";
 import extract from "extract-zip";
 import {config} from "@/common/config";
+import AsyncLock from "async-lock";
 
+const lock = new AsyncLock();
 
 const commitAndRespond =  async (res : Response, object: Omit<TestCase | Solution, 'datetime' | 'id'>, table: "solution" | "testCase", prof : boolean) => {
-    const commit = await commitFiles(object, table, prof);
-    if (commit === null) {
-        res.statusCode = 500;
-        res.send({message: 'Failed to process submission.'});
-        return;
-    }
-    if (typeof commit === "object" && "error" in commit) {
-        res.statusCode = 400;
-        res.send({message: commit.error});
-        return;
-    }
-    res.send({commit});
+    lock.acquire(object.author_id, async () => {
+        const commit = await commitFiles(object, table, prof);
+        if (commit === null) {
+            res.statusCode = 500;
+            res.send({message: 'Failed to process submission.'});
+            return;
+        }
+        if (typeof commit === "object" && "error" in commit) {
+            res.statusCode = 400;
+            res.send({message: commit.error});
+            return;
+        }
+        res.send({commit});
+    });
 };
 
 /**
