@@ -11,9 +11,7 @@ import {
 } from "./index";
 import {commitFiles, getCommit, getFile, softResetRepo} from "./git";
 import {Commit} from "codetierlist-types";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
-import git, {ReadBlobResult} from "isomorphic-git";
+import git, {ReadBlobResult} from "isomorphic-git-dm";
 import {promises as fs} from "fs";
 import path from "path";
 import extract from "extract-zip";
