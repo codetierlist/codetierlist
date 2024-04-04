@@ -5,6 +5,8 @@ import {
 } from "@/common/updateScores";
 import {promises as fs} from "fs";
 import path from "path";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 import git from "isomorphic-git";
 import {Commit, JobResult, TestCase} from "codetierlist-types";
 import {Solution} from "@prisma/client";
@@ -36,11 +38,17 @@ export const commitFiles = async (object: Omit<TestCase | Solution, 'datetime' |
     const status = await git.statusMatrix({fs, dir: repoPath});
 
     // no unstaged changes
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     if (status.every(x => x[2] == 1)) {
         return {error: "No changes"};
     }
     // too many files added
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     if (status.filter(x => x[2] !== 0).length > config.max_file_count
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
         && status.some(x => x[1] === 0)) {
         await softResetRepo(repoPath, object.git_id);
         return {error: `Too many files added. The limit is ${config.max_file_count}`};
