@@ -11,7 +11,7 @@ import {
 } from "./index";
 import {commitFiles, getCommit, getFile, softResetRepo} from "./git";
 import {Commit} from "codetierlist-types";
-import git, {ReadBlobResult} from "isomorphic-git";
+import git, {ReadBlobResult} from "isomorphic-git-dm";
 import {promises as fs} from "fs";
 import path from "path";
 import extract from "extract-zip";

@@ -5,7 +5,7 @@ import {
 } from "@/common/updateScores";
 import {promises as fs} from "fs";
 import path from "path";
-import git from "isomorphic-git";
+import git from "isomorphic-git-dm";
 import {Commit, JobResult, TestCase} from "codetierlist-types";
 import {Solution} from "@prisma/client";
 import {config} from "../config";
