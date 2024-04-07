@@ -38,57 +38,78 @@ const convertPathsToTree = (paths: string[]): TreeType => {
 };
 
 /**
- * A list of files for a commit
+ * Get the file contents from the server for the current file given the commit id
+ *
+ * @param fullRoute the full route to the file, e.g., all the stuff before the commit id
+ * @param commitId the commit id to get the file from
+ * @param currentFile the current file to get the contents of
+ *
+ * @returns the file contents as an ArrayBuffer
  */
-export const ListFiles = () => {
-    const {
-        currentFile,
-        commit,
-        commitId,
-        fullRoute,
-        route,
-        submitFiles,
-    } = useFileListingProps();
+export const getFileContents = async (
+    fullRoute: string,
+    commitId: string,
+    currentFile: string,
+    utorid: string | null
+) => {
+    return await axios.get<ArrayBuffer>(`${fullRoute}/${commitId}/${currentFile}`, {
+        responseType: 'arraybuffer',
+        skipErrorHandling: true,
+        params: {
+            utorid: utorid ?? undefined,
+        },
+    });
+};
 
+/**
+ * Hook to get the file contents. This will fetch the file contents when the current file changes
+ * Expects the current file to be set in the FileListingContext
+ *
+ * @returns the file contents as an ArrayBuffer
+ */
+const useFileContents = () => {
     const { showSnack } = useContext(SnackbarContext);
-    const searchParams = useSearchParams();
     const [currentFileContent, setCurrentFileContent] = useState<ArrayBuffer | null>(
         null
     );
-
-    // turn the files into a tree
-    const files = convertPathsToTree(commit.files);
-
-    /** get the contents of a file and set it in the state
-     * @param file the file to get the contents of
-     */
-    const getFileContents = async (file: string) => {
-        await axios
-            .get<ArrayBuffer>(
-                `${fullRoute}/${commitId || (commit.log[0]?.id ?? '')}/${file}`,
-                {
-                    skipErrorHandling: true,
-                    params: {
-                        utorid: searchParams.get('utorid') ?? undefined,
-                    },
-                    responseType: 'arraybuffer',
-                }
-            )
-            .then((res) => {
-                // read the file contents from buffer
-                setCurrentFileContent(res.data);
-            })
-            .catch((e) => {
-                handleError(showSnack)(e);
-            });
-    };
+    const searchParams = useSearchParams();
+    const { currentFile, commit, fullRoute, commitId } = useFileListingProps();
 
     useEffect(() => {
         if (currentFile) {
-            void getFileContents(currentFile);
+            getFileContents(
+                fullRoute,
+                commitId || (commit.log[0]?.id ?? ''),
+                currentFile,
+                searchParams.get('utorid')
+            )
+                .then((res) => {
+                    setCurrentFileContent(res.data);
+                })
+                .catch((e) => {
+                    handleError(showSnack)(e);
+                });
         }
+
+        return () => {
+            setCurrentFileContent(null);
+        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentFile, submitFiles]);
+    }, [currentFile, commit, fullRoute, commitId, searchParams]);
+
+    return currentFileContent;
+};
+
+/**
+ * A list of files for a commit
+ */
+export const ListFiles = () => {
+    const { currentFile, commit, route } = useFileListingProps();
+
+    const currentFileContent = useFileContents();
+
+    // turn the files into a tree
+    const files = convertPathsToTree(commit.files);
 
     const focusTargetAttribute = useRestoreFocusTarget();
 
