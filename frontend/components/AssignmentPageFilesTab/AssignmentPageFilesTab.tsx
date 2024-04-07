@@ -244,20 +244,26 @@ const DownloadEverythingButton = () => {
             return;
         }
 
-        for (const file of commit.files) {
-            const response = await getFileContents(
+        const promises = commit.files.map(file =>
+            getFileContents(
                 `/courses/${assignment.course_id}/assignments/${assignmentId}/${route}`,
                 commitId || (commit.log[0]?.id ?? ''),
                 file,
                 searchParams.get('utorid')
-            ).catch(handleError(showSnack));
+            ).then(response => {
+                if (response) {
+                    zip.file(file, response.data);
+                } else {
+                    throw new Error('Failed to download files');
+                }
+            }).catch(handleError(showSnack))
+        );
 
-            if (response) {
-                zip.file(file, response.data);
-            } else {
-                showSnack('Failed to download files', 'error');
-                return null;
-            }
+        try {
+            await Promise.all(promises);
+        } catch (error) {
+            showSnack('Failed to download files', 'error');
+            return null;
         }
 
         zip.generateAsync({ type: 'blob' })
