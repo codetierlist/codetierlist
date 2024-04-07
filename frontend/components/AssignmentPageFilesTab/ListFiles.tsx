@@ -45,8 +45,7 @@ export const ListFiles = () => {
         currentFile,
         commit,
         commitId,
-        assignment,
-        assignmentId,
+        fullRoute,
         route,
         submitFiles,
     } = useFileListingProps();
@@ -66,7 +65,7 @@ export const ListFiles = () => {
     const getFileContents = async (file: string) => {
         await axios
             .get<ArrayBuffer>(
-                `/courses/${assignment.course_id}/assignments/${assignmentId}/${route}/${commitId || (commit.log[0]?.id ?? '')}/${file}`,
+                `${fullRoute}/${commitId || (commit.log[0]?.id ?? '')}/${file}`,
                 {
                     skipErrorHandling: true,
                     params: {
