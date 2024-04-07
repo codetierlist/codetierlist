@@ -635,7 +635,9 @@ export const AssignmentPageFilesTab = ({
                             ` to ${basename(currentFolder)}`}
                     </Button>
 
-                    <DownloadEverythingButton />
+                    { checkIfCourseAdmin(userInfo, assignment.course_id) && (
+                        <DownloadEverythingButton />
+                    )}
 
                     <FileSelectorDropdown
                         content={content}
