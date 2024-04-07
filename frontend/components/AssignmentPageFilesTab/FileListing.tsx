@@ -28,7 +28,7 @@ export const FileListing = ({ path, ...props }: FileListingProps) => {
         fullRoute,
         changeFolder,
         commit,
-        commitId
+        commitId,
     } = useFileListingProps();
 
     const iconType = useMemo(() => {
