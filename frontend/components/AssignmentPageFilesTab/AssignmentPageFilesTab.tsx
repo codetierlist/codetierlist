@@ -20,10 +20,17 @@ import {
     MessageBarBody,
     MessageBarTitle,
     Option,
+    ProgressBar,
     Subtitle1,
+    Toast,
+    ToastBody,
+    ToastTitle,
+    useId,
+    useToastController,
 } from '@fluentui/react-components';
 import {
     Add24Regular,
+    ArrowDownload24Regular,
     DocumentMultiple24Regular,
     EditProhibited24Regular,
     Folder24Regular,
@@ -36,7 +43,7 @@ import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import styles from './AssignmentPageFilesTab.module.css';
 import { Dropzone } from './Dropzone';
 import { FileListingContext } from './FileListingContext';
-import { ListFiles } from './ListFiles';
+import { ListFiles, getFileContents } from './ListFiles';
 
 export declare type AssignmentPageFilesTabProps = {
     /** a function that fetches the assignment */
@@ -196,6 +203,95 @@ const FileSelectorDropdown = ({
                 </Option>
             ))}
         </Dropdown>
+    );
+};
+
+/**
+ * This button downloads all the files in a submission
+ */
+const DownloadEverythingButton = () => {
+    const { showSnack, toasterId } = useContext(SnackbarContext);
+    const { dismissToast, dispatchToast } = useToastController(toasterId);
+    const searchParams = useSearchParams();
+    const { commitId, commit, assignment, assignmentId, route } =
+        useContext(FileListingContext);
+    const toastId = useId('download-toast');
+
+    const DownloadToast = () => (
+        <Toast>
+            <ToastTitle>
+                Downloading files
+                {searchParams.get('utorid') ? ` for ${searchParams.get('utorid')}` : ''}
+            </ToastTitle>
+            <ToastBody>
+                <ProgressBar />
+            </ToastBody>
+        </Toast>
+    );
+
+    /**
+     * download the entire submission as a zip file by downloading each file
+     * one by one and zipping them up into a single file
+     */
+    const downloadSubmission = async () => {
+        const zip = new JSZip();
+
+        dispatchToast(<DownloadToast />, { toastId, timeout: -1 });
+
+        if (!commit.files || commit.files.length === 0) {
+            showSnack('No files to download', 'error');
+            dismissToast(toastId);
+            return;
+        }
+
+        const promises = commit.files.map(file =>
+            getFileContents(
+                `/courses/${assignment.course_id}/assignments/${assignmentId}/${route}`,
+                commitId || (commit.log[0]?.id ?? ''),
+                file,
+                searchParams.get('utorid')
+            ).then(response => {
+                if (response) {
+                    zip.file(file, response.data);
+                } else {
+                    throw new Error('Failed to download files');
+                }
+            }).catch(handleError(showSnack))
+        );
+
+        try {
+            await Promise.all(promises);
+        } catch (error) {
+            showSnack('Failed to download files', 'error');
+            return null;
+        }
+
+        zip.generateAsync({ type: 'blob' })
+            .then(function (blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${route}${searchParams.get('utorid') ? `-${searchParams.get('utorid')}` : ''}.zip`;
+                a.click();
+                URL.revokeObjectURL(url);
+            })
+            .catch((e) => {
+                handleError(showSnack)(e);
+            })
+            .finally(() => {
+                dismissToast(toastId);
+                showSnack('Files downloaded', 'success');
+            });
+    };
+
+    return (
+        <Button
+            icon={<ArrowDownload24Regular />}
+            appearance="subtle"
+            onClick={downloadSubmission}
+        >
+            Download files
+        </Button>
     );
 };
 
@@ -470,124 +566,127 @@ export const AssignmentPageFilesTab = ({
     }, [assignment.due_date, assignment.strict_deadline, searchParams, commitID]);
 
     return (
-        <div className="m-y-xxxl">
-            <div className={`${styles.uploadHeader} m-b-xl`}>
-                <Subtitle1 className={styles.testCaseHeader} block as="h2">
-                    Uploaded {routeName}s{' '}
-                    {commitID &&
-                        currentCommit &&
-                        `from ${convertDate(
-                            new Date(currentCommit.date)
-                        )} at ${convertTime(new Date(currentCommit.date))}`}
-                    <TestCaseStatus status={content.valid} />
-                    {!isEditable && (
-                        <ToolTipIcon
-                            tooltip="This file selector is currently read only"
-                            icon={<EditProhibited24Regular />}
-                        />
+        <FileListingContext.Provider
+            value={{
+                update: getTestData,
+                changeFile: setCurrentFile,
+                currentFile,
+                changeFolder: setCurrentFolder,
+                currentFolder,
+                submitFolder,
+                submitFiles,
+                isEditable,
+                assignmentId: assignmentID,
+                assignment,
+                commit: content,
+                commitId: commitID,
+                route,
+                fullRoute: `/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/`,
+            }}
+        >
+            <div className="m-y-xxxl">
+                <div className={`${styles.uploadHeader} m-b-xl`}>
+                    <Subtitle1 className={styles.testCaseHeader} block as="h2">
+                        Uploaded {routeName}s{' '}
+                        {commitID &&
+                            currentCommit &&
+                            `from ${convertDate(
+                                new Date(currentCommit.date)
+                            )} at ${convertTime(new Date(currentCommit.date))}`}
+                        <TestCaseStatus status={content.valid} />
+                        {!isEditable && (
+                            <ToolTipIcon
+                                tooltip="This file selector is currently read only"
+                                icon={<EditProhibited24Regular />}
+                            />
+                        )}
+                    </Subtitle1>
+                    <Caption1 className="p-y-s" block as="p">
+                        {description}
+                    </Caption1>
+                </div>
+
+                {checkIfCourseAdmin(userInfo, assignment.course_id) && (
+                    <ValidationErrorMessageBar commit={content} />
+                )}
+
+                <HeaderToolbar className="m-none p-xs">
+                    <Button
+                        disabled={!isEditable}
+                        icon={<Folder24Regular />}
+                        appearance="subtle"
+                        onClick={uploadFolder}
+                    >
+                        Upload folder
+                        {currentFolder &&
+                            currentFolder !== '.' &&
+                            ` to ${basename(currentFolder)}`}
+                    </Button>
+
+                    <Button
+                        disabled={!isEditable}
+                        icon={<Add24Regular />}
+                        appearance="subtle"
+                        onClick={uploadFile}
+                    >
+                        Upload {routeName}{' '}
+                        {currentFolder &&
+                            currentFolder !== '.' &&
+                            ` to ${basename(currentFolder)}`}
+                    </Button>
+
+                    { checkIfCourseAdmin(userInfo, assignment.course_id) && (
+                        <DownloadEverythingButton />
                     )}
-                </Subtitle1>
-                <Caption1 className="p-y-s" block as="p">
-                    {description}
-                </Caption1>
-            </div>
 
-            {checkIfCourseAdmin(userInfo, assignment.course_id) && (
-                <ValidationErrorMessageBar commit={content} />
-            )}
+                    <FileSelectorDropdown
+                        content={content}
+                        setCommitID={setCommitID}
+                        update={async () => {
+                            setCurrentFile('');
+                            setCurrentFolder('');
+                            await getTestData();
+                        }}
+                    />
+                </HeaderToolbar>
 
-            <HeaderToolbar className="m-none p-xs">
-                <Button
-                    disabled={!isEditable}
-                    icon={<Folder24Regular />}
-                    appearance="subtle"
-                    onClick={uploadFolder}
-                >
-                    Upload folder
-                    {currentFolder &&
-                        currentFolder !== '.' &&
-                        ` to ${basename(currentFolder)}`}
-                </Button>
-
-                <Button
-                    disabled={!isEditable}
-                    icon={<Add24Regular />}
-                    appearance="subtle"
-                    onClick={uploadFile}
-                >
-                    Upload {routeName}{' '}
-                    {currentFolder &&
-                        currentFolder !== '.' &&
-                        ` to ${basename(currentFolder)}`}
-                </Button>
-
-                <FileSelectorDropdown
-                    content={content}
-                    setCommitID={setCommitID}
-                    update={async () => {
-                        setCurrentFile('');
+                <div
+                    onClick={() => {
                         setCurrentFolder('');
-                        await getTestData();
+                        setCurrentFile('');
                     }}
-                />
-            </HeaderToolbar>
-
-            <div
-                onClick={() => {
-                    setCurrentFolder('');
-                    setCurrentFile('');
-                }}
-            >
-                <Dropzone
-                    submitFiles={(files) => {
-                        void submitFiles(files, '');
-                    }}
-                    dropText={`Drop files to upload as a ${routeName}`}
-                    disabled={isEditable === false}
                 >
-                    <Card className="m-t-xl">
-                        {!content.files || content.files.length === 0 ? (
-                            <div className={styles.noFiles}>
-                                <DocumentMultiple24Regular />
-                                <Caption1>
-                                    No files uploaded
-                                    {isEditable && (
-                                        <>
-                                            {' '}
-                                            yet. Drag and drop files here or{' '}
-                                            <Link inline onClick={uploadFile}>
-                                                choose files
-                                            </Link>{' '}
-                                            to upload.
-                                        </>
-                                    )}
-                                </Caption1>
-                            </div>
-                        ) : null}
-
-                        <FileListingContext.Provider
-                            value={{
-                                update: getTestData,
-                                changeFile: setCurrentFile,
-                                currentFile,
-                                changeFolder: setCurrentFolder,
-                                currentFolder,
-                                submitFolder,
-                                submitFiles,
-                                isEditable,
-                                assignmentId: assignmentID,
-                                assignment,
-                                commit: content,
-                                commitId: commitID,
-                                route,
-                                fullRoute: `/courses/${assignment.course_id}/assignments/${assignmentID}/${route}/`,
-                            }}
-                        >
+                    <Dropzone
+                        submitFiles={(files) => {
+                            void submitFiles(files, '');
+                        }}
+                        dropText={`Drop files to upload as a ${routeName}`}
+                        disabled={isEditable === false}
+                    >
+                        <Card className="m-t-xl">
+                            {!content.files || content.files.length === 0 ? (
+                                <div className={styles.noFiles}>
+                                    <DocumentMultiple24Regular />
+                                    <Caption1>
+                                        No files uploaded
+                                        {isEditable && (
+                                            <>
+                                                {' '}
+                                                yet. Drag and drop files here or{' '}
+                                                <Link inline onClick={uploadFile}>
+                                                    choose files
+                                                </Link>{' '}
+                                                to upload.
+                                            </>
+                                        )}
+                                    </Caption1>
+                                </div>
+                            ) : null}
                             <ListFiles />
-                        </FileListingContext.Provider>
-                    </Card>
-                </Dropzone>
+                        </Card>
+                    </Dropzone>
+                </div>
             </div>
-        </div>
+        </FileListingContext.Provider>
     );
 };
