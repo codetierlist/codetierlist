@@ -238,6 +238,12 @@ const DownloadEverythingButton = () => {
 
         dispatchToast(<DownloadToast />, { toastId, timeout: -1 });
 
+        if (!commit.files || commit.files.length === 0) {
+            showSnack('No files to download', 'error');
+            dismissToast(toastId);
+            return;
+        }
+
         for (const file of commit.files) {
             const response = await getFileContents(
                 `/courses/${assignment.course_id}/assignments/${assignmentId}/${route}`,
