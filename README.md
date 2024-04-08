@@ -56,7 +56,38 @@ Docker containers as well.
 - [Make](https://www.gnu.org/software/make/)
 - [Node.js](https://nodejs.org/en/) (for development)
 
+
+### 🚀 Production Deployment
+
+To start the run the containers needed to run Codetierlist, clone the repository onto the machine you want to run Codetierlist on.
+
+Then, run the following command in the root directory of the project:
+
+```bash
+make docker_up  # starts core application
+make runner_up  # starts the job runner
+```
+
+To tear down the docker containers, run:
+
+```bash
+make docker_down  # stops core application
+make runner_down  # stops the job runner
+```
+
+After running the docker containers, go to http://localhost:3555/ to visit the site.
+
 ### 💼 Local Development
+
+#### 🧠 Setting up IDE code completion
+
+To set up Intellisense for VSCode, or any other IDE that supports TypeScript code completion, run the following command in the root directory of the project:
+
+```bash
+make init  # runs npm ci on all packages
+```
+
+#### 🏃‍♂️ Running the Development Environment
 
 To start the run the containers needed to run Codetierlist, run the following command in the root directory of the project:
 
@@ -80,25 +111,6 @@ Dev containers are available for use with [Visual Studio Code](https://code.visu
 the [JetBrains](https://www.jetbrains.com/) suite of IDEs. These containers are pre-configured with the
 necessary tools to run Codetierlist locally for development of the frontend or backend.
 
-### 🚀 Production Deployment
-
-To start the run the containers needed to run Codetierlist, clone the repository onto the machine you want to run Codetierlist on.
-
-Then, run the following command in the root directory of the project:
-
-```bash
-make docker_up  # starts core application
-make runner_up  # starts the job runner
-```
-
-To tear down the docker containers, run:
-
-```bash
-make docker_down  # stops core application
-make runner_down  # stops the job runner
-```
-
-After running the docker containers, go to http://localhost:3555/ to visit the site.
 
 ## 📚 Simplified System Architecture
 
