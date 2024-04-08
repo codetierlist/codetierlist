@@ -30,6 +30,19 @@ own test cases, this will be shown in a tier list for students to see.
 
 ## 👟 Running Codetierlist
 
+Codetierlist is a web application that is run using [Docker](https://www.docker.com/). To run Codetierlist, you
+will need to have Docker installed on your machine.
+
+For increased horizontal scalability, Codetierlist uses a job runner to handle the processing of student submissions.
+This job runner can be run on a separate machine from the main Codetierlist application, and there can be multiple
+job runners connected to the main Codetierlist application.
+
+At least one job runner must be running for Codetierlist to function properly. Otherwise, uploads will not be
+processed. Furthermore, the main Codetierlist application must be running for the job runner to connect to it.
+
+The job runner must also have access to the Redis server that the main Codetierlist application is using, along
+with the corresponding Redis password.
+
 ### 💼 Local Development
 
 #### Running Locally
@@ -37,13 +50,15 @@ own test cases, this will be shown in a tier list for students to see.
 To start the run the containers needed to run Codetierlist, run the following command in the root directory of the project:
 
 ```bash
-make docker_up_dev
+make docker_up_dev # starts core services
+make runner_up     # starts the job runner (does not have to be the same machine as above command)
 ```
 
 To tear down the docker containers when finished with development, run:
 
 ```bash
-make docker_down_dev
+make docker_down_dev # stops core services
+make runner_down     # stops the job runner (does not have to be the same machine as above command)
 ```
 
 After running the docker containers, go to http://localhost:3555/ to visit the site.
@@ -57,15 +72,15 @@ Production is handled via GitHub Actions CI/CD.
 To start the run the containers needed to run Codetierlist, run the following command in the root directory of the project:
 
 ```bash
-make docker_up
-make runner_up  # starts the job runner
+make docker_up  # starts core services
+make runner_up  # starts the job runner (does not have to be the same machine as above command)
 ```
 
 To tear down the docker containers, run:
 
 ```bash
-make docker_down
-make runner_down  # stops the job runner
+make docker_down  # stops core services
+make runner_down  # stops the job runner (does not have to be the same machine as above command)
 ```
 
 After running the docker containers, go to http://localhost:3555/ to visit the site.
