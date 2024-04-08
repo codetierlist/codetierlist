@@ -18,22 +18,22 @@ clean:
 	cd ./runner && rm -rf node_modules
 
 # prod docker
-docker_up:
+prod_up:
 	docker compose  -f "docker-compose.yml" up -d --build
 
-docker_down:
+prod_down:
 	docker compose  -f "docker-compose.yml" down
 
-docker_restart: docker_down docker_up
+prod_restart: docker_down docker_up
 
 # dev docker (includes hot reload for backend and frontend)
-docker_dev:
+dev_up:
 	docker compose -f "docker-compose-dev.yml" up -d --build
 
-docker_dev_down:
+dev_down:
 	docker compose -f "docker-compose-dev.yml" down
 
-docker_dev_restart: docker_dev_down docker_dev
+dev_restart: docker_dev_down docker_dev
 
 # runner
 runner_up:
