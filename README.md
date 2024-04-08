@@ -43,9 +43,17 @@ processed. Furthermore, the main Codetierlist application must be running for th
 The job runner must also have access to the Redis server that the main Codetierlist application is using, along
 with the corresponding Redis password.
 
-### 💼 Local Development
+Typically, production services are handled via GitHub Actions CI/CD. This following section is to run Codetierlist
+locally on your own system.
 
-#### Running Locally
+### 📦 Prerequisites
+
+- [Docker](https://www.docker.com/)
+- [Docker Compose](https://docs.docker.com/compose/)
+- [Make](https://www.gnu.org/software/make/)
+- [Node.js](https://nodejs.org/en/) (for development)
+
+### 💼 Local Development
 
 To start the run the containers needed to run Codetierlist, run the following command in the root directory of the project:
 
@@ -63,13 +71,17 @@ make runner_down     # stops the job runner (does not have to be the same machin
 
 After running the docker containers, go to http://localhost:3555/ to visit the site.
 
+#### 🚢 Dev containers
+
+Dev containers are available for use with [Visual Studio Code](https://code.visualstudio.com/) or
+the [JetBrains](https://www.jetbrains.com/) suite of IDEs. These containers are pre-configured with the
+necessary tools to run Codetierlist locally for development of the frontend or backend.
+
 ### 🚀 Production Deployment
 
-Production is handled via GitHub Actions CI/CD.
+To start the run the containers needed to run Codetierlist, clone the repository onto the machine you want to run Codetierlist on.
 
-#### Running Locally
-
-To start the run the containers needed to run Codetierlist, run the following command in the root directory of the project:
+Then, run the following command in the root directory of the project:
 
 ```bash
 make docker_up  # starts core services
