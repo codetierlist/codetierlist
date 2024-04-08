@@ -30,21 +30,24 @@ own test cases, this will be shown in a tier list for students to see.
 
 ## 👟 Running Codetierlist
 
-Codetierlist is a web application that is run using [Docker](https://www.docker.com/). To run Codetierlist, you
-will need to have Docker installed on your machine.
-
-For increased horizontal scalability, Codetierlist uses a job runner to handle the processing of student submissions.
+For increased horizontal scalability, Codetierlist uses a separate job runner container to handle the processing of student submissions.
 This job runner can be run on a separate machine from the main Codetierlist application, and there can be multiple
 job runners connected to the main Codetierlist application.
 
 At least one job runner must be running for Codetierlist to function properly. Otherwise, uploads will not be
-processed. Furthermore, the main Codetierlist application must be running for the job runner to connect to it.
+processed. Furthermore, the main Codetierlist application ("core application") must be running for the job runner to connect to it.
 
-The job runner must also have access to the Redis server that the main Codetierlist application is using, along
-with the corresponding Redis password.
+The job runner must also have access to the Redis server that are run by the core application. The job runner must be configured
+with the corresponding Redis password. Ideally, the Redis server should not be exposed to the public internet, so the job runner
+should be run on the same network as the Redis server.
 
-Typically, production services are handled via GitHub Actions CI/CD. This following section is to run Codetierlist
-locally on your own system.
+Moreover, it is ideal that the job runner is run on a machine with a high number of CPU cores, as the job runner is CPU-bound.
+It is also recommended to run the core application on a separate machine from the job runner, to prevent the job runner from
+hogging too many resources from the core application.
+
+Typically, [GitHub Actions CI/CD pipelines](./.github/workflows) are used to deploy the Codetierlist application to a cloud provider
+or on-premises server. The Codetierlist application is deployed using Docker containers, and the job runner is deployed using
+Docker containers as well.
 
 ### 📦 Prerequisites
 
@@ -58,15 +61,15 @@ locally on your own system.
 To start the run the containers needed to run Codetierlist, run the following command in the root directory of the project:
 
 ```bash
-make docker_up_dev # starts core services
-make runner_up     # starts the job runner (does not have to be the same machine as above command)
+make docker_up_dev # starts core application
+make runner_up     # starts the job runner
 ```
 
 To tear down the docker containers when finished with development, run:
 
 ```bash
-make docker_down_dev # stops core services
-make runner_down     # stops the job runner (does not have to be the same machine as above command)
+make docker_down_dev # stops core application
+make runner_down     # stops the job runner
 ```
 
 After running the docker containers, go to http://localhost:3555/ to visit the site.
@@ -84,15 +87,15 @@ To start the run the containers needed to run Codetierlist, clone the repository
 Then, run the following command in the root directory of the project:
 
 ```bash
-make docker_up  # starts core services
-make runner_up  # starts the job runner (does not have to be the same machine as above command)
+make docker_up  # starts core application
+make runner_up  # starts the job runner
 ```
 
 To tear down the docker containers, run:
 
 ```bash
-make docker_down  # stops core services
-make runner_down  # stops the job runner (does not have to be the same machine as above command)
+make docker_down  # stops core application
+make runner_down  # stops the job runner
 ```
 
 After running the docker containers, go to http://localhost:3555/ to visit the site.
