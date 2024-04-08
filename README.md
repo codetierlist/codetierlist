@@ -81,9 +81,9 @@ make runner_down  # stops the job runner
 
 After running the docker containers, go to http://localhost:3555/ to visit the site.
 
-## 📚 System Architecture
+## 📚 Simplified System Architecture
 
-![System achitecture](https://i.imgur.com/4mcN2Su.png)
+![System architecture](https://i.imgur.com/4mcN2Su.png)
 
 ## 💪 Contributing
 
