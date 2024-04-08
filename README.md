@@ -81,26 +81,9 @@ make runner_down  # stops the job runner
 
 After running the docker containers, go to http://localhost:3555/ to visit the site.
 
-### Tech stack:
+## 📚 System Architecture
 
-![System achitecture](https://i.imgur.com/bLK35FU.png)
-
-* Frontend
-  * [Fluent UI](https://fluent2.microsoft.design/) 🌊
-  * [Next.js](https://nextjs.org/) 🖖
-* Backend
-  * [Express.js](https://expressjs.com/) 🚂
-  * [Docker](https://www.docker.com/) 🐳
-* Database, ORM, and data storage
-  * [Postgres](https://www.postgresql.org/) 🐘
-  * [Prisma](https://www.prisma.io/) 🦄
-  * [Isomorphic-git](https://github.com/isomorphic-git/isomorphic-git) 🐙
-* Runner and Job Queue
-  * [Redis](https://redis.io/) 🍎
-  * [BullMQ](https://docs.bullmq.io/) 🐂
-  * [Node.js](https://nodejs.org/en/) 🚀
-  * [Docker](https://www.docker.com/) 🐳
-  * [standard in/out](https://en.wikipedia.org/wiki/Standard_streams) 📡
+![System achitecture](https://i.imgur.com/4mcN2Su.png)
 
 ## 💪 Contributing
 
