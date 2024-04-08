@@ -11,6 +11,8 @@ clean:
 	cd ./frontend && rm -rf node_modules
 	cd ./backend && rm -rf out
 	cd ./backend && rm -rf node_modules
+	cd ./types && rm -rf node_modules
+	cd ./runner && rm -rf node_modules
 
 # prod docker
 docker_up:
@@ -29,3 +31,12 @@ docker_dev_down:
 	docker compose -f "docker-compose-dev.yml" down
 
 docker_dev_restart: docker_dev_down docker_dev
+
+# runner
+runner_up:
+	docker compose -f "docker-compose-runner.yml" up -d --build
+
+runner_down:
+	docker compose -f "docker-compose-runner.yml" down
+
+runner_restart: runner_down runner_up
