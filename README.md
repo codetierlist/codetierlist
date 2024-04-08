@@ -21,29 +21,18 @@ own test cases, this will be shown in a tier list for students to see.
 
 ## 😋 Features
 
-### 🔒 Login features
+1. **🔒 Login features**: Students and instructors can login to their accounts to access their respective features.
+2. **🥇 Tierlist with real time updates**: Continuously updating the accuracy of each students code and repositioning them
+3. **🤫 Safety and Independent working**: While students do provide their test cases and code to rank their progress, specific
+   implementation details are never shown to other students. This is done to ensures students work independently, and to prevent
+   [Academic Offenses](https://www.utm.utoronto.ca/academic-integrity/students/sanctions).
+4. **📚 Timeline of submissions**: student submissions are stored using [git](https://git-scm.com/) and commit history is viewable
 
-For each course, only students enrolled are able to have access to the courses
-Codetierlist.
+## 👟 Running Codetierlist
 
-### 🥇 Tierlist with real time updates
+### 💼 Local Development
 
-Continuously updating the accuracy of each students code and repositioning them
-in the tier list.
-
-### 🧑‍💻 Straightforward REST API
-
-Allows for user addition of multiple files.
-
-### 🤫 Safety and Independent working
-
-While students do provide their test cases and code to rank their progress, these
-will not be shown to other students. This is done to ensures students work
-independently, and to prevent [Academic Offenses](https://www.utm.utoronto.ca/academic-integrity/students/sanctions).
-
-## 💼 Local Development
-
-### Running Locally
+#### Running Locally
 
 To start the run the containers needed to run Codetierlist, run the following command in the root directory of the project:
 
@@ -59,11 +48,11 @@ make docker_down_dev
 
 After running the docker containers, go to http://localhost:3555/ to visit the site.
 
-## 🚀 Production Deployment
+### 🚀 Production Deployment
 
 Production is handled via GitHub Actions CI/CD.
 
-### Running Locally
+#### Running Locally
 
 To start the run the containers needed to run Codetierlist, run the following command in the root directory of the project:
 
