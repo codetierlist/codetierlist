@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 jobs:
   deploy:
-    runs-on: prod
+    runs-on: prodocto
     steps:
       - uses: actions/checkout@v2
 
@@ -21,11 +21,11 @@ jobs:
       - name: compose build
         run: docker compose build --pull
 
-#      - name: compose build runners
-#        run: docker compose -f docker-compose-runner.yml build --pull
+      - name: compose build runners
+        run: docker compose -f docker-compose-runner.yml build --pull
 
       - name: compose up
         run: docker compose up -d
 
-#      - name: compose up runners
-#        run: docker compose -f docker-compose-runner.yml up -d
+      - name: compose up runners
+        run: docker compose -f docker-compose-runner.yml up -d
