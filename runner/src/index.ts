@@ -145,7 +145,7 @@ const worker = new Worker<ReadyJobData, JobResult>("job_queue",
     });
 
 // when the worker is connected to redis, log it
-worker.on("active", () => {
+worker.on("ready", () => {
     console.info("worker is active and ready to process jobs");
 });
 
