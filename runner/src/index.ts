@@ -26,8 +26,6 @@ if (process.env.REDIS_PASSWORD === undefined) {
     console.warn("REDIS_PASSWORD is undefined, connection might fail");
 }
 
-const mtask = parseInt(process.env.MAX_RUNNING_TASKS);
-
 // todo:
 // what if we have just 5 containers running and have a job queue
 // instead of running one container per job
@@ -143,9 +141,13 @@ const worker = new Worker<ReadyJobData, JobResult>("job_queue",
             port: parseInt(process.env.REDIS_PORT),
             password: process.env.REDIS_PASSWORD
         },
-        concurrency: mtask
+        concurrency: parseInt(process.env.MAX_RUNNING_TASKS)
     });
 
+// when the worker is connected to redis, log it
+worker.on("active", () => {
+    console.info("worker is active and ready to process jobs");
+});
 
 // trap SIGINT and SIGTERM and gracefully shutdown
 process.on("SIGINT", async () => {
