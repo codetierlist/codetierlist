@@ -64,15 +64,15 @@ To start the run the containers needed to run Codetierlist, clone the repository
 Then, run the following command in the root directory of the project:
 
 ```bash
-make docker_up  # starts core application
-make runner_up  # starts the job runner
+make prod_up   # starts core application
+make runner_up # starts the job runner
 ```
 
 To tear down the docker containers, run:
 
 ```bash
-make docker_down  # stops core application
-make runner_down  # stops the job runner
+make prod_down   # stops core application
+make runner_down # stops the job runner
 ```
 
 After running the docker containers, go to http://localhost:3555/ to visit the site.
@@ -92,15 +92,15 @@ make init  # runs npm ci on all packages
 To start the run the containers needed to run Codetierlist, run the following command in the root directory of the project:
 
 ```bash
-make docker_up_dev # starts core application
-make runner_up     # starts the job runner
+make dev_up     # starts core application
+make runner_up  # starts the job runner
 ```
 
 To tear down the docker containers when finished with development, run:
 
 ```bash
-make docker_down_dev # stops core application
-make runner_down     # stops the job runner
+make dev_down     # stops core application
+make runner_down  # stops the job runner
 ```
 
 After running the docker containers, go to http://localhost:3555/ to visit the site.
