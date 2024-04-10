@@ -9,6 +9,8 @@ import { useContext, useMemo } from 'react';
 import styles from './AssignmentPageFilesTab.module.css';
 import { useFileListingProps } from './FileListingContext';
 import { ToolTipIcon } from '..';
+import { getFileContents } from './ListFiles';
+import { useSearchParams } from 'next/navigation';
 
 export declare type FileListingProps = {
     /** the full path of the file to display */
@@ -17,8 +19,17 @@ export declare type FileListingProps = {
 
 export const FileListing = ({ path, ...props }: FileListingProps) => {
     const { showSnack } = useContext(SnackbarContext);
-    const { update, changeFile, currentFile, isEditable, fullRoute, changeFolder } =
-        useFileListingProps();
+    const searchParams = useSearchParams();
+    const {
+        update,
+        changeFile,
+        currentFile,
+        isEditable,
+        fullRoute,
+        changeFolder,
+        commit,
+        commitId,
+    } = useFileListingProps();
 
     const iconType = useMemo(() => {
         const extension = path.split('.').pop() ?? '';
@@ -68,20 +79,19 @@ export const FileListing = ({ path, ...props }: FileListingProps) => {
                         icon={<ArrowDownload24Regular />}
                         onClick={(e) => {
                             e.stopPropagation();
-                            void fetch(`/api/assignment/${fullRoute}/file/${path}`)
-                                .then((res) => res.blob())
-                                .then((blob) => {
-                                    const url = window.URL.createObjectURL(blob);
-                                    const a = document.createElement('a');
-                                    a.href = url;
-                                    a.download = basename(path);
-                                    document.body.appendChild(a);
-                                    a.click();
-                                    a.remove();
-                                })
-                                .catch((err) => {
-                                    showSnack(err.message, 'error');
-                                });
+                            getFileContents(
+                                fullRoute,
+                                commitId || (commit.log[0]?.id ?? ''),
+                                currentFile || path,
+                                searchParams.get('utorid')
+                            ).then((res) => {
+                                const blob = new Blob([res.data]);
+                                const url = window.URL.createObjectURL(blob);
+                                const a = document.createElement('a');
+                                a.href = url;
+                                a.download = basename(path);
+                                a.click();
+                            });
                         }}
                     />
                 }
