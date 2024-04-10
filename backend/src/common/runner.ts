@@ -346,7 +346,6 @@ const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue
     });
     if (!submission || !testCase) {
         runnerLogger.error(`Submission or test case not found for job ${job.id}`);
-        await job.remove();
         throw new UnrecoverableError("Submission or test case not found");
     }
 
@@ -359,7 +358,6 @@ const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue
     }
     catch (e) {
         runnerLogger.error(`Error fetching files for job ${job.id}: ${e}`);
-        await job.remove();
         throw new UnrecoverableError("Error fetching files");
     }
 
