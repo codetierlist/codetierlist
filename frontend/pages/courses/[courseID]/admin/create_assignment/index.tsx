@@ -6,7 +6,7 @@ import {
     checkIfCourseAdmin,
     MarkdownRender,
 } from '@/components';
-import { SnackbarContext, UserContext } from '@/hooks';
+import { useRunnersList, SnackbarContext, UserContext } from '@/hooks';
 import {
     Button,
     Caption1,
@@ -41,7 +41,7 @@ import { RunnerImage } from 'codetierlist-types';
 import Error from 'next/error';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { Container } from 'react-grid-system';
 import styles from './page.module.css';
 
@@ -52,43 +52,6 @@ const updateTimezoneOffset = (date: string) => {
     const d = new Date(date);
     d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
     return d;
-};
-
-/**
- * Custom hook to fetch the runner images
- */
-const useRunners = () => {
-    const [runners, setRunners] = useState<Record<string, string[]>>({});
-    const [selectedRunner, setSelectedRunner] = useState<RunnerImage | null>(null);
-    const { showSnack } = useContext(SnackbarContext);
-
-    useEffect(() => {
-        const fetchRunners = async () => {
-            const res = await axios.get<RunnerImage[]>('/runner/images').catch((e) => {
-                handleError(showSnack)(e);
-            });
-            if (!res) {
-                return;
-            }
-            setRunners(
-                res.data.reduce(
-                    (acc, runner) => {
-                        acc[runner.runner_image] = acc[runner.runner_image] ?? [];
-                        acc[runner.runner_image].push(runner.image_version);
-                        return acc;
-                    },
-                    {} as Record<string, string[]>
-                )
-            );
-
-            setSelectedRunner(res.data[0]);
-        };
-
-        void fetchRunners();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    return { runners, setSelectedRunner, selectedRunner };
 };
 
 const Preview = ({
@@ -122,7 +85,7 @@ export default function Page(): JSX.Element {
     const { showSnack } = useContext(SnackbarContext);
     const [assignmentName, setAssignmentName] = useState('');
     const [description, setDescription] = useState('');
-    const { runners, setSelectedRunner, selectedRunner } = useRunners();
+    const { runners, setSelectedRunner, selectedRunner } = useRunnersList();
     const [dueDate, setDueDate] = useState(new Date());
     const { courseID } = useRouter().query;
     const { fetchUserInfo } = useContext(UserContext);

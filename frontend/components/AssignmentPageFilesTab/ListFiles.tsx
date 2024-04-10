@@ -67,7 +67,7 @@ export const getFileContents = async (
  *
  * @returns the file contents as an ArrayBuffer
  */
-const useFileContents = () => {
+const useAssignmentFileContents = () => {
     const { showSnack } = useContext(SnackbarContext);
     const [currentFileContent, setCurrentFileContent] = useState<ArrayBuffer | null>(
         null
@@ -106,7 +106,7 @@ const useFileContents = () => {
 export const ListFiles = () => {
     const { currentFile, commit, route } = useFileListingProps();
 
-    const currentFileContent = useFileContents();
+    const currentFileContent = useAssignmentFileContents();
 
     // turn the files into a tree
     const files = convertPathsToTree(commit.files);

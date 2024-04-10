@@ -1,14 +1,12 @@
-import axios, { handleError } from '@/axios';
 import { Navbar } from '@/components';
 import { defaultAccentColor } from '@/components/utils/theme/theme';
 import {
-    defaultUser,
-    ShowSnackType,
     SnackbarContext,
     UserContext,
     useSystemTheme,
     useTheme,
 } from '@/hooks';
+import { useUserInfo } from '@/hooks';
 import '@/styles/globals.css';
 import '@/styles/spacing.css';
 import {
@@ -27,40 +25,40 @@ import {
     useId,
     useToastController,
 } from '@fluentui/react-components';
-import { FetchedUser } from 'codetierlist-types';
 import type { AppProps } from 'next/app';
 import { useEffect, useState } from 'react';
 import useLocalStorage from 'use-local-storage';
-
-type EnhancedAppProps = AppProps & {
-    renderer?: GriffelRenderer;
-};
+import '@/styles/globals.css';
+import '@/styles/spacing.css';
 
 /**
- * Fetches user info
+ * A toast
  */
-const useUserInfo = (showSnack: ShowSnackType) => {
-    const [userInfo, setUserInfo] = useState<FetchedUser>(defaultUser);
+const ToastComponent = ({ message, severity, title, action }: {
+    /** The message to display */
+    message: string;
+    /** The severity of the toast */
+    severity?: ToastIntent;
+    /** The title of the toast */
+    title?: string;
+    /** The action to display */
+    action?: JSX.Element;
+}) => {
+    return (
+        <Toast>
+            {severity && (
+                <ToastTitle action={action}>
+                    {title || severity.charAt(0).toUpperCase() + severity.slice(1)}
+                </ToastTitle>
+            )}
+            <ToastBody>{message}</ToastBody>
+        </Toast>
+    )
+}
 
-    const fetchUserInfo = async () => {
-        await axios('/users')
-            .then(({ data }) => {
-                setUserInfo(data as FetchedUser);
-            })
-            .catch((e) => {
-                handleError(showSnack)(e);
-            });
-    };
-
-    useEffect(() => {
-        void fetchUserInfo();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    return { userInfo, setUserInfo, fetchUserInfo };
-};
-
-function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
+function App({ Component, pageProps, renderer }: AppProps & {
+    renderer?: GriffelRenderer;
+}) {
     /** snackbar */
     const toasterId = useId('toaster');
     const { dispatchToast } = useToastController(toasterId);
@@ -72,14 +70,12 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
         action?: JSX.Element
     ) => {
         dispatchToast(
-            <Toast>
-                {severity && (
-                    <ToastTitle action={action}>
-                        {title || severity.charAt(0).toUpperCase() + severity.slice(1)}
-                    </ToastTitle>
-                )}
-                <ToastBody>{message}</ToastBody>
-            </Toast>,
+            <ToastComponent
+                message={message || ''}
+                severity={severity}
+                title={title}
+                action={action}
+            />,
             {
                 intent: severity,
                 pauseOnWindowBlur: true,
@@ -90,6 +86,7 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
     };
 
     /** user info */
+    console.log(useUserInfo);
     const { userInfo, setUserInfo, fetchUserInfo } = useUserInfo(showSnack);
 
     /*
@@ -122,8 +119,11 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
                             <Field validationState="none" id="axios-loading-backdrop">
                                 <ProgressBar />
                             </Field>
+
                             <Navbar />
+
                             <Component {...pageProps} />
+
                             <Toaster toasterId={toasterId} />
                         </SnackbarContext.Provider>
                     </FluentProvider>
@@ -133,4 +133,4 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
     );
 }
 
-export default MyApp;
+export default App;
