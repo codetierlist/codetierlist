@@ -55,17 +55,6 @@ export type QueriedSubmission = {
     passed: bigint
 }
 
-// https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
-/* Randomize array in-place using Durstenfeld shuffle algorithm */
-function shuffleArray(array : unknown[]) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        const temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
-    }
-}
-
 
 export const generateTierFromQueriedData = (submissions: QueriedSubmission[], user?: User | string, anonymize = false): [Tierlist, UserTier] => {
     const res: Tierlist = {
@@ -124,9 +113,13 @@ export const generateTierFromQueriedData = (submissions: QueriedSubmission[], us
         res[tier].push(scoreNew);
     }
     if (!yourTier) yourTier = "?";
-    for (const tier of  Object.keys(res) as Tier[]) {
-        shuffleArray(res[tier as Tier]);
-    }
+    Object.values(res).forEach(x=>x.sort((a,b)=> {
+        const h1 = twoLetterHash(a.name);
+        const h2 = twoLetterHash(b.name);
+        if(h1 > h2) return 1;
+        if(h1 < h1) return -1;
+        return 0;
+    }));
     return [res, yourTier];
 };
 
