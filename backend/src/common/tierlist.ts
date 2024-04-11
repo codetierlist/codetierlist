@@ -124,7 +124,7 @@ export const generateTierFromQueriedData = (submissions: QueriedSubmission[], us
         res[tier].push(scoreNew);
     }
     if (!yourTier) yourTier = "?";
-    for (const tier in (Object.keys(res) as Tier[])) {
+    for (const tier of  Object.keys(res) as Tier[]) {
         shuffleArray(res[tier as Tier]);
     }
     return [res, yourTier];
