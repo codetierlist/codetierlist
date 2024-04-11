@@ -162,10 +162,10 @@ export const AdminToolbarCSVButton = ({
             return;
         }
 
-        const csvContent = `data:text/csv;charset=utf-8,UTORid,Name,Tests Passed,Total Tests,Group Number\n${studentData
+        const csvContent = `data:text/csv;charset=utf-8,UTORid,Name,Tier,Tests Passed,Total Tests,Group Number\n${studentData
             .map(
                 (student) =>
-                    `${student.utorid},${student.givenName} ${student.surname},${student.testsPassed},${student.totalTests},${student.groupNumber ?? ''}`
+                    `${student.utorid},${student.givenName} ${student.surname},${student.tier},${student.testsPassed},${student.totalTests},${student.groupNumber ?? ''}`
             )
             .join('\n')}`;
 
