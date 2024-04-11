@@ -151,5 +151,5 @@
     }
   ],
   "max_file_size": 20000000,
-  "max_file_count": 30
+  "max_file_count": 200
 }
