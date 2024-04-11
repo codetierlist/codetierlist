@@ -386,7 +386,7 @@ const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue
         max: 50,
         duration: 10,
     },
-    concurrency: 50
+    concurrency: 1
 });
 
 /** Fetches jobs from the parent job queue and adds them to the job queue */
