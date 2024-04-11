@@ -13,7 +13,9 @@ jobs:
         run: echo "${{ secrets.REDIS_PASSWORD }}" > ./redis/.env;
 
       - name: create backend env files
-        run: echo "${{ secrets.BACKEND_ENV }}" > ./backend/.env;
+        run: |
+          echo "${{ secrets.BACKEND_ENV }}" > ./backend/.env;
+          echo -e "\nNODE_ENV=development" >> ./backend/.env;
 
       - name: create runner env files
         run: echo "${{ secrets.BACKEND_ENV }}" > ./runner/.env;
