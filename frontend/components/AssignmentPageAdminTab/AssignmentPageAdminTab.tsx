@@ -34,6 +34,7 @@ import {
     Dismiss24Regular,
     Open12Regular,
     Search24Regular,
+    DocumentTableArrowRight24Regular
 } from '@fluentui/react-icons';
 import {
     AssignmentStudentStat,
@@ -138,6 +139,51 @@ export const AdminToolbarDeleteAssignmentButton = ({
             noun="assignment"
             deleteFunction={deleteAssignment}
         />
+    );
+};
+
+/**
+ * A button that deletes an assignment
+ */
+export const AdminToolbarCSVButton = ({
+    courseID,
+    assignmentID,
+    studentData,
+}: {
+    /** the course ID */
+    courseID: string;
+    /** the assignment ID */
+    assignmentID: string;
+    /** the student data */
+    studentData: AssignmentStudentStats | null;
+}) => {
+    const exportStats = async () => {
+        if (!studentData) {
+            return;
+        }
+
+        const csvContent = `data:text/csv;charset=utf-8,UTORid,Name,Tests Passed,Total Tests,Group Number\n${studentData
+            .map(
+                (student) =>
+                    `${student.utorid},${student.givenName} ${student.surname},${student.testsPassed},${student.totalTests},${student.groupNumber ?? ''}`
+            )
+            .join('\n')}`;
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement('a');
+        link.setAttribute('href', encodedUri);
+        link.setAttribute('download', `${courseID}-${assignmentID}.csv`);
+        document.body.appendChild(link);
+        link.click();
+    };
+
+    return (
+        <ToolbarButton
+            icon={<DocumentTableArrowRight24Regular />}
+            onClick={exportStats}
+        >
+            Export to CSV
+        </ToolbarButton>
     );
 };
 
@@ -332,6 +378,11 @@ export const AssignmentPageAdminTab = () => {
                 <AdminToolbarRevalidateAssignmentButton
                     courseID={courseID as string}
                     assignmentID={assignmentID as string}
+                />
+                <AdminToolbarCSVButton
+                    courseID={courseID as string}
+                    assignmentID={assignmentID as string}
+                    studentData={studentData}
                 />
             </HeaderToolbar>
 
