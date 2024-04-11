@@ -256,7 +256,7 @@ job_events.on("completed", async ({jobId}) => {
         return;
     }
     // not a validation job, update the score in db
-    await updateScore(submission, testCase, pass);
+    await updateScore(submission, testCase, pass, result);
     try {
         await job.updateData({status: "COMPLETED"});
     } catch { /* empty */
