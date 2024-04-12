@@ -255,16 +255,16 @@ export type BackendConfig = {
 
 /** the config of the limits */
 export type LimitsConfig = {
-    /** the maximum file size in bytes */
+    /** The maximum file size in bytes */
     max_file_size: number,
-    /** the maximum file count */
+    /** The maximum file count */
     max_file_count: number,
-    /** the maximum CPU time in seconds */
+    /** The maximum number of CPU seconds that each container can use */
     max_seconds: number,
-    /** the maximum memory with unit */
+    /** The maximum memory with unit */
     max_memory: string,
-    /** the memory swap with unit */
+    /** The memory swap with unit. If the value is the same as max_memory, swap is disabled */
     max_memory_swap: string,
-    /** the maximum number CPU */
+    /** The maximum percentage of CPU that each container can use (e.g., 0.5 for 50%) */
     max_cpu: number,
 }

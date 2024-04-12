@@ -48,13 +48,8 @@ export const runJob = async (job: ReadyJobData): Promise<JobResult> => {
     const img = job.image.runner_image;
     const img_ver = job.image.image_version;
     const promise =  new Promise<JobResult>((resolve) => {
-        // cpus=0.5; each container can only use 50% of a cpu
-        // ulimit cpu=5; each container can only run for 5 cpu seconds
-        // network=none; no network access
-        // --memory="200mb"; limit memory to 200mb
-        // --memory-swap="200mb"; swap = memory limit, so swap disabled
-
         // {timeout: (max_seconds+5) * 1000} is the timeout for the spawn process, if docker doesn't kill
+
         const runner = spawn("docker",
             ["run", "--rm", "-i", `--cpus=${limits.max_cpu}`, `--memory="${limits.max_memory}"`, `--memory-swap="${limits.max_memory_swap}"`, "--ulimit", `cpu=${limits.max_seconds}`, "--network=none", `codetl-runner-${img}-${img_ver}`],
             {timeout: (limits.max_seconds + 5) * 1000});
@@ -94,7 +89,7 @@ export const runJob = async (job: ReadyJobData): Promise<JobResult> => {
     const timeout = new Promise<JobResult>((_, reject) => {
         setTimeout(() => {
             reject(new Error("timeout"));
-        }, 1000 * (max_seconds + 10));
+        }, 1000 * (limits.max_seconds + 10));
     });
     return await Promise.race([promise, timeout]);
 };
