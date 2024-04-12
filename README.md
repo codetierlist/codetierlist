@@ -30,45 +30,87 @@ own test cases, this will be shown in a tier list for students to see.
 
 ## 👟 Running Codetierlist
 
-### 💼 Local Development
+For increased horizontal scalability, Codetierlist uses a separate job runner container to handle the processing of student submissions.
+This job runner can be run on a separate machine from the main Codetierlist application, and there can be multiple
+job runners connected to the main Codetierlist application.
 
-#### Running Locally
+At least one job runner must be running for Codetierlist to function properly. Otherwise, uploads will not be
+processed. Furthermore, the main Codetierlist application ("core application") must be running for the job runner to connect to it.
 
-To start the run the containers needed to run Codetierlist, run the following command in the root directory of the project:
+The job runner must also have access to the Redis server that are run by the core application. The job runner must be configured
+with the corresponding Redis password. Ideally, the Redis server should not be exposed to the public internet, so the job runner
+should be run on the same network as the Redis server.
 
-```bash
-make docker_up_dev
-```
+Moreover, it is ideal that the job runner is run on a machine with a high number of CPU cores, as the job runner is CPU-bound.
+It is also recommended to run the core application on a separate machine from the job runner, to prevent the job runner from
+hogging too many resources from the core application.
 
-To tear down the docker containers when finished with development, run:
+Typically, [GitHub Actions CI/CD pipelines](./.github/workflows) are used to deploy the Codetierlist application to a cloud provider
+or on-premises server. The Codetierlist application is deployed using Docker containers, and the job runner is deployed using
+Docker containers as well.
 
-```bash
-make docker_down_dev
-```
+### 📦 Prerequisites
 
-After running the docker containers, go to http://localhost:3555/ to visit the site.
+- [Docker](https://www.docker.com/)
+- [Docker Compose](https://docs.docker.com/compose/)
+- [Make](https://www.gnu.org/software/make/)
+- [Node.js](https://nodejs.org/en/) (for development)
+
 
 ### 🚀 Production Deployment
 
-Production is handled via GitHub Actions CI/CD.
+To start the run the containers needed to run Codetierlist, clone the repository onto the machine you want to run Codetierlist on.
 
-#### Running Locally
-
-To start the run the containers needed to run Codetierlist, run the following command in the root directory of the project:
+Then, run the following command in the root directory of the project:
 
 ```bash
-make docker_up
-make runner_up  # starts the job runner
+make prod_up   # starts core application
+make runner_up # starts the job runner
 ```
 
 To tear down the docker containers, run:
 
 ```bash
-make docker_down
+make prod_down   # stops core application
+make runner_down # stops the job runner
+```
+
+After running the docker containers, go to http://localhost:3555/ to visit the site.
+
+### 💼 Local Development
+
+#### 🧠 Setting up IDE code completion
+
+To set up Intellisense for VSCode, or any other IDE that supports TypeScript code completion, run the following command in the root directory of the project:
+
+```bash
+make init  # runs npm ci on all packages
+```
+
+#### 🏃‍♂️ Running the Development Environment
+
+To start the run the containers needed to run Codetierlist, run the following command in the root directory of the project:
+
+```bash
+make dev_up     # starts core application
+make runner_up  # starts the job runner
+```
+
+To tear down the docker containers when finished with development, run:
+
+```bash
+make dev_down     # stops core application
 make runner_down  # stops the job runner
 ```
 
 After running the docker containers, go to http://localhost:3555/ to visit the site.
+
+#### 🚢 Dev containers
+
+Dev containers are available for use with [Visual Studio Code](https://code.visualstudio.com/) or
+the [JetBrains](https://www.jetbrains.com/) suite of IDEs. These containers are pre-configured with the
+necessary tools to run Codetierlist locally for development of the frontend or backend.
+
 
 ## 📚 Simplified System Architecture
 

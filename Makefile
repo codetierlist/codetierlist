@@ -1,3 +1,5 @@
+DOCKER = docker
+
 # install dependencies for Intellisense to work,
 # not needed for running the app (project is dockerized)
 init:
@@ -18,28 +20,28 @@ clean:
 	cd ./runner && rm -rf node_modules
 
 # prod docker
-docker_up:
-	docker compose  -f "docker-compose.yml" up -d --build
+prod_up:
+	$(DOCKER) compose -f "docker-compose.yml" up -d --build
 
-docker_down:
-	docker compose  -f "docker-compose.yml" down
+prod_down:
+	$(DOCKER) compose -f "docker-compose.yml" down
 
-docker_restart: docker_down docker_up
+prod_restart: docker_down docker_up
 
 # dev docker (includes hot reload for backend and frontend)
-docker_dev:
-	docker compose -f "docker-compose-dev.yml" up -d --build
+dev_up:
+	$(DOCKER) compose -f "docker-compose-dev.yml" up -d --build
 
-docker_dev_down:
-	docker compose -f "docker-compose-dev.yml" down
+dev_down:
+	$(DOCKER) compose -f "docker-compose-dev.yml" down
 
-docker_dev_restart: docker_dev_down docker_dev
+dev_restart: docker_dev_down docker_dev
 
 # runner
 runner_up:
-	docker compose -f "docker-compose-runner.yml" up -d --build
+	$(DOCKER) compose -f "docker-compose-runner.yml" up -d --build
 
 runner_down:
-	docker compose -f "docker-compose-runner.yml" down
+	$(DOCKER) compose -f "docker-compose-runner.yml" down
 
 runner_restart: runner_down runner_up

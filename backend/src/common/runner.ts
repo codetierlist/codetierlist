@@ -108,9 +108,13 @@ export const getFiles = async (submission: Submission | TestCase): Promise<JobFi
     }
 
     await Promise.all(commit.files.map(async (x) => {
-        const file = await getFile(x, submission.git_url, submission.git_id);
-        if (!file) return;
-        res[x] = Buffer.from(file.blob.buffer).toString("base64");
+        try{
+            const file = await getFile(x, submission.git_url, submission.git_id);
+            if (!file) return;
+            res[x] = Buffer.from(file.blob.buffer).toString("base64");
+        } catch (e) {
+            throw new Error("Error fetching file");
+        }
     }));
     return res;
 };
@@ -348,10 +352,18 @@ const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue
         runnerLogger.error(`Submission or test case not found for job ${job.id}`);
         throw new UnrecoverableError("Submission or test case not found");
     }
-    const query = {
-        'solution_files': await getFiles(submission),
-        'test_case_files': await getFiles(testCase),
-    };
+
+    let query;
+    try {
+        query = {
+            'solution_files': await getFiles(submission),
+            'test_case_files': await getFiles(testCase),
+        };
+    }
+    catch (e) {
+        runnerLogger.error(`Error fetching files for job ${job.id}: ${e}`);
+        throw new UnrecoverableError("Error fetching files");
+    }
 
     const newData: ReadyJobData = {
         query,
