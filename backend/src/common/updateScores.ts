@@ -20,7 +20,7 @@ import logger from "@/common/logger";
  * @param testCase
  * @param pass
  */
-export const updateScore = async (submission: Submission, testCase: TestCase, pass: boolean) => {
+export const updateScore = async (submission: Submission, testCase: TestCase, pass: boolean, result: object) => {
     const currentScore = await prisma.scoreCache.findFirst({
         where: {
             course_id: submission.course_id,
@@ -41,6 +41,7 @@ export const updateScore = async (submission: Submission, testCase: TestCase, pa
             testcase_author_id: testCase.author_id,
             solution_id: submission.id,
             testcase_id: testCase.id,
+            run_result: result
         }
     };
     await prisma.scoreCache.upsert({

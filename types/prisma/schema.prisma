@@ -186,6 +186,7 @@ model Score {
   testcase_author_id String
   solution_author_id String
   ScoreCache         ScoreCache[]
+  run_result         Json
 
   @@map("_Scores")
 }

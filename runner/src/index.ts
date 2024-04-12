@@ -1,14 +1,17 @@
-import {spawn, spawnSync} from "child_process";
-import path from "path";
+import { Job, WaitingChildrenError, Worker } from "bullmq";
+import { spawn, spawnSync } from "child_process";
 import {
     BackendConfig,
+    JobResult,
+    LimitsConfig,
     ReadyJobData,
-    JobResult, RunnerImage
+    RunnerImage
 } from "codetierlist-types";
-import {Job, WaitingChildrenError, Worker} from "bullmq";
-import {readFileSync} from "fs";
+import { readFileSync } from "fs";
+import path from "path";
 
-export const images: RunnerImage[] = (JSON.parse(readFileSync('backend_config.json', 'utf-8')) as BackendConfig).runners;
+export const images: RunnerImage[] = (JSON.parse(readFileSync('config_backend.json', 'utf-8')) as BackendConfig).runners;
+export const limits: LimitsConfig = JSON.parse(readFileSync('config_limits.json', 'utf-8')) as LimitsConfig;
 
 if (process.env.MAX_RUNNING_TASKS === undefined) {
     throw new Error("MAX_RUNNING_TASKS is undefined");
@@ -44,11 +47,17 @@ export const runJob = async (job: ReadyJobData): Promise<JobResult> => {
     const query = job.query;
     const img = job.image.runner_image;
     const img_ver = job.image.image_version;
-    const max_seconds = 5;
     const promise =  new Promise<JobResult>((resolve) => {
+        // cpus=0.5; each container can only use 50% of a cpu
+        // ulimit cpu=5; each container can only run for 5 cpu seconds
+        // network=none; no network access
+        // --memory="200mb"; limit memory to 200mb
+        // --memory-swap="200mb"; swap = memory limit, so swap disabled
+
+        // {timeout: (max_seconds+5) * 1000} is the timeout for the spawn process, if docker doesn't kill
         const runner = spawn("docker",
-            ["run", "--rm", "-i", "--ulimit", `cpu=${max_seconds}`, "--network=none", `codetl-runner-${img}-${img_ver}`],
-            {timeout: (max_seconds+1) * 1000});
+            ["run", "--rm", "-i", `--cpus=${limits.max_cpu}`, `--memory="${limits.max_memory}"`, `--memory-swap="${limits.max_memory_swap}"`, "--ulimit", `cpu=${limits.max_seconds}`, "--network=none", `codetl-runner-${img}-${img_ver}`],
+            {timeout: (limits.max_seconds + 5) * 1000});
 
         let buffer = "";
 
