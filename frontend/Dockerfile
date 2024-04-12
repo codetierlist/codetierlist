@@ -1,6 +1,8 @@
 FROM node:21-alpine
 RUN npm install -g typescript
 
+COPY ./config_limits.json ./config_limits.json
+
 # npm install types
 WORKDIR /types
 COPY ./types/package.json ./types/package-lock.json ./
@@ -27,4 +29,3 @@ ENV NEXT_TELEMETRY_DISABLED 1
 # build nextjs
 RUN npm run build
 CMD ["./node_modules/.bin/next", "start"]
-

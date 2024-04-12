@@ -2,7 +2,7 @@ import { Caption1, Card, CardHeader, Label } from '@fluentui/react-components';
 
 import styles from './ControlCard.module.css';
 
-export declare type ControlCardProps = {
+export declare type ControlCardProps = React.HTMLAttributes<HTMLDivElement> & {
     /** The title of the card. */
     title: string;
     /** The description of the card, or any additional information. */
@@ -23,7 +23,7 @@ export declare type ControlCardProps = {
  */
 export const ControlCard = (props: ControlCardProps): JSX.Element => {
     return (
-        <Card size="large">
+        <Card size="large" {...props}>
             <CardHeader
                 image={props.icon}
                 header={

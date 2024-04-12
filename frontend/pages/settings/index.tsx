@@ -1,20 +1,29 @@
 import axios, { handleError } from '@/axios';
-import { ControlCard, defaultAccentColor } from '@/components';
+import { ControlCard, defaultAccentColor, limits } from '@/components';
 import { SnackbarContext, UserContext } from '@/hooks';
 import favicon from '@/public/favicon.svg';
 import {
+    Button,
     Caption1,
     Caption2,
+    Dialog,
+    DialogActions,
+    DialogBody,
+    DialogContent,
+    DialogSurface,
+    DialogTitle,
+    DialogTrigger,
     Dropdown,
     Link,
     Option,
     Subtitle2,
-    Title3,
+    Title3
 } from '@fluentui/react-components';
 import {
     Color24Regular,
     Image24Regular,
     PaintBrush24Regular,
+    TopSpeed24Regular,
 } from '@fluentui/react-icons';
 import { Theme } from 'codetierlist-types';
 import Head from 'next/head';
@@ -202,6 +211,46 @@ const AccentSelector = () => {
         </div>
     );
 };
+
+const LimitsViewer = () => {
+    return (
+        <div className={styles.accentSelector}>
+            <Dialog>
+                <DialogTrigger disableButtonEnhancement>
+                    <Button>View limits</Button>
+                </DialogTrigger>
+                <DialogSurface>
+                    <DialogBody>
+                        <DialogTitle>Codetierlist limits</DialogTitle>
+                        <DialogContent>
+                            Maximum file size: <strong>{limits.max_file_size / 1000 / 1000} MB</strong>
+                            <br />
+                            Maximum number of files in a repo: <strong>{limits.max_file_count}</strong>
+                            <br />
+                            Maximum number of seconds per your whole test suite: <strong>{limits.max_seconds}</strong>
+                            <br />
+                            Maximum memory per your whole test suite: <strong>{limits.max_memory}</strong>
+                        </DialogContent>
+                        <DialogActions>
+                            <DialogTrigger disableButtonEnhancement>
+                                <Button appearance="secondary">Close</Button>
+                            </DialogTrigger>
+                        </DialogActions>
+                    </DialogBody>
+                </DialogSurface>
+            </Dialog>
+        </div>
+    );
+};
+
+const developers: Record<string, string> = {
+    ido: 'https://www.linkedin.com/in/idobenhaim/',
+    jackson: 'https://www.linkedin.com/in/leejacks/',
+    daksh: 'https://www.linkedin.com/in/daksh-malhotra/',
+    yousef: 'https://www.linkedin.com/in/yousef-bulbulia/',
+    brian: 'https://www.linkedin.com/in/brianzhang/',
+}
+
 export const Settings = () => {
     return (
         <>
@@ -240,44 +289,34 @@ export const Settings = () => {
                 </form>
 
                 <Subtitle2 className="m-t-xl">About</Subtitle2>
-                <div className="m-t-l m-b-xxxl">
+                <div className={`m-t-l m-b-xxxl ${styles.form}`}>
+                    <ControlCard
+                        title="Current limits"
+                        description="The current limits for the app"
+                        icon={<TopSpeed24Regular />}
+                    >
+                        <LimitsViewer />
+                    </ControlCard>
+
                     <ControlCard
                         title="Codetierlist"
                         description={
                             <Caption1>
                                 &copy; 2024{' '}
-                                <Link
-                                    as="a"
-                                    href="https://www.linkedin.com/in/idobenhaim/"
-                                >
-                                    Ido
-                                </Link>
-                                ,{' '}
-                                <Link as="a" href="https://www.linkedin.com/in/leejacks/">
-                                    Jackson
-                                </Link>
-                                ,{' '}
-                                <Link
-                                    as="a"
-                                    href="https://www.linkedin.com/in/daksh-malhotra/"
-                                >
-                                    Daksh
-                                </Link>
-                                ,{' '}
-                                <Link
-                                    as="a"
-                                    href="https://www.linkedin.com/in/yousef-bulbulia/"
-                                >
-                                    Yousef
-                                </Link>
-                                ,{' '}
-                                <Link
-                                    as="a"
-                                    href="https://www.linkedin.com/in/brianzhang/"
-                                >
-                                    Brian
-                                </Link>
-                                .
+                                {
+                                    Object.keys(developers).map((developer, index) => (
+                                        <>
+                                            <Link
+                                                as="a"
+                                                href={developers[developer]}
+                                                key={index}
+                                            >
+                                                {developer.charAt(0).toUpperCase() + developer.slice(1)}
+                                            </Link>
+                                            {(index === Object.keys(developers).length - 1 ? '' : ', ')}
+                                        </>
+                                    ))
+                                }.
                             </Caption1>
                         }
                         icon={

@@ -29,5 +29,6 @@ export * from './utils/checkIfCourseAdmin/checkIfCourseAdmin';
 export * from './utils/ColourHash/ColourHash';
 export * from './utils/FileUploadUtils/FileUploadUtils';
 export * from './utils/generatePlaceholderImage/generatePlaceholderImage';
+export * from './utils/limits/limits';
 export * from './utils/theme/theme';
 export * from './utils/TimeUtils/TimeUtils';
