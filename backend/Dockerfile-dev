@@ -15,7 +15,8 @@ RUN npm ci
 RUN cp -r ../types/prisma .
 RUN npm run prisma
 
-COPY ../backend_config.json ./backend_config.json
+COPY ../config_backend.json ./config_backend.json
+COPY ./config_limits.json ./config_limits.json
 COPY ./backend/dev.sh ./backend/tsconfig.json ./
 
 CMD ["sh", "dev.sh"]

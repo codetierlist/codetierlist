@@ -1,4 +1,4 @@
-import { config, images } from "@/common/config";
+import { limits, images } from "@/common/config";
 import prisma, {
     fetchedAssignmentArgs
 } from "@/common/prisma";
@@ -41,8 +41,8 @@ const storage = multer.diskStorage({
 });
 const upload = multer({
     storage, limits: {
-        fileSize: config.max_file_size, // 20MB
-        files: config.max_file_count // 30 files, 600MB total (total limit is lower but limited by nginx)
+        fileSize: limits.max_file_size, // 20MB
+        files: limits.max_file_count // 30 files, 600MB total (total limit is lower but limited by nginx)
     }
 });
 const uploadMiddleware = (req: Request, res: Response, next: NextFunction) =>
@@ -52,10 +52,10 @@ const uploadMiddleware = (req: Request, res: Response, next: NextFunction) =>
                 res.statusCode = 413;
 
                 if (err.code === 'LIMIT_FILE_COUNT') {
-                    res.send({message: `File count exceeded. Maximum ${config.max_file_count} files allowed.`});
+                    res.send({message: `File count exceeded. Maximum ${limits.max_file_count} files allowed.`});
                 }
                 else if (err.code === 'LIMIT_FILE_SIZE') {
-                    res.send({message: `File size exceeded. Maximum ${config.max_file_size / 1000 / 1000} megabytes allowed.`});
+                    res.send({message: `File size exceeded. Maximum ${limits.max_file_size / 1000 / 1000} megabytes allowed.`});
                 }
                 else {
                     res.send({message: "File size or count exceeded."});

@@ -3,15 +3,15 @@ import {
     onNewSubmission,
     onNewTestCase
 } from "@/common/updateScores";
-import {promises as fs} from "fs";
-import path from "path";
+import { Solution } from "@prisma/client";
+import { Commit, JobResult, TestCase } from "codetierlist-types";
+import { promises as fs } from "fs";
 import git from "isomorphic-git";
-import {Commit, JobResult, TestCase} from "codetierlist-types";
-import {Solution} from "@prisma/client";
-import {config} from "../config";
+import path from "path";
+import { limits } from "../config";
 import logger from "../logger";
 import prisma from "../prisma";
-import {securePath} from "./index";
+import { securePath } from "./index";
 
 /**
  * Soft resets the staging area in a git repository to a specific commit.
@@ -40,10 +40,10 @@ export const commitFiles = async (object: Omit<TestCase | Solution, 'datetime' |
         return {error: "No changes"};
     }
     // too many files added
-    if (status.filter(x => x[2] !== 0).length > config.max_file_count
+    if (status.filter(x => x[2] !== 0).length > limits.max_file_count
         && status.some(x => x[1] === 0)) {
         await softResetRepo(repoPath, object.git_id);
-        return {error: `Too many files added. The limit is ${config.max_file_count}`};
+        return {error: `Too many files added. The limit is ${limits.max_file_count}`};
     }
     await git.add({fs, dir: repoPath, filepath: '.'});
     try {
