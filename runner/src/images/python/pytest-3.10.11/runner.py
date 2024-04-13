@@ -76,8 +76,8 @@ if __name__ == '__main__':
 
     plugin = PytestPlugin()
     args = ['-o', 'python_files=*test*.py', '.']
-    if 'coverage' in data and data['coverage']:
-        args += ['--cov', '--cov-report=json']
+    # if 'coverage' in data and data['coverage']:
+    args += ['--cov', '--cov-report=json']
     with suppress_output():
         random.seed(0)
         pytest_out = pytest.main(args, plugins=[plugin])
