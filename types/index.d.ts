@@ -144,14 +144,12 @@ type JobFiles = {
     [key: string]: string
 }
 
-export type ReadyJobData = RunnerJobData | {status: "WAITING_FILES" | "COMPLETED"}
-
-export type RunnerJobData = {
+export type ReadyJobData = {
     image: RunnerImage,
     testCase: TestCase,
     submission: Submission,
     query: { solution_files: JobFiles, test_case_files: JobFiles }
-}
+} | {status: "WAITING_FILES" | "COMPLETED"}
 
 export type PendingJobData = {
     image: RunnerImage,

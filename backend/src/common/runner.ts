@@ -1,10 +1,11 @@
-import {publish} from "@/common/achievements/eventHandler";
+import { publish } from "@/common/achievements/eventHandler";
 import prisma from "@/common/prisma";
-import {runTestcase, updateScore} from "@/common/updateScores";
-import {getCommit, getFile} from "@/common/utils/git";
-import {TestCase} from "@prisma/client";
+import { runTestcase, updateScore } from "@/common/updateScores";
+import { getCommit, getFile } from "@/common/utils/git";
+import { TestCase } from "@prisma/client";
 import {
     FlowProducer,
+    Job,
     Queue,
     QueueEvents,
     UnrecoverableError,
@@ -19,7 +20,7 @@ import {
     ParentJobData,
     PendingJobData,
     ReadyJobData,
-    RunnerImage, RunnerJobData,
+    RunnerImage,
     Submission,
     TestCaseStatus,
 } from "codetierlist-types";
@@ -91,7 +92,7 @@ const pending_queue: Queue<PendingJobData, undefined, JobType> =
         defaultJobOptions: {removeOnComplete: true}
     });
 
-const completion_queue: Queue<Omit<RunnerJobData, "query"> | Record<never, never>, undefined, JobType> = new Queue<Omit<ReadyJobData, "query"> | Record<string, never>, undefined, JobType>("completion_queue", queue_conf);
+const job_events: QueueEvents = new QueueEvents(job_queue.name, queue_conf);
 
 const parent_job_queue = "parent_job";
 const parent_job_events: QueueEvents = new QueueEvents(parent_job_queue, queue_conf);
@@ -107,7 +108,7 @@ export const getFiles = async (submission: Submission | TestCase): Promise<JobFi
     }
 
     await Promise.all(commit.files.map(async (x) => {
-        try {
+        try{
             const file = await getFile(x, submission.git_url, submission.git_id);
             if (!file) return;
             res[x] = Buffer.from(file.blob.buffer).toString("base64");
@@ -140,55 +141,50 @@ export const bulkQueueTestCases = async <T extends Submission | TestCase>(image:
             const submission = "valid" in item ? cur as Submission : item as Submission;
             const testCase = "valid" in item ? item as TestCase : cur as TestCase;
             return {
-                data: {},
+                opts: {
+                    priority: 10,
+                    attempts: 3,
+                    backoff: {type: "exponential", delay: 1000}
+                },
+                children: [
+                    {
+                        data: {
+                            submissionId: submission.id,
+                            submissionAuthorId: submission.author_id,
+                            submissionDatetime: submission.datetime,
+                            testcaseId: testCase.id,
+                            testcaseDatetime: testCase.datetime,
+                            courseId: testCase.course_id,
+                            assignmentTitle: testCase.assignment_title,
+                            testcaseAuthorId: testCase.author_id,
+                            image: {
+                                runner_image: image.runner_image,
+                                image_version: image.image_version
+                            }
+                        } satisfies PendingJobData,
+                        opts: {
+                            priority: 10,
+                            attempts: 3,
+                            backoff: {type: "fixed", delay: 1000}
+                        },
+                        name: JobType.testSubmission,
+                        queueName: pending_queue.name
+                    }
+                ],
+                data: {
+                    status: "WAITING_FILES",
+                },
                 name: JobType.testSubmission,
-                queueName: completion_queue.name,
-                children: [{
-                    opts: {
-                        priority: 10,
-                        attempts:3,
-                        backoff:{
-                            type: "exponential",
-                            delay: 1000
-                        }
-                    }
-                    ,
-                    children: [
-                        {
-                            data: {
-                                submissionId: submission.id,
-                                submissionAuthorId: submission.author_id,
-                                submissionDatetime: submission.datetime,
-                                testcaseId: testCase.id,
-                                testcaseDatetime: testCase.datetime,
-                                courseId: testCase.course_id,
-                                assignmentTitle: testCase.assignment_title,
-                                testcaseAuthorId: testCase.author_id,
-                                image: {
-                                    runner_image: image.runner_image,
-                                    image_version: image.image_version
-                                }
-                            } satisfies PendingJobData,
-                            opts: {
-                                priority: 10,
-                                attempts: 3,
-                                backoff: {type: "fixed", delay: 1000}
-                            },
-                            name: JobType.testSubmission,
-                            queueName: pending_queue.name
-                        }
-                    ],
-                    data: {
-                        status: "WAITING_FILES",
-                    }
-                    ,
-                    name: JobType.testSubmission,
-                    queueName:
-                    job_queue.name
-                }]
+                queueName: job_queue.name
             };
         })
     });
+    // await Promise.all(queue.map(async cur =>{
+    //     const submission = "valid" in item ? cur as Submission : item as Submission;
+    //     const testCase = "valid" in item ? item as TestCase : cur as TestCase ;
+    //     // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    //     return queueJob({submission, testCase, image}, JobType.testSubmission);
+    // }));
 };
 
 // TODO: add empty submission and testcase reporting
@@ -203,50 +199,33 @@ export const queueJob = async (job: {
     image: Assignment | RunnerImage,
 }, name: JobType, priority: number = 10): Promise<string | undefined> => {
     // push to redis queue
-    const redis_job = await flowProducer.add({
-        opts: {priority},
-        name,
-        queueName: completion_queue.name,
-        data: {},
-        children: [{
-            opts: {priority},
-            data: {
-                status: "WAITING_FILES"
-            } as ReadyJobData,
-            name,
-            queueName: job_queue.name,
-            children: [{
-                opts: {priority},
-                name,
-                queueName: pending_queue.name,
-                data: {
-                    testcaseId: job.testCase.id,
-                    testcaseAuthorId: job.testCase.author_id,
-                    testcaseDatetime: job.testCase.datetime,
-                    courseId: job.testCase.course_id,
-                    assignmentTitle: job.testCase.assignment_title,
-                    submissionId: job.submission.id,
-                    submissionAuthorId: job.submission.author_id,
-                    submissionDatetime: job.submission.datetime,
-                    image: {
-                        runner_image: job.image.runner_image,
-                        image_version: job.image.image_version
-                    },
-                }}]
-        }]
-    });
-    runnerLogger.info(`job ${redis_job.job.id} added to queue`);
-    return redis_job.job.id;
+    const redis_job = await pending_queue.add(name, {
+        testcaseId: job.testCase.id,
+        testcaseAuthorId: job.testCase.author_id,
+        testcaseDatetime: job.testCase.datetime,
+        courseId: job.testCase.course_id,
+        assignmentTitle: job.testCase.assignment_title,
+        submissionId: job.submission.id,
+        submissionAuthorId: job.submission.author_id,
+        submissionDatetime: job.submission.datetime,
+        image: {
+            runner_image: job.image.runner_image,
+            image_version: job.image.image_version
+        },
+    }, {priority});
+    runnerLogger.info(`job ${redis_job.id} added to queue`);
+    return redis_job.id;
 };
 
-const completionWorker = new Worker<Omit<RunnerJobData, "query"> | Record<never, never>, undefined, JobType>(completion_queue.name, async (job) => {
+job_events.on("completed", async ({jobId}) => {
+    const job = await Job.fromId<ReadyJobData, JobResult, JobType>(job_queue, jobId);
     if (!job) return;
-    const result = (await job.getChildrenValues<JobResult>())[0];
-    if (!job.data || Object.keys(job.data).length == 0 || !result) {
+    const data = job.data;
+    const result = job.returnvalue;
+    if (!data || "status" in data || !result) {
         runnerLogger.error(`job ${job.id} completed with no data or result`);
         return;
     }
-    const data = job.data as Omit<RunnerJobData, "query">;
     runnerLogger.info(`job ${job.id} completed with status ${result.status} with data ${JSON.stringify(result)}. Job info: ${JSON.stringify({
         submission_utorid: data.submission.author_id,
         testCase: data.testCase.author_id,
@@ -268,7 +247,7 @@ const completionWorker = new Worker<Omit<RunnerJobData, "query"> | Record<never,
         await prisma.testCase.update({
             where: {
                 id: testCase.id
-            }, data: {valid: status, validation_result: result}
+            }, data: {valid: status, validation_result: result }
         });
         // if the test case is valid, run the test case on all student submissions
         if ((job.name === JobType.validateTestCase || data.testCase.valid !== "VALID") && status === "VALID") {
@@ -278,6 +257,10 @@ const completionWorker = new Worker<Omit<RunnerJobData, "query"> | Record<never,
     }
     // not a validation job, update the score in db
     await updateScore(submission, testCase, pass, result);
+    try {
+        await job.updateData({status: "COMPLETED"});
+    } catch { /* empty */
+    }
 });
 
 /** Remove all pending jobs for a user */
@@ -376,7 +359,8 @@ const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue
             'solution_files': await getFiles(submission),
             'test_case_files': await getFiles(testCase),
         };
-    } catch (e) {
+    }
+    catch (e) {
         runnerLogger.error(`Error fetching files for job ${job.id}: ${e}`);
         throw new UnrecoverableError("Error fetching files");
     }
@@ -395,20 +379,12 @@ const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue
     if (!parent) {
         return;
     }
-    const grandparent = parent.parent?.id ? await completion_queue.getJob(parent.parent.id) : undefined;
-    if(grandparent) {
-        await grandparent.updateData({
-            submission,
-            testCase,
-            image: data.image
-        });
-    }
-    if (Object.keys(query.solution_files).length === 0) {
+    if(Object.keys(query.solution_files).length === 0) {
         // https://docs.bullmq.io/patterns/manually-fetching-jobs
         await parent.moveToCompleted({status: "SUBMISSION_EMPTY"}, parent.id ?? '', false);
         return;
     }
-    if (Object.keys(query.test_case_files).length === 0) {
+    if(Object.keys(query.test_case_files).length === 0) {
         // https://docs.bullmq.io/patterns/manually-fetching-jobs
         await parent.moveToCompleted({status: "TESTCASE_EMPTY"}, parent.id ?? '', false);
         return;
@@ -437,10 +413,9 @@ parent_job_events.on("completed", async ({jobId}) => {
 export const shutDown = async () => {
     await fetchWorker.close();
     await parentWorker.close();
-    await completionWorker.close();
     await parent_queue.close();
     await job_queue.close();
     await pending_queue.close();
-    await completion_queue.close();
+    await job_events.close();
     await parent_job_events.close();
 };
