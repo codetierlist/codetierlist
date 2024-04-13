@@ -80,7 +80,7 @@ export type UserFetchedAssignment = Assignment & {
 } & {
     due_date?: string,
     submissions: Omit<Submission, "group_number">[],
-    test_cases: Omit<TestCase, "group_number" | "validation_result">[],
+    test_cases: Omit<TestCase, "group_number" | "validation_result" | "coverage">[],
 };
 
 export type AssignmentWithTier = Assignment & { tier: UserTier };
