@@ -42,16 +42,14 @@ class PytestPlugin:
         failed = [f"id: {x['name']} output: {x['errors']}" for x in self.results.values() if x['errors'] is not None]
         if len(failed) == 0:
             return {'status': 'PASS', 'amount': len(self.results), 'coverage': json.loads(
-                    open('coverage.json', 'r').read()) if Path(
-                    'coverage.json').is_file() else None}
+                    open('coverage.json', 'r').read())}
         else:
             return {'status': 'FAIL',
                     'amount': len(self.results),
                     'score': len(self.results) - len(failed),
                     'failed': failed,
                     'coverage': json.loads(
-                        open('coverage.json', 'r').read()) if Path(
-                        'coverage.json').is_file() else None
+                        open('coverage.json', 'r').read())
                     }
 
 
