@@ -2,7 +2,7 @@
     "max_file_size": 20000000,
     "max_file_count": 200,
     "max_seconds": 60,
-    "max_memory": "3gb",
-    "max_memory_swap": "3gb",
-    "max_cpu": 1
+    "max_memory": "3000mb",
+    "max_memory_swap": "3000mb",
+    "max_cpu": 0.5
 }
