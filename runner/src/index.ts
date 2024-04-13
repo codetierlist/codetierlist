@@ -1,4 +1,4 @@
-import { Job, WaitingChildrenError, Worker } from "bullmq";
+import {Job, WaitingChildrenError, Worker} from "bullmq";
 import { spawn, spawnSync } from "child_process";
 import {
     BackendConfig,
@@ -40,7 +40,7 @@ if (process.env.REDIS_PASSWORD === undefined) {
 //
 // ~ shubh
 
-export const runJob = async (job: ReadyJobData): Promise<JobResult> => {
+export const runJob = async (job: ReadyJobData, coverage: boolean): Promise<JobResult> => {
     if("status" in job) {
         throw new Error("Job not ready");
     }
@@ -56,7 +56,7 @@ export const runJob = async (job: ReadyJobData): Promise<JobResult> => {
 
         let buffer = "";
 
-        runner.stdin.write(JSON.stringify(query));
+        runner.stdin.write(JSON.stringify({...query, coverage}));
         runner.stdin.end();
 
         runner.stdout.on('data', (data) => {
@@ -130,7 +130,7 @@ const worker = new Worker<ReadyJobData, JobResult>("job_queue",
         }
         console.info(`running job ${job.id} with image ${job.data.image.runner_image}:${job.data.image.image_version}`);
         try{
-            const res = await runJob(job.data);
+            const res = await runJob(job.data, job.name === "validateTestCase");
             console.info(`job ${job.id} done`);
             return res;
         } catch (e) {
