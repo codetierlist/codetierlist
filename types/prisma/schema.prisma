@@ -104,6 +104,7 @@ model TestCase {
   assignment        Assignment     @relation(onDelete: Cascade, onUpdate: Cascade, fields: [course_id, assignment_title], references: [course_id, title])
   course            Course         @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   scores            Score[]
+  coverage          Int[]
   course_id         String
   assignment_title  String
   valid             TestCaseStatus @default(PENDING)

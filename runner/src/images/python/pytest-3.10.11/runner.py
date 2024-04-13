@@ -1,5 +1,7 @@
 import os
 import sys
+from pathlib import Path
+
 import pytest
 import json
 import base64
@@ -39,12 +41,17 @@ class PytestPlugin:
     def res(self):
         failed = [f"id: {x['name']} output: {x['errors']}" for x in self.results.values() if x['errors'] is not None]
         if len(failed) == 0:
-            return {'status': 'PASS', 'amount': len(self.results)}
+            return {'status': 'PASS', 'amount': len(self.results), 'coverage': json.loads(
+                    open('coverage.json', 'r').read()) if Path(
+                    'coverage.json').is_file() else None}
         else:
             return {'status': 'FAIL',
                     'amount': len(self.results),
                     'score': len(self.results) - len(failed),
-                    'failed': failed
+                    'failed': failed,
+                    'coverage': json.loads(
+                        open('coverage.json', 'r').read()) if Path(
+                        'coverage.json').is_file() else None
                     }
 
 
@@ -68,9 +75,12 @@ if __name__ == '__main__':
     os.chdir('../tests')
 
     plugin = PytestPlugin()
+    args = ['-o', 'python_files=*test*.py', '.']
+    if 'coverage' in data and data['coverage']:
+        args += ['--cov', '--cov-report=json']
     with suppress_output():
         random.seed(0)
-        pytest_out = pytest.main(['-o', 'python_files=*test*.py', '.'], plugins=[plugin])
+        pytest_out = pytest.main(args, plugins=[plugin])
 
     if pytest_out == 0 or pytest_out == 1:
         print(json.dumps(plugin.res()))

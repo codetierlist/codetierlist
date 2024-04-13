@@ -221,7 +221,7 @@ job_events.on("completed", async ({jobId}) => {
     const job = await Job.fromId<ReadyJobData, JobResult, JobType>(job_queue, jobId);
     if (!job) return;
     const data = job.data;
-    const result = job.returnvalue;
+    const {coverage, ...result} = {coverage: null, ...job.returnvalue};
     if (!data || "status" in data || !result) {
         runnerLogger.error(`job ${job.id} completed with no data or result`);
         return;
@@ -247,7 +247,7 @@ job_events.on("completed", async ({jobId}) => {
         await prisma.testCase.update({
             where: {
                 id: testCase.id
-            }, data: {valid: status, validation_result: result }
+            }, data: {valid: status, validation_result: result,  coverage: coverage?.files['tm_trees.py']?.executed_lines ?? []}
         });
         // if the test case is valid, run the test case on all student submissions
         if ((job.name === JobType.validateTestCase || data.testCase.valid !== "VALID") && status === "VALID") {

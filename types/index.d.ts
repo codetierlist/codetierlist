@@ -68,9 +68,16 @@ export type FetchedAssignment =
 export type FullFetchedAssignment = Prisma.AssignmentGetPayload<typeof fullFetchedAssignmentArgs>;
 export type Submission = _Submission;
 export type TestCase = _TestCase;
-export type FrontendSubmission = Omit<_Submission, "group_number"> & { group_number?: number | null};
-export type FrontendTestCase = Omit<_TestCase, "group_number"> & { group_number?: number | null};
-export type UserFetchedAssignment = Assignment & { tier: UserTier, view_tierlist: boolean } & {
+export type FrontendSubmission = Omit<_Submission, "group_number"> & {
+    group_number?: number | null
+};
+export type FrontendTestCase = Omit<_TestCase, "group_number"> & {
+    group_number?: number | null
+};
+export type UserFetchedAssignment = Assignment & {
+    tier: UserTier,
+    view_tierlist: boolean
+} & {
     due_date?: string,
     submissions: Omit<Submission, "group_number">[],
     test_cases: Omit<TestCase, "group_number" | "validation_result">[],
@@ -88,8 +95,8 @@ export type FetchedCourseWithTiers = Omit<FetchedCourse, "assignments"> & {
 export type Commit = {
     files: string[],
     valid?: TestCaseStatus,
-    validation_result? : JobResult,
-    log: {id: string, date:number}[],
+    validation_result?: JobResult,
+    log: { id: string, date: number }[],
 }
 
 /**
@@ -149,7 +156,7 @@ export type ReadyJobData = {
     testCase: TestCase,
     submission: Submission,
     query: { solution_files: JobFiles, test_case_files: JobFiles }
-} | {status: "WAITING_FILES" | "COMPLETED"}
+} | { status: "WAITING_FILES" | "COMPLETED" }
 
 export type PendingJobData = {
     image: RunnerImage,
@@ -187,6 +194,32 @@ enum _JobStatus {
  * Status of a job
  */
 export type JobStatus = `${_JobStatus}`;
+interface CoverageSummary {
+    covered_lines:           number;
+    num_statements:          number;
+    percent_covered:         number;
+    percent_covered_display: string;
+    missing_lines:           number;
+    excluded_lines:          number;
+}
+
+interface CoverageReport {
+    meta: {
+        version: string;
+        timestamp: string;
+        branch_coverage: boolean;
+        show_contexts: boolean;
+    }
+    files: {
+        [file: string]: {
+            executed_lines: number[];
+            summary: CoverageSummary;
+            missing_lines: number[];
+            excluded_lines: any[];
+        }
+    };
+    totals: CoverageSummary;
+}
 
 /**
  * A job result from the runner
@@ -195,7 +228,9 @@ export type JobResult =
     ({
         status: "PASS",
         /** amount of test cases & amount passed */
-        amount: number
+        amount: number,
+        /** the coverage report */
+        coverage: CoverageReport | null,
     } |
         {
             status: "FAIL",
@@ -204,7 +239,9 @@ export type JobResult =
             /** amount of test cases passed */
             score: number,
             /** list of failed test case info */
-            failed: string[]
+            failed: string[],
+            /** the coverage report */
+            coverage: CoverageReport | null,
         } |
         {
             status: "ERROR" | "SUBMISSION_EMPTY" | "TESTCASE_EMPTY"

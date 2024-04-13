@@ -2,7 +2,7 @@ import {publish} from "@/common/achievements/eventHandler";
 import prisma from "@/common/prisma";
 import {RoleType} from "@prisma/client";
 import {
-    Assignment, RunnerImage,
+    Assignment, JobResult, RunnerImage,
     Submission, TestCase
 } from "codetierlist-types";
 import {
@@ -19,8 +19,9 @@ import logger from "@/common/logger";
  * @param submission
  * @param testCase
  * @param pass
+ * @param result
  */
-export const updateScore = async (submission: Submission, testCase: TestCase, pass: boolean, result: object) => {
+export const updateScore = async (submission: Submission, testCase: TestCase, pass: boolean, result: Omit<JobResult, "coverage">) => {
     const currentScore = await prisma.scoreCache.findFirst({
         where: {
             course_id: submission.course_id,

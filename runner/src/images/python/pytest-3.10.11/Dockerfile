@@ -8,7 +8,8 @@ WORKDIR /tests
 
 # for runner data
 WORKDIR /setup
-RUN pip install pytest hypothesis
+RUN pip install pytest hypothesis pytest_cov
+
 COPY runner.py ./
 
 CMD ["python", "runner.py"]
