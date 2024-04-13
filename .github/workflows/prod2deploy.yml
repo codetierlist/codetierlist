@@ -8,7 +8,7 @@ jobs:
     runs-on: ${{ matrix.runner }}
     strategy:
       matrix:
-        runner: [ prod2, prodocto ]
+        runner: [ prod2, prod, prodocto ]
     steps:
       - uses: actions/checkout@v2
 
