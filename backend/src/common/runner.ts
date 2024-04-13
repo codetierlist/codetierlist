@@ -278,7 +278,7 @@ const completionWorker = new Worker<Omit<RunnerJobData, "query"> | Record<never,
     }
     // not a validation job, update the score in db
     await updateScore(submission, testCase, pass, result);
-}, queue_conf);
+});
 
 /** Remove all pending jobs for a user */
 export const removeSubmission = async (newSubmission: Submission): Promise<void> => {
