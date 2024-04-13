@@ -244,11 +244,11 @@ job_events.on("completed", async ({jobId}) => {
         } else if (result.status === "TESTCASE_EMPTY" || (result.status === "PASS" && result.amount <= 0)) {
             status = "EMPTY";
         }
-        console.log("coverage", coverage?.files);
+        console.log("coverage", coverage);
         await prisma.testCase.update({
             where: {
                 id: testCase.id
-            }, data: {valid: status, validation_result: {...result, coverage: coverage as object},  coverage: coverage?.files['/code/tm_trees.py']?.executed_lines ?? []}
+            }, data: {valid: status, validation_result: {...result, coverage: coverage ??  undefined},  coverage: coverage?.files['/code/tm_trees.py']?.executed_lines ?? []}
         });
         // if the test case is valid, run the test case on all student submissions
         if ((job.name === JobType.validateTestCase || data.testCase.valid !== "VALID") && status === "VALID") {

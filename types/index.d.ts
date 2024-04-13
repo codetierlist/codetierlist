@@ -194,7 +194,7 @@ enum _JobStatus {
  * Status of a job
  */
 export type JobStatus = `${_JobStatus}`;
-interface CoverageSummary {
+type CoverageSummary = {
     covered_lines:           number;
     num_statements:          number;
     percent_covered:         number;
@@ -203,7 +203,7 @@ interface CoverageSummary {
     excluded_lines:          number;
 }
 
-interface CoverageReport {
+type CoverageReport = {
     meta: {
         version: string;
         timestamp: string;
