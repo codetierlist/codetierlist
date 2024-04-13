@@ -51,7 +51,7 @@ export const runJob = async (job: ReadyJobData): Promise<JobResult> => {
         // {timeout: (max_seconds+5) * 1000} is the timeout for the spawn process, if docker doesn't kill
 
         const runner = spawn("docker",
-            ["run", "--rm", "-i", `--cpus=${limits.max_cpu}`, `--memory="${limits.max_memory}"`, `--memory-swap="${limits.max_memory_swap}"`, "--ulimit", `cpu=${limits.max_seconds}`, "--network=none", `codetl-runner-${img}-${img_ver}`],
+            ["run", "--rm", "-i", `--cpus=${limits.max_cpu}`, `--memory=${limits.max_memory}`, `--memory-swap=${limits.max_memory_swap}`, "--ulimit", `cpu=${limits.max_seconds}`, "--network=none", `codetl-runner-${img}-${img_ver}`],
             {timeout: (limits.max_seconds + 5) * 1000});
 
         let buffer = "";
