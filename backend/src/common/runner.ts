@@ -241,7 +241,7 @@ export const queueJob = async (job: {
 
 const completionWorker = new Worker<Omit<RunnerJobData, "query"> | Record<never, never>, undefined, JobType>(completion_queue.name, async (job) => {
     if (!job) return;
-    const result = Object.values(await job.getChildrenValues<JobResult>())[0];
+    const result = (await job.getChildrenValues<JobResult>())[0];
     if (!job.data || Object.keys(job.data).length == 0 || !result) {
         runnerLogger.error(`job ${job.id} completed with no data or result`);
         return;
