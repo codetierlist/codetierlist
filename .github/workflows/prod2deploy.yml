@@ -5,7 +5,10 @@ on:
   workflow_dispatch:
 jobs:
   deploy:
-    runs-on: prod2
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        runner: [ prod2, prod, prodocto ]
     steps:
       - uses: actions/checkout@v2
 
