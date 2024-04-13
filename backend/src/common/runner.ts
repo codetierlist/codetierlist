@@ -244,6 +244,7 @@ job_events.on("completed", async ({jobId}) => {
         } else if (result.status === "TESTCASE_EMPTY" || (result.status === "PASS" && result.amount <= 0)) {
             status = "EMPTY";
         }
+        console.log("coverage", coverage?.files);
         await prisma.testCase.update({
             where: {
                 id: testCase.id
