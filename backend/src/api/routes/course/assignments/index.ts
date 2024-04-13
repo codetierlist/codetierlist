@@ -508,7 +508,7 @@ router.post('/:assignment/revalidate', fetchAssignmentMiddleware, errorHandler(a
             }
         },
         data: {
-            valid: "INVALID"
+            valid: "PENDING"
         }
     });
 
