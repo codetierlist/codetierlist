@@ -21,7 +21,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "bullmq": "^5.7.1"
+    "bullmq": "^5.7.4"
   },
   "eslintConfig": {
     "extends": [
