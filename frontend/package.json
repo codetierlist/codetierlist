@@ -14,7 +14,7 @@
     "dependencies": {
         "@fluentui-contrib/react-data-grid-react-window": "^1.1.2",
         "@fluentui/react-components": "^9.49.0",
-        "@fluentui/react-file-type-icons": "^8.11.7",
+        "@fluentui/react-file-type-icons": "^8.11.9",
         "@fluentui/react-icons": "^2.0.236",
         "@monaco-editor/react": "^4.6.0",
         "axios": "^1.6.8",
