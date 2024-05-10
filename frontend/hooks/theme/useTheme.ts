@@ -10,6 +10,9 @@ import { useMemo } from 'react';
 import type { Theme } from '@fluentui/react-components';
 import { Theme as ThemeTypes } from 'codetierlist-types';
 
+/**
+ * Get the brand tokens for the app based on the accent color.
+ */
 const useBrandTokens = (accentColor: string) => {
     return useMemo(() => {
         return getBrandTokensFromPalette(accentColor);

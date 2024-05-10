@@ -1,4 +1,3 @@
-import axios, { handleError } from '@/axios';
 import {
     AssignmentPageAdminTab,
     AssignmentPageFilesTab,
@@ -11,7 +10,7 @@ import {
     convertDate,
     convertTime,
 } from '@/components';
-import { SnackbarContext, UserContext } from '@/hooks';
+import { UserContext, useAssignment, useTierlist } from '@/hooks';
 import {
     Badge,
     Button,
@@ -29,62 +28,16 @@ import {
 } from '@fluentui/react-components';
 import { Info16Regular } from '@fluentui/react-icons';
 import { Subtitle2, Title2 } from '@fluentui/react-text';
-import { Tierlist, UserFetchedAssignment } from 'codetierlist-types';
+import { UserFetchedAssignment } from 'codetierlist-types';
 import Error from 'next/error';
 import Head from 'next/head';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/router';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect } from 'react';
 import { Col, Container, Row } from 'react-grid-system';
 import styles from './page.module.css';
 
 export declare type Stage = 'details' | 'upload' | 'tierlist' | 'admin' | '404';
-
-/**
- * A hook that fetches the tierlist for the assignment page
- */
-const useTierlist = (courseID: string, assignmentID: string) => {
-    const [tierlist, setTierlist] = useState<Tierlist | null>(null);
-    const { showSnack } = useContext(SnackbarContext);
-    const searchParams = useSearchParams();
-
-    const fetchTierlist = async () => {
-        await axios
-            .get<Tierlist>(`/courses/${courseID}/assignments/${assignmentID}/tierlist`, {
-                skipErrorHandling: true,
-                params: {
-                    utorid: searchParams.get('utorid') ?? undefined,
-                },
-            })
-            .then((res) => setTierlist(res.data))
-            .catch((e) => {
-                handleError(showSnack)(e);
-            });
-    };
-
-    /**
-     * the polling rate for fetching the assignment and tierlist
-     */
-    const POLLING_RATE = 60000;
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            if (!courseID || !assignmentID) {
-                return;
-            }
-            void fetchTierlist();
-        }, POLLING_RATE);
-
-        return () => clearInterval(interval);
-    });
-
-    useEffect(() => {
-        void fetchTierlist();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [courseID, assignmentID]);
-
-    return { tierlist, fetchTierlist };
-};
 
 /**
  * Displays the tierlist
@@ -349,7 +302,7 @@ const LoadingSkeleton = () => {
 };
 
 /**
- * Removes the utorid query from the url when not in the upload or tierlist stage
+ * Removes the utorid query from the url when not in the specified stages
  *
  * @param queryKey the query key to remove
  * @param excludeStages the stages to exclude from removing the query
@@ -376,39 +329,6 @@ const useQueryString = (
     }, [currentStage]);
 };
 
-/**
- * A hook that fetches the assignment and tierlist for the assignment page
- * @param courseID the course ID
- * @param assignmentID the assignment ID
- */
-const useAssignment = (courseID: string, assignmentID: string) => {
-    const [assignment, setAssignment] = useState<UserFetchedAssignment | null>(null);
-    const { showSnack } = useContext(SnackbarContext);
-
-    const fetchAssignment = async () => {
-        await axios
-            .get<UserFetchedAssignment>(
-                `/courses/${courseID}/assignments/${assignmentID}`,
-                {
-                    skipErrorHandling: true,
-                }
-            )
-            .then((res) => setAssignment(res.data))
-            .catch((e) => {
-                handleError(showSnack)(e);
-            });
-    };
-
-    useEffect(() => {
-        if (!courseID || !assignmentID) {
-            return;
-        }
-        void fetchAssignment();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [courseID, assignmentID]);
-
-    return { assignment, fetchAssignment };
-};
 
 export default function Page() {
     const router = useRouter();
