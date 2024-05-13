@@ -5,13 +5,13 @@ on:
     branches: [main]
     
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
       - name: set up env
-        run: for f in */.env.example; do mv "$f" "${f%.example}"; done
+        run: for f in */.env.example; do cp "$f" "${f%.example}"; done
 
       - name: compose build
         run: docker compose build --pull
