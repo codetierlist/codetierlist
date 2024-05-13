@@ -1,11 +1,13 @@
+name: CI/CD for Codetierlist production deployment (runner machine(s))
+
 on:
   push:
     branches:
-      - dev
+      - main
   workflow_dispatch:
 jobs:
   deploy:
-    runs-on: dev2
+    runs-on: prod_runner
     steps:
       - uses: actions/checkout@v2
 
@@ -13,10 +15,11 @@ jobs:
         run: echo "${{ secrets.REDIS_PASSWORD }}" > ./redis/.env;
 
       - name: create runner env files
-        run: echo "${{ secrets.REDIS_HOSTPORT_DEV }}" > ./runner/.env;
+        run: echo "${{ secrets.REDIS_HOSTPORT }}" > ./runner/.env;
 
       - name: compose build runners
         run: docker compose -f docker-compose-runner.yml build --pull
 
       - name: compose up runners
         run: docker compose -f docker-compose-runner.yml up -d
+

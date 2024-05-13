@@ -1,0 +1,17 @@
+name: Build check
+
+on:
+  pull_request:
+    branches: [main]
+    
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: compose build
+        run: docker compose build --pull
+
+      - name: compose build runners
+        run: docker compose -f docker-compose-runner.yml build --pull
