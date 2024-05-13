@@ -15,7 +15,8 @@ WORKDIR /runner
 COPY ./runner/package.json ./runner/package-lock.json ./
 RUN npm ci
 
-COPY ./backend_config.json ./backend_config.json
+COPY ./config_backend.json ./config_backend.json
+COPY ./config_limits.json ./config_limits.json
 COPY ./runner ./
 RUN npm run build
 

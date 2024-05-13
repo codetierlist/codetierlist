@@ -1,0 +1,20 @@
+name: Build check
+
+on:
+  pull_request:
+    branches: [main]
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: set up env
+        run: for f in */.env.example; do cp "$f" "${f%.example}"; done
+
+      - name: compose build
+        run: docker compose build --pull
+
+      - name: compose build runners
+        run: docker compose -f docker-compose-runner.yml build --pull

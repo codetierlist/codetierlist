@@ -1,0 +1,27 @@
+name: CI/CD for Codetierlist production deployment (host machine)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: prod_host
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: create redis env files
+        run: echo "${{ secrets.REDIS_PASSWORD }}" > ./redis/.env;
+
+      - name: create backend env files
+        run: |
+          echo "${{ secrets.BACKEND_ENV }}" > ./backend/.env;
+          echo -e "\nNODE_ENV=development" >> ./backend/.env;
+
+      - name: compose build
+        run: docker compose build --pull
+
+      - name: compose up
+        run: docker compose up -d
+

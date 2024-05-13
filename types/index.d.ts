@@ -251,6 +251,20 @@ export type BackendConfig = {
     achievements: AchievementConfig[],
     /** the list of runner images */
     runners: RunnerImage[],
+}
+
+/** the config of the limits */
+export type LimitsConfig = {
+    /** The maximum file size in bytes */
     max_file_size: number,
+    /** The maximum file count */
     max_file_count: number,
+    /** The maximum number of CPU seconds that each container can use */
+    max_seconds: number,
+    /** The maximum memory with unit */
+    max_memory: string,
+    /** The memory swap with unit. If the value is the same as max_memory, swap is disabled */
+    max_memory_swap: string,
+    /** The maximum percentage of CPU that each container can use (e.g., 0.5 for 50%) */
+    max_cpu: number,
 }

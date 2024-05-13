@@ -83,7 +83,7 @@ To create an assignment, click on the "Add assignment" button on the course page
 
 ### Runners
 You can select the runner you want to use for the assignment. The runner is the script that will run the students' testcases against their code. You can only select one runner for an assignment.
-The available runners are listed in `backend_config.json` and can be added on request (see [Contact and Support](#contact-and-support)).
+The available runners are listed in `config_backend.json` and can be added on request (see [Contact and Support](#contact-and-support)).
 
 ### Due Dates
 By default, due dates don't mean much and are only displayed to students for information. However, if you want to use the due dates to enforce the deadline, you can enable the "Strict deadlines" option. Once enabled, students cannot submit after the deadline.

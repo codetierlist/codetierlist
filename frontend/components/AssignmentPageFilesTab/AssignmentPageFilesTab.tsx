@@ -6,7 +6,8 @@ import {
     checkIfCourseAdmin,
     convertDate,
     convertTime,
-    promptForFileObject,
+    limits,
+    promptForFileObject
 } from '@/components';
 import { SnackbarContext, UserContext } from '@/hooks';
 import {
@@ -368,14 +369,14 @@ export const AssignmentPageFilesTab = ({
      */
     const submitFolder = async (files: File[], target?: string) => {
         if (commitID !== '') {
-            showSnack('You can only update the latest submission', 'error');
+            showSnack('You can only update the latest submission', 'error', 'Upload failed');
             return;
         }
-        if (files.length > 100 || files.reduce((a, x) => a + x.size, 0) >= 1e9) {
-            // TODO: this should sync with the backend
+        if (files.length > limits.max_file_count || files.reduce((a, x) => a + x.size, 0) >= limits.max_file_size) {
             showSnack(
-                'Please upload less than 30 files and less than 20mb at a time',
-                'error'
+                `Please upload less than ${limits.max_file_count} files and less than 20mb at a time`,
+                'error',
+                'Upload too large'
             );
             return;
         }
@@ -399,9 +400,10 @@ export const AssignmentPageFilesTab = ({
             zip.generateAsync({ type: 'blob' }).then(function (blob) {
                 const formData = new FormData();
 
+                // todo this should sync with nginx
                 // check if the blob is less than 50 MB in size
                 if (blob.size > 50 * 1024 * 1024) {
-                    showSnack('Please upload a folder less than 50MB', 'error');
+                    showSnack('Please upload a folder less than 50MB', 'error', 'Upload failed');
                     return;
                 }
 

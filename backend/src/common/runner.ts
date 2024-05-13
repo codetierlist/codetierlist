@@ -256,7 +256,7 @@ job_events.on("completed", async ({jobId}) => {
         return;
     }
     // not a validation job, update the score in db
-    await updateScore(submission, testCase, pass);
+    await updateScore(submission, testCase, pass, result);
     try {
         await job.updateData({status: "COMPLETED"});
     } catch { /* empty */
@@ -329,8 +329,8 @@ const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue
     const isRateLimited = await job_queue.count();
     const waiting = await job_queue.getWaitingChildrenCount()
         + await job_queue.getWaitingCount()
-        + await job_queue.getFailedCount()
-        + await job_queue.getCompletedCount()
+        // + await job_queue.getFailedCount()
+        // + await job_queue.getCompletedCount()
         + await job_queue.getDelayedCount();
     if (isRateLimited - waiting >= max_fetched) {
         await fetchWorker.rateLimit(1000);
@@ -379,6 +379,16 @@ const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue
     if (!parent) {
         return;
     }
+    if(Object.keys(query.solution_files).length === 0) {
+        // https://docs.bullmq.io/patterns/manually-fetching-jobs
+        await parent.moveToCompleted({status: "SUBMISSION_EMPTY"}, parent.id ?? '', false);
+        return;
+    }
+    if(Object.keys(query.test_case_files).length === 0) {
+        // https://docs.bullmq.io/patterns/manually-fetching-jobs
+        await parent.moveToCompleted({status: "TESTCASE_EMPTY"}, parent.id ?? '', false);
+        return;
+    }
     await parent.updateData(newData);
 }, {
     ...queue_conf,
@@ -386,7 +396,7 @@ const fetchWorker = new Worker<PendingJobData, undefined, JobType>(pending_queue
         max: 50,
         duration: 10,
     },
-    concurrency: 50
+    concurrency: 1
 });
 
 /** Fetches jobs from the parent job queue and adds them to the job queue */

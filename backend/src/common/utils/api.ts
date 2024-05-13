@@ -1,22 +1,21 @@
-import {NextFunction, Request, Response} from "express";
+import { limits } from "@/common/config";
+import { Prisma, Solution, TestCase } from "@prisma/client";
+import { Commit } from "codetierlist-types";
+import { NextFunction, Request, Response } from "express";
+import extract from "extract-zip";
+import { promises as fs } from "fs";
+import { isUTORid } from "is-utorid";
+import git, { ReadBlobResult } from "isomorphic-git";
+import path from "path";
 import logger from "../logger";
-import {isUTORid} from "is-utorid";
-import {Prisma, Solution, TestCase} from "@prisma/client";
-import prisma, {fetchedAssignmentArgs, fetchedCourseArgs} from "../prisma";
+import prisma, { fetchedAssignmentArgs, fetchedCourseArgs } from "../prisma";
+import { commitFiles, getCommit, getFile, softResetRepo } from "./git";
 import {
     exists,
     isProf,
     securePath,
     serializeAssignment
 } from "./index";
-import {commitFiles, getCommit, getFile, softResetRepo} from "./git";
-import {Commit} from "codetierlist-types";
-import git, {ReadBlobResult} from "isomorphic-git";
-import {promises as fs} from "fs";
-import path from "path";
-import extract from "extract-zip";
-import {config} from "@/common/config";
-
 
 const commitAndRespond =  async (res : Response, object: Omit<TestCase | Solution, 'datetime' | 'id'>, table: "solution" | "testCase", prof : boolean) => {
     const commit = await commitFiles(object, table, prof);
@@ -157,7 +156,7 @@ export const processSubmission = async (req: Request, res: Response, table: "sol
             try{
                 await extract(file.path, {dir: dest, onEntry: entry => {
                     totalcount += 1;
-                    if(entry.uncompressedSize>config.max_file_size || totalcount>config.max_file_count) {
+                    if(entry.uncompressedSize>limits.max_file_size || totalcount>limits.max_file_count) {
                         throw new Error("unzip too big");
                     }
                 }});
