@@ -4,7 +4,7 @@
   <img alt="Codetierlist" src="https://i.imgur.com/BthpMZh.png" height="34">
 </picture></h1>
 
-<a href="https://codeclimate.com/repos/65c59dd3da642979ffce97af/maintainability"><img src="https://api.codeclimate.com/v1/badges/91584b095b8e1ad9a134/maintainability" /></a> [![.github/workflows/proddeploy.yml](https://github.com/codetierlist/codetierlist/actions/workflows/proddeploy.yml/badge.svg)](https://github.com/codetierlist/codetierlist/actions/workflows/proddeploy.yml) [![.github/workflows/prod2deploy.yml](https://github.com/codetierlist/codetierlist/actions/workflows/prod2deploy.yml/badge.svg)](https://github.com/codetierlist/codetierlist/actions/workflows/prod2deploy.yml)
+<a href="https://codeclimate.com/repos/65c59dd3da642979ffce97af/maintainability"><img src="https://api.codeclimate.com/v1/badges/91584b095b8e1ad9a134/maintainability" /></a> 
 
 Ever wondered when you complete an assignment and do not know how well you're
 doing compared to other students? Introducing Codetierlist!
