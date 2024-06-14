@@ -42,7 +42,7 @@ dev_up: check_docker
 dev_down: check_docker
 	$(DOCKER) compose -f "docker-compose-dev.yml" down
 
-dev_restart: docker_dev_down docker_dev
+dev_restart: dev_down dev_up
 
 # runner
 runner_up: check_docker
