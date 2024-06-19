@@ -17,7 +17,7 @@
         "@fluentui/react-file-type-icons": "^8.11.9",
         "@fluentui/react-icons": "^2.0.244",
         "@monaco-editor/react": "^4.6.0",
-        "axios": "^1.6.8",
+        "axios": "^1.7.2",
         "is-utorid": "^1.2.2",
         "jszip": "^3.10.1",
         "magic-bytes.js": "^1.10.0",
