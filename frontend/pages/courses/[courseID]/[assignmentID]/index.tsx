@@ -273,7 +273,7 @@ const ViewDetailsTab = ({
                     className={styles.assignmentHeaderContent}
                     action={<TierChip tier={assignment.tier} />}
                     header={
-                        <div className={styles.assignmentHeaderContent}>
+                        <div className={styles.assignmentHeaderInfo}>
                             <Subtitle2 className={styles.dueDate}>
                                 <div>
                                     <strong>Due</strong>{' '}

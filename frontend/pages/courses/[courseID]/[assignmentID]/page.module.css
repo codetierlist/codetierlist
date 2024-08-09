@@ -13,6 +13,11 @@
 .assignmentHeaderContent {
     gap: var(--spacingHorizontalS);
     display: flex;
+    flex-direction: row;
+}
+
+.assignmentHeaderInfo {
+    display: flex;
     flex-direction: column;
 }
 

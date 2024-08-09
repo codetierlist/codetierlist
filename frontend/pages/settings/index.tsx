@@ -217,7 +217,7 @@ const LimitsViewer = () => {
         <div className={styles.accentSelector}>
             <Dialog>
                 <DialogTrigger disableButtonEnhancement>
-                    <Button>View limits</Button>
+                    <Button className="codetl-max-content">View limits</Button>
                 </DialogTrigger>
                 <DialogSurface>
                     <DialogBody>
@@ -273,7 +273,7 @@ export const Settings = () => {
 
                     <ControlCard
                         title="Background image"
-                        description="A picture background that will be displayed behind the app."
+                        description="A picture background that will be displayed behind the app"
                         icon={<Image24Regular />}
                     >
                         <BackgroundSelector />
@@ -292,7 +292,7 @@ export const Settings = () => {
                 <div className={`m-t-l m-b-xxxl ${styles.form}`}>
                     <ControlCard
                         title="Current limits"
-                        description="The current limits for the app"
+                        description="View the restrictions that your code will be tested under"
                         icon={<TopSpeed24Regular />}
                     >
                         <LimitsViewer />
