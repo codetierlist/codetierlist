@@ -60,7 +60,7 @@ const useUserInfo = (showSnack: ShowSnackType) => {
     return { userInfo, setUserInfo, fetchUserInfo };
 };
 
-function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
+const App = ({ Component, pageProps, renderer }: EnhancedAppProps) => {
     /** snackbar */
     const toasterId = useId('toaster');
     const { dispatchToast } = useToastController(toasterId);
@@ -133,4 +133,4 @@ function MyApp({ Component, pageProps, renderer }: EnhancedAppProps) {
     );
 }
 
-export default MyApp;
+export default App;
