@@ -85,3 +85,7 @@ html {
     z-index: 9999;
     display: none;
 }
+
+.codetl-max-content {
+    width: max-content;
+}
