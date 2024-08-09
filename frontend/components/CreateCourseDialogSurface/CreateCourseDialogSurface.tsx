@@ -14,7 +14,7 @@ import {
     Label,
     Option,
 } from '@fluentui/react-components';
-import { useContext, useState } from 'react';
+import { useContext, useState, forwardRef } from 'react';
 
 import styles from './CreateCourseForm.module.css';
 
@@ -26,9 +26,7 @@ export declare type CreateCourseFormProps = {
 /**
  * Form for creating a course
  */
-export const CreateCourseDialogSurface = ({
-    closeDialog,
-}: CreateCourseFormProps): JSX.Element => {
+export const CreateCourseDialogSurface = forwardRef(({ closeDialog }: CreateCourseFormProps, ref: React.Ref<HTMLDivElement>) => {
     let defaultSession;
     const date = new Date();
     const month = date.getMonth();
@@ -47,7 +45,7 @@ export const CreateCourseDialogSurface = ({
     const { showSnack } = useContext(SnackbarContext);
 
     return (
-        <DialogSurface>
+        <DialogSurface ref={ref}>
             <form
                 onSubmit={(event) => {
                     event.preventDefault();
@@ -133,4 +131,6 @@ export const CreateCourseDialogSurface = ({
             </form>
         </DialogSurface>
     );
-};
+});
+
+CreateCourseDialogSurface.displayName = 'CreateCourseDialogSurface';
