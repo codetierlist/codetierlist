@@ -1,4 +1,4 @@
-FROM node:21-alpine
+FROM node:21
 RUN npm install -g typescript
 
 # npm install types
