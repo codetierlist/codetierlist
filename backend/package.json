@@ -5,7 +5,7 @@
   "license": "LGPL-3.0-or-later",
   "main": "index.js",
   "scripts": {
-    "build": "prisma generate && tsc && tsc-alias -p tsconfig.json",
+    "build": "prisma generate --schema ./prisma/schema.prisma && tsc && tsc-alias -p tsconfig.json",
     "migrate": "prisma migrate deploy",
     "start": "node out/index.js",
     "prisma": "prisma generate --schema ./prisma/schema.prisma",
