@@ -2,5 +2,5 @@
 
 set -e
 
-npm run migrate
+# npm run migrate
 exec node ./out/index.js
