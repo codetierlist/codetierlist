@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 jobs:
   deploy:
-    runs-on: prod_runner
+    runs-on: prod2
     steps:
       - uses: actions/checkout@v2
 
