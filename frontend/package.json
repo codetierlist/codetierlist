@@ -24,7 +24,7 @@
         "monaco-editor": "^0.52.2",
         "next": "^15.3.0",
         "react": "^18.3.1",
-        "react-dom": "^18.3.1",
+        "react-dom": "^19.1.0",
         "react-dropzone": "^14.3.8",
         "react-grid-system": "^8.2.1",
         "react-markdown": "^10.1.0",
@@ -35,7 +35,7 @@
     "devDependencies": {
         "@types/node": "^22.14.1",
         "@types/react": "^18.3.2",
-        "@types/react-dom": "^18.3.0",
+        "@types/react-dom": "^19.1.2",
         "@typescript-eslint/eslint-plugin": "^7.7.0",
         "@typescript-eslint/parser": "^7.18.0",
         "codetierlist-types": "../types",
