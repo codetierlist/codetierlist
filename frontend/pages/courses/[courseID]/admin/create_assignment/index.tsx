@@ -5,6 +5,7 @@ import {
     Monaco,
     checkIfCourseAdmin,
     MarkdownRender,
+    formatDateForInput,
 } from '@/components';
 import { SnackbarContext, UserContext } from '@/hooks';
 import {
@@ -44,15 +45,6 @@ import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import { Container } from 'react-grid-system';
 import styles from './page.module.css';
-
-/**
- * Converts an ISO string to a date object
- */
-const updateTimezoneOffset = (date: string) => {
-    const d = new Date(date);
-    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-    return d;
-};
 
 /**
  * Custom hook to fetch the runner images
@@ -297,13 +289,13 @@ export default function Page(): JSX.Element {
                             type="datetime-local"
                             id="dueDate"
                             name="dueDate"
-                            value={dueDate.toISOString().slice(0, -8)}
+                            value={formatDateForInput(dueDate)}
                             onChange={(e) => {
                                 // check if the date is valid
                                 if (
                                     new Date(e.target.value).toString() !== 'Invalid Date'
                                 )
-                                    setDueDate(updateTimezoneOffset(e.target.value));
+                                    setDueDate(new Date(e.target.value));
                             }}
                         />
                     </ControlCard>

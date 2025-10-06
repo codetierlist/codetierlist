@@ -133,3 +133,16 @@ export const getSession = (date: Date): Session => {
         return 'WINTER';
     }
 };
+
+/**
+ * Formats a Date object for HTML datetime-local input elements.
+ * Converts the date to local timezone and formats it as YYYY-MM-DDTHH:MM.
+ * 
+ * @param date The Date object to format
+ * @returns A string in the format YYYY-MM-DDTHH:MM suitable for datetime-local inputs
+ */
+export const formatDateForInput = (date: Date): string => {
+    return new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+        .toISOString()
+        .slice(0, 16);
+};
